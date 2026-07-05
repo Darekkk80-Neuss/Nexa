@@ -1,0 +1,1548 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#07090f">
+<meta name="description" content="NEXA – Dein persönlicher KI-Alltagsmanager. Briefe verstehen, Fristen erkennen, Aufgaben und Termine automatisch organisieren.">
+<title>NEXA – Dein KI-Alltagsmanager</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/svg+xml" href="icon.svg">
+<link rel="apple-touch-icon" href="icon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ============================== TOKENS ============================== */
+:root{
+  --bg:#07090f;
+  --bg2:#0b0e17;
+  --card:rgba(255,255,255,.045);
+  --card2:rgba(255,255,255,.08);
+  --border:rgba(255,255,255,.09);
+  --border2:rgba(255,255,255,.16);
+  --text:#eef1f7;
+  --muted:#9aa3b5;
+  --faint:#697184;
+  --acc1:#7c3aed;
+  --acc2:#06b6d4;
+  --grad:linear-gradient(135deg,#8b5cf6 0%,#06b6d4 100%);
+  --ok:#34d399;
+  --warn:#fbbf24;
+  --danger:#f87171;
+  --radius:18px;
+  --font-head:'Space Grotesk',system-ui,sans-serif;
+  --font-body:'Inter',system-ui,sans-serif;
+  --tabbar-h:72px;
+  --topbar-h:58px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:var(--font-body);
+  font-size:15px;
+  line-height:1.55;
+  min-height:100dvh;
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3,.font-head{font-family:var(--font-head)}
+button{font-family:inherit;cursor:pointer}
+input,select,textarea{font-family:inherit;font-size:15px}
+::selection{background:rgba(124,58,237,.45)}
+::-webkit-scrollbar{width:9px;height:9px}
+::-webkit-scrollbar-thumb{background:rgba(255,255,255,.14);border-radius:9px}
+::-webkit-scrollbar-track{background:transparent}
+
+/* ============================== BACKGROUND ORBS ============================== */
+.orbs{position:fixed;inset:0;z-index:-1;overflow:hidden;background:
+  radial-gradient(ellipse 80% 55% at 50% -10%,rgba(124,58,237,.14),transparent),
+  var(--bg);}
+.orb{position:absolute;border-radius:50%;filter:blur(90px);opacity:.32;will-change:transform}
+.orb-1{width:520px;height:520px;background:#5b21b6;top:-180px;left:-140px;animation:drift1 26s ease-in-out infinite alternate}
+.orb-2{width:460px;height:460px;background:#0e7490;bottom:-200px;right:-120px;animation:drift2 32s ease-in-out infinite alternate}
+.orb-3{width:300px;height:300px;background:#7c3aed;top:40%;left:60%;opacity:.18;animation:drift1 38s ease-in-out infinite alternate-reverse}
+@keyframes drift1{from{transform:translate(0,0) scale(1)}to{transform:translate(90px,60px) scale(1.15)}}
+@keyframes drift2{from{transform:translate(0,0) scale(1.1)}to{transform:translate(-80px,-70px) scale(.95)}}
+
+/* ============================== LAYOUT SHELL ============================== */
+#app{display:flex;min-height:100dvh}
+main{flex:1;width:100%;max-width:760px;margin:0 auto;
+  padding:calc(var(--topbar-h) + 14px) 16px calc(var(--tabbar-h) + 34px)}
+
+/* Topbar (mobil) */
+.topbar{position:fixed;top:0;left:0;right:0;z-index:40;height:var(--topbar-h);
+  display:flex;align-items:center;justify-content:space-between;padding:0 16px;
+  background:rgba(7,9,15,.72);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--border)}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--text)}
+.brand .logo-mark{width:32px;height:32px;flex:none}
+.brand b{font-family:var(--font-head);font-size:19px;letter-spacing:2.5px}
+.icon-btn{display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;
+  border-radius:12px;border:1px solid var(--border);background:var(--card);color:var(--muted);transition:.2s}
+.icon-btn:hover{color:var(--text);border-color:var(--border2)}
+.icon-btn svg{width:19px;height:19px}
+
+/* Tabbar (mobil) */
+.tabbar{position:fixed;bottom:0;left:0;right:0;z-index:40;height:calc(var(--tabbar-h) + env(safe-area-inset-bottom));
+  padding-bottom:env(safe-area-inset-bottom);
+  display:flex;align-items:stretch;justify-content:space-around;
+  background:rgba(9,11,18,.82);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+  border-top:1px solid var(--border)}
+.tab{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
+  background:none;border:none;color:var(--faint);font-size:10.5px;font-weight:600;letter-spacing:.3px;transition:.2s}
+.tab svg{width:22px;height:22px}
+.tab.active{color:var(--text)}
+.tab.active svg{color:#a78bfa}
+.tab-center{position:relative;top:-16px;flex:none;width:60px}
+.tab-center .bubble{width:56px;height:56px;flex:none;border-radius:50%;background:var(--grad);
+  display:flex;align-items:center;justify-content:center;color:#fff;
+  box-shadow:0 6px 24px rgba(124,58,237,.5),0 0 0 5px rgba(7,9,15,.9);transition:.2s}
+.tab-center .bubble svg{width:26px;height:26px}
+.tab-center.active .bubble{box-shadow:0 6px 30px rgba(6,182,212,.65),0 0 0 5px rgba(7,9,15,.9)}
+.tab-center span{margin-top:4px}
+
+/* Sidebar (desktop) */
+.sidebar{display:none}
+@media(min-width:900px){
+  .topbar,.tabbar{display:none}
+  main{padding:36px 44px 70px;max-width:860px}
+  .sidebar{display:flex;flex-direction:column;width:236px;flex:none;position:sticky;top:0;height:100dvh;
+    padding:26px 16px 22px;border-right:1px solid var(--border);background:rgba(9,11,18,.55);
+    backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
+  .sidebar .brand{padding:0 10px 24px}
+  .sidebar .brand .logo-mark{width:38px;height:38px}
+  .sidebar .brand b{font-size:22px}
+  .snav{display:flex;flex-direction:column;gap:4px}
+  .snav button{display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:13px;
+    border:1px solid transparent;background:none;color:var(--muted);font-size:14.5px;font-weight:600;
+    text-align:left;transition:.18s}
+  .snav button svg{width:20px;height:20px;flex:none}
+  .snav button:hover{color:var(--text);background:var(--card)}
+  .snav button.active{color:var(--text);background:var(--card2);border-color:var(--border)}
+  .snav button.active svg{color:#a78bfa}
+  .sidebar .foot{margin-top:auto;padding:0 10px;font-size:12px;color:var(--faint)}
+}
+.status-pill{display:inline-flex;align-items:center;gap:7px;padding:6px 12px;border-radius:20px;
+  border:1px solid var(--border);background:var(--card);font-size:12px;font-weight:600;color:var(--muted);margin-bottom:10px}
+.status-pill .dot{width:8px;height:8px;border-radius:50%;background:var(--faint)}
+.status-pill.on .dot{background:var(--ok);box-shadow:0 0 8px rgba(52,211,153,.8)}
+
+/* ============================== VIEWS ============================== */
+.view{display:none}
+.view.active{display:block;animation:viewIn .35s ease both}
+@keyframes viewIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.view-head{margin-bottom:20px}
+.view-head h1{font-size:26px;font-weight:700;letter-spacing:-.3px}
+.view-head p{color:var(--muted);font-size:14px;margin-top:3px}
+
+/* ============================== CARDS & BUTTONS ============================== */
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);padding:18px}
+.card+.card{margin-top:14px}
+.rise{animation:fadeUp .5s ease both;animation-delay:calc(var(--i,0)*70ms)}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  padding:10px 18px;border-radius:13px;border:1px solid var(--border2);
+  background:var(--card2);color:var(--text);font-size:14px;font-weight:600;transition:.2s}
+.btn:hover{border-color:rgba(255,255,255,.3)}
+.btn:disabled{opacity:.5;cursor:default}
+.btn svg{width:17px;height:17px}
+.btn-primary{background:var(--grad);border:none;color:#fff;box-shadow:0 4px 18px rgba(124,58,237,.4)}
+.btn-primary:hover{box-shadow:0 6px 26px rgba(124,58,237,.55);transform:translateY(-1px)}
+.btn-primary:disabled{transform:none;box-shadow:none}
+.btn-sm{padding:7px 13px;font-size:13px;border-radius:11px}
+.btn-danger{color:var(--danger);border-color:rgba(248,113,113,.35)}
+.btn-ghost{background:none;border-color:transparent;color:var(--muted)}
+.btn-ghost:hover{color:var(--text)}
+input[type=text],input[type=password],input[type=date],input[type=time],select,textarea{
+  width:100%;padding:11px 14px;border-radius:13px;border:1px solid var(--border2);
+  background:rgba(0,0,0,.3);color:var(--text);outline:none;transition:.2s}
+input:focus,select:focus,textarea:focus{border-color:#7c3aed;box-shadow:0 0 0 3px rgba(124,58,237,.22)}
+input::placeholder,textarea::placeholder{color:var(--faint)}
+select option{background:#12151f;color:var(--text)}
+input[type=date],input[type=time]{color-scheme:dark}
+label.fld{display:block;font-size:12.5px;font-weight:600;color:var(--muted);margin:0 0 6px 2px}
+.badge{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:20px;
+  font-size:11.5px;font-weight:700;letter-spacing:.3px}
+.empty{padding:28px 14px;text-align:center;color:var(--faint);font-size:14px}
+.empty .big{font-size:30px;display:block;margin-bottom:8px}
+
+/* ============================== DASHBOARD ============================== */
+.greet{margin-bottom:22px}
+.greet h1{font-size:28px;font-weight:700;letter-spacing:-.4px}
+.greet h1 .grad-text{background:var(--grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.greet p{color:var(--muted);margin-top:4px;font-size:14px}
+.qa-row{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin-bottom:22px}
+.qa{display:flex;flex-direction:column;align-items:center;gap:9px;padding:17px 8px;
+  border-radius:var(--radius);border:1px solid var(--border);background:var(--card);
+  color:var(--text);font-size:12.5px;font-weight:600;transition:.2s;backdrop-filter:blur(14px)}
+.qa:hover{border-color:var(--border2);transform:translateY(-2px)}
+.qa .qa-ic{width:44px;height:44px;border-radius:14px;display:flex;align-items:center;justify-content:center;color:#fff}
+.qa .qa-ic svg{width:21px;height:21px}
+.qa-1 .qa-ic{background:linear-gradient(135deg,#8b5cf6,#6366f1)}
+.qa-2 .qa-ic{background:var(--grad)}
+.qa-3 .qa-ic{background:linear-gradient(135deg,#06b6d4,#0891b2)}
+.stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin-bottom:22px}
+.stat{padding:14px 10px;text-align:center;border-radius:var(--radius);border:1px solid var(--border);background:var(--card)}
+.stat b{display:block;font-size:24px;font-family:var(--font-head);background:var(--grad);
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.stat span{font-size:11.5px;color:var(--muted);font-weight:600}
+.sec-title{display:flex;align-items:center;justify-content:space-between;margin:20px 0 10px}
+.sec-title h2{font-size:15px;font-weight:700;color:var(--text);letter-spacing:.2px}
+.sec-title button{background:none;border:none;color:#a78bfa;font-size:13px;font-weight:600}
+.mini-list .mini{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:14px;
+  border:1px solid var(--border);background:var(--card);margin-bottom:8px}
+.mini .mini-ic{width:36px;height:36px;border-radius:11px;flex:none;display:flex;align-items:center;justify-content:center;
+  background:var(--card2);color:#a78bfa}
+.mini .mini-ic svg{width:17px;height:17px}
+.mini .mini-tx{flex:1;min-width:0}
+.mini .mini-tx b{display:block;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mini .mini-tx span{font-size:12.5px;color:var(--muted)}
+.mini .mini-when{font-size:12px;color:var(--muted);font-weight:600;white-space:nowrap}
+.mini .mini-when.warn{color:var(--warn)}
+.mini .mini-when.late{color:var(--danger)}
+
+/* ============================== DOKUMENTE ============================== */
+.dropzone{position:relative;border:1.5px dashed rgba(167,139,250,.5);border-radius:22px;
+  background:linear-gradient(160deg,rgba(124,58,237,.08),rgba(6,182,212,.06));
+  padding:34px 20px;text-align:center;cursor:pointer;transition:.25s}
+.dropzone:hover,.dropzone.drag{border-color:#a78bfa;background:linear-gradient(160deg,rgba(124,58,237,.15),rgba(6,182,212,.1))}
+.dropzone .dz-ic{width:64px;height:64px;margin:0 auto 14px;border-radius:20px;background:var(--grad);
+  display:flex;align-items:center;justify-content:center;color:#fff;box-shadow:0 8px 30px rgba(124,58,237,.45)}
+.dropzone .dz-ic svg{width:30px;height:30px}
+.dropzone h3{font-size:17px;margin-bottom:5px}
+.dropzone p{color:var(--muted);font-size:13.5px}
+#docInput{display:none}
+.analyzing{display:none;margin-top:14px;padding:20px;border-radius:var(--radius);
+  border:1px solid var(--border);background:var(--card);text-align:center}
+.analyzing.on{display:block}
+.analyzing .scanbox{position:relative;width:110px;height:140px;margin:0 auto 16px;border-radius:12px;
+  overflow:hidden;border:1px solid var(--border2);background:#000}
+.analyzing .scanbox img{width:100%;height:100%;object-fit:cover;opacity:.75}
+.analyzing .scanline{position:absolute;left:0;right:0;height:34%;
+  background:linear-gradient(180deg,transparent,rgba(6,182,212,.45),rgba(167,139,250,.5),transparent);
+  animation:scan 1.6s ease-in-out infinite}
+@keyframes scan{0%{top:-35%}50%{top:100%}100%{top:-35%}}
+.analyzing .a-status{font-weight:600;font-size:14.5px}
+.analyzing .a-sub{color:var(--muted);font-size:13px;margin-top:3px}
+.doc-card{margin-top:14px}
+.doc-head{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.doc-head .spacer{flex:1}
+.doc-head time{font-size:12px;color:var(--faint)}
+.b-mahnung{background:rgba(248,113,113,.15);color:#fca5a5}
+.b-rechnung{background:rgba(251,191,36,.14);color:#fcd34d}
+.b-vertrag{background:rgba(96,165,250,.15);color:#93c5fd}
+.b-behoerde{background:rgba(167,139,250,.16);color:#c4b5fd}
+.b-sonstiges{background:rgba(255,255,255,.1);color:var(--muted)}
+.b-demo{background:rgba(6,182,212,.14);color:#67e8f9}
+.doc-body{display:flex;gap:14px}
+.doc-thumb{width:64px;height:84px;flex:none;border-radius:10px;object-fit:cover;border:1px solid var(--border2)}
+.doc-main{flex:1;min-width:0}
+.doc-main h3{font-size:16.5px;margin-bottom:2px}
+.doc-sender{font-size:13px;color:var(--muted);margin-bottom:10px}
+.doc-explain{padding:12px 14px;border-radius:13px;background:rgba(124,58,237,.09);
+  border:1px solid rgba(167,139,250,.22);font-size:14px;margin-bottom:10px}
+.doc-explain b{color:#c4b5fd;font-size:12px;letter-spacing:.5px;display:block;margin-bottom:4px}
+.deadline-row{display:flex;align-items:center;gap:9px;padding:10px 14px;border-radius:13px;
+  font-size:13.5px;font-weight:600;margin-bottom:10px;border:1px solid}
+.deadline-row.ok{background:rgba(52,211,153,.08);border-color:rgba(52,211,153,.25);color:#6ee7b7}
+.deadline-row.warn{background:rgba(251,191,36,.09);border-color:rgba(251,191,36,.3);color:#fcd34d}
+.deadline-row.late{background:rgba(248,113,113,.1);border-color:rgba(248,113,113,.35);color:#fca5a5}
+.doc-todos{list-style:none;margin-bottom:10px}
+.doc-todos li{display:flex;align-items:center;gap:9px;padding:7px 2px;font-size:14px;color:var(--text)}
+.doc-todos li svg{width:16px;height:16px;color:#a78bfa;flex:none}
+.doc-todos li span.due{margin-left:auto;font-size:12px;color:var(--muted)}
+.doc-reply{margin-bottom:12px}
+.doc-reply summary{cursor:pointer;font-size:13.5px;font-weight:600;color:#a78bfa;padding:4px 0}
+.doc-reply .reply-text{white-space:pre-wrap;font-size:13.5px;color:var(--muted);padding:12px 14px;
+  border-radius:13px;background:rgba(0,0,0,.3);border:1px solid var(--border);margin-top:8px}
+.doc-actions{display:flex;gap:8px;flex-wrap:wrap}
+.demo-hint{margin-top:14px;padding:12px 16px;border-radius:13px;font-size:13px;color:#67e8f9;
+  background:rgba(6,182,212,.07);border:1px solid rgba(6,182,212,.25)}
+.demo-hint a{color:#a5f3fc;cursor:pointer;text-decoration:underline}
+
+/* ============================== AUFGABEN ============================== */
+.task-add{display:flex;gap:8px;margin-bottom:12px}
+.task-add input[type=text]{flex:1}
+.task-add .btn{flex:none;padding:10px 14px}
+.task-opts{display:flex;gap:8px;margin-bottom:16px}
+.task-opts input,.task-opts select{flex:1}
+.seg{display:flex;gap:4px;padding:4px;border-radius:14px;background:var(--card);border:1px solid var(--border);margin-bottom:16px}
+.seg button{flex:1;padding:8px;border:none;border-radius:10px;background:none;color:var(--muted);font-size:13px;font-weight:600;transition:.2s}
+.seg button.active{background:var(--card2);color:var(--text);box-shadow:0 1px 6px rgba(0,0,0,.3)}
+.task{display:flex;align-items:center;gap:12px;padding:13px 14px;border-radius:14px;
+  border:1px solid var(--border);background:var(--card);margin-bottom:8px;transition:.2s}
+.task.done{opacity:.5}
+.task.done .t-title{text-decoration:line-through}
+.tcheck{width:24px;height:24px;flex:none;border-radius:50%;border:2px solid var(--border2);
+  background:none;display:flex;align-items:center;justify-content:center;color:#fff;transition:.2s;padding:0}
+.tcheck svg{width:13px;height:13px;opacity:0}
+.task.done .tcheck{background:var(--grad);border-color:transparent}
+.task.done .tcheck svg{opacity:1}
+.t-main{flex:1;min-width:0}
+.t-title{font-size:14.5px;font-weight:600;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.t-meta{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted);margin-top:2px}
+.t-meta .late{color:var(--danger);font-weight:700}
+.t-meta .today{color:var(--warn);font-weight:700}
+.prio{width:8px;height:8px;border-radius:50%;flex:none}
+.prio-high{background:var(--danger)}.prio-med{background:var(--warn)}.prio-low{background:var(--ok)}
+.src-badge{font-size:10.5px;padding:2px 8px;border-radius:10px;background:var(--card2);color:var(--muted);font-weight:700}
+.t-del{background:none;border:none;color:var(--faint);padding:6px;border-radius:9px;transition:.2s}
+.t-del:hover{color:var(--danger)}
+.t-del svg{width:16px;height:16px}
+
+/* ============================== KALENDER ============================== */
+.cal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.cal-head h2{font-size:18px;text-transform:capitalize}
+.cal-nav{display:flex;gap:8px}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.cal-dow{text-align:center;font-size:11px;font-weight:700;color:var(--faint);padding:6px 0;letter-spacing:.5px}
+.cal-day{position:relative;aspect-ratio:1;border:none;border-radius:12px;background:none;
+  color:var(--text);font-size:13.5px;font-weight:600;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:3px;transition:.15s}
+.cal-day:hover{background:var(--card2)}
+.cal-day.dim{color:var(--faint);opacity:.5}
+.cal-day.today{box-shadow:inset 0 0 0 1.5px #a78bfa}
+.cal-day.sel{background:var(--grad);color:#fff;box-shadow:0 4px 14px rgba(124,58,237,.45)}
+.cal-day .dots{display:flex;gap:3px;height:5px}
+.cal-day .dots i{width:5px;height:5px;border-radius:50%;background:#67e8f9}
+.cal-day.sel .dots i{background:#fff}
+.day-panel{margin-top:16px}
+.day-panel h3{font-size:15px;margin-bottom:10px}
+.ev{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:14px;
+  border:1px solid var(--border);background:var(--card);margin-bottom:8px}
+.ev .ev-time{font-size:12.5px;font-weight:700;color:#67e8f9;min-width:44px}
+.ev .ev-tx{flex:1;min-width:0;font-size:14px;font-weight:600}
+.ev .ev-tx small{display:block;font-weight:400;color:var(--muted);font-size:12.5px}
+.ev-form{display:none;margin-top:10px}
+.ev-form.on{display:block}
+.ev-form .row{display:flex;gap:8px;margin-bottom:8px}
+
+/* ============================== CHAT ============================== */
+#view-chat.active{display:flex;flex-direction:column;height:calc(100dvh - var(--topbar-h) - var(--tabbar-h) - 26px)}
+@media(min-width:900px){#view-chat.active{height:calc(100dvh - 110px)}}
+.chat-msgs{flex:1;overflow-y:auto;padding:6px 2px 14px;display:flex;flex-direction:column;gap:14px}
+.msg{display:flex;gap:10px;max-width:92%;animation:fadeUp .3s ease both}
+.msg.user{align-self:flex-end;flex-direction:row-reverse}
+.msg .avatar{width:34px;height:34px;flex:none;border-radius:50%;background:var(--grad);
+  display:flex;align-items:center;justify-content:center;color:#fff;box-shadow:0 3px 12px rgba(124,58,237,.4)}
+.msg .avatar svg{width:17px;height:17px}
+.msg .bubble-tx{padding:12px 15px;border-radius:18px;font-size:14.5px;white-space:pre-wrap;overflow-wrap:break-word;min-width:0}
+.msg.bot .bubble-tx{background:var(--card2);border:1px solid var(--border);border-top-left-radius:6px}
+.msg.user .bubble-tx{background:linear-gradient(135deg,#7c3aed,#6d28d9);border-top-right-radius:6px;color:#fff}
+.action-chips{display:flex;flex-direction:column;gap:7px;margin-top:10px}
+.chip{display:flex;align-items:center;gap:8px;padding:9px 14px;border-radius:12px;text-align:left;
+  border:1px solid rgba(167,139,250,.45);background:rgba(124,58,237,.14);color:#ddd6fe;
+  font-size:13.5px;font-weight:600;transition:.2s}
+.chip:hover{background:rgba(124,58,237,.26)}
+.chip.done{border-color:rgba(52,211,153,.4);background:rgba(52,211,153,.1);color:#6ee7b7;cursor:default}
+.chip svg{width:15px;height:15px;flex:none}
+.typing{display:flex;gap:5px;padding:14px 16px}
+.typing i{width:7px;height:7px;border-radius:50%;background:var(--muted);animation:blink 1.2s infinite}
+.typing i:nth-child(2){animation-delay:.2s}.typing i:nth-child(3){animation-delay:.4s}
+@keyframes blink{0%,60%,100%{opacity:.25;transform:none}30%{opacity:1;transform:translateY(-3px)}}
+.suggest{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:auto 0}
+.suggest button{padding:10px 15px;border-radius:16px;border:1px solid var(--border2);
+  background:var(--card);color:var(--text);font-size:13.5px;transition:.2s;backdrop-filter:blur(10px)}
+.suggest button:hover{border-color:#a78bfa;transform:translateY(-1px)}
+.chat-hello{text-align:center;margin:auto 0 18px}
+.chat-hello .logo-mark{width:58px;height:58px;margin:0 auto 12px}
+.chat-hello h2{font-size:20px}
+.chat-hello p{color:var(--muted);font-size:13.5px;margin-top:4px}
+.chat-inputbar{display:flex;gap:9px;padding-top:12px}
+.chat-inputbar input{flex:1;border-radius:16px;padding:13px 17px}
+.chat-inputbar .send{flex:none;width:48px;height:48px;border-radius:16px;border:none;background:var(--grad);
+  color:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(124,58,237,.45);transition:.2s}
+.chat-inputbar .send:hover{transform:translateY(-1px)}
+.chat-inputbar .send svg{width:20px;height:20px}
+
+/* ============================== EINSTELLUNGEN ============================== */
+.set-card h3{font-size:15.5px;margin-bottom:4px}
+.set-card .sub{color:var(--muted);font-size:13px;margin-bottom:13px}
+.set-row{display:flex;gap:8px}
+.set-row input{flex:1}
+.note-box{font-size:13px;color:var(--muted);padding:12px 15px;border-radius:13px;
+  background:rgba(0,0,0,.25);border:1px solid var(--border);margin-top:12px}
+.note-box b{color:var(--text)}
+
+/* ============================== ONBOARDING ============================== */
+#onboarding{position:fixed;inset:0;z-index:100;display:none;flex-direction:column;align-items:center;
+  justify-content:center;padding:30px 26px;background:
+  radial-gradient(ellipse 90% 60% at 50% -15%,rgba(124,58,237,.22),transparent),var(--bg)}
+#onboarding.on{display:flex}
+.ob-slide{display:none;text-align:center;max-width:400px;width:100%;animation:viewIn .45s ease both}
+.ob-slide.active{display:block}
+.ob-slide .logo-mark{width:92px;height:92px;margin:0 auto 26px;filter:drop-shadow(0 10px 40px rgba(124,58,237,.6))}
+.ob-slide h1{font-size:32px;letter-spacing:6px;margin-bottom:6px}
+.ob-slide h2{font-size:22px;margin-bottom:10px;letter-spacing:-.2px}
+.ob-slide .tagline{background:var(--grad);-webkit-background-clip:text;background-clip:text;
+  -webkit-text-fill-color:transparent;font-weight:700;font-size:15.5px;margin-bottom:14px}
+.ob-slide p{color:var(--muted);font-size:14.5px}
+.ob-feats{display:flex;flex-direction:column;gap:12px;margin:24px 0;text-align:left}
+.ob-feats .f{display:flex;gap:14px;align-items:center;padding:14px 16px;border-radius:16px;
+  border:1px solid var(--border);background:var(--card)}
+.ob-feats .f-ic{width:42px;height:42px;flex:none;border-radius:13px;background:var(--grad);
+  display:flex;align-items:center;justify-content:center;color:#fff}
+.ob-feats .f-ic svg{width:20px;height:20px}
+.ob-feats b{display:block;font-size:14.5px}
+.ob-feats span{font-size:12.5px;color:var(--muted)}
+.ob-name{margin:22px 0 6px;text-align:left}
+.ob-ctrl{margin-top:30px;display:flex;flex-direction:column;gap:14px;align-items:center;width:100%;max-width:400px}
+.ob-ctrl .btn-primary{width:100%;padding:14px;font-size:15px}
+.ob-dots{display:flex;gap:7px}
+.ob-dots i{width:8px;height:8px;border-radius:50%;background:var(--card2);transition:.3s}
+.ob-dots i.on{background:#a78bfa;width:22px;border-radius:6px}
+.ob-skip{background:none;border:none;color:var(--faint);font-size:13px}
+
+/* ============================== TOAST ============================== */
+#toasts{position:fixed;bottom:calc(var(--tabbar-h) + 18px);left:50%;transform:translateX(-50%);
+  z-index:200;display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none}
+@media(min-width:900px){#toasts{bottom:28px}}
+.toast{padding:11px 20px;border-radius:14px;background:rgba(20,23,34,.92);border:1px solid var(--border2);
+  backdrop-filter:blur(12px);font-size:13.5px;font-weight:600;box-shadow:0 8px 30px rgba(0,0,0,.5);
+  animation:toastIn .3s ease both;white-space:nowrap;max-width:90vw;overflow:hidden;text-overflow:ellipsis}
+@keyframes toastIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+.toast.out{animation:toastOut .3s ease both}
+@keyframes toastOut{to{opacity:0;transform:translateY(8px)}}
+</style>
+</head>
+<body>
+
+<div class="orbs"><div class="orb orb-1"></div><div class="orb orb-2"></div><div class="orb orb-3"></div></div>
+
+<!-- ============================== ONBOARDING ============================== -->
+<div id="onboarding">
+  <div class="ob-slide active" data-slide="0">
+    <svg class="logo-mark" viewBox="0 0 64 64"><use href="#logoSym"/></svg>
+    <h1>NEXA</h1>
+    <div class="tagline">Dein persönlicher KI-Alltagsmanager</div>
+    <p>Nicht nur Informationen liefern – <br><b>Arbeit abnehmen.</b><br><br>NEXA versteht deine Briefe, denkt an deine Fristen und organisiert deinen Alltag. Damit du Zeit für das hast, was zählt.</p>
+  </div>
+  <div class="ob-slide" data-slide="1">
+    <h2>Was NEXA für dich tut</h2>
+    <div class="ob-feats">
+      <div class="f"><div class="f-ic"><svg viewBox="0 0 24 24"><use href="#icCam"/></svg></div>
+        <div><b>Dokumente verstehen</b><span>Brief fotografieren – NEXA erklärt ihn in einfachen Worten und erkennt Fristen.</span></div></div>
+      <div class="f"><div class="f-ic"><svg viewBox="0 0 24 24"><use href="#icCheck2"/></svg></div>
+        <div><b>Aufgaben &amp; Termine</b><span>To-dos und Kalendereinträge entstehen automatisch – nichts geht mehr verloren.</span></div></div>
+      <div class="f"><div class="f-ic"><svg viewBox="0 0 24 24"><use href="#icSpark"/></svg></div>
+        <div><b>KI-Chat</b><span>„Ich möchte nächste Woche in den Urlaub" – NEXA plant, erinnert und organisiert.</span></div></div>
+    </div>
+  </div>
+  <div class="ob-slide" data-slide="2">
+    <h2>Fast geschafft ✨</h2>
+    <p>Wie darf NEXA dich nennen?</p>
+    <div class="ob-name">
+      <input type="text" id="obName" placeholder="Dein Vorname (optional)" maxlength="30" autocomplete="given-name">
+    </div>
+    <p style="font-size:12.5px">Alle Daten bleiben auf deinem Gerät. Kein Konto, keine Cloud, keine Werbung.</p>
+  </div>
+  <div class="ob-ctrl">
+    <button class="btn btn-primary" id="obNext">Weiter</button>
+    <div class="ob-dots"><i class="on"></i><i></i><i></i></div>
+    <button class="ob-skip" id="obSkip">Überspringen</button>
+  </div>
+</div>
+
+<!-- ============================== APP SHELL ============================== -->
+<div id="app">
+
+  <aside class="sidebar">
+    <a class="brand"><svg class="logo-mark" viewBox="0 0 64 64"><use href="#logoSym"/></svg><b>NEXA</b></a>
+    <nav class="snav">
+      <button data-view="dashboard"><svg viewBox="0 0 24 24"><use href="#icHome"/></svg>Dashboard</button>
+      <button data-view="docs"><svg viewBox="0 0 24 24"><use href="#icDoc"/></svg>Dokumente</button>
+      <button data-view="tasks"><svg viewBox="0 0 24 24"><use href="#icCheck2"/></svg>Aufgaben</button>
+      <button data-view="calendar"><svg viewBox="0 0 24 24"><use href="#icCal"/></svg>Kalender</button>
+      <button data-view="chat"><svg viewBox="0 0 24 24"><use href="#icSpark"/></svg>NEXA Chat</button>
+      <button data-view="settings"><svg viewBox="0 0 24 24"><use href="#icGear"/></svg>Einstellungen</button>
+    </nav>
+    <div class="foot">
+      <div class="status-pill" id="aiStatusSide"><span class="dot"></span><span class="lbl">Demo-Modus</span></div>
+      <div>NEXA v1.0 · lokal &amp; privat</div>
+    </div>
+  </aside>
+
+  <header class="topbar">
+    <a class="brand"><svg class="logo-mark" viewBox="0 0 64 64"><use href="#logoSym"/></svg><b>NEXA</b></a>
+    <button class="icon-btn" id="btnTopSettings" title="Einstellungen"><svg viewBox="0 0 24 24"><use href="#icGear"/></svg></button>
+  </header>
+
+  <main>
+
+    <!-- ============================== DASHBOARD ============================== -->
+    <section class="view" id="view-dashboard">
+      <div class="greet">
+        <h1 id="greetLine">Guten Tag<span class="grad-text"></span></h1>
+        <p id="greetDate"></p>
+      </div>
+      <div class="qa-row">
+        <button class="qa qa-1 rise" style="--i:0" id="qaDoc">
+          <span class="qa-ic"><svg viewBox="0 0 24 24"><use href="#icCam"/></svg></span>Foto analysieren</button>
+        <button class="qa qa-2 rise" style="--i:1" id="qaChat">
+          <span class="qa-ic"><svg viewBox="0 0 24 24"><use href="#icSpark"/></svg></span>Frag NEXA</button>
+        <button class="qa qa-3 rise" style="--i:2" id="qaTask">
+          <span class="qa-ic"><svg viewBox="0 0 24 24"><use href="#icPlus"/></svg></span>Neue Aufgabe</button>
+      </div>
+      <div class="stat-row" id="statRow"></div>
+      <div id="dashWidgets"></div>
+    </section>
+
+    <!-- ============================== DOKUMENTE ============================== -->
+    <section class="view" id="view-docs">
+      <div class="view-head">
+        <h1>Dokumente</h1>
+        <p>Brief fotografieren – NEXA erklärt ihn und erkennt Fristen.</p>
+      </div>
+      <div class="dropzone" id="dropzone">
+        <div class="dz-ic"><svg viewBox="0 0 24 24"><use href="#icCam"/></svg></div>
+        <h3>Dokument fotografieren oder hochladen</h3>
+        <p>Brief, Rechnung, Vertrag – NEXA übersetzt Amtsdeutsch in einfache Worte.</p>
+      </div>
+      <input type="file" id="docInput" accept="image/*" capture="environment">
+      <div class="analyzing" id="analyzing">
+        <div class="scanbox"><img id="scanImg" alt=""><div class="scanline"></div></div>
+        <div class="a-status" id="aStatus">Lese Dokument …</div>
+        <div class="a-sub">NEXA analysiert dein Dokument</div>
+      </div>
+      <div id="demoHintDocs"></div>
+      <div id="docList"></div>
+    </section>
+
+    <!-- ============================== AUFGABEN ============================== -->
+    <section class="view" id="view-tasks">
+      <div class="view-head">
+        <h1>Aufgaben</h1>
+        <p>Alles im Blick – manuell, aus Dokumenten oder aus dem Chat.</p>
+      </div>
+      <div class="task-add">
+        <input type="text" id="taskTitle" placeholder="Neue Aufgabe …" maxlength="120">
+        <button class="btn btn-primary" id="taskAddBtn"><svg viewBox="0 0 24 24"><use href="#icPlus"/></svg></button>
+      </div>
+      <div class="task-opts">
+        <input type="date" id="taskDue" title="Fällig am">
+        <select id="taskPrio" title="Priorität">
+          <option value="med">Mittel</option>
+          <option value="high">Hoch</option>
+          <option value="low">Niedrig</option>
+        </select>
+      </div>
+      <div class="seg" id="taskSeg">
+        <button data-f="open" class="active">Offen</button>
+        <button data-f="done">Erledigt</button>
+        <button data-f="all">Alle</button>
+      </div>
+      <div id="taskList"></div>
+    </section>
+
+    <!-- ============================== KALENDER ============================== -->
+    <section class="view" id="view-calendar">
+      <div class="view-head">
+        <h1>Kalender</h1>
+        <p>Termine und Fristen – automatisch aus deinen Dokumenten.</p>
+      </div>
+      <div class="card">
+        <div class="cal-head">
+          <h2 id="calTitle"></h2>
+          <div class="cal-nav">
+            <button class="icon-btn" id="calPrev"><svg viewBox="0 0 24 24"><use href="#icLeft"/></svg></button>
+            <button class="icon-btn" id="calNext"><svg viewBox="0 0 24 24"><use href="#icRight"/></svg></button>
+          </div>
+        </div>
+        <div class="cal-grid" id="calGrid"></div>
+      </div>
+      <div class="day-panel">
+        <div class="sec-title"><h2 id="dayTitle"></h2><button id="evAddToggle">+ Termin</button></div>
+        <div class="ev-form" id="evForm">
+          <div class="row"><input type="text" id="evTitle" placeholder="Titel des Termins" maxlength="80"></div>
+          <div class="row"><input type="time" id="evTime"><button class="btn btn-primary" id="evSave">Speichern</button></div>
+        </div>
+        <div id="dayEvents"></div>
+      </div>
+      <div class="sec-title"><h2>Anstehend</h2></div>
+      <div id="upcomingList"></div>
+    </section>
+
+    <!-- ============================== CHAT ============================== -->
+    <section class="view" id="view-chat">
+      <div class="chat-msgs" id="chatMsgs"></div>
+      <div class="chat-inputbar">
+        <input type="text" id="chatInput" placeholder="Frag NEXA …" maxlength="1000" autocomplete="off">
+        <button class="send" id="chatSend"><svg viewBox="0 0 24 24"><use href="#icSend"/></svg></button>
+      </div>
+    </section>
+
+    <!-- ============================== EINSTELLUNGEN ============================== -->
+    <section class="view" id="view-settings">
+      <div class="view-head">
+        <h1>Einstellungen</h1>
+        <p>Alles bleibt lokal auf deinem Gerät.</p>
+      </div>
+
+      <div class="card set-card">
+        <h3>Dein Name</h3>
+        <p class="sub">So spricht NEXA dich an.</p>
+        <div class="set-row">
+          <input type="text" id="setName" placeholder="Vorname" maxlength="30">
+          <button class="btn" id="setNameSave">Speichern</button>
+        </div>
+      </div>
+
+      <div class="card set-card">
+        <h3>Echte KI aktivieren <span class="status-pill" id="aiStatusSet" style="margin:0 0 0 6px"><span class="dot"></span><span class="lbl">Demo-Modus</span></span></h3>
+        <p class="sub">Mit einem eigenen Anthropic-API-Schlüssel analysiert Claude deine Fotos wirklich und der Chat wird echt. Ohne Schlüssel läuft NEXA im Demo-Modus mit simulierten Antworten.</p>
+        <div class="set-row">
+          <input type="password" id="setKey" placeholder="sk-ant-…" autocomplete="off">
+          <button class="btn btn-primary" id="setKeySave">Aktivieren</button>
+        </div>
+        <div style="margin-top:10px">
+          <label class="fld" for="setModel">Modell</label>
+          <select id="setModel">
+            <option value="claude-sonnet-5">Claude Sonnet 5 – empfohlen</option>
+            <option value="claude-haiku-4-5-20251001">Claude Haiku 4.5 – schnell &amp; günstig</option>
+          </select>
+        </div>
+        <div class="note-box">🔒 <b>Privat:</b> Der Schlüssel wird nur in deinem Browser gespeichert (localStorage) und direkt an die Anthropic-API gesendet – niemals an andere Server. Einen Schlüssel bekommst du unter <b>console.anthropic.com</b>.</div>
+        <div style="margin-top:10px"><button class="btn btn-sm btn-danger" id="setKeyClear">Schlüssel entfernen</button></div>
+      </div>
+
+      <div class="card set-card">
+        <h3>Daten</h3>
+        <p class="sub">Beispieldaten zum Ausprobieren – oder alles zurücksetzen.</p>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn" id="btnDemoData"><svg viewBox="0 0 24 24"><use href="#icSpark"/></svg>Demo-Daten laden</button>
+          <button class="btn" id="btnClearChat">Chat leeren</button>
+          <button class="btn btn-danger" id="btnWipe">Alle Daten löschen</button>
+        </div>
+      </div>
+
+      <div class="card set-card">
+        <h3>Über NEXA</h3>
+        <p class="sub">Version 1.0 – Dein persönlicher KI-Alltagsmanager.<br>
+        Dokumente verstehen · Fristen erkennen · Aufgaben &amp; Termine organisieren · KI-Chat.<br>
+        Ohne Konto, ohne Tracking, ohne Werbung. Alle Daten bleiben auf diesem Gerät.</p>
+      </div>
+    </section>
+
+  </main>
+
+  <nav class="tabbar">
+    <button class="tab" data-view="dashboard"><svg viewBox="0 0 24 24"><use href="#icHome"/></svg><span>Start</span></button>
+    <button class="tab" data-view="docs"><svg viewBox="0 0 24 24"><use href="#icDoc"/></svg><span>Doks</span></button>
+    <button class="tab tab-center" data-view="chat"><span class="bubble"><svg viewBox="0 0 24 24"><use href="#icSpark"/></svg></span><span>NEXA</span></button>
+    <button class="tab" data-view="tasks"><svg viewBox="0 0 24 24"><use href="#icCheck2"/></svg><span>Aufgaben</span></button>
+    <button class="tab" data-view="calendar"><svg viewBox="0 0 24 24"><use href="#icCal"/></svg><span>Kalender</span></button>
+  </nav>
+
+</div>
+
+<div id="toasts"></div>
+
+<!-- ============================== SVG SYMBOLS ============================== -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <linearGradient id="lgrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#8b5cf6"/><stop offset="1" stop-color="#06b6d4"/>
+    </linearGradient>
+    <symbol id="logoSym" viewBox="0 0 64 64">
+      <rect x="2" y="2" width="60" height="60" rx="16" fill="#0d1019" stroke="url(#lgrad)" stroke-width="2.5"/>
+      <path d="M20 46 V18 l24 20 V18" fill="none" stroke="url(#lgrad)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="48" cy="45" r="3.5" fill="#22d3ee"/>
+    </symbol>
+    <symbol id="icHome" viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
+    <symbol id="icDoc" viewBox="0 0 24 24"><path d="M6 2h8l5 5v14a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M13 2v6h6M9 13h6M9 17h6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+    <symbol id="icCheck2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="m8 12 3 3 5-6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="icCal" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="3" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M3 10h18M8 3v4M16 3v4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+    <symbol id="icSpark" viewBox="0 0 24 24"><path d="M12 2c.6 4.8 2.4 7.4 8 8-5.6.6-7.4 3.2-8 8-.6-4.8-2.4-7.4-8-8 5.6-.6 7.4-3.2 8-8z" fill="currentColor"/><circle cx="19" cy="18" r="2.2" fill="currentColor" opacity=".7"/></symbol>
+    <symbol id="icGear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 2.8 13.5 6a6.6 6.6 0 0 1 2.4 1.4l3.4-.9 1.5 2.7-2.3 2.6a6.7 6.7 0 0 1 0 2.4l2.3 2.6-1.5 2.7-3.4-.9a6.6 6.6 0 0 1-2.4 1.4L12 21.2 10.5 18a6.6 6.6 0 0 1-2.4-1.4l-3.4.9-1.5-2.7 2.3-2.6a6.7 6.7 0 0 1 0-2.4L3.2 7.2l1.5-2.7 3.4.9A6.6 6.6 0 0 1 10.5 6z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></symbol>
+    <symbol id="icCam" viewBox="0 0 24 24"><path d="M4 7h3l2-2.5h6L17 7h3a1 1 0 0 1 1 1v11a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><circle cx="12" cy="13.5" r="3.6" fill="none" stroke="currentColor" stroke-width="1.8"/></symbol>
+    <symbol id="icPlus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></symbol>
+    <symbol id="icCheck" viewBox="0 0 24 24"><path d="m4 12.5 5.5 5.5L20 6.5" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="icTrash" viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3m-9 0 1 13h10l1-13M10 11v6M14 11v6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="icSend" viewBox="0 0 24 24"><path d="M3.5 11.5 20.5 3.8 15 20.5l-3.5-6.5z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="m11.5 14 9-10.2" fill="none" stroke="currentColor" stroke-width="1.8"/></symbol>
+    <symbol id="icLeft" viewBox="0 0 24 24"><path d="m14.5 5.5-6.5 6.5 6.5 6.5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="icRight" viewBox="0 0 24 24"><path d="m9.5 5.5 6.5 6.5-6.5 6.5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="icClock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 7.5V12l3 2.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+    <symbol id="icCopy" viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="12" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2" fill="none" stroke="currentColor" stroke-width="1.8"/></symbol>
+  </defs>
+</svg>
+
+<script>
+(() => {
+'use strict';
+
+/* ============================== HELPERS ============================== */
+const $ = (s, r) => (r || document).querySelector(s);
+const $$ = (s, r) => Array.from((r || document).querySelectorAll(s));
+const esc = (s) => String(s == null ? '' : s)
+  .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+  .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+
+const pad = (n) => String(n).padStart(2, '0');
+const toISO = (d) => d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
+const todayISO = () => toISO(new Date());
+const parseISO = (iso) => {
+  const [y, m, d] = iso.split('-').map(Number);
+  return new Date(y, m - 1, d);
+};
+const addDays = (iso, n) => {
+  const d = parseISO(iso);
+  d.setDate(d.getDate() + n);
+  return toISO(d);
+};
+const dayDiff = (iso) => Math.round((parseISO(iso) - parseISO(todayISO())) / 86400000);
+const fmtDate = (iso) => parseISO(iso).toLocaleDateString('de-DE', { weekday: 'short', day: 'numeric', month: 'long' });
+const fmtDateShort = (iso) => parseISO(iso).toLocaleDateString('de-DE', { day: 'numeric', month: 'short' });
+const relDay = (iso) => {
+  const n = dayDiff(iso);
+  if (n === 0) return 'heute';
+  if (n === 1) return 'morgen';
+  if (n === -1) return 'gestern';
+  if (n < 0) return 'vor ' + (-n) + ' Tagen';
+  if (n <= 14) return 'in ' + n + ' Tagen';
+  return fmtDateShort(iso);
+};
+
+function toast(msg) {
+  const t = document.createElement('div');
+  t.className = 'toast';
+  t.textContent = msg;
+  $('#toasts').appendChild(t);
+  setTimeout(() => { t.classList.add('out'); setTimeout(() => t.remove(), 320); }, 2600);
+}
+
+async function copyText(text) {
+  try {
+    await navigator.clipboard.writeText(text);
+    return true;
+  } catch (e) {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    let ok = false;
+    try { ok = document.execCommand('copy'); } catch (e2) {}
+    ta.remove();
+    return ok;
+  }
+}
+
+/* ============================== STORE ============================== */
+const DATA_KEY = 'nexa_data';
+const KEY_KEY = 'nexa_key';
+
+const store = Object.assign({
+  onboarded: false,
+  name: '',
+  tasks: [],    // {id,title,due,prio,done,source,createdAt}
+  events: [],   // {id,title,date,time,note,source}
+  docs: [],     // {id,docType,title,sender,explanation,deadline,urgency,todos,replyDraft,thumb,demo,tasksApplied,eventApplied,createdAt}
+  chat: [],     // {role:'user'|'bot', text, actions:[{label,kind,payload,done}]}
+  settings: { model: 'claude-sonnet-5', demoIdx: 0 }
+}, (() => {
+  try { return JSON.parse(localStorage.getItem(DATA_KEY)) || {}; } catch (e) { return {}; }
+})());
+
+function save() {
+  try { localStorage.setItem(DATA_KEY, JSON.stringify(store)); }
+  catch (e) { toast('⚠️ Speicher voll – ältestes Dokument entfernen'); }
+}
+const getKey = () => { try { return localStorage.getItem(KEY_KEY) || ''; } catch (e) { return ''; } };
+const hasKey = () => getKey().length > 8;
+
+/* ============================== NAVIGATION ============================== */
+let currentView = 'dashboard';
+const RENDERERS = {};
+
+function showView(name) {
+  currentView = name;
+  $$('.view').forEach(v => v.classList.toggle('active', v.id === 'view-' + name));
+  $$('[data-view]').forEach(b => b.classList.toggle('active', b.dataset.view === name));
+  if (RENDERERS[name]) RENDERERS[name]();
+  window.scrollTo(0, 0);
+}
+function refresh() { if (RENDERERS[currentView]) RENDERERS[currentView](); }
+
+$$('[data-view]').forEach(b => b.addEventListener('click', () => showView(b.dataset.view)));
+$('#btnTopSettings').addEventListener('click', () => showView('settings'));
+
+function refreshAIStatus() {
+  const on = hasKey();
+  [$('#aiStatusSide'), $('#aiStatusSet')].forEach(el => {
+    if (!el) return;
+    el.classList.toggle('on', on);
+    $('.lbl', el).textContent = on ? 'Echte KI aktiv' : 'Demo-Modus';
+  });
+}
+
+/* ============================== ONBOARDING ============================== */
+let obIdx = 0;
+function obShow(i) {
+  obIdx = i;
+  $$('.ob-slide').forEach(s => s.classList.toggle('active', +s.dataset.slide === i));
+  $$('.ob-dots i').forEach((d, k) => d.classList.toggle('on', k === i));
+  $('#obNext').textContent = i === 2 ? 'Los geht’s 🚀' : 'Weiter';
+  $('#obSkip').style.visibility = i === 2 ? 'hidden' : 'visible';
+}
+function obFinish() {
+  const n = $('#obName').value.trim();
+  if (n) store.name = n;
+  store.onboarded = true;
+  save();
+  $('#onboarding').classList.remove('on');
+  showView('dashboard');
+  toast('Willkommen bei NEXA' + (store.name ? ', ' + store.name : '') + ' ✨');
+}
+$('#obNext').addEventListener('click', () => { obIdx < 2 ? obShow(obIdx + 1) : obFinish(); });
+$('#obSkip').addEventListener('click', obFinish);
+$('#obName').addEventListener('keydown', e => { if (e.key === 'Enter') obFinish(); });
+
+/* ============================== TASKS (Daten) ============================== */
+function addTask(title, due, prio, source) {
+  const t = { id: uid(), title: title.trim(), due: due || null, prio: prio || 'med', done: false, source: source || 'manual', createdAt: Date.now() };
+  if (!t.title) return null;
+  store.tasks.push(t);
+  save();
+  return t;
+}
+function openTasksSorted() {
+  return store.tasks.filter(t => !t.done).sort((a, b) => {
+    if (a.due && b.due) return a.due < b.due ? -1 : a.due > b.due ? 1 : 0;
+    if (a.due) return -1;
+    if (b.due) return 1;
+    const P = { high: 0, med: 1, low: 2 };
+    return P[a.prio] - P[b.prio];
+  });
+}
+
+/* ============================== EVENTS (Daten) ============================== */
+function addEvent(title, date, time, note, source) {
+  const ev = { id: uid(), title: title.trim(), date, time: time || null, note: note || '', source: source || 'manual' };
+  if (!ev.title || !ev.date) return null;
+  store.events.push(ev);
+  save();
+  return ev;
+}
+const eventsOn = (iso) => store.events.filter(e => e.date === iso)
+  .sort((a, b) => (a.time || '99') < (b.time || '99') ? -1 : 1);
+const upcomingEvents = (n) => store.events.filter(e => e.date >= todayISO())
+  .sort((a, b) => (a.date + (a.time || '')) < (b.date + (b.time || '')) ? -1 : 1).slice(0, n);
+
+/* ============================== DASHBOARD ============================== */
+const SOURCE_LABEL = { doc: 'aus Dokument', chat: 'aus Chat' };
+
+RENDERERS.dashboard = function () {
+  const h = new Date().getHours();
+  const g = h < 5 ? 'Gute Nacht' : h < 11 ? 'Guten Morgen' : h < 18 ? 'Guten Tag' : 'Guten Abend';
+  $('#greetLine').innerHTML = esc(g) + (store.name ? ', <span class="grad-text">' + esc(store.name) + '</span>' : '') + ' 👋';
+  $('#greetDate').textContent = new Date().toLocaleDateString('de-DE', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+
+  const open = store.tasks.filter(t => !t.done).length;
+  const evToday = eventsOn(todayISO()).length;
+  $('#statRow').innerHTML =
+    '<div class="stat rise" style="--i:0"><b>' + open + '</b><span>Offene Aufgaben</span></div>' +
+    '<div class="stat rise" style="--i:1"><b>' + evToday + '</b><span>Termine heute</span></div>' +
+    '<div class="stat rise" style="--i:2"><b>' + store.docs.length + '</b><span>Dokumente</span></div>';
+
+  let html = '';
+
+  const evs = upcomingEvents(3);
+  html += '<div class="sec-title"><h2>📅 Nächste Termine</h2><button data-go="calendar">Alle</button></div><div class="mini-list">';
+  if (!evs.length) html += '<div class="empty">Keine anstehenden Termine – genieß die Ruhe 🌿</div>';
+  evs.forEach((e, i) => {
+    html += '<div class="mini rise" style="--i:' + i + '"><div class="mini-ic"><svg viewBox="0 0 24 24"><use href="#icCal"/></svg></div>' +
+      '<div class="mini-tx"><b>' + esc(e.title) + '</b><span>' + esc(fmtDate(e.date)) + (e.time ? ' · ' + esc(e.time) + ' Uhr' : '') + '</span></div>' +
+      '<div class="mini-when' + (dayDiff(e.date) <= 1 ? ' warn' : '') + '">' + esc(relDay(e.date)) + '</div></div>';
+  });
+  html += '</div>';
+
+  const tks = openTasksSorted().slice(0, 4);
+  html += '<div class="sec-title"><h2>✅ Wichtige Aufgaben</h2><button data-go="tasks">Alle</button></div><div class="mini-list">';
+  if (!tks.length) html += '<div class="empty">Nichts offen – stark! 🎉</div>';
+  tks.forEach((t, i) => {
+    const late = t.due && dayDiff(t.due) < 0;
+    html += '<div class="mini rise" style="--i:' + i + '"><div class="mini-ic"><svg viewBox="0 0 24 24"><use href="#icCheck2"/></svg></div>' +
+      '<div class="mini-tx"><b>' + esc(t.title) + '</b><span>' + (t.due ? 'fällig ' + esc(relDay(t.due)) : 'ohne Datum') + '</span></div>' +
+      (t.due ? '<div class="mini-when' + (late ? ' late' : dayDiff(t.due) <= 1 ? ' warn' : '') + '">' + (late ? 'überfällig' : esc(relDay(t.due))) + '</div>' : '') +
+      '</div>';
+  });
+  html += '</div>';
+
+  const docs = store.docs.slice(-2).reverse();
+  if (docs.length) {
+    html += '<div class="sec-title"><h2>📄 Zuletzt analysiert</h2><button data-go="docs">Alle</button></div><div class="mini-list">';
+    docs.forEach((d, i) => {
+      html += '<div class="mini rise" style="--i:' + i + '"><div class="mini-ic"><svg viewBox="0 0 24 24"><use href="#icDoc"/></svg></div>' +
+        '<div class="mini-tx"><b>' + esc(d.title) + '</b><span>' + esc(d.sender || d.docType) + '</span></div>' +
+        (d.deadline ? '<div class="mini-when warn">Frist ' + esc(relDay(d.deadline)) + '</div>' : '') + '</div>';
+    });
+    html += '</div>';
+  }
+
+  $('#dashWidgets').innerHTML = html;
+  $$('#dashWidgets [data-go]').forEach(b => b.addEventListener('click', () => showView(b.dataset.go)));
+};
+
+$('#qaDoc').addEventListener('click', () => { showView('docs'); setTimeout(() => $('#docInput').click(), 250); });
+$('#qaChat').addEventListener('click', () => showView('chat'));
+$('#qaTask').addEventListener('click', () => { showView('tasks'); setTimeout(() => $('#taskTitle').focus(), 250); });
+
+/* ============================== AUFGABEN (View) ============================== */
+let taskFilter = 'open';
+
+RENDERERS.tasks = function () {
+  let list = store.tasks.slice();
+  if (taskFilter === 'open') list = list.filter(t => !t.done);
+  if (taskFilter === 'done') list = list.filter(t => t.done);
+  list.sort((a, b) => {
+    if (a.done !== b.done) return a.done ? 1 : -1;
+    if (a.due && b.due) return a.due < b.due ? -1 : 1;
+    if (a.due) return -1;
+    if (b.due) return 1;
+    return b.createdAt - a.createdAt;
+  });
+  if (!list.length) {
+    $('#taskList').innerHTML = '<div class="empty"><span class="big">' + (taskFilter === 'done' ? '📭' : '🎉') + '</span>' +
+      (taskFilter === 'done' ? 'Noch nichts erledigt.' : 'Alles erledigt – genieß den Tag!') + '</div>';
+    return;
+  }
+  $('#taskList').innerHTML = list.map((t, i) => {
+    const late = t.due && !t.done && dayDiff(t.due) < 0;
+    const isToday = t.due && dayDiff(t.due) === 0;
+    return '<div class="task' + (t.done ? ' done' : '') + ' rise" style="--i:' + Math.min(i, 8) + '" data-id="' + t.id + '">' +
+      '<button class="tcheck" data-act="toggle" title="Erledigt"><svg viewBox="0 0 24 24"><use href="#icCheck"/></svg></button>' +
+      '<div class="t-main"><span class="t-title">' + esc(t.title) + '</span>' +
+      '<div class="t-meta"><span class="prio prio-' + esc(t.prio) + '"></span>' +
+      (t.due ? '<span class="' + (late ? 'late' : isToday ? 'today' : '') + '">' + (late ? 'überfällig · ' : 'fällig ') + esc(relDay(t.due)) + '</span>' : '<span>ohne Datum</span>') +
+      (SOURCE_LABEL[t.source] ? '<span class="src-badge">' + SOURCE_LABEL[t.source] + '</span>' : '') +
+      '</div></div>' +
+      '<button class="t-del" data-act="del" title="Löschen"><svg viewBox="0 0 24 24"><use href="#icTrash"/></svg></button></div>';
+  }).join('');
+};
+
+$('#taskAddBtn').addEventListener('click', () => {
+  const title = $('#taskTitle').value;
+  if (!title.trim()) { $('#taskTitle').focus(); return; }
+  addTask(title, $('#taskDue').value || null, $('#taskPrio').value, 'manual');
+  $('#taskTitle').value = ''; $('#taskDue').value = '';
+  refresh();
+  toast('Aufgabe angelegt ✓');
+});
+$('#taskTitle').addEventListener('keydown', e => { if (e.key === 'Enter') $('#taskAddBtn').click(); });
+$('#taskSeg').addEventListener('click', e => {
+  const b = e.target.closest('button[data-f]');
+  if (!b) return;
+  taskFilter = b.dataset.f;
+  $$('#taskSeg button').forEach(x => x.classList.toggle('active', x === b));
+  refresh();
+});
+$('#taskList').addEventListener('click', e => {
+  const act = e.target.closest('[data-act]');
+  if (!act) return;
+  const id = act.closest('.task').dataset.id;
+  const t = store.tasks.find(x => x.id === id);
+  if (!t) return;
+  if (act.dataset.act === 'toggle') { t.done = !t.done; save(); refresh(); }
+  if (act.dataset.act === 'del') { store.tasks = store.tasks.filter(x => x.id !== id); save(); refresh(); toast('Aufgabe gelöscht'); }
+});
+
+/* ============================== KALENDER (View) ============================== */
+const now0 = new Date();
+let calCur = { y: now0.getFullYear(), m: now0.getMonth() };
+let selDate = todayISO();
+
+RENDERERS.calendar = function () {
+  const first = new Date(calCur.y, calCur.m, 1);
+  $('#calTitle').textContent = first.toLocaleDateString('de-DE', { month: 'long', year: 'numeric' });
+  const offset = (first.getDay() + 6) % 7;
+  const days = new Date(calCur.y, calCur.m + 1, 0).getDate();
+  const cells = Math.ceil((offset + days) / 7) * 7;
+  const today = todayISO();
+  let html = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'].map(d => '<div class="cal-dow">' + d + '</div>').join('');
+  for (let i = 0; i < cells; i++) {
+    const d = new Date(calCur.y, calCur.m, i - offset + 1);
+    const iso = toISO(d);
+    const dim = d.getMonth() !== calCur.m;
+    const evs = eventsOn(iso);
+    html += '<button class="cal-day' + (dim ? ' dim' : '') + (iso === today ? ' today' : '') + (iso === selDate ? ' sel' : '') + '" data-date="' + iso + '">' +
+      d.getDate() + '<span class="dots">' + evs.slice(0, 3).map(() => '<i></i>').join('') + '</span></button>';
+  }
+  $('#calGrid').innerHTML = html;
+  renderDayPanel();
+  renderUpcoming();
+};
+
+function renderDayPanel() {
+  $('#dayTitle').textContent = 'Termine am ' + fmtDate(selDate);
+  const evs = eventsOn(selDate);
+  $('#dayEvents').innerHTML = !evs.length
+    ? '<div class="empty">Keine Termine an diesem Tag.</div>'
+    : evs.map(e =>
+      '<div class="ev" data-id="' + e.id + '"><span class="ev-time">' + (e.time ? esc(e.time) : '–') + '</span>' +
+      '<div class="ev-tx">' + esc(e.title) + (e.note ? '<small>' + esc(e.note) + '</small>' : '') + '</div>' +
+      (SOURCE_LABEL[e.source] ? '<span class="src-badge">' + SOURCE_LABEL[e.source] + '</span>' : '') +
+      '<button class="t-del" data-act="del"><svg viewBox="0 0 24 24"><use href="#icTrash"/></svg></button></div>').join('');
+}
+
+function renderUpcoming() {
+  const evs = upcomingEvents(5);
+  $('#upcomingList').innerHTML = !evs.length
+    ? '<div class="empty">Nichts geplant. Zeit für neue Pläne ✨</div>'
+    : '<div class="mini-list">' + evs.map((e, i) =>
+      '<div class="mini rise" style="--i:' + i + '"><div class="mini-ic"><svg viewBox="0 0 24 24"><use href="#icCal"/></svg></div>' +
+      '<div class="mini-tx"><b>' + esc(e.title) + '</b><span>' + esc(fmtDate(e.date)) + (e.time ? ' · ' + esc(e.time) + ' Uhr' : '') + '</span></div>' +
+      '<div class="mini-when' + (dayDiff(e.date) <= 1 ? ' warn' : '') + '">' + esc(relDay(e.date)) + '</div></div>').join('') + '</div>';
+}
+
+$('#calPrev').addEventListener('click', () => { calCur.m--; if (calCur.m < 0) { calCur.m = 11; calCur.y--; } refresh(); });
+$('#calNext').addEventListener('click', () => { calCur.m++; if (calCur.m > 11) { calCur.m = 0; calCur.y++; } refresh(); });
+$('#calGrid').addEventListener('click', e => {
+  const b = e.target.closest('.cal-day');
+  if (!b) return;
+  selDate = b.dataset.date;
+  const d = parseISO(selDate);
+  calCur = { y: d.getFullYear(), m: d.getMonth() };
+  refresh();
+});
+$('#evAddToggle').addEventListener('click', () => {
+  $('#evForm').classList.toggle('on');
+  if ($('#evForm').classList.contains('on')) $('#evTitle').focus();
+});
+$('#evSave').addEventListener('click', () => {
+  const t = $('#evTitle').value;
+  if (!t.trim()) { $('#evTitle').focus(); return; }
+  addEvent(t, selDate, $('#evTime').value || null, '', 'manual');
+  $('#evTitle').value = ''; $('#evTime').value = '';
+  $('#evForm').classList.remove('on');
+  refresh();
+  toast('Termin gespeichert ✓');
+});
+$('#dayEvents').addEventListener('click', e => {
+  const del = e.target.closest('[data-act="del"]');
+  if (!del) return;
+  const id = del.closest('.ev').dataset.id;
+  store.events = store.events.filter(x => x.id !== id);
+  save(); refresh();
+  toast('Termin gelöscht');
+});
+
+/* ============================== KI-ADAPTER ============================== */
+const API_URL = 'https://api.anthropic.com/v1/messages';
+
+async function callClaude(payload) {
+  let res;
+  try {
+    res = await fetch(API_URL, {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        'x-api-key': getKey(),
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify(payload)
+    });
+  } catch (e) {
+    throw new Error('Keine Verbindung zur KI möglich. Bist du online?');
+  }
+  if (!res.ok) {
+    if (res.status === 401) throw new Error('Der API-Schlüssel ist ungültig. Bitte prüfe ihn in den Einstellungen.');
+    if (res.status === 429) throw new Error('Zu viele Anfragen – bitte warte einen Moment.');
+    if (res.status >= 500) throw new Error('Der KI-Dienst ist gerade überlastet. Versuch es gleich nochmal.');
+    throw new Error('KI-Anfrage fehlgeschlagen (Fehler ' + res.status + ').');
+  }
+  const data = await res.json();
+  return (data.content || []).map(b => b.type === 'text' ? b.text : '').join('');
+}
+
+function extractJSON(text) {
+  const a = text.indexOf('{');
+  const b = text.lastIndexOf('}');
+  if (a < 0 || b <= a) return null;
+  try { return JSON.parse(text.slice(a, b + 1)); } catch (e) { return null; }
+}
+
+/* --- Dokumentanalyse (echt) --- */
+async function aiAnalyze(dataUrl) {
+  const m = dataUrl.match(/^data:(image\/\w+);base64,(.+)$/s);
+  if (!m) throw new Error('Bild konnte nicht gelesen werden.');
+  const prompt = 'Du bist NEXA, ein KI-Alltagsassistent. Analysiere das fotografierte Dokument (Brief, Rechnung, Vertrag o. Ä.). Heute ist der ' + todayISO() + '. ' +
+    'Antworte AUSSCHLIESSLICH mit einem JSON-Objekt, ohne Markdown und ohne Erklärtext, exakt in diesem Format: ' +
+    '{"docType":"Rechnung|Mahnung|Vertrag|Behörde|Sonstiges","title":"kurzer Titel, max. 6 Wörter","sender":"Absender","explanation":"Erkläre das Dokument in 2-4 kurzen, einfachen Sätzen ohne Amtsdeutsch, duze den Leser","deadline":"YYYY-MM-DD oder null","urgency":"hoch|mittel|niedrig","todos":[{"title":"konkrete Aufgabe","due":"YYYY-MM-DD oder null"}],"replyDraft":"vollständiger, höflicher Antwortbrief falls sinnvoll, sonst null"}';
+  const text = await callClaude({
+    model: store.settings.model,
+    max_tokens: 1500,
+    messages: [{
+      role: 'user',
+      content: [
+        { type: 'image', source: { type: 'base64', media_type: m[1], data: m[2] } },
+        { type: 'text', text: prompt }
+      ]
+    }]
+  });
+  const j = extractJSON(text);
+  if (!j || !j.explanation) throw new Error('Die KI-Antwort konnte nicht verarbeitet werden. Versuch es mit einem schärferen Foto.');
+  return j;
+}
+
+/* --- Demo-Analysen --- */
+function demoAnalyses() {
+  return [
+    {
+      docType: 'Mahnung', title: 'Zahlungserinnerung Stromabrechnung', sender: 'Stadtwerke Neuss GmbH',
+      explanation: 'Die Stadtwerke erinnern dich daran, dass die Stromrechnung über 86,40 € noch offen ist. Es ist erst die erste Erinnerung – es fallen noch keine Extra-Gebühren an. Wenn du bis zur Frist überweist, ist alles gut.',
+      deadline: addDays(todayISO(), 10), urgency: 'hoch',
+      todos: [
+        { title: '86,40 € an Stadtwerke überweisen', due: addDays(todayISO(), 8) },
+        { title: 'Zahlungseingang prüfen', due: addDays(todayISO(), 12) }
+      ],
+      replyDraft: 'Sehr geehrte Damen und Herren,\n\nvielen Dank für Ihre Zahlungserinnerung vom ' + parseISO(todayISO()).toLocaleDateString('de-DE') + '. Die offene Rechnung über 86,40 € habe ich soeben überwiesen. Bitte entschuldigen Sie die Verzögerung.\n\nMit freundlichen Grüßen'
+    },
+    {
+      docType: 'Vertrag', title: 'Preiserhöhung Mobilfunkvertrag', sender: 'Telbo Mobilfunk GmbH',
+      explanation: 'Dein Mobilfunkanbieter erhöht ab übernächstem Monat den Preis um 3 € pro Monat. Wichtig für dich: Wegen der Preiserhöhung hast du ein Sonderkündigungsrecht – du kannst also ohne Frist kündigen oder widersprechen, wenn du das möchtest.',
+      deadline: addDays(todayISO(), 30), urgency: 'mittel',
+      todos: [
+        { title: 'Alternativ-Tarife vergleichen', due: addDays(todayISO(), 14) },
+        { title: 'Entscheiden: bleiben oder Sonderkündigung nutzen', due: addDays(todayISO(), 25) }
+      ],
+      replyDraft: 'Sehr geehrte Damen und Herren,\n\nhiermit widerspreche ich der angekündigten Preiserhöhung meines Mobilfunkvertrags und mache von meinem Sonderkündigungsrecht Gebrauch. Bitte bestätigen Sie mir die Kündigung schriftlich.\n\nMit freundlichen Grüßen'
+    },
+    {
+      docType: 'Behörde', title: 'Erinnerung Hauptuntersuchung (TÜV)', sender: 'Straßenverkehrsamt Rhein-Kreis Neuss',
+      explanation: 'Dein Auto muss zur Hauptuntersuchung (TÜV). Der Termin ist bald fällig – wenn du ihn verpasst, kann ein Bußgeld anfallen. Einfach rechtzeitig einen Termin bei einer Prüfstelle oder Werkstatt machen, dann ist alles entspannt.',
+      deadline: addDays(todayISO(), 21), urgency: 'mittel',
+      todos: [
+        { title: 'TÜV-Termin bei Prüfstelle vereinbaren', due: addDays(todayISO(), 7) },
+        { title: 'Fahrzeugschein bereitlegen', due: addDays(todayISO(), 20) }
+      ],
+      replyDraft: null
+    }
+  ];
+}
+
+/* ============================== DOKUMENTE (View) ============================== */
+const DOC_BADGE = { 'Mahnung': 'b-mahnung', 'Rechnung': 'b-rechnung', 'Vertrag': 'b-vertrag', 'Behörde': 'b-behoerde', 'Sonstiges': 'b-sonstiges' };
+
+function readAndResize(file, maxDim, quality) {
+  return new Promise((resolve, reject) => {
+    const r = new FileReader();
+    r.onload = () => {
+      const img = new Image();
+      img.onload = () => {
+        const scale = Math.min(1, maxDim / Math.max(img.width, img.height));
+        const c = document.createElement('canvas');
+        c.width = Math.max(1, Math.round(img.width * scale));
+        c.height = Math.max(1, Math.round(img.height * scale));
+        c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+        resolve(c.toDataURL('image/jpeg', quality));
+      };
+      img.onerror = () => reject(new Error('Bild konnte nicht geladen werden.'));
+      img.src = r.result;
+    };
+    r.onerror = () => reject(new Error('Datei konnte nicht gelesen werden.'));
+    r.readAsDataURL(file);
+  });
+}
+
+let analyzeTimer = null;
+const ANALYZE_STEPS = ['Lese Dokument …', 'Erkenne Absender und Betreff …', 'Suche nach Fristen …', 'Formuliere einfache Erklärung …', 'Erstelle Aufgaben …'];
+
+async function handleDocFile(file) {
+  if (!file || !file.type.startsWith('image/')) { toast('Bitte ein Foto auswählen 📷'); return; }
+  const box = $('#analyzing');
+  box.classList.add('on');
+  let step = 0;
+  $('#aStatus').textContent = ANALYZE_STEPS[0];
+  analyzeTimer = setInterval(() => {
+    step = (step + 1) % ANALYZE_STEPS.length;
+    $('#aStatus').textContent = ANALYZE_STEPS[step];
+  }, 1400);
+
+  try {
+    const thumb = await readAndResize(file, 200, 0.7);
+    $('#scanImg').src = thumb;
+    let result, demo;
+    if (hasKey()) {
+      const full = await readAndResize(file, 1568, 0.85);
+      result = await aiAnalyze(full);
+      demo = false;
+    } else {
+      await new Promise(r => setTimeout(r, 3200));
+      const all = demoAnalyses();
+      result = all[store.settings.demoIdx % all.length];
+      store.settings.demoIdx = (store.settings.demoIdx + 1) % all.length;
+      demo = true;
+    }
+    const doc = {
+      id: uid(),
+      docType: DOC_BADGE[result.docType] ? result.docType : 'Sonstiges',
+      title: result.title || 'Dokument',
+      sender: result.sender || '',
+      explanation: result.explanation || '',
+      deadline: (result.deadline && /^\d{4}-\d{2}-\d{2}$/.test(result.deadline)) ? result.deadline : null,
+      urgency: result.urgency || 'mittel',
+      todos: Array.isArray(result.todos) ? result.todos.filter(t => t && t.title).slice(0, 6) : [],
+      replyDraft: result.replyDraft || null,
+      thumb, demo,
+      tasksApplied: false, eventApplied: false,
+      createdAt: Date.now()
+    };
+    store.docs.push(doc);
+    save();
+    refresh();
+    toast(demo ? 'Demo-Analyse fertig ✨' : 'Dokument analysiert ✨');
+  } catch (e) {
+    toast('⚠️ ' + e.message);
+  } finally {
+    clearInterval(analyzeTimer);
+    box.classList.remove('on');
+  }
+}
+
+RENDERERS.docs = function () {
+  $('#demoHintDocs').innerHTML = hasKey() ? '' :
+    '<div class="demo-hint">🧪 <b>Demo-Modus:</b> Der Upload zeigt eine Beispiel-Analyse. Mit einem eigenen API-Schlüssel analysiert die KI deine echten Briefe – <a data-go-settings>jetzt in den Einstellungen aktivieren</a>.</div>';
+  const link = $('#demoHintDocs [data-go-settings]');
+  if (link) link.addEventListener('click', () => showView('settings'));
+
+  const docs = store.docs.slice().reverse();
+  $('#docList').innerHTML = !docs.length
+    ? '<div class="empty" style="margin-top:20px"><span class="big">📬</span>Noch keine Dokumente analysiert.<br>Fotografier deinen ersten Brief!</div>'
+    : docs.map(d => {
+      const dl = d.deadline ? dayDiff(d.deadline) : null;
+      const dlClass = dl === null ? '' : dl < 0 ? 'late' : dl <= 7 ? 'warn' : 'ok';
+      return '<div class="card doc-card rise" data-id="' + d.id + '">' +
+        '<div class="doc-head">' +
+        '<span class="badge ' + DOC_BADGE[d.docType] + '">' + esc(d.docType) + '</span>' +
+        (d.demo ? '<span class="badge b-demo">Demo</span>' : '') +
+        '<span class="spacer"></span><time>' + new Date(d.createdAt).toLocaleDateString('de-DE') + '</time>' +
+        '<button class="t-del" data-act="delDoc" title="Löschen"><svg viewBox="0 0 24 24"><use href="#icTrash"/></svg></button></div>' +
+        '<div class="doc-body">' +
+        (d.thumb ? '<img class="doc-thumb" src="' + d.thumb + '" alt="">' : '') +
+        '<div class="doc-main"><h3>' + esc(d.title) + '</h3>' +
+        (d.sender ? '<div class="doc-sender">von ' + esc(d.sender) + '</div>' : '') +
+        '<div class="doc-explain"><b>💡 IN EINFACHEN WORTEN</b>' + esc(d.explanation) + '</div>' +
+        (d.deadline ? '<div class="deadline-row ' + dlClass + '"><svg viewBox="0 0 24 24" width="17" height="17"><use href="#icClock"/></svg>Frist: ' +
+          esc(fmtDate(d.deadline)) + ' (' + (dl < 0 ? 'abgelaufen' : esc(relDay(d.deadline))) + ')</div>' : '') +
+        (d.todos.length ? '<ul class="doc-todos">' + d.todos.map(t =>
+          '<li><svg viewBox="0 0 24 24"><use href="#icPlus"/></svg>' + esc(t.title) +
+          (t.due ? '<span class="due">' + esc(fmtDateShort(t.due)) + '</span>' : '') + '</li>').join('') + '</ul>' : '') +
+        (d.replyDraft ? '<details class="doc-reply"><summary>✉️ Antwortentwurf ansehen</summary><div class="reply-text">' + esc(d.replyDraft) + '</div></details>' : '') +
+        '<div class="doc-actions">' +
+        (d.todos.length ? '<button class="btn btn-sm btn-primary" data-act="applyTasks"' + (d.tasksApplied ? ' disabled' : '') + '>' +
+          (d.tasksApplied ? '✓ Aufgaben übernommen' : d.todos.length + ' Aufgabe' + (d.todos.length > 1 ? 'n' : '') + ' übernehmen') + '</button>' : '') +
+        (d.deadline ? '<button class="btn btn-sm" data-act="applyEvent"' + (d.eventApplied ? ' disabled' : '') + '>' +
+          (d.eventApplied ? '✓ Im Kalender' : '📅 Frist in Kalender') + '</button>' : '') +
+        (d.replyDraft ? '<button class="btn btn-sm" data-act="copyReply"><svg viewBox="0 0 24 24"><use href="#icCopy"/></svg>Antwort kopieren</button>' : '') +
+        '</div></div></div></div>';
+    }).join('');
+};
+
+$('#dropzone').addEventListener('click', () => $('#docInput').click());
+$('#dropzone').addEventListener('dragover', e => { e.preventDefault(); $('#dropzone').classList.add('drag'); });
+$('#dropzone').addEventListener('dragleave', () => $('#dropzone').classList.remove('drag'));
+$('#dropzone').addEventListener('drop', e => {
+  e.preventDefault();
+  $('#dropzone').classList.remove('drag');
+  if (e.dataTransfer.files.length) handleDocFile(e.dataTransfer.files[0]);
+});
+$('#docInput').addEventListener('change', e => {
+  if (e.target.files.length) handleDocFile(e.target.files[0]);
+  e.target.value = '';
+});
+
+$('#docList').addEventListener('click', e => {
+  const act = e.target.closest('[data-act]');
+  if (!act) return;
+  const id = act.closest('.doc-card').dataset.id;
+  const d = store.docs.find(x => x.id === id);
+  if (!d) return;
+  if (act.dataset.act === 'delDoc') {
+    store.docs = store.docs.filter(x => x.id !== id);
+    save(); refresh(); toast('Dokument gelöscht');
+  }
+  if (act.dataset.act === 'applyTasks' && !d.tasksApplied) {
+    d.todos.forEach(t => addTask(t.title, t.due || null, d.urgency === 'hoch' ? 'high' : 'med', 'doc'));
+    d.tasksApplied = true;
+    save(); refresh();
+    toast(d.todos.length + ' Aufgabe' + (d.todos.length > 1 ? 'n' : '') + ' angelegt ✓');
+  }
+  if (act.dataset.act === 'applyEvent' && !d.eventApplied && d.deadline) {
+    addEvent('⏰ Frist: ' + d.title, d.deadline, null, 'von ' + (d.sender || 'Dokument'), 'doc');
+    d.eventApplied = true;
+    save(); refresh();
+    toast('Frist im Kalender eingetragen ✓');
+  }
+  if (act.dataset.act === 'copyReply' && d.replyDraft) {
+    copyText(d.replyDraft).then(ok => toast(ok ? 'Antwort kopiert ✓' : 'Kopieren nicht möglich'));
+  }
+});
+
+/* ============================== CHAT ============================== */
+const CHAT_SUGGESTIONS = [
+  '🏖️ Ich möchte nächste Woche in den Urlaub',
+  '🛒 Erstelle mir eine Einkaufsliste',
+  '✨ Was kannst du alles?'
+];
+let botTyping = false;
+
+RENDERERS.chat = function () {
+  const box = $('#chatMsgs');
+  let html = '';
+  if (!store.chat.length) {
+    html += '<div class="chat-hello"><svg class="logo-mark" viewBox="0 0 64 64"><use href="#logoSym"/></svg>' +
+      '<h2>Hallo' + (store.name ? ', ' + esc(store.name) : '') + '! 👋</h2>' +
+      '<p>Ich bin NEXA. Erzähl mir, was ansteht –<br>ich organisiere den Rest.</p></div>' +
+      '<div class="suggest">' + CHAT_SUGGESTIONS.map(s => '<button data-sg="' + esc(s) + '">' + esc(s) + '</button>').join('') + '</div>';
+  } else {
+    html += store.chat.map((m, mi) => {
+      const chips = (m.actions || []).map((a, ai) =>
+        '<button class="chip' + (a.done ? ' done' : '') + '" data-m="' + mi + '" data-a="' + ai + '"' + (a.done ? ' disabled' : '') + '>' +
+        '<svg viewBox="0 0 24 24"><use href="#' + (a.done ? 'icCheck' : (a.kind === 'event' ? 'icCal' : 'icPlus')) + '"/></svg>' +
+        esc(a.done ? '✓ ' + a.label.replace(/^[✓]\s*/, '') : a.label) + '</button>').join('');
+      return '<div class="msg ' + (m.role === 'user' ? 'user' : 'bot') + '">' +
+        (m.role === 'bot' ? '<div class="avatar"><svg viewBox="0 0 24 24"><use href="#icSpark"/></svg></div>' : '') +
+        '<div><div class="bubble-tx">' + esc(m.text) + '</div>' +
+        (chips ? '<div class="action-chips">' + chips + '</div>' : '') + '</div></div>';
+    }).join('');
+  }
+  if (botTyping) {
+    html += '<div class="msg bot"><div class="avatar"><svg viewBox="0 0 24 24"><use href="#icSpark"/></svg></div>' +
+      '<div class="bubble-tx typing"><i></i><i></i><i></i></div></div>';
+  }
+  box.innerHTML = html;
+  box.scrollTop = box.scrollHeight;
+};
+
+function pushBot(text, actions) {
+  store.chat.push({ role: 'bot', text, actions: actions || [] });
+  save();
+}
+
+/* --- Aktions-Chips bauen --- */
+function taskAction(label, tasks) {
+  return { kind: 'tasks', label, payload: tasks, done: false };
+}
+function eventAction(label, ev) {
+  return { kind: 'event', label, payload: ev, done: false };
+}
+
+/* --- Demo-Intent-Engine (funktioniert ohne API-Key wirklich) --- */
+function demoReply(text) {
+  const t = text.toLowerCase();
+  const name = store.name ? ' ' + store.name : '';
+
+  if (/urlaub|verreis|reise(n)?\b|wegfahren|ferien/.test(t)) {
+    const today = todayISO();
+    const dow = parseISO(today).getDay();
+    const nextMon = addDays(today, ((8 - dow) % 7) || 7);
+    const nextSun = addDays(nextMon, 6);
+    const conflicts = store.events.filter(e => e.date >= nextMon && e.date <= nextSun);
+    let msg = 'Klingt gut' + name + '! 🏖️ Ich habe deinen Kalender für nächste Woche (' + fmtDateShort(nextMon) + ' – ' + fmtDateShort(nextSun) + ') geprüft: ';
+    msg += conflicts.length
+      ? '⚠️ Da steht noch etwas drin: „' + conflicts[0].title + '" am ' + fmtDate(conflicts[0].date) + '. Das solltest du verschieben oder absagen.'
+      : 'alles frei, perfekt!';
+    msg += '\n\nIch habe dir eine Packliste und die wichtigsten Erledigungen vorbereitet – ein Tipp: Reisepass und Versicherungen immer zuerst prüfen, das dauert am längsten.';
+    const packTasks = [
+      { title: '🛂 Reisepass & Ausweise prüfen', due: addDays(today, 2) },
+      { title: '🏥 Auslandskrankenversicherung checken', due: addDays(today, 3) },
+      { title: '🎫 Tickets & Buchungen sammeln', due: addDays(nextMon, -2) },
+      { title: '💊 Reiseapotheke packen', due: addDays(nextMon, -1) },
+      { title: '🧳 Koffer packen', due: addDays(nextMon, -1) },
+      { title: '🏠 Nachbarn wegen Post & Blumen fragen', due: addDays(nextMon, -1) }
+    ];
+    pushBot(msg, [
+      taskAction(packTasks.length + ' Aufgaben zur Reisevorbereitung anlegen', packTasks),
+      eventAction('Urlaub (' + fmtDateShort(nextMon) + ' – ' + fmtDateShort(nextSun) + ') in Kalender eintragen',
+        { title: '🏖️ Urlaub', date: nextMon, note: 'bis ' + fmtDate(nextSun) })
+    ]);
+    return;
+  }
+
+  if (/einkauf|einkaufsliste|supermarkt|kochen/.test(t)) {
+    const items = ['🛒 Milch & Butter', '🛒 Brot', '🛒 Eier', '🛒 Gemüse & Obst', '🛒 Nudeln & Reis', '🛒 Kaffee'];
+    pushBot('Gern! Hier ist eine Basis-Einkaufsliste – du kannst danach in den Aufgaben einzelne Punkte abhaken oder löschen. 🛒',
+      [taskAction(items.length + ' Einkäufe als Liste anlegen', items.map(i => ({ title: i, due: todayISO() })))]);
+    return;
+  }
+
+  if (/was kannst|hilfe|funktionen|können|kannst du/.test(t)) {
+    pushBot('Ich nehme dir Alltagsarbeit ab' + name + ':\n\n📄 Fotografiere einen Brief im Bereich „Dokumente" – ich erkläre ihn in einfachen Worten, erkenne Fristen und erstelle Aufgaben.\n✅ Ich lege Aufgaben und Termine für dich an.\n🏖️ Sag z. B. „Ich möchte nächste Woche in den Urlaub" – ich plane alles.\n\n💡 Gerade läuft der Demo-Modus. Mit einem eigenen API-Schlüssel (Einstellungen) werde ich zur echten KI und kann frei mit dir sprechen.');
+    return;
+  }
+
+  if (/^(hallo|hi|hey|guten|moin|servus)/.test(t)) {
+    pushBot('Hallo' + name + '! 👋 Schön, dass du da bist. Sag mir, was ansteht – zum Beispiel „Ich möchte nächste Woche in den Urlaub" oder frag „Was kannst du alles?"');
+    return;
+  }
+
+  if (/brief|dokument|rechnung|vertrag|post\b/.test(t)) {
+    pushBot('Dafür bin ich da! 📄 Geh in den Bereich „Dokumente" und fotografiere den Brief – ich erkläre dir in einfachen Worten, was drinsteht, und erkenne automatisch Fristen und Aufgaben.');
+    return;
+  }
+
+  if (/termin|kalender/.test(t)) {
+    pushBot('Termine legst du im Kalender an – oder ich mache es für dich, wenn du mir Details gibst. Im Demo-Modus verstehe ich feste Szenarien; mit API-Schlüssel (Einstellungen) verstehe ich jeden Satz. 📅');
+    return;
+  }
+
+  pushBot('Das verstehe ich im Demo-Modus leider noch nicht. 🧪\n\nProbiere: „Ich möchte nächste Woche in den Urlaub", „Erstelle mir eine Einkaufsliste" oder „Was kannst du alles?"\n\n💡 Mit einem eigenen API-Schlüssel (Einstellungen → Echte KI aktivieren) antworte ich frei auf alles.');
+}
+
+/* --- Echte KI-Antwort --- */
+function buildSystemPrompt() {
+  const openT = openTasksSorted().slice(0, 8).map(t => t.title + (t.due ? ' (fällig ' + t.due + ')' : '')).join('; ') || 'keine';
+  const nextE = upcomingEvents(5).map(e => e.title + ' am ' + e.date + (e.time ? ' ' + e.time : '')).join('; ') || 'keine';
+  return 'Du bist NEXA, ein persönlicher KI-Alltagsassistent in einer App. Heute ist ' +
+    new Date().toLocaleDateString('de-DE', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }) + ' (' + todayISO() + ').' +
+    (store.name ? ' Der Nutzer heißt ' + store.name + '.' : '') +
+    ' Antworte kurz, warm und konkret auf Deutsch in Du-Form. Du hilfst bei Alltag, Dokumenten, Fristen, Aufgaben, Terminen, Reisen und Einkäufen. Nimm Arbeit ab, statt nur zu erklären.' +
+    ' Kontext – offene Aufgaben: ' + openT + '. Nächste Termine: ' + nextE + '.' +
+    ' Wenn du konkrete Aufgaben oder Termine vorschlägst, hänge ganz am Ende deiner Antwort GENAU EINEN Block in diesem Format an: ' +
+    '<<NEXA_ACTIONS>>{"tasks":[{"title":"...","due":"YYYY-MM-DD oder null"}],"events":[{"title":"...","date":"YYYY-MM-DD","time":"HH:MM oder null"}]}<<END>> ' +
+    'Der Block wird dem Nutzer als Buttons angezeigt – erwähne ihn nicht im Text.';
+}
+
+async function realReply(text) {
+  const history = store.chat.slice(-12).map(m => ({ role: m.role === 'user' ? 'user' : 'assistant', content: m.text }));
+  const raw = await callClaude({
+    model: store.settings.model,
+    max_tokens: 1024,
+    system: buildSystemPrompt(),
+    messages: history.length ? history : [{ role: 'user', content: text }]
+  });
+  let clean = raw;
+  const actions = [];
+  const m = raw.match(/<<NEXA_ACTIONS>>([\s\S]*?)<<END>>/);
+  if (m) {
+    clean = raw.replace(m[0], '').trim();
+    const j = extractJSON(m[1]);
+    if (j) {
+      const tks = (j.tasks || []).filter(t => t && t.title).slice(0, 10);
+      if (tks.length) actions.push(taskAction(tks.length + ' Aufgabe' + (tks.length > 1 ? 'n' : '') + ' anlegen', tks));
+      (j.events || []).filter(e => e && e.title && /^\d{4}-\d{2}-\d{2}$/.test(e.date || '')).slice(0, 4)
+        .forEach(e => actions.push(eventAction('📅 „' + e.title + '" eintragen', e)));
+    }
+  }
+  pushBot(clean || 'Okay!', actions);
+}
+
+async function sendChat(text) {
+  text = (text || '').trim();
+  if (!text || botTyping) return;
+  store.chat.push({ role: 'user', text, actions: [] });
+  save();
+  botTyping = true;
+  RENDERERS.chat();
+  try {
+    if (hasKey()) {
+      await realReply(text);
+    } else {
+      await new Promise(r => setTimeout(r, 900 + Math.random() * 700));
+      demoReply(text);
+    }
+  } catch (e) {
+    pushBot('⚠️ ' + e.message);
+  } finally {
+    botTyping = false;
+    if (currentView === 'chat') RENDERERS.chat();
+  }
+}
+
+$('#chatSend').addEventListener('click', () => { const i = $('#chatInput'); const v = i.value; i.value = ''; sendChat(v); });
+$('#chatInput').addEventListener('keydown', e => { if (e.key === 'Enter') $('#chatSend').click(); });
+$('#chatMsgs').addEventListener('click', e => {
+  const sg = e.target.closest('[data-sg]');
+  if (sg) { sendChat(sg.dataset.sg.replace(/^\S+\s/, '')); return; }
+  const chip = e.target.closest('.chip[data-m]');
+  if (!chip || chip.disabled) return;
+  const msg = store.chat[+chip.dataset.m];
+  const a = msg && msg.actions[+chip.dataset.a];
+  if (!a || a.done) return;
+  if (a.kind === 'tasks') {
+    a.payload.forEach(t => addTask(t.title, t.due || null, 'med', 'chat'));
+    toast(a.payload.length + ' Aufgabe' + (a.payload.length > 1 ? 'n' : '') + ' angelegt ✓');
+  }
+  if (a.kind === 'event') {
+    addEvent(a.payload.title, a.payload.date, a.payload.time || null, a.payload.note || '', 'chat');
+    toast('Termin eingetragen ✓');
+  }
+  a.done = true;
+  save();
+  RENDERERS.chat();
+});
+
+/* ============================== EINSTELLUNGEN (View) ============================== */
+RENDERERS.settings = function () {
+  $('#setName').value = store.name;
+  $('#setModel').value = store.settings.model;
+  $('#setKey').value = getKey() ? '••••••••••••••••' : '';
+  refreshAIStatus();
+};
+
+$('#setNameSave').addEventListener('click', () => {
+  store.name = $('#setName').value.trim();
+  save();
+  toast(store.name ? 'Gespeichert, ' + store.name + ' ✓' : 'Name entfernt');
+});
+$('#setKeySave').addEventListener('click', () => {
+  const v = $('#setKey').value.trim();
+  if (!v || v.startsWith('••')) { toast('Bitte einen API-Schlüssel eingeben'); return; }
+  try { localStorage.setItem(KEY_KEY, v); } catch (e) {}
+  refreshAIStatus();
+  RENDERERS.settings();
+  toast('Echte KI aktiviert 🚀');
+});
+$('#setKeyClear').addEventListener('click', () => {
+  try { localStorage.removeItem(KEY_KEY); } catch (e) {}
+  $('#setKey').value = '';
+  refreshAIStatus();
+  toast('Schlüssel entfernt – Demo-Modus aktiv');
+});
+$('#setModel').addEventListener('change', () => {
+  store.settings.model = $('#setModel').value;
+  save();
+  toast('Modell gespeichert ✓');
+});
+$('#btnClearChat').addEventListener('click', () => {
+  store.chat = [];
+  save();
+  toast('Chat geleert');
+});
+$('#btnDemoData').addEventListener('click', () => {
+  const t = todayISO();
+  addTask('Stromrechnung überweisen', addDays(t, 3), 'high', 'doc');
+  addTask('Geschenk für Omas Geburtstag besorgen', addDays(t, 6), 'med', 'manual');
+  addTask('Sportsachen für Donnerstag packen', addDays(t, 2), 'low', 'manual');
+  addEvent('Zahnarzt', addDays(t, 1), '09:30', 'Kontrolle', 'manual');
+  addEvent('Elternabend Schule', addDays(t, 4), '19:00', '', 'manual');
+  addEvent('⏰ Frist: Widerspruch Mobilfunk', addDays(t, 12), null, 'von Telbo Mobilfunk GmbH', 'doc');
+  save();
+  refresh();
+  toast('Demo-Daten geladen ✨');
+});
+$('#btnWipe').addEventListener('click', () => {
+  if (!confirm('Wirklich ALLE Daten löschen? Aufgaben, Termine, Dokumente und Chat werden entfernt.')) return;
+  try { localStorage.removeItem(DATA_KEY); localStorage.removeItem(KEY_KEY); } catch (e) {}
+  location.reload();
+});
+
+/* ============================== INIT ============================== */
+refreshAIStatus();
+if (!store.onboarded) {
+  $('#onboarding').classList.add('on');
+  obShow(0);
+}
+showView('dashboard');
+
+})();
+</script>
+</body>
+</html>

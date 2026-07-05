@@ -1,0 +1,19 @@
+{
+  "name": "NEXA – Dein KI-Alltagsmanager",
+  "short_name": "NEXA",
+  "description": "Briefe verstehen, Fristen erkennen, Aufgaben und Termine automatisch organisieren.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#07090f",
+  "theme_color": "#07090f",
+  "lang": "de",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
