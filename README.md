@@ -14,6 +14,10 @@ NEXA ist ein Alltagshelfer als Web-App: Briefe fotografieren und in einfachen Wo
 - ✨ **KI-Chat** – „Ich möchte nächste Woche in den Urlaub" → NEXA prüft den Kalender, erstellt Packliste und Erinnerungen per Ein-Klick-Buttons.
 - 📊 **Dashboard** – Begrüßung, nächste Termine, wichtigste Aufgaben, zuletzt analysierte Dokumente.
 
+## Konto & Testphase
+
+Beim ersten Start erstellst du ein Konto (nur lokal auf dem Gerät gespeichert). Danach sind **3 Tage lang alle Funktionen kostenlos** nutzbar. Nach der Testphase schaltet ein Premium-Code (`NEXA-XXXX-XXXX`) alles dauerhaft frei – im Quelltext stehen nur die Hashes der Codes. Details und das Kostenmodell: [KONZEPT.md](KONZEPT.md).
+
 ## Demo-Modus & echte KI
 
 NEXA läuft sofort im **Demo-Modus** (simulierte Analysen und ein Chat mit vorbereiteten Szenarien – die Urlaubs­planung funktioniert dabei wirklich).

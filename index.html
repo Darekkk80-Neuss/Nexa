@@ -397,6 +397,33 @@ label.fld{display:block;font-size:12.5px;font-weight:600;color:var(--muted);marg
 .ob-dots i.on{background:#a78bfa;width:22px;border-radius:6px}
 .ob-skip{background:none;border:none;color:var(--faint);font-size:13px}
 
+/* ============================== AUTH & PAYWALL (GATES) ============================== */
+.gate{position:fixed;inset:0;z-index:120;display:none;flex-direction:column;align-items:center;
+  justify-content:center;padding:28px 24px;overflow-y:auto;background:
+  radial-gradient(ellipse 90% 60% at 50% -15%,rgba(124,58,237,.22),transparent),var(--bg)}
+.gate.on{display:flex}
+.gate-box{max-width:400px;width:100%;text-align:center;animation:viewIn .45s ease both}
+.gate-box .logo-mark{width:72px;height:72px;margin:0 auto 14px;filter:drop-shadow(0 8px 30px rgba(124,58,237,.55))}
+.gate-brand{font-size:26px;letter-spacing:5px;margin-bottom:18px}
+.gate-box h2{font-size:21px;margin-bottom:8px}
+.gate-sub{color:var(--muted);font-size:14px;margin-bottom:20px;overflow-wrap:break-word}
+.gate-fields{display:flex;flex-direction:column;gap:10px;text-align:left}
+.gate-cta{width:100%;padding:13px;font-size:15px}
+.auth-err{min-height:18px;color:var(--danger);font-size:13px;font-weight:600;padding-left:2px}
+.gate-note{margin-top:20px;color:var(--faint);font-size:12.5px;line-height:1.6}
+.gate-note a{color:#a78bfa;cursor:pointer;text-decoration:underline}
+.gate-reset{background:none;border:none;color:var(--faint);font-size:13px;text-decoration:underline}
+.pw-icon{font-size:52px;margin-bottom:12px}
+.b-trial{background:rgba(251,191,36,.14);color:#fcd34d}
+.b-expired{background:rgba(248,113,113,.15);color:#fca5a5}
+.b-premium{background:linear-gradient(135deg,rgba(139,92,246,.25),rgba(6,182,212,.25));color:#ddd6fe;border:1px solid rgba(167,139,250,.4)}
+.trial-pill{display:inline-flex;align-items:center;gap:6px;margin-top:10px;padding:7px 14px;border-radius:20px;
+  border:1px solid rgba(251,191,36,.35);background:rgba(251,191,36,.08);color:#fcd34d;
+  font-size:12.5px;font-weight:600;cursor:pointer;transition:.2s}
+.trial-pill:hover{background:rgba(251,191,36,.15)}
+.trial-pill b{color:#fde68a}
+.trial-pill.premium{border-color:rgba(167,139,250,.4);background:rgba(124,58,237,.12);color:#ddd6fe;cursor:default}
+
 /* ============================== TOAST ============================== */
 #toasts{position:fixed;bottom:calc(var(--tabbar-h) + 18px);left:50%;transform:translateX(-50%);
   z-index:200;display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none}
@@ -412,6 +439,40 @@ label.fld{display:block;font-size:12.5px;font-weight:600;color:var(--muted);marg
 <body>
 
 <div class="orbs"><div class="orb orb-1"></div><div class="orb orb-2"></div><div class="orb orb-3"></div></div>
+
+<!-- ============================== AUTH (erste Seite) ============================== -->
+<div id="auth" class="gate">
+  <div class="gate-box">
+    <svg class="logo-mark" viewBox="0 0 64 64"><use href="#logoSym"/></svg>
+    <h1 class="gate-brand font-head">NEXA</h1>
+    <h2 id="authTitle">Konto erstellen</h2>
+    <p class="gate-sub" id="authSub">3 Tage kostenlos testen – alle Funktionen inklusive.</p>
+    <div class="gate-fields">
+      <input type="text" id="auName" placeholder="Vorname" maxlength="30" autocomplete="given-name">
+      <input type="text" id="auEmail" placeholder="E-Mail-Adresse" maxlength="80" autocomplete="email" inputmode="email">
+      <input type="password" id="auPass" placeholder="Passwort (mind. 6 Zeichen)" maxlength="80" autocomplete="current-password">
+      <div class="auth-err" id="authErr"></div>
+      <button class="btn btn-primary gate-cta" id="authGo">Kostenlos starten</button>
+      <button class="gate-reset" id="authReset" style="display:none">Passwort vergessen? Konto zurücksetzen</button>
+    </div>
+    <p class="gate-note">🔒 Dein Konto wird nur auf diesem Gerät gespeichert – keine Cloud, keine Werbung.<br>Nach der Testphase schaltet ein Premium-Code alle Funktionen dauerhaft frei.</p>
+  </div>
+</div>
+
+<!-- ============================== PAYWALL (Testphase abgelaufen) ============================== -->
+<div id="paywall" class="gate">
+  <div class="gate-box">
+    <div class="pw-icon">💎</div>
+    <h2>Deine Testphase ist abgelaufen</h2>
+    <p class="gate-sub">Schön, dass du NEXA ausprobiert hast! Mit <b>Premium</b> nutzt du alles unbegrenzt weiter – Dokument-Analysen, Aufgaben, Kalender und den KI-Chat. Deine Daten bleiben natürlich erhalten.</p>
+    <div class="gate-fields">
+      <input type="text" id="pwCode" placeholder="Freischalt-Code (NEXA-XXXX-XXXX)" maxlength="20" autocomplete="off">
+      <div class="auth-err" id="pwErr"></div>
+      <button class="btn btn-primary gate-cta" id="pwGo">💎 Premium freischalten</button>
+    </div>
+    <p class="gate-note">Einen Freischalt-Code bekommst du vom Betreiber der App.<br><a id="pwLogout">Abmelden</a></p>
+  </div>
+</div>
 
 <!-- ============================== ONBOARDING ============================== -->
 <div id="onboarding">
@@ -478,6 +539,7 @@ label.fld{display:block;font-size:12.5px;font-weight:600;color:var(--muted);marg
       <div class="greet">
         <h1 id="greetLine">Guten Tag<span class="grad-text"></span></h1>
         <p id="greetDate"></p>
+        <div id="trialSlot"></div>
       </div>
       <div class="qa-row">
         <button class="qa qa-1 rise" style="--i:0" id="qaDoc">
@@ -581,6 +643,8 @@ label.fld{display:block;font-size:12.5px;font-weight:600;color:var(--muted);marg
         <h1>Einstellungen</h1>
         <p>Alles bleibt lokal auf deinem Gerät.</p>
       </div>
+
+      <div class="card set-card" id="accountCard"></div>
 
       <div class="card set-card">
         <h3>Dein Name</h3>
@@ -762,6 +826,7 @@ const RENDERERS = {};
 
 function showView(name) {
   currentView = name;
+  gate();
   $$('.view').forEach(v => v.classList.toggle('active', v.id === 'view-' + name));
   $$('[data-view]').forEach(b => b.classList.toggle('active', b.dataset.view === name));
   if (RENDERERS[name]) RENDERERS[name]();
@@ -803,6 +868,142 @@ $('#obNext').addEventListener('click', () => { obIdx < 2 ? obShow(obIdx + 1) : o
 $('#obSkip').addEventListener('click', obFinish);
 $('#obName').addEventListener('keydown', e => { if (e.key === 'Enter') obFinish(); });
 
+/* ============================== AUTH & PLAN ============================== */
+const ACC_KEY = 'nexa_account';
+const TRIAL0_KEY = 'nexa_trial0';
+const TRIAL_DAYS = 3;
+/* SHA-256-Hashes gültiger Freischalt-Codes – die Codes selbst stehen nicht im Quelltext */
+const PREMIUM_HASHES = [
+  '19d0030aea66bc3f6f6c244ed7ba921fe0f28cb0b4ea40b9084ab944b8352a2d',
+  '8e5f5051706e095e49fcd320cf82d6aff9e8a32a8c46eb9119e1b345589a6c5e',
+  'd0ee8addd0f56f661264aad40de71a15687f1e2af1913aaf45c846df5fdd592f',
+  '1cef3964c45a38fa7a522baa9d28ed3cd58facea7b80b079da73826b6d003cec',
+  '2d259593da59c9caa11b65215a22064ec5a604064bd0b04ab3bd7b27b2282d1a'
+];
+
+let account = (() => {
+  try { return JSON.parse(localStorage.getItem(ACC_KEY)); } catch (e) { return null; }
+})();
+function saveAccount() {
+  try { localStorage.setItem(ACC_KEY, JSON.stringify(account)); } catch (e) {}
+}
+
+async function sha256Hex(s) {
+  if (window.crypto && crypto.subtle) {
+    const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s));
+    return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+  }
+  /* Fallback ohne sicheren Kontext: schwacher Hash, reine Komfort-Sperre */
+  let h1 = 0x811c9dc5, h2 = 0;
+  for (let i = 0; i < s.length; i++) {
+    h1 = Math.imul(h1 ^ s.charCodeAt(i), 0x01000193) >>> 0;
+    h2 = (h2 + s.charCodeAt(i) * (i + 1)) >>> 0;
+  }
+  return 'f_' + h1.toString(16) + '_' + h2.toString(16);
+}
+
+const isPremium = () => !!(account && account.plan === 'premium');
+const isTrialExpired = () => !!(account && account.plan !== 'premium' &&
+  Date.now() > account.trialStart + TRIAL_DAYS * 864e5);
+function trialDaysLeft() {
+  if (!account) return TRIAL_DAYS;
+  return Math.max(0, Math.ceil((account.trialStart + TRIAL_DAYS * 864e5 - Date.now()) / 864e5));
+}
+
+/* Zeigt je nach Zustand Login/Registrierung oder Paywall; sonst die App */
+function gate() {
+  const loggedIn = !!(account && account.loggedIn);
+  $('#auth').classList.toggle('on', !loggedIn);
+  $('#paywall').classList.toggle('on', loggedIn && isTrialExpired());
+  if (!loggedIn) setupAuthForm();
+}
+
+function setupAuthForm() {
+  const isReg = !account;
+  $('#auName').style.display = isReg ? '' : 'none';
+  $('#auEmail').style.display = isReg ? '' : 'none';
+  $('#authTitle').textContent = isReg ? 'Konto erstellen' : 'Willkommen zurück';
+  $('#authSub').textContent = isReg
+    ? '3 Tage kostenlos testen – alle Funktionen inklusive.'
+    : 'Angemeldet bleiben als ' + account.email;
+  $('#authGo').textContent = isReg ? 'Kostenlos starten' : 'Anmelden';
+  $('#authReset').style.display = isReg ? 'none' : '';
+  $('#authErr').textContent = '';
+}
+
+async function submitAuth() {
+  const err = $('#authErr');
+  err.textContent = '';
+  const pass = $('#auPass').value;
+  if (pass.length < 6) { err.textContent = 'Das Passwort braucht mindestens 6 Zeichen.'; return; }
+  if (!account) {
+    const name = $('#auName').value.trim();
+    const email = $('#auEmail').value.trim().toLowerCase();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) { err.textContent = 'Bitte eine gültige E-Mail-Adresse eingeben.'; return; }
+    const salt = uid();
+    const hash = await sha256Hex(salt + ':' + pass);
+    /* Trial-Start überlebt ein Konto-Zurücksetzen – kein Neustart der Testphase */
+    let t0 = parseInt(localStorage.getItem(TRIAL0_KEY) || '0', 10);
+    if (!t0) { t0 = Date.now(); try { localStorage.setItem(TRIAL0_KEY, String(t0)); } catch (e) {} }
+    account = { name, email, salt, hash, plan: 'free', trialStart: t0, createdAt: Date.now(), loggedIn: true };
+    saveAccount();
+    if (name && !store.name) { store.name = name; save(); }
+    $('#auPass').value = '';
+    gate();
+    if (!isTrialExpired() && !store.onboarded) {
+      $('#onboarding').classList.add('on');
+      obShow(0);
+      $('#obName').value = store.name;
+    }
+    toast('Konto erstellt – 3 Tage alles inklusive ✨');
+    refresh();
+  } else {
+    const hash = await sha256Hex(account.salt + ':' + pass);
+    if (hash !== account.hash) { err.textContent = 'Falsches Passwort.'; return; }
+    account.loggedIn = true;
+    saveAccount();
+    $('#auPass').value = '';
+    gate();
+    toast('Willkommen zurück' + (account.name ? ', ' + account.name : '') + ' 👋');
+    refresh();
+  }
+}
+
+function logout() {
+  if (!account) return;
+  account.loggedIn = false;
+  saveAccount();
+  gate();
+}
+
+async function activatePremium(code, errEl) {
+  errEl.textContent = '';
+  code = (code || '').trim().toUpperCase();
+  if (!code) { errEl.textContent = 'Bitte einen Freischalt-Code eingeben.'; return false; }
+  if (!(window.crypto && crypto.subtle)) { errEl.textContent = 'Die Aktivierung benötigt eine sichere Verbindung (https).'; return false; }
+  const h = await sha256Hex(code);
+  if (PREMIUM_HASHES.indexOf(h) === -1) { errEl.textContent = 'Dieser Code ist leider ungültig.'; return false; }
+  account.plan = 'premium';
+  account.premiumSince = Date.now();
+  saveAccount();
+  gate();
+  toast('Premium freigeschaltet – alles inklusive 💎');
+  refresh();
+  return true;
+}
+
+$('#authGo').addEventListener('click', submitAuth);
+$('#auPass').addEventListener('keydown', e => { if (e.key === 'Enter') submitAuth(); });
+$('#authReset').addEventListener('click', () => {
+  if (!confirm('Konto zurücksetzen? Du kannst dich danach neu registrieren. Aufgaben, Termine und Dokumente bleiben erhalten, die Testphase läuft weiter.')) return;
+  try { localStorage.removeItem(ACC_KEY); } catch (e) {}
+  account = null;
+  setupAuthForm();
+});
+$('#pwGo').addEventListener('click', () => activatePremium($('#pwCode').value, $('#pwErr')));
+$('#pwCode').addEventListener('keydown', e => { if (e.key === 'Enter') $('#pwGo').click(); });
+$('#pwLogout').addEventListener('click', logout);
+
 /* ============================== TASKS (Daten) ============================== */
 function addTask(title, due, prio, source) {
   const t = { id: uid(), title: title.trim(), due: due || null, prio: prio || 'med', done: false, source: source || 'manual', createdAt: Date.now() };
@@ -842,6 +1043,17 @@ RENDERERS.dashboard = function () {
   const g = h < 5 ? 'Gute Nacht' : h < 11 ? 'Guten Morgen' : h < 18 ? 'Guten Tag' : 'Guten Abend';
   $('#greetLine').innerHTML = esc(g) + (store.name ? ', <span class="grad-text">' + esc(store.name) + '</span>' : '') + ' 👋';
   $('#greetDate').textContent = new Date().toLocaleDateString('de-DE', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+
+  const slot = $('#trialSlot');
+  if (account && isPremium()) {
+    slot.innerHTML = '<span class="trial-pill premium">💎 Premium – alles inklusive</span>';
+  } else if (account) {
+    const d = trialDaysLeft();
+    slot.innerHTML = '<button class="trial-pill" id="trialGo">⏳ Testphase: noch ' + d + ' Tag' + (d === 1 ? '' : 'e') + ' · <b>Premium freischalten</b></button>';
+    $('#trialGo').addEventListener('click', () => showView('settings'));
+  } else {
+    slot.innerHTML = '';
+  }
 
   const open = store.tasks.filter(t => !t.done).length;
   const evToday = eventsOn(todayISO()).length;
@@ -1485,7 +1697,35 @@ RENDERERS.settings = function () {
   $('#setModel').value = store.settings.model;
   $('#setKey').value = getKey() ? '••••••••••••••••' : '';
   refreshAIStatus();
+  renderAccountCard();
 };
+
+function renderAccountCard() {
+  const card = $('#accountCard');
+  if (!account) { card.style.display = 'none'; return; }
+  card.style.display = '';
+  const days = trialDaysLeft();
+  const planHtml = isPremium()
+    ? '<span class="badge b-premium">💎 Premium aktiv</span>'
+    : isTrialExpired()
+      ? '<span class="badge b-expired">Testphase abgelaufen</span>'
+      : '<span class="badge b-trial">⏳ Testphase: noch ' + days + ' Tag' + (days === 1 ? '' : 'e') + '</span>';
+  card.innerHTML = '<h3>Dein Konto</h3>' +
+    '<p class="sub">' + (account.name ? esc(account.name) + ' · ' : '') + esc(account.email) + '</p>' +
+    '<div style="margin-bottom:14px">' + planHtml + '</div>' +
+    (!isPremium()
+      ? '<label class="fld" for="setCode">Premium freischalten</label>' +
+        '<div class="set-row"><input type="text" id="setCode" placeholder="NEXA-XXXX-XXXX" maxlength="20" autocomplete="off">' +
+        '<button class="btn btn-primary" id="setCodeGo">Einlösen</button></div>' +
+        '<div class="auth-err" id="setCodeErr"></div>'
+      : '') +
+    '<div style="margin-top:6px"><button class="btn btn-sm" id="btnLogout">Abmelden</button></div>';
+  const go = $('#setCodeGo');
+  if (go) go.addEventListener('click', async () => {
+    if (await activatePremium($('#setCode').value, $('#setCodeErr'))) renderAccountCard();
+  });
+  $('#btnLogout').addEventListener('click', logout);
+}
 
 $('#setNameSave').addEventListener('click', () => {
   store.name = $('#setName').value.trim();
@@ -1529,16 +1769,22 @@ $('#btnDemoData').addEventListener('click', () => {
   toast('Demo-Daten geladen ✨');
 });
 $('#btnWipe').addEventListener('click', () => {
-  if (!confirm('Wirklich ALLE Daten löschen? Aufgaben, Termine, Dokumente und Chat werden entfernt.')) return;
-  try { localStorage.removeItem(DATA_KEY); localStorage.removeItem(KEY_KEY); } catch (e) {}
+  if (!confirm('Wirklich ALLE Daten löschen? Aufgaben, Termine, Dokumente, Chat und dein Konto werden entfernt.')) return;
+  try {
+    localStorage.removeItem(DATA_KEY);
+    localStorage.removeItem(KEY_KEY);
+    localStorage.removeItem(ACC_KEY);
+  } catch (e) {}
   location.reload();
 });
 
 /* ============================== INIT ============================== */
 refreshAIStatus();
-if (!store.onboarded) {
+gate();
+if (account && account.loggedIn && !isTrialExpired() && !store.onboarded) {
   $('#onboarding').classList.add('on');
   obShow(0);
+  $('#obName').value = store.name || account.name || '';
 }
 showView('dashboard');
 
