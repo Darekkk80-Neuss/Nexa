@@ -59,7 +59,7 @@ input,select,textarea{font-family:inherit;font-size:15px}
 /* ============================== BACKGROUND ORBS ============================== */
 .orbs{position:fixed;inset:0;z-index:-1;overflow:hidden;background:
   radial-gradient(ellipse 80% 55% at 50% -10%,rgba(124,58,237,.12),transparent),
-  linear-gradient(180deg,rgba(7,9,15,.86) 0%,rgba(7,9,15,.93) 55%,rgba(7,9,15,.97) 100%),
+  linear-gradient(180deg,rgba(7,9,15,.55) 0%,rgba(7,9,15,.68) 55%,rgba(7,9,15,.82) 100%),
   url('bg.jpg') center/cover no-repeat,
   var(--bg);}
 .orb{position:absolute;border-radius:50%;filter:blur(90px);opacity:.32;will-change:transform}
@@ -373,8 +373,8 @@ label.fld{display:block;font-size:12.5px;font-weight:600;color:var(--muted);marg
 /* ============================== ONBOARDING ============================== */
 #onboarding{position:fixed;inset:0;z-index:100;display:none;flex-direction:column;align-items:center;
   justify-content:center;padding:30px 26px;background:
-  radial-gradient(ellipse 90% 60% at 50% -15%,rgba(124,58,237,.16),transparent),
-  linear-gradient(180deg,rgba(7,9,15,.74) 0%,rgba(7,9,15,.85) 55%,rgba(7,9,15,.95) 100%),
+  radial-gradient(ellipse 90% 60% at 50% -15%,rgba(124,58,237,.1),transparent),
+  linear-gradient(180deg,rgba(7,9,15,.45) 0%,rgba(7,9,15,.58) 55%,rgba(7,9,15,.76) 100%),
   url('bg.jpg') center/cover no-repeat,var(--bg)}
 #onboarding.on{display:flex}
 .ob-slide{display:none;text-align:center;max-width:400px;width:100%;animation:viewIn .45s ease both}
@@ -404,11 +404,14 @@ label.fld{display:block;font-size:12.5px;font-weight:600;color:var(--muted);marg
 /* ============================== AUTH & PAYWALL (GATES) ============================== */
 .gate{position:fixed;inset:0;z-index:120;display:none;flex-direction:column;align-items:center;
   justify-content:center;padding:28px 24px;overflow-y:auto;background:
-  radial-gradient(ellipse 90% 60% at 50% -15%,rgba(124,58,237,.16),transparent),
-  linear-gradient(180deg,rgba(7,9,15,.74) 0%,rgba(7,9,15,.85) 55%,rgba(7,9,15,.95) 100%),
+  radial-gradient(ellipse 90% 60% at 50% -15%,rgba(124,58,237,.1),transparent),
+  linear-gradient(180deg,rgba(7,9,15,.28) 0%,rgba(7,9,15,.42) 55%,rgba(7,9,15,.62) 100%),
   url('bg.jpg') center/cover no-repeat,var(--bg)}
 .gate.on{display:flex}
-.gate-box{max-width:400px;width:100%;text-align:center;animation:viewIn .45s ease both}
+.gate-box{max-width:420px;width:100%;text-align:center;animation:viewIn .45s ease both;
+  background:rgba(9,11,18,.62);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+  border:1px solid var(--border);border-radius:26px;padding:30px 26px;
+  box-shadow:0 20px 60px rgba(0,0,0,.45)}
 .gate-box .logo-mark{width:72px;height:72px;margin:0 auto 14px;filter:drop-shadow(0 8px 30px rgba(124,58,237,.55))}
 .gate-brand{font-size:26px;letter-spacing:5px;margin-bottom:18px}
 .gate-box h2{font-size:21px;margin-bottom:8px}
