@@ -58,7 +58,9 @@ input,select,textarea{font-family:inherit;font-size:15px}
 
 /* ============================== BACKGROUND ORBS ============================== */
 .orbs{position:fixed;inset:0;z-index:-1;overflow:hidden;background:
-  radial-gradient(ellipse 80% 55% at 50% -10%,rgba(124,58,237,.14),transparent),
+  radial-gradient(ellipse 80% 55% at 50% -10%,rgba(124,58,237,.12),transparent),
+  linear-gradient(180deg,rgba(7,9,15,.86) 0%,rgba(7,9,15,.93) 55%,rgba(7,9,15,.97) 100%),
+  url('bg.jpg') center/cover no-repeat,
   var(--bg);}
 .orb{position:absolute;border-radius:50%;filter:blur(90px);opacity:.32;will-change:transform}
 .orb-1{width:520px;height:520px;background:#5b21b6;top:-180px;left:-140px;animation:drift1 26s ease-in-out infinite alternate}
@@ -371,7 +373,9 @@ label.fld{display:block;font-size:12.5px;font-weight:600;color:var(--muted);marg
 /* ============================== ONBOARDING ============================== */
 #onboarding{position:fixed;inset:0;z-index:100;display:none;flex-direction:column;align-items:center;
   justify-content:center;padding:30px 26px;background:
-  radial-gradient(ellipse 90% 60% at 50% -15%,rgba(124,58,237,.22),transparent),var(--bg)}
+  radial-gradient(ellipse 90% 60% at 50% -15%,rgba(124,58,237,.16),transparent),
+  linear-gradient(180deg,rgba(7,9,15,.74) 0%,rgba(7,9,15,.85) 55%,rgba(7,9,15,.95) 100%),
+  url('bg.jpg') center/cover no-repeat,var(--bg)}
 #onboarding.on{display:flex}
 .ob-slide{display:none;text-align:center;max-width:400px;width:100%;animation:viewIn .45s ease both}
 .ob-slide.active{display:block}
@@ -400,7 +404,9 @@ label.fld{display:block;font-size:12.5px;font-weight:600;color:var(--muted);marg
 /* ============================== AUTH & PAYWALL (GATES) ============================== */
 .gate{position:fixed;inset:0;z-index:120;display:none;flex-direction:column;align-items:center;
   justify-content:center;padding:28px 24px;overflow-y:auto;background:
-  radial-gradient(ellipse 90% 60% at 50% -15%,rgba(124,58,237,.22),transparent),var(--bg)}
+  radial-gradient(ellipse 90% 60% at 50% -15%,rgba(124,58,237,.16),transparent),
+  linear-gradient(180deg,rgba(7,9,15,.74) 0%,rgba(7,9,15,.85) 55%,rgba(7,9,15,.95) 100%),
+  url('bg.jpg') center/cover no-repeat,var(--bg)}
 .gate.on{display:flex}
 .gate-box{max-width:400px;width:100%;text-align:center;animation:viewIn .45s ease both}
 .gate-box .logo-mark{width:72px;height:72px;margin:0 auto 14px;filter:drop-shadow(0 8px 30px rgba(124,58,237,.55))}
