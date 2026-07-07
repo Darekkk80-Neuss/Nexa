@@ -175,6 +175,41 @@ label.fld{display:block;font-size:12.5px;font-weight:600;color:var(--muted);marg
 .empty{padding:28px 14px;text-align:center;color:var(--faint);font-size:14px}
 .empty .big{font-size:30px;display:block;margin-bottom:8px}
 
+/* ============================== WETTER-WIDGET ============================== */
+.wx-card{position:relative;border-radius:20px;padding:18px 18px 16px;margin-bottom:22px;color:#fff;overflow:hidden;
+  box-shadow:0 14px 34px rgba(0,0,0,.4);text-shadow:0 1px 3px rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.14);
+  animation:fadeUp .5s ease both}
+.wx-card::after{content:'';position:absolute;top:-45%;right:-8%;width:230px;height:230px;border-radius:50%;
+  background:radial-gradient(circle,rgba(255,255,255,.28),transparent 70%);pointer-events:none}
+.wx-clear-day{background:linear-gradient(135deg,#2563eb,#38bdf8 55%,#fbbf24)}
+.wx-clear-night{background:linear-gradient(135deg,#1e3a8a,#312e81)}
+.wx-clouds{background:linear-gradient(135deg,#475569,#64748b)}
+.wx-rain{background:linear-gradient(135deg,#1e3a8a,#0ea5e9 60%,#334155)}
+.wx-snow{background:linear-gradient(135deg,#3b82f6,#93c5fd)}
+.wx-thunder{background:linear-gradient(135deg,#4c1d95,#1e293b)}
+.wx-fog{background:linear-gradient(135deg,#64748b,#94a3b8)}
+.wx-top{display:flex;align-items:center;gap:10px}
+.wx-main{flex:1;min-width:0}
+.wx-temp{font-family:var(--font-head);font-size:46px;font-weight:700;line-height:1}
+.wx-cond{font-size:15px;font-weight:600;margin-top:2px}
+.wx-loc{font-size:12.5px;opacity:.92;margin-top:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.wx-icon{font-size:56px;line-height:1;filter:drop-shadow(0 3px 6px rgba(0,0,0,.3))}
+.wx-pills{display:flex;gap:8px;margin-top:14px}
+.wx-pill{flex:1;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.2);border-radius:13px;
+  padding:9px 5px;text-align:center;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);min-width:0}
+.wx-pill span{font-size:17px;display:block}
+.wx-pill b{font-size:14px;display:block;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.wx-pill small{font-size:10.5px;opacity:.85;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}
+.wx-edit{position:absolute;top:12px;right:12px;background:rgba(255,255,255,.2);border:none;color:#fff;
+  width:30px;height:30px;border-radius:9px;font-size:14px;cursor:pointer;z-index:1;transition:.2s}
+.wx-edit:hover{background:rgba(255,255,255,.32)}
+.wx-setup{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:18px;margin-bottom:22px;text-align:center}
+.wx-setup h3{font-size:15.5px;margin-bottom:4px}
+.wx-setup p{color:var(--muted);font-size:13px;margin-bottom:12px}
+.wx-setup .row{display:flex;gap:8px}
+.wx-setup .row input{flex:1}
+.wx-loading{opacity:.75}
+
 /* ============================== DASHBOARD ============================== */
 .greet{margin-bottom:22px}
 .greet h1{font-size:28px;font-weight:700;letter-spacing:-.4px}
@@ -667,6 +702,7 @@ input.invalid,textarea.invalid{border-color:var(--danger)!important;box-shadow:0
         <p id="greetDate"></p>
         <div id="trialSlot"></div>
       </div>
+      <div id="weatherWidget"></div>
       <div class="qa-row">
         <button class="qa qa-1 rise" style="--i:0" id="qaDoc">
           <span class="qa-ic"><svg viewBox="0 0 24 24"><use href="#icCam"/></svg></span>Foto analysieren</button>
@@ -980,6 +1016,8 @@ const store = Object.assign({
   profile: {},  // Absenderdaten: {name,street,zip,city,email,phone}
   docFavs: [],  // Template-IDs der Favoriten
   life: {},     // Lebenslagen: {typ:{startDate,done{},tasksAdded}}
+  weatherLoc: null, // {name,lat,lon}
+  weather: null,    // zuletzt geladene Wetterdaten (Cache)
   settings: { model: 'claude-sonnet-5', demoIdx: 0 }
 }, (() => {
   try { return JSON.parse(localStorage.getItem(DATA_KEY)) || {}; } catch (e) { return {}; }
@@ -1465,6 +1503,7 @@ RENDERERS.dashboard = function () {
 
   $('#dashWidgets').innerHTML = html;
   $$('#dashWidgets [data-go]').forEach(b => b.addEventListener('click', () => showView(b.dataset.go)));
+  renderWeather();
 };
 
 $('#qaDoc').addEventListener('click', () => { showView('docs'); setTimeout(() => $('#docInput').click(), 250); });
@@ -2312,6 +2351,162 @@ $('#lifeRoot').addEventListener('change', e => {
     lifeState(lifeActive).startDate = e.target.value || '';
     save(); RENDERERS.life();
   }
+});
+
+/* ============================== WETTER & POLLENFLUG (Open-Meteo, kostenlos) ============================== */
+let weatherEditing = false, weatherAutoTried = false;
+const POLLEN_MAP = { alder_pollen: 'Erle', birch_pollen: 'Birke', grass_pollen: 'Gräser', mugwort_pollen: 'Beifuß', olive_pollen: 'Olive', ragweed_pollen: 'Ambrosia' };
+
+function wCode(c, day) {
+  const m = {
+    0: ['Klar', day ? '☀️' : '🌙'], 1: ['Überwiegend klar', day ? '🌤️' : '🌙'], 2: ['Teils bewölkt', day ? '⛅' : '☁️'], 3: ['Bedeckt', '☁️'],
+    45: ['Nebel', '🌫️'], 48: ['Reifnebel', '🌫️'], 51: ['Leichter Niesel', '🌦️'], 53: ['Niesel', '🌦️'], 55: ['Dichter Niesel', '🌧️'],
+    56: ['Gefrierender Niesel', '🌧️'], 57: ['Gefrierender Niesel', '🌧️'], 61: ['Leichter Regen', '🌦️'], 63: ['Regen', '🌧️'], 65: ['Starker Regen', '🌧️'],
+    66: ['Gefrierender Regen', '🌧️'], 67: ['Gefrierender Regen', '🌧️'], 71: ['Leichter Schnee', '🌨️'], 73: ['Schnee', '🌨️'], 75: ['Starker Schnee', '❄️'],
+    77: ['Schneegriesel', '🌨️'], 80: ['Regenschauer', '🌦️'], 81: ['Regenschauer', '🌧️'], 82: ['Heftige Schauer', '⛈️'], 85: ['Schneeschauer', '🌨️'], 86: ['Schneeschauer', '🌨️'],
+    95: ['Gewitter', '⛈️'], 96: ['Gewitter mit Hagel', '⛈️'], 99: ['Gewitter mit Hagel', '⛈️']
+  };
+  return m[c] || ['Wetter', '🌡️'];
+}
+function wGrad(c, day) {
+  if (c === 0 || c === 1) return day ? 'clear-day' : 'clear-night';
+  if (c === 2 || c === 3) return 'clouds';
+  if (c === 45 || c === 48) return 'fog';
+  if ((c >= 71 && c <= 77) || c === 85 || c === 86) return 'snow';
+  if (c >= 95) return 'thunder';
+  return 'rain';
+}
+function pollenLevel(v) { if (v <= 0) return 'Keiner'; if (v < 10) return 'Gering'; if (v < 50) return 'Mäßig'; if (v < 100) return 'Hoch'; return 'Sehr hoch'; }
+
+function getWeatherLoc() { return (store.weatherLoc && store.weatherLoc.lat != null) ? store.weatherLoc : null; }
+
+function buildWeather(loc, wx, aq) {
+  const cur = wx.current, code = cur.weather_code, day = cur.is_day !== 0;
+  const ti = wCode(code, day);
+  let rain = null;
+  if (wx.hourly && wx.hourly.time) {
+    const nowH = (cur.time || '').slice(0, 13);
+    let i = wx.hourly.time.findIndex(t => t.slice(0, 13) === nowH);
+    if (i < 0) i = 0;
+    rain = wx.hourly.precipitation_probability[i];
+  }
+  if (rain == null && wx.daily) rain = wx.daily.precipitation_probability_max[0];
+  let pMax = 0, dom = '', hasPollen = false;
+  if (aq && aq.current) {
+    Object.keys(POLLEN_MAP).forEach(k => {
+      const v = aq.current[k];
+      if (typeof v === 'number') { hasPollen = true; if (v > pMax) { pMax = v; dom = POLLEN_MAP[k]; } }
+    });
+  }
+  return {
+    lat: loc.lat, lon: loc.lon, name: loc.name, ts: Date.now(),
+    temp: Math.round(cur.temperature_2m), feels: Math.round(cur.apparent_temperature),
+    text: ti[0], icon: ti[1], grad: wGrad(code, day),
+    rain: rain != null ? Math.round(rain) : null,
+    hi: wx.daily ? Math.round(wx.daily.temperature_2m_max[0]) : Math.round(cur.temperature_2m),
+    lo: wx.daily ? Math.round(wx.daily.temperature_2m_min[0]) : Math.round(cur.temperature_2m),
+    pollen: hasPollen ? pollenLevel(pMax) : '—',
+    pollenSub: hasPollen ? (pMax > 0 ? 'Pollen: ' + dom : 'Pollenflug') : 'keine Daten'
+  };
+}
+async function fetchWeather(loc) {
+  const wxURL = 'https://api.open-meteo.com/v1/forecast?latitude=' + loc.lat + '&longitude=' + loc.lon +
+    '&current=temperature_2m,apparent_temperature,is_day,weather_code&hourly=precipitation_probability' +
+    '&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=auto&forecast_days=1';
+  const aqURL = 'https://air-quality-api.open-meteo.com/v1/air-quality?latitude=' + loc.lat + '&longitude=' + loc.lon +
+    '&current=alder_pollen,birch_pollen,grass_pollen,mugwort_pollen,olive_pollen,ragweed_pollen&timezone=auto';
+  try {
+    const [wx, aq] = await Promise.all([
+      fetch(wxURL).then(r => r.json()),
+      fetch(aqURL).then(r => r.json()).catch(() => null)
+    ]);
+    if (!wx || !wx.current) throw new Error('keine Daten');
+    store.weather = buildWeather(loc, wx, aq);
+    save();
+    if (currentView === 'dashboard') { const w = $('#weatherWidget'); if (w) w.innerHTML = weatherCardHTML(store.weather); }
+  } catch (e) {
+    if (currentView === 'dashboard') { const w = $('#weatherWidget'); if (w && !store.weather) w.innerHTML = weatherErrorHTML(); }
+  }
+}
+async function setWeatherByCity(city, silent) {
+  const w = $('#weatherWidget'); if (w) w.innerHTML = weatherLoadingHTML();
+  try {
+    const r = await fetch('https://geocoding-api.open-meteo.com/v1/search?name=' + encodeURIComponent(city) + '&count=1&language=de&format=json').then(x => x.json());
+    if (!r.results || !r.results.length) { if (!silent) toast('Ort nicht gefunden'); weatherEditing = false; renderWeather(); return; }
+    const g = r.results[0];
+    store.weatherLoc = { name: g.name, lat: g.latitude, lon: g.longitude };
+    store.weather = null; save();
+    weatherEditing = false;
+    fetchWeather(store.weatherLoc);
+  } catch (e) { if (!silent) toast('Keine Verbindung'); weatherEditing = false; renderWeather(); }
+}
+function setWeatherByGPS() {
+  if (!navigator.geolocation) { toast('Standort nicht verfügbar'); return; }
+  toast('Standort wird ermittelt …');
+  navigator.geolocation.getCurrentPosition(async pos => {
+    const lat = pos.coords.latitude, lon = pos.coords.longitude;
+    let name = 'Aktueller Standort';
+    try {
+      const rg = await fetch('https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=' + lat + '&longitude=' + lon + '&localityLanguage=de').then(x => x.json());
+      name = rg.city || rg.locality || name;
+    } catch (e) {}
+    store.weatherLoc = { name, lat, lon };
+    store.weather = null; save();
+    weatherEditing = false;
+    fetchWeather(store.weatherLoc);
+  }, () => toast('Standort-Zugriff abgelehnt'), { timeout: 8000 });
+}
+
+function weatherLoadingHTML() { return '<div class="wx-setup wx-loading"><h3>🌤️ Wetter wird geladen …</h3></div>'; }
+function weatherErrorHTML() {
+  return '<div class="wx-setup"><h3>🌧️ Wetter nicht verfügbar</h3><p>Die Wetterdaten konnten nicht geladen werden.</p>' +
+    '<button class="btn btn-sm" data-wx="retry">Erneut versuchen</button></div>';
+}
+function weatherSetupHTML(hasLoc) {
+  const preset = hasLoc && store.weatherLoc ? (store.weatherLoc.name || '') : ((store.profile && store.profile.city) || '');
+  return '<div class="wx-setup"><h3>🌤️ Wetter &amp; Pollenflug</h3><p>Für welchen Ort möchtest du Wetter und Pollen sehen?</p>' +
+    '<div class="row"><input type="text" id="wxCity" placeholder="Stadt (z. B. Neuss)" maxlength="60" value="' + esc(preset) + '"><button class="btn btn-primary" data-wx="find">Anzeigen</button></div>' +
+    '<button class="btn btn-sm" data-wx="gps" style="margin-top:8px">📍 Meinen Standort verwenden</button>' +
+    (hasLoc ? '<button class="btn btn-sm btn-ghost" data-wx="cancel" style="margin-top:8px">Abbrechen</button>' : '') + '</div>';
+}
+function weatherCardHTML(d) {
+  return '<div class="wx-card wx-' + d.grad + '"><button class="wx-edit" data-wx="edit" title="Ort ändern">📍</button>' +
+    '<div class="wx-top"><div class="wx-main"><div class="wx-temp">' + d.temp + '°</div>' +
+    '<div class="wx-cond">' + esc(d.text) + '</div>' +
+    '<div class="wx-loc">📍 ' + esc(d.name) + ' · gefühlt ' + d.feels + '°</div></div>' +
+    '<div class="wx-icon">' + d.icon + '</div></div>' +
+    '<div class="wx-pills">' +
+    '<div class="wx-pill"><span>💧</span><b>' + (d.rain != null ? d.rain + '%' : '–') + '</b><small>Regen</small></div>' +
+    '<div class="wx-pill"><span>🌸</span><b>' + esc(d.pollen) + '</b><small>' + esc(d.pollenSub) + '</small></div>' +
+    '<div class="wx-pill"><span>🌡️</span><b>' + d.hi + '° / ' + d.lo + '°</b><small>Höchst / Tief</small></div>' +
+    '</div></div>';
+}
+
+function renderWeather() {
+  const w = $('#weatherWidget'); if (!w) return;
+  const loc = getWeatherLoc();
+  if (weatherEditing || !loc) {
+    if (!loc && !weatherEditing && store.profile && store.profile.city && !weatherAutoTried) {
+      weatherAutoTried = true; w.innerHTML = weatherLoadingHTML(); setWeatherByCity(store.profile.city, true); return;
+    }
+    w.innerHTML = weatherSetupHTML(!!loc); return;
+  }
+  const c = store.weather;
+  if (c && c.lat === loc.lat && c.lon === loc.lon) w.innerHTML = weatherCardHTML(c);
+  else w.innerHTML = weatherLoadingHTML();
+  if (!c || c.lat !== loc.lat || c.lon !== loc.lon || (Date.now() - c.ts) > 1800000) fetchWeather(loc);
+}
+$('#weatherWidget').addEventListener('click', e => {
+  const b = e.target.closest('[data-wx]'); if (!b) return;
+  const a = b.dataset.wx;
+  if (a === 'edit') { weatherEditing = true; renderWeather(); }
+  else if (a === 'cancel') { weatherEditing = false; renderWeather(); }
+  else if (a === 'find') { const c = $('#wxCity').value.trim(); if (c) setWeatherByCity(c); }
+  else if (a === 'gps') { setWeatherByGPS(); }
+  else if (a === 'retry') { const loc = getWeatherLoc(); if (loc) fetchWeather(loc); else renderWeather(); }
+});
+$('#weatherWidget').addEventListener('keydown', e => {
+  if (e.key === 'Enter' && e.target.id === 'wxCity') { const c = e.target.value.trim(); if (c) setWeatherByCity(c); }
 });
 
 /* ============================== KI-ADAPTER ============================== */
