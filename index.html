@@ -673,7 +673,7 @@ input.invalid,textarea.invalid{border-color:var(--danger)!important;box-shadow:0
     <a class="brand"><svg class="logo-mark" viewBox="0 0 64 64"><use href="#logoSym"/></svg><b>NEXA</b></a>
     <nav class="snav">
       <button data-view="dashboard"><svg viewBox="0 0 24 24"><use href="#icHome"/></svg>Dashboard</button>
-      <button data-view="docs"><svg viewBox="0 0 24 24"><use href="#icDoc"/></svg>Dokumente</button>
+      <button data-view="docs"><svg viewBox="0 0 24 24"><use href="#icDoc"/></svg>Dokumentenscanner</button>
       <button data-view="docgen"><svg viewBox="0 0 24 24"><use href="#icPen"/></svg>Dokumentenassistent</button>
       <button data-view="life"><svg viewBox="0 0 24 24"><use href="#icLife"/></svg>Lebenslagen</button>
       <button data-view="tasks"><svg viewBox="0 0 24 24"><use href="#icCheck2"/></svg>Aufgaben</button>
@@ -718,8 +718,8 @@ input.invalid,textarea.invalid{border-color:var(--danger)!important;box-shadow:0
     <!-- ============================== DOKUMENTE ============================== -->
     <section class="view" id="view-docs">
       <div class="view-head">
-        <h1>Dokumente</h1>
-        <p>Brief fotografieren – NEXA erklärt ihn und erkennt Fristen.</p>
+        <h1>Dokumentenscanner mit Texterkennung</h1>
+        <p>Brief fotografieren – NEXA liest den Text, erklärt ihn und erkennt Fristen.</p>
       </div>
       <div class="dropzone" id="dropzone">
         <div class="dz-ic"><svg viewBox="0 0 24 24"><use href="#icCam"/></svg></div>
@@ -891,7 +891,7 @@ input.invalid,textarea.invalid{border-color:var(--danger)!important;box-shadow:0
 <div id="moreSheet" class="more-sheet">
   <div class="more-panel">
     <div class="more-grid">
-      <button data-view="docs"><span class="mi">📄</span>Dokumente (Foto)</button>
+      <button data-view="docs"><span class="mi">📄</span>Dokumentenscanner</button>
       <button data-view="school"><span class="mi">🧒</span>Kinder</button>
       <button data-view="calendar"><span class="mi">📅</span>Kalender</button>
       <button data-view="life"><span class="mi">🧭</span>Lebenslagen</button>
@@ -2851,7 +2851,7 @@ function demoReply(text) {
   }
 
   if (/was kannst|hilfe|funktionen|können|kannst du/.test(t)) {
-    pushBot('Ich nehme dir Alltagsarbeit ab' + name + ':\n\n📄 Fotografiere einen Brief im Bereich „Dokumente" – ich erkläre ihn in einfachen Worten, erkenne Fristen und erstelle Aufgaben.\n✅ Ich lege Aufgaben und Termine für dich an.\n🏖️ Sag z. B. „Ich möchte nächste Woche in den Urlaub" – ich plane alles.\n\n💡 Gerade läuft der Demo-Modus. Mit einem eigenen API-Schlüssel (Einstellungen) werde ich zur echten KI und kann frei mit dir sprechen.');
+    pushBot('Ich nehme dir Alltagsarbeit ab' + name + ':\n\n📄 Fotografiere einen Brief im Bereich „Dokumentenscanner" – ich lese den Text, erkläre ihn in einfachen Worten, erkenne Fristen und erstelle Aufgaben.\n✅ Ich lege Aufgaben und Termine für dich an.\n🏖️ Sag z. B. „Ich möchte nächste Woche in den Urlaub" – ich plane alles.\n\n💡 Gerade läuft der Demo-Modus. Mit einem eigenen API-Schlüssel (Einstellungen) werde ich zur echten KI und kann frei mit dir sprechen.');
     return;
   }
 
@@ -2861,7 +2861,7 @@ function demoReply(text) {
   }
 
   if (/brief|dokument|rechnung|vertrag|post\b/.test(t)) {
-    pushBot('Dafür bin ich da! 📄 Geh in den Bereich „Dokumente" und fotografiere den Brief – ich erkläre dir in einfachen Worten, was drinsteht, und erkenne automatisch Fristen und Aufgaben.');
+    pushBot('Dafür bin ich da! 📄 Geh in den Bereich „Dokumentenscanner" und fotografiere den Brief – ich lese den Text, erkläre dir in einfachen Worten, was drinsteht, und erkenne automatisch Fristen und Aufgaben.');
     return;
   }
 
