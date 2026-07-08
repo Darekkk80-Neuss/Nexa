@@ -579,6 +579,25 @@ input.invalid,textarea.invalid{border-color:var(--danger)!important;box-shadow:0
   display:flex;align-items:center;justify-content:center;text-decoration:none;font-size:17px;flex:none}
 .em-priv{font-size:12px;color:var(--faint);text-align:center;margin-top:16px;padding:0 10px;line-height:1.5}
 
+/* ============================== ARBEITSZEIT ============================== */
+.cal-day.wd-feiertag{background:rgba(167,139,250,.24)}
+.cal-day.wd-urlaub{background:rgba(96,165,250,.24)}
+.cal-day.wd-krank{background:rgba(248,113,113,.24)}
+.cal-day.wd-kinder{background:rgba(251,191,36,.24)}
+.cal-day.wd-worked{background:rgba(52,211,153,.22)}
+.wlegend{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px;font-size:11.5px;color:var(--muted)}
+.wlegend span{display:inline-flex;align-items:center;gap:5px}
+.wlegend i{width:12px;height:12px;border-radius:3px;display:inline-block}
+.wl-worked{background:#34d399}.wl-urlaub{background:#60a5fa}.wl-krank{background:#f87171}.wl-kinder{background:#fbbf24}.wl-feiertag{background:#a78bfa}
+.wyear{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:14px}
+.wmonth-t{font-size:12px;font-weight:700;color:var(--muted);margin-bottom:4px;text-transform:capitalize}
+.wmonth-g{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
+.wmonth-g i{aspect-ratio:1;border-radius:3px;background:rgba(255,255,255,.07)}
+.wmonth-g i.wdt-feiertag{background:#a78bfa}.wmonth-g i.wdt-urlaub{background:#60a5fa}.wmonth-g i.wdt-krank{background:#f87171}.wmonth-g i.wdt-kinder{background:#fbbf24}.wmonth-g i.wdt-worked{background:#34d399}
+.letter .wtable{width:100%;border-collapse:collapse;font-size:12px;margin-top:8px}
+.letter .wtable th,.letter .wtable td{border:1px solid #ccc;padding:4px 7px;text-align:left}
+.letter .wtable th{background:#f0f0f0}
+
 /* ============================== VOICE2PDF ============================== */
 .v2p-rec{display:flex;flex-direction:column;align-items:center;gap:12px;padding:16px 0 14px}
 .v2p-mic{width:88px;height:88px;border-radius:50%;border:none;background:var(--grad);color:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 30px rgba(124,58,237,.5);transition:.2s;cursor:pointer}
@@ -749,6 +768,7 @@ input.invalid,textarea.invalid{border-color:var(--danger)!important;box-shadow:0
     <a class="brand"><svg class="logo-mark" viewBox="0 0 64 64"><use href="#logoSym"/></svg><b>Effyra</b></a>
     <nav class="snav">
       <button data-view="dashboard"><svg viewBox="0 0 24 24"><use href="#icHome"/></svg>Dashboard</button>
+      <button data-view="work"><svg viewBox="0 0 24 24"><use href="#icWork"/></svg>Arbeitszeit</button>
       <button data-view="docs"><svg viewBox="0 0 24 24"><use href="#icDoc"/></svg>Dokumentenscanner</button>
       <button data-view="docgen"><svg viewBox="0 0 24 24"><use href="#icPen"/></svg>Dokumentenassistent</button>
       <button data-view="voice"><svg viewBox="0 0 24 24"><use href="#icMic"/></svg>Voice2PDF</button>
@@ -903,6 +923,11 @@ input.invalid,textarea.invalid{border-color:var(--danger)!important;box-shadow:0
       <div id="emRoot"></div>
     </section>
 
+    <!-- ============================== ARBEITSZEIT ============================== -->
+    <section class="view" id="view-work">
+      <div id="workRoot"></div>
+    </section>
+
     <!-- ============================== VOICE2PDF ============================== -->
     <section class="view" id="view-voice">
       <div class="view-head">
@@ -1017,6 +1042,7 @@ input.invalid,textarea.invalid{border-color:var(--danger)!important;box-shadow:0
 <div id="moreSheet" class="more-sheet">
   <div class="more-panel">
     <div class="more-grid">
+      <button data-view="work"><span class="mi">🕒</span>Arbeitszeit</button>
       <button data-view="docs"><span class="mi">📄</span>Dokumentenscanner</button>
       <button data-view="school"><span class="mi">🧒</span>Kinder</button>
       <button data-view="calendar"><span class="mi">📅</span>Kalender</button>
@@ -1059,6 +1085,7 @@ input.invalid,textarea.invalid{border-color:var(--danger)!important;box-shadow:0
     <symbol id="icAlert" viewBox="0 0 24 24"><path d="M12 3c2.5 3 6 4 8 4 0 6-3 10-8 12-5-2-8-6-8-12 2 0 5.5-1 8-4z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M12 9v6M9 12h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
     <symbol id="icCar" viewBox="0 0 24 24"><path d="M3 13l2-5.5A2 2 0 0 1 6.9 6h10.2a2 2 0 0 1 1.9 1.5L21 13v5a1 1 0 0 1-1 1h-1.5a1 1 0 0 1-1-1v-1H6.5v1a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M3 13h18" fill="none" stroke="currentColor" stroke-width="1.7"/><circle cx="7.5" cy="16" r="1" fill="currentColor"/><circle cx="16.5" cy="16" r="1" fill="currentColor"/></symbol>
     <symbol id="icMic" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21M8.5 21h7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+    <symbol id="icWork" viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M8.5 7V5.5A1.5 1.5 0 0 1 10 4h4a1.5 1.5 0 0 1 1.5 1.5V7M3 12h18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
     <symbol id="icSpark" viewBox="0 0 24 24"><path d="M12 2c.6 4.8 2.4 7.4 8 8-5.6.6-7.4 3.2-8 8-.6-4.8-2.4-7.4-8-8 5.6-.6 7.4-3.2 8-8z" fill="currentColor"/><circle cx="19" cy="18" r="2.2" fill="currentColor" opacity=".7"/></symbol>
     <symbol id="icGear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 2.8 13.5 6a6.6 6.6 0 0 1 2.4 1.4l3.4-.9 1.5 2.7-2.3 2.6a6.7 6.7 0 0 1 0 2.4l2.3 2.6-1.5 2.7-3.4-.9a6.6 6.6 0 0 1-2.4 1.4L12 21.2 10.5 18a6.6 6.6 0 0 1-2.4-1.4l-3.4.9-1.5-2.7 2.3-2.6a6.7 6.7 0 0 1 0-2.4L3.2 7.2l1.5-2.7 3.4.9A6.6 6.6 0 0 1 10.5 6z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></symbol>
     <symbol id="icCam" viewBox="0 0 24 24"><path d="M4 7h3l2-2.5h6L17 7h3a1 1 0 0 1 1 1v11a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><circle cx="12" cy="13.5" r="3.6" fill="none" stroke="currentColor" stroke-width="1.8"/></symbol>
@@ -1158,6 +1185,7 @@ const store = Object.assign({
   emergency: { contacts: [], phones: [], medical: {}, insurances: [], checkDone: {} }, // Notfallbereich (nur lokal)
   vehicles: [], // Auto & Motorrad
   voiceNotes: [], // Voice2PDF gespeicherte Transkriptionen
+  work: { settings: { weeklyHours: 40, hoursPerDay: 8, vacationDays: 30, childSickMax: 10, state: 'NW', autoBreak: true }, entries: {}, shifts: [], absences: [] }, // Arbeitszeit
   settings: { model: 'claude-sonnet-5', demoIdx: 0 }
 }, (() => {
   try { return JSON.parse(localStorage.getItem(DATA_KEY)) || {}; } catch (e) { return {}; }
@@ -1174,7 +1202,7 @@ const hasKey = () => getKey().length > 8;
 let currentView = 'dashboard';
 const RENDERERS = {};
 
-const MORE_VIEWS = ['docs', 'voice', 'school', 'calendar', 'life', 'family', 'emergency', 'vehicles', 'settings'];
+const MORE_VIEWS = ['work', 'docs', 'voice', 'school', 'calendar', 'life', 'family', 'emergency', 'vehicles', 'settings'];
 function showView(name) {
   currentView = name;
   gate();
@@ -1635,6 +1663,16 @@ RENDERERS.dashboard = function () {
         '<div class="mini-when' + (dayDiff(b.next) <= 7 ? ' warn' : '') + '">' + relDay(b.next) + '</div></div>';
     });
     html += '</div>';
+  }
+
+  if (store.work && (Object.keys(store.work.entries || {}).length || (store.work.absences || []).length)) {
+    ensureWork();
+    const iso = todayISO(), wr = weekRange(iso), wk = rangeStats(wr[0], wr[1]), yr = rangeStats(...yearRange(new Date().getFullYear()));
+    const rest = store.work.settings.vacationDays - yr.urlaub;
+    html += '<div class="sec-title"><h2>🕒 Arbeitszeit</h2><button data-go="work">Öffnen</button></div><div class="mini-list">' +
+      '<div class="mini"><div class="mini-ic" style="color:#34d399">🕒</div><div class="mini-tx"><b>Heute ' + hmDur(netMinutes(store.work.entries[iso])) + ' h · Woche ' + hmDur(wk.workedMin) + ' h</b>' +
+      '<span>Resturlaub ' + rest + ' Tage · ' + yr.offen + ' offene Tage</span></div>' +
+      (yr.offen ? '<div class="mini-when warn">' + yr.offen + ' offen</div>' : '') + '</div></div>';
   }
 
   const tuevDue = (store.vehicles || []).filter(v => v.tuev && dayDiff(v.tuev) <= 45).sort((a, b) => a.tuev < b.tuev ? -1 : 1);
@@ -3311,6 +3349,325 @@ $('#vehList').addEventListener('keydown', e => {
   const map = { fKm: 'addFuel', fL: 'addFuel', tKm: 'addTrip', tTo: 'addTrip', svcTitle: 'addSvc', tireKm: 'addTire', toTitle: 'addTour', toDist: 'addTour', parkNote: 'parkNote' };
   const key = (e.target.dataset.in || '');
   if (map[key]) { const btn = card.querySelector('[data-va="' + map[key] + '"]'); if (btn) btn.click(); }
+});
+
+/* ============================== ARBEITSZEIT ============================== */
+const DE_STATES = { BW: 'Baden-Württemberg', BY: 'Bayern', BE: 'Berlin', BB: 'Brandenburg', HB: 'Bremen', HH: 'Hamburg', HE: 'Hessen', MV: 'Mecklenburg-Vorpommern', NI: 'Niedersachsen', NW: 'Nordrhein-Westfalen', RP: 'Rheinland-Pfalz', SL: 'Saarland', SN: 'Sachsen', ST: 'Sachsen-Anhalt', SH: 'Schleswig-Holstein', TH: 'Thüringen' };
+const WD_CLS = { feiertag: 'wd-feiertag', urlaub: 'wd-urlaub', krank: 'wd-krank', krank_au: 'wd-krank', kinderkrank: 'wd-kinder', gearbeitet: 'wd-worked' };
+const WD_DOT = { feiertag: 'wdt-feiertag', urlaub: 'wdt-urlaub', krank: 'wdt-krank', krank_au: 'wdt-krank', kinderkrank: 'wdt-kinder', gearbeitet: 'wdt-worked' };
+const ABS_ICON = { urlaub: '🏖️', krank: '🤒', krank_au: '🩺', kinderkrank: '🧒' };
+const ABS_LABEL = { urlaub: 'Urlaub', krank: 'Krank (ohne AU)', krank_au: 'Krank mit AU', kinderkrank: 'Kinderkrank' };
+const WD_LEGEND = '<div class="wlegend"><span><i class="wl-worked"></i>Gearbeitet</span><span><i class="wl-urlaub"></i>Urlaub</span><span><i class="wl-krank"></i>Krank</span><span><i class="wl-kinder"></i>Kinderkrank</span><span><i class="wl-feiertag"></i>Feiertag</span></div>';
+let workTab = 'heute', workCal = null, workSel = null, workYear = null, workMonthSel = null, workAI = null;
+const holCache = {};
+function easterSunday(y) {
+  const a = y % 19, b = Math.floor(y / 100), c = y % 100, d = Math.floor(b / 4), e = b % 4, f = Math.floor((b + 8) / 25), g = Math.floor((b - f + 1) / 3), h = (19 * a + b - d - g + 15) % 30, i = Math.floor(c / 4), k = c % 4, l = (32 + 2 * e + 2 * i - h - k) % 7, m = Math.floor((a + 11 * h + 22 * l) / 451), mo = Math.floor((h + l - 7 * m + 114) / 31), day = ((h + l - 7 * m + 114) % 31) + 1;
+  return new Date(y, mo - 1, day);
+}
+function holidaysDE(y, st) {
+  const E = easterSunday(y), off = (base, o) => { const x = new Date(base); x.setDate(x.getDate() + o); return toISO(x); }, map = {};
+  const add = (iso, name) => { map[iso] = name; };
+  add(toISO(new Date(y, 0, 1)), 'Neujahr'); add(off(E, -2), 'Karfreitag'); add(off(E, 1), 'Ostermontag');
+  add(toISO(new Date(y, 4, 1)), 'Tag der Arbeit'); add(off(E, 39), 'Christi Himmelfahrt'); add(off(E, 50), 'Pfingstmontag');
+  add(toISO(new Date(y, 9, 3)), 'Tag der Deutschen Einheit'); add(toISO(new Date(y, 11, 25)), '1. Weihnachtstag'); add(toISO(new Date(y, 11, 26)), '2. Weihnachtstag');
+  if (['BW', 'BY', 'ST'].includes(st)) add(toISO(new Date(y, 0, 6)), 'Heilige Drei Könige');
+  if (st === 'BE') add(toISO(new Date(y, 2, 8)), 'Internationaler Frauentag');
+  if (['BW', 'BY', 'HE', 'NW', 'RP', 'SL'].includes(st)) add(off(E, 60), 'Fronleichnam');
+  if (st === 'SL') add(toISO(new Date(y, 7, 15)), 'Mariä Himmelfahrt');
+  if (['BB', 'MV', 'SN', 'ST', 'TH', 'HB', 'HH', 'NI', 'SH'].includes(st)) add(toISO(new Date(y, 9, 31)), 'Reformationstag');
+  if (['BW', 'BY', 'NW', 'RP', 'SL'].includes(st)) add(toISO(new Date(y, 10, 1)), 'Allerheiligen');
+  if (st === 'SN') { let x = new Date(y, 10, 22); while (x.getDay() !== 3) x.setDate(x.getDate() - 1); add(toISO(x), 'Buß- und Bettag'); }
+  return map;
+}
+function holMap(iso) { const y = iso.slice(0, 4), st = store.work.settings.state || '', key = y + '_' + st; if (!holCache[key]) holCache[key] = holidaysDE(+y, st); return holCache[key]; }
+const isHoliday = (iso) => !!holMap(iso)[iso];
+const holidayName = (iso) => holMap(iso)[iso] || '';
+function ensureWork() {
+  const w = store.work = store.work || {};
+  w.settings = Object.assign({ weeklyHours: 40, hoursPerDay: 8, vacationDays: 30, childSickMax: 10, state: 'NW', autoBreak: true }, w.settings || {});
+  w.entries = w.entries || {}; w.shifts = w.shifts || []; w.absences = w.absences || [];
+}
+function netMinutes(e) {
+  if (!e || !e.start || !e.end) return 0;
+  let gross = hm2min(e.end) - hm2min(e.start); if (gross < 0) gross += 1440;
+  let brk = 0;
+  if (e.breakStart && e.breakEnd) { brk = hm2min(e.breakEnd) - hm2min(e.breakStart); if (brk < 0) brk += 1440; }
+  else if (e.breakMin) brk = +e.breakMin;
+  else if (store.work.settings.autoBreak) { if (gross > 540) brk = 45; else if (gross > 360) brk = 30; }
+  return Math.max(0, gross - brk);
+}
+const absenceOn = (iso) => (store.work.absences || []).find(a => iso >= a.from && iso <= a.to);
+function workingDaysInRange(from, to) { let n = 0; const end = parseISO(to); for (let d = parseISO(from); d <= end; d.setDate(d.getDate() + 1)) { const iso = toISO(d), dow = d.getDay(); if (dow >= 1 && dow <= 5 && !isHoliday(iso)) n++; } return n; }
+const nowHM = () => { const d = new Date(); return pad(d.getHours()) + ':' + pad(d.getMinutes()); };
+const hmDur = (min) => { min = Math.max(0, Math.round(min)); return Math.floor(min / 60) + ':' + pad(min % 60); };
+function dayType(iso) {
+  if (isHoliday(iso)) return 'feiertag';
+  const ab = absenceOn(iso); if (ab) return ab.type;
+  const e = store.work.entries[iso]; if (e && e.start && e.end) return 'gearbeitet';
+  return 'normal';
+}
+const monthRange = (y, m) => [toISO(new Date(y, m, 1)), toISO(new Date(y, m + 1, 0))];
+const yearRange = (y) => [y + '-01-01', y + '-12-31'];
+function weekRange(iso) { const d = parseISO(iso), dow = (d.getDay() + 6) % 7, mon = new Date(d); mon.setDate(d.getDate() - dow); const sun = new Date(mon); sun.setDate(mon.getDate() + 6); return [toISO(mon), toISO(sun)]; }
+function rangeStats(from, to) {
+  const s = store.work.settings, hpd = s.hoursPerDay || 8, today = todayISO();
+  let workDays = 0, workedMin = 0, urlaub = 0, krank = 0, kinder = 0, absMin = 0, offen = 0;
+  const end = parseISO(to);
+  for (let d = parseISO(from); d <= end; d.setDate(d.getDate() + 1)) {
+    const iso = toISO(d), dow = d.getDay(), isWD = dow >= 1 && dow <= 5 && !isHoliday(iso);
+    if (isWD) workDays++;
+    const ab = absenceOn(iso);
+    if (ab) { if (isWD) { if (ab.type === 'urlaub') urlaub++; else if (ab.type === 'kinderkrank') kinder++; else krank++; absMin += hpd * 60; } continue; }
+    const nm = netMinutes(store.work.entries[iso]);
+    if (nm > 0) workedMin += nm;
+    else if (isWD && iso < today) offen++;
+  }
+  const sollMin = workDays * hpd * 60, istMin = workedMin + absMin;
+  return { workDays, workedMin, urlaub, krank, kinder, offen, sollMin, istMin, overMin: istMin - sollMin };
+}
+
+RENDERERS.work = function () {
+  ensureWork();
+  const s = store.work.settings;
+  let h = '<div class="view-head"><h1>Arbeitszeit</h1><p>Zeiterfassung, Dienste, Urlaub & Fehlzeiten – alles an einem Ort.</p></div>';
+  h += '<details class="card dg-mydata" style="margin-bottom:14px"><summary>⚙️ Einstellungen</summary><div class="dg-grid2" style="margin-top:12px">' +
+    '<div class="span2"><label class="fld">Bundesland (für Feiertage)</label><select data-ws="state">' + Object.keys(DE_STATES).map(k => '<option value="' + k + '"' + (s.state === k ? ' selected' : '') + '>' + DE_STATES[k] + '</option>').join('') + '</select></div>' +
+    '<div><label class="fld">Wochenstunden (Soll)</label><input type="number" data-ws="weeklyHours" value="' + s.weeklyHours + '" inputmode="decimal" step="0.5"></div>' +
+    '<div><label class="fld">Stunden/Tag</label><input type="number" data-ws="hoursPerDay" value="' + s.hoursPerDay + '" inputmode="decimal" step="0.5"></div>' +
+    '<div><label class="fld">Urlaubstage/Jahr</label><input type="number" data-ws="vacationDays" value="' + s.vacationDays + '" inputmode="numeric"></div>' +
+    '<div><label class="fld">Kinderkrank/Jahr</label><input type="number" data-ws="childSickMax" value="' + s.childSickMax + '" inputmode="numeric"></div>' +
+    '<label class="veh-check span2"><input type="checkbox" data-ws="autoBreak"' + (s.autoBreak ? ' checked' : '') + '> Gesetzliche Pausen automatisch abziehen (30 Min ab 6 h, 45 Min ab 9 h)</label>' +
+    '</div></details>';
+  const tabs = [['heute', '🕒 Heute'], ['kalender', '📅 Kalender'], ['abwesenheit', '🏖️ Frei'], ['dienste', '🗂️ Dienste'], ['jahr', '📊 Jahr'], ['bericht', '📄 Bericht']];
+  h += '<div class="veh-tabs">' + tabs.map(t => '<button data-wtab="' + t[0] + '" class="' + (workTab === t[0] ? 'active' : '') + '">' + t[1] + '</button>').join('') + '</div>';
+  h += workTab === 'kalender' ? workKalender() : workTab === 'abwesenheit' ? workAbwesenheit() : workTab === 'dienste' ? workDienste() : workTab === 'jahr' ? workJahr() : workTab === 'bericht' ? workBericht() : workHeute();
+  $('#workRoot').innerHTML = h;
+};
+function workEntryForm(iso) {
+  const e = store.work.entries[iso] || {}, s = store.work.settings, net = netMinutes(e);
+  const auto = s.autoBreak && !(e.breakStart && e.breakEnd) && !e.breakMin && net > 0;
+  return '<div class="kid-row" style="margin-bottom:8px"><div style="flex:1"><label class="fld">Beginn</label><input type="time" data-we="start" data-iso="' + iso + '" value="' + (e.start || '') + '"></div><div style="flex:1"><label class="fld">Ende</label><input type="time" data-we="end" data-iso="' + iso + '" value="' + (e.end || '') + '"></div></div>' +
+    '<div class="kid-row" style="margin-bottom:8px"><div style="flex:1"><label class="fld">Pause von</label><input type="time" data-we="breakStart" data-iso="' + iso + '" value="' + (e.breakStart || '') + '"></div><div style="flex:1"><label class="fld">Pause bis</label><input type="time" data-we="breakEnd" data-iso="' + iso + '" value="' + (e.breakEnd || '') + '"></div></div>' +
+    '<input type="text" data-we="note" data-iso="' + iso + '" placeholder="Notiz" maxlength="60" value="' + esc(e.note || '') + '" style="margin-bottom:10px">' +
+    '<div class="veh-stat"><b>' + hmDur(net) + ' h</b><span>Nettoarbeitszeit' + (auto ? ' · autom. Pause abgezogen' : '') + '</span></div>';
+}
+function workHeute() {
+  const iso = todayISO();
+  const [wf, wt] = weekRange(iso), wk = rangeStats(wf, wt);
+  const [mf, mt] = monthRange(new Date().getFullYear(), new Date().getMonth()), mo = rangeStats(mf, mt);
+  const [yf, yt] = yearRange(new Date().getFullYear()), yr = rangeStats(yf, yt);
+  let h = '<div class="veh-stats">' +
+    '<div class="veh-stat"><b>' + hmDur(netMinutes(store.work.entries[iso])) + '</b><span>Heute</span></div>' +
+    '<div class="veh-stat"><b>' + hmDur(wk.workedMin) + '</b><span>Woche</span></div>' +
+    '<div class="veh-stat"><b>' + hmDur(mo.workedMin) + '</b><span>Monat</span></div>' +
+    '<div class="veh-stat"><b>' + (yr.overMin >= 0 ? '+' : '−') + hmDur(Math.abs(yr.overMin)) + '</b><span>Saldo (Jahr)</span></div></div>';
+  h += '<div class="v2p-actions"><button class="btn btn-sm" data-wa="stampIn">▶️ Kommen</button><button class="btn btn-sm" data-wa="stampBreak">⏸️ Pause</button><button class="btn btn-sm" data-wa="stampBreakEnd">↩️ Weiter</button><button class="btn btn-sm" data-wa="stampOut">⏹️ Gehen</button></div>';
+  h += '<div class="card">' + workEntryForm(iso) + '</div>';
+  return h;
+}
+function workKalender() {
+  if (!workCal) { const d = new Date(); workCal = { y: d.getFullYear(), m: d.getMonth() }; }
+  if (!workSel) workSel = todayISO();
+  const first = new Date(workCal.y, workCal.m, 1), offset = (first.getDay() + 6) % 7, days = new Date(workCal.y, workCal.m + 1, 0).getDate(), cells = Math.ceil((offset + days) / 7) * 7, today = todayISO();
+  let grid = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'].map(d => '<div class="cal-dow">' + d + '</div>').join('');
+  for (let i = 0; i < cells; i++) {
+    const d = new Date(workCal.y, workCal.m, i - offset + 1), iso = toISO(d), dim = d.getMonth() !== workCal.m;
+    const cls = iso === workSel ? '' : (WD_CLS[dayType(iso)] || '');
+    grid += '<button class="cal-day ' + cls + (dim ? ' dim' : '') + (iso === today ? ' today' : '') + (iso === workSel ? ' sel' : '') + '" data-wday="' + iso + '">' + d.getDate() + '</button>';
+  }
+  let h = '<div class="card"><div class="cal-head"><h2 style="text-transform:capitalize">' + first.toLocaleDateString('de-DE', { month: 'long', year: 'numeric' }) + '</h2><div class="cal-nav"><button class="icon-btn" data-wa="calPrev"><svg viewBox="0 0 24 24"><use href="#icLeft"/></svg></button><button class="icon-btn" data-wa="calNext"><svg viewBox="0 0 24 24"><use href="#icRight"/></svg></button></div></div><div class="cal-grid">' + grid + '</div>' + WD_LEGEND + '</div>';
+  h += '<div class="sec-title"><h2>' + fmtDate(workSel) + '</h2></div>';
+  if (isHoliday(workSel)) h += '<div class="mem"><span style="font-size:18px">🎉</span><div class="mem-info"><b>Feiertag</b><span>' + esc(holidayName(workSel)) + '</span></div></div>';
+  const ab = absenceOn(workSel);
+  if (ab) h += '<div class="mem"><span style="font-size:18px">' + ABS_ICON[ab.type] + '</span><div class="mem-info"><b>' + ABS_LABEL[ab.type] + '</b><span>' + fmtDateShort(ab.from) + ' – ' + fmtDateShort(ab.to) + '</span></div></div>';
+  else h += '<div class="card">' + workEntryForm(workSel) + '</div>';
+  return h;
+}
+function workAbwesenheit() {
+  const y = new Date().getFullYear(), [yf, yt] = yearRange(y), st = rangeStats(yf, yt), s = store.work.settings;
+  let h = '<div class="veh-stats">' +
+    '<div class="veh-stat"><b>' + (s.vacationDays - st.urlaub) + '</b><span>Resturlaub ' + y + '</span></div>' +
+    '<div class="veh-stat"><b>' + st.urlaub + '</b><span>Urlaub genommen</span></div>' +
+    '<div class="veh-stat"><b>' + st.krank + '</b><span>Kranktage</span></div>' +
+    '<div class="veh-stat"><b>' + st.kinder + ' / ' + s.childSickMax + '</b><span>Kinderkrank</span></div></div>';
+  h += '<select data-in="absType" style="margin-bottom:8px"><option value="urlaub">🏖️ Urlaub</option><option value="krank">🤒 Krank (ohne AU)</option><option value="krank_au">🩺 Krank mit AU</option><option value="kinderkrank">🧒 Kinderkrank</option></select>' +
+    '<div class="kid-row" style="margin-bottom:8px"><div style="flex:1"><label class="fld">Von</label><input type="date" data-in="absFrom"></div><div style="flex:1"><label class="fld">Bis</label><input type="date" data-in="absTo"></div></div>' +
+    '<input type="text" data-in="absNote" placeholder="Notiz (optional)" maxlength="60" style="margin-bottom:8px">' +
+    '<button class="btn btn-primary btn-sm" data-wa="addAbs" style="width:100%;margin-bottom:14px">+ Abwesenheit eintragen</button>';
+  const abs = (store.work.absences || []).filter(a => a.to >= y + '-01-01' && a.from <= y + '-12-31').sort((a, b) => a.from < b.from ? 1 : -1);
+  if (!abs.length) h += '<div class="empty" style="padding:10px">Keine Einträge in ' + y + '.</div>';
+  abs.forEach(a => {
+    const days = workingDaysInRange(a.from, a.to);
+    h += '<div class="mem"><span style="font-size:18px">' + ABS_ICON[a.type] + '</span><div class="mem-info"><b>' + ABS_LABEL[a.type] + ' · ' + days + ' Tag' + (days === 1 ? '' : 'e') + '</b><span>' + fmtDateShort(a.from) + ' – ' + fmtDateShort(a.to) + (a.note ? ' · ' + esc(a.note) : '') + '</span></div>' +
+      (a.type === 'urlaub' ? '<button class="ls-tpl" data-wa="urlaubPdf" data-id="' + a.id + '">📄 Antrag</button>' : '') +
+      '<button class="t-del" data-wa="delAbs" data-id="' + a.id + '"><svg viewBox="0 0 24 24"><use href="#icTrash"/></svg></button></div>';
+  });
+  return h;
+}
+function workDienste() {
+  let h = '<input type="text" data-in="shName" placeholder="Dienstname (z. B. Frühschicht)" maxlength="40" style="margin-bottom:8px">' +
+    '<div class="kid-row" style="margin-bottom:8px"><input type="date" data-in="shDate"><input type="time" data-in="shStart"><input type="time" data-in="shEnd"></div>' +
+    '<div class="kid-row" style="margin-bottom:8px"><input type="text" data-in="shLoc" placeholder="Standort" maxlength="40"><input type="text" data-in="shNote" placeholder="Notiz" maxlength="40"></div>' +
+    '<div class="kid-row" style="margin-bottom:8px"><select data-in="shRecur"><option value="0">Einmalig</option><option value="4">4× wöchentlich</option><option value="8">8× wöchentlich</option><option value="12">12× wöchentlich</option></select></div>' +
+    '<button class="btn btn-primary btn-sm" data-wa="addShift" style="width:100%;margin-bottom:14px">+ Dienst anlegen</button>';
+  const sh = (store.work.shifts || []).slice().sort((a, b) => (a.date + (a.start || '')) < (b.date + (b.start || '')) ? 1 : -1);
+  if (!sh.length) h += '<div class="empty" style="padding:10px">Noch keine Dienste.</div>';
+  sh.forEach(x => {
+    h += '<div class="mem"><span style="font-size:18px">🗂️</span><div class="mem-info"><b>' + esc(x.name) + ' · ' + (x.start || '') + '–' + (x.end || '') + '</b><span>' + fmtDateShort(x.date) + (x.location ? ' · ' + esc(x.location) : '') + (x.note ? ' · ' + esc(x.note) : '') + '</span></div>' +
+      '<button class="ls-tpl" data-wa="copyShift" data-id="' + x.id + '" title="+1 Woche">⧉</button>' +
+      '<button class="t-del" data-wa="delShift" data-id="' + x.id + '"><svg viewBox="0 0 24 24"><use href="#icTrash"/></svg></button></div>';
+  });
+  return h;
+}
+function miniMonth(y, m) {
+  const first = new Date(y, m, 1), offset = (first.getDay() + 6) % 7, days = new Date(y, m + 1, 0).getDate();
+  let cells = '';
+  for (let i = 0; i < offset; i++) cells += '<i></i>';
+  for (let dd = 1; dd <= days; dd++) { const iso = toISO(new Date(y, m, dd)); cells += '<i class="' + (WD_DOT[dayType(iso)] || '') + '"></i>'; }
+  return '<div class="wmonth"><div class="wmonth-t">' + first.toLocaleDateString('de-DE', { month: 'short' }) + '</div><div class="wmonth-g">' + cells + '</div></div>';
+}
+function workJahr() {
+  if (!workYear) workYear = new Date().getFullYear();
+  const [yf, yt] = yearRange(workYear), st = rangeStats(yf, yt);
+  const quote = st.workDays ? Math.round((st.krank + st.kinder) / st.workDays * 1000) / 10 : 0;
+  let h = '<div class="cal-head"><h2>Jahr ' + workYear + '</h2><div class="cal-nav"><button class="icon-btn" data-wa="yearPrev"><svg viewBox="0 0 24 24"><use href="#icLeft"/></svg></button><button class="icon-btn" data-wa="yearNext"><svg viewBox="0 0 24 24"><use href="#icRight"/></svg></button></div></div>';
+  h += '<div class="veh-stats" style="grid-template-columns:repeat(3,1fr)">' +
+    '<div class="veh-stat"><b>' + st.workDays + '</b><span>Arbeitstage</span></div>' +
+    '<div class="veh-stat"><b>' + Math.round(st.workedMin / 60) + '</b><span>Arbeitsstunden</span></div>' +
+    '<div class="veh-stat"><b>' + st.urlaub + '</b><span>Urlaubstage</span></div>' +
+    '<div class="veh-stat"><b>' + st.krank + '</b><span>Kranktage</span></div>' +
+    '<div class="veh-stat"><b>' + st.kinder + '</b><span>Kinderkrank</span></div>' +
+    '<div class="veh-stat"><b>' + quote + '%</b><span>Fehlzeitenquote</span></div></div>' + WD_LEGEND;
+  h += '<div class="wyear">'; for (let m = 0; m < 12; m++) h += miniMonth(workYear, m); h += '</div>';
+  return h;
+}
+function workBericht() {
+  if (!workMonthSel) { const d = new Date(); workMonthSel = { y: d.getFullYear(), m: d.getMonth() }; }
+  const [mf, mt] = monthRange(workMonthSel.y, workMonthSel.m), st = rangeStats(mf, mt);
+  const mname = new Date(workMonthSel.y, workMonthSel.m, 1).toLocaleDateString('de-DE', { month: 'long', year: 'numeric' });
+  let h = '<div class="cal-head"><h2 style="text-transform:capitalize">' + mname + '</h2><div class="cal-nav"><button class="icon-btn" data-wa="repPrev"><svg viewBox="0 0 24 24"><use href="#icLeft"/></svg></button><button class="icon-btn" data-wa="repNext"><svg viewBox="0 0 24 24"><use href="#icRight"/></svg></button></div></div>';
+  h += '<div class="veh-stats"><div class="veh-stat"><b>' + hmDur(st.workedMin) + '</b><span>Ist-Stunden</span></div><div class="veh-stat"><b>' + hmDur(st.sollMin) + '</b><span>Soll-Stunden</span></div><div class="veh-stat"><b>' + (st.overMin >= 0 ? '+' : '−') + hmDur(Math.abs(st.overMin)) + '</b><span>Saldo</span></div><div class="veh-stat"><b>' + st.offen + '</b><span>Offene Tage</span></div></div>';
+  h += '<div class="v2p-actions"><button class="btn btn-primary btn-sm" data-wa="pdfNachweis">🖨️ Arbeitszeitnachweis (PDF)</button><button class="btn btn-sm" data-wa="csv">📊 Excel/CSV</button><button class="btn btn-sm" data-wa="aiAnalyse">✨ KI-Analyse</button></div>';
+  if (workAI) h += '<div class="card"><div class="ls-note" style="white-space:pre-wrap;font-size:13.5px">' + esc(workAI) + '</div></div>';
+  return h;
+}
+function downloadCSV(filename, rows) {
+  const csv = rows.map(r => r.map(c => '"' + String(c).replace(/"/g, '""') + '"').join(';')).join('\r\n');
+  const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8' });
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = filename; document.body.appendChild(a); a.click(); a.remove();
+}
+function workNachweisPDF() {
+  const { y, m } = workMonthSel, [mf, mt] = monthRange(y, m), st = rangeStats(mf, mt);
+  const mname = new Date(y, m, 1).toLocaleDateString('de-DE', { month: 'long', year: 'numeric' }), days = new Date(y, m + 1, 0).getDate(), DN = ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'];
+  let rows = '';
+  for (let dd = 1; dd <= days; dd++) {
+    const iso = toISO(new Date(y, m, dd)), e = store.work.entries[iso], ab = absenceOn(iso), dow = new Date(y, m, dd).getDay();
+    let info = '';
+    if (isHoliday(iso)) info = holidayName(iso);
+    else if (ab) info = ABS_LABEL[ab.type];
+    else if (e && e.start && e.end) info = e.start + '–' + e.end + (e.breakStart && e.breakEnd ? ' (Pause ' + e.breakStart + '–' + e.breakEnd + ')' : '') + ' = ' + hmDur(netMinutes(e)) + ' h';
+    else if (dow === 0 || dow === 6) info = '—';
+    rows += '<tr><td>' + pad(dd) + '.' + pad(m + 1) + '.</td><td>' + DN[dow] + '</td><td>' + esc(info) + '</td></tr>';
+  }
+  const name = (store.profile && store.profile.name) || store.name || (account && account.name) || '';
+  $('#printRoot').innerHTML = '<div class="letter"><div class="l-subject" style="font-size:20px">Arbeitszeitnachweis – ' + esc(mname) + '</div>' + (name ? '<div class="l-place">' + esc(name) + '</div>' : '') +
+    '<table class="wtable"><thead><tr><th>Datum</th><th>Tag</th><th>Zeit / Status</th></tr></thead><tbody>' + rows + '</tbody></table>' +
+    '<p style="margin-top:14px"><b>Summe Ist: ' + hmDur(st.workedMin) + ' h · Soll: ' + hmDur(st.sollMin) + ' h · Saldo: ' + (st.overMin >= 0 ? '+' : '−') + hmDur(Math.abs(st.overMin)) + ' h</b></p>' +
+    '<p style="margin-top:20px;color:#777">Erstellt mit Effyra</p></div>';
+  window.print();
+}
+function workCSVexport() {
+  const { y, m } = workMonthSel, days = new Date(y, m + 1, 0).getDate();
+  const rows = [['Datum', 'Beginn', 'Ende', 'Pause von', 'Pause bis', 'Netto (h)', 'Status']];
+  for (let dd = 1; dd <= days; dd++) {
+    const iso = toISO(new Date(y, m, dd)), e = store.work.entries[iso] || {}, ab = absenceOn(iso);
+    const status = isHoliday(iso) ? holidayName(iso) : (ab ? ABS_LABEL[ab.type] : '');
+    rows.push([iso, e.start || '', e.end || '', e.breakStart || '', e.breakEnd || '', (e.start && e.end) ? hmDur(netMinutes(e)) : '', status]);
+  }
+  downloadCSV('Arbeitszeit_' + y + '-' + pad(m + 1) + '.csv', rows);
+  toast('CSV exportiert ✓');
+}
+async function workAIAnalyse() {
+  if (!hasKey()) { toast('KI-Analyse braucht einen API-Schlüssel (Einstellungen)'); return; }
+  const { y, m } = workMonthSel, [mf, mt] = monthRange(y, m), st = rangeStats(mf, mt);
+  const mname = new Date(y, m, 1).toLocaleDateString('de-DE', { month: 'long', year: 'numeric' });
+  toast('Effyra analysiert deinen Monat …');
+  try {
+    const out = await callClaude({
+      model: store.settings.model, max_tokens: 900,
+      messages: [{ role: 'user', content: 'Du bist ein freundlicher Arbeitszeit-Assistent. Analysiere kurz, klar und motivierend auf Deutsch (Du-Form) diesen Monat (' + mname + '): Ist-Stunden ' + hmDur(st.workedMin) + ', Soll ' + hmDur(st.sollMin) + ', Saldo ' + (st.overMin >= 0 ? '+' : '-') + hmDur(Math.abs(st.overMin)) + ', Arbeitstage ' + st.workDays + ', Urlaubstage ' + st.urlaub + ', Kranktage ' + st.krank + ', vergangene Arbeitstage ohne Zeiteintrag: ' + st.offen + '. Gib eine kurze Zusammenfassung, weise auf Überstunden/Minusstunden und fehlende Einträge hin und gib 2-3 konkrete Tipps zur Arbeitsplanung. Höchstens 8 Sätze, Fließtext.' }]
+    });
+    workAI = (out || '').trim(); RENDERERS.work();
+  } catch (e) { toast('⚠️ ' + e.message); }
+}
+
+$('#workRoot').addEventListener('click', e => {
+  const tab = e.target.closest('[data-wtab]');
+  if (tab) { workTab = tab.dataset.wtab; workAI = null; RENDERERS.work(); return; }
+  const wd = e.target.closest('[data-wday]');
+  if (wd) { workSel = wd.dataset.wday; RENDERERS.work(); return; }
+  const b = e.target.closest('[data-wa]'); if (!b) return;
+  const a = b.dataset.wa, q = s => $('#workRoot ' + s), iso = todayISO();
+  const setEntry = (i, f, v) => { const w = store.work.entries; w[i] = w[i] || {}; w[i][f] = v; };
+  if (a === 'stampIn') { setEntry(iso, 'start', nowHM()); save(); RENDERERS.work(); return; }
+  if (a === 'stampOut') { setEntry(iso, 'end', nowHM()); save(); RENDERERS.work(); return; }
+  if (a === 'stampBreak') { setEntry(iso, 'breakStart', nowHM()); save(); RENDERERS.work(); return; }
+  if (a === 'stampBreakEnd') { setEntry(iso, 'breakEnd', nowHM()); save(); RENDERERS.work(); return; }
+  if (a === 'calPrev') { workCal.m--; if (workCal.m < 0) { workCal.m = 11; workCal.y--; } RENDERERS.work(); return; }
+  if (a === 'calNext') { workCal.m++; if (workCal.m > 11) { workCal.m = 0; workCal.y++; } RENDERERS.work(); return; }
+  if (a === 'yearPrev') { workYear--; RENDERERS.work(); return; }
+  if (a === 'yearNext') { workYear++; RENDERERS.work(); return; }
+  if (a === 'repPrev') { workMonthSel.m--; if (workMonthSel.m < 0) { workMonthSel.m = 11; workMonthSel.y--; } workAI = null; RENDERERS.work(); return; }
+  if (a === 'repNext') { workMonthSel.m++; if (workMonthSel.m > 11) { workMonthSel.m = 0; workMonthSel.y++; } workAI = null; RENDERERS.work(); return; }
+  if (a === 'addAbs') {
+    const from = q('[data-in="absFrom"]').value, to = q('[data-in="absTo"]').value;
+    if (!from || !to) { toast('Bitte Von und Bis angeben'); return; }
+    if (to < from) { toast('„Bis" liegt vor „Von"'); return; }
+    store.work.absences.push({ id: uid(), type: q('[data-in="absType"]').value, from, to, note: q('[data-in="absNote"]').value.trim() });
+    save(); RENDERERS.work(); toast('Abwesenheit eingetragen ✓'); return;
+  }
+  if (a === 'delAbs') { store.work.absences = store.work.absences.filter(x => x.id !== b.dataset.id); save(); RENDERERS.work(); return; }
+  if (a === 'urlaubPdf') {
+    const ab = store.work.absences.find(x => x.id === b.dataset.id); if (!ab) return;
+    const days = workingDaysInRange(ab.from, ab.to), name = (store.profile && store.profile.name) || store.name || (account && account.name) || '';
+    $('#printRoot').innerHTML = '<div class="letter"><div class="l-subject" style="font-size:20px">Urlaubsantrag</div>' + (name ? '<div class="l-place">' + esc(name) + '</div>' : '') +
+      '<p>Sehr geehrte Damen und Herren,</p><div class="l-body"><p>hiermit beantrage ich Urlaub für den Zeitraum vom <b>' + esc(fmtDate(ab.from)) + '</b> bis <b>' + esc(fmtDate(ab.to)) + '</b> (' + days + ' Arbeitstag' + (days === 1 ? '' : 'e') + ').' + (ab.note ? ' ' + esc(ab.note) : '') + '</p><p>Ich bitte um Genehmigung und Bestätigung.</p></div><p style="margin-top:18px">Mit freundlichen Grüßen</p>' + (name ? '<p>' + esc(name) + '</p>' : '') + '</div>';
+    window.print(); return;
+  }
+  if (a === 'addShift') {
+    const name = q('[data-in="shName"]').value.trim(), date = q('[data-in="shDate"]').value;
+    if (!name || !date) { toast('Bitte Dienstname und Datum angeben'); return; }
+    const base = { name, start: q('[data-in="shStart"]').value, end: q('[data-in="shEnd"]').value, location: q('[data-in="shLoc"]').value.trim(), note: q('[data-in="shNote"]').value.trim() };
+    const rep = +q('[data-in="shRecur"]').value || 1;
+    for (let i = 0; i < rep; i++) store.work.shifts.push(Object.assign({ id: uid(), date: addDays(date, i * 7) }, base));
+    save(); RENDERERS.work(); toast(rep > 1 ? rep + ' Dienste angelegt ✓' : 'Dienst angelegt ✓'); return;
+  }
+  if (a === 'delShift') { store.work.shifts = store.work.shifts.filter(x => x.id !== b.dataset.id); save(); RENDERERS.work(); return; }
+  if (a === 'copyShift') { const x = store.work.shifts.find(s => s.id === b.dataset.id); if (x) { store.work.shifts.push(Object.assign({}, x, { id: uid(), date: addDays(x.date, 7) })); save(); RENDERERS.work(); toast('+1 Woche kopiert ✓'); } return; }
+  if (a === 'pdfNachweis') { workNachweisPDF(); return; }
+  if (a === 'csv') { workCSVexport(); return; }
+  if (a === 'aiAnalyse') { workAIAnalyse(); return; }
+});
+$('#workRoot').addEventListener('change', e => {
+  const t = e.target;
+  if (t.dataset.ws) {
+    const k = t.dataset.ws, s = store.work.settings;
+    if (k === 'autoBreak') s.autoBreak = t.checked;
+    else if (k === 'state') { s.state = t.value; Object.keys(holCache).forEach(x => delete holCache[x]); }
+    else if (k === 'weeklyHours' || k === 'hoursPerDay') s[k] = Math.max(0, +t.value || 0);
+    else s[k] = Math.max(0, Math.round(+t.value || 0));
+    save(); RENDERERS.work(); return;
+  }
+  if (t.dataset.we) {
+    const i = t.dataset.iso, f = t.dataset.we;
+    store.work.entries[i] = store.work.entries[i] || {};
+    store.work.entries[i][f] = t.value;
+    save(); RENDERERS.work();
+  }
+});
+$('#workRoot').addEventListener('keydown', e => {
+  if (e.key !== 'Enter') return;
+  if (e.target.dataset.in === 'shName' || e.target.dataset.in === 'absNote') { const btn = $('#workRoot [data-wa="' + (e.target.dataset.in === 'shName' ? 'addShift' : 'addAbs') + '"]'); if (btn) btn.click(); }
 });
 
 /* ============================== KI-ADAPTER ============================== */
