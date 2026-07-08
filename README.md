@@ -33,3 +33,9 @@ Kein Konto, keine Cloud, keine Werbung, kein Tracking. Alle Daten (Aufgaben, Ter
 ## Technik
 
 Eine einzige `index.html` – Vanilla-JavaScript, ohne Build-System und ohne Abhängigkeiten. Einfach die Datei im Browser öffnen oder statisch hosten (z. B. GitHub Pages).
+
+Das Cloud-Backend (Supabase) ist per **Domain-Sperre** an die offizielle Adresse gebunden: Kopien der App auf fremden Domains laufen automatisch nur im lokalen Modus und haben keinen Zugriff auf das Backend.
+
+## Lizenz
+
+**Proprietär – Alle Rechte vorbehalten.** Dieses Repository ist öffentlich, damit die offizielle App über GitHub Pages läuft. Das ist **keine** Open-Source-Lizenz: Kopieren, Verändern, Verbreiten oder kommerzielle Nutzung sind ohne ausdrückliche Genehmigung nicht gestattet. Details siehe [LICENSE](LICENSE).

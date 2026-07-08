@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!-- Effyra © 2026 Darius Gonschior. Alle Rechte vorbehalten. Kopieren, Verändern oder Weiterverwenden nur mit ausdrücklicher Genehmigung. Siehe LICENSE. -->
 <html lang="de">
 <head>
 <meta charset="UTF-8">
@@ -1227,7 +1228,12 @@ $('#obName').addEventListener('keydown', e => { if (e.key === 'Enter') obFinish(
 /* Konfiguration siehe BACKEND.md – beide Werte leer = lokaler Modus.              */
 const SUPABASE_URL = 'https://wocjmdbfxpalnlqmdvqp.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_vjw9omgEZNAREBUUf_Z2-A_ywR8ZIa6';   /* öffentlicher Key – darf im Repo stehen */
-const CLOUD = !!(SUPABASE_URL && SUPABASE_ANON_KEY && window.supabase);
+/* Domain-Sperre: Cloud/Backend nur auf der offiziellen Adresse + lokal zum Testen.
+   Kopien der App auf fremden Domains laufen automatisch nur im lokalen Modus
+   (kein Zugriff auf dieses Supabase). Neue eigene Domain? Hier ergänzen. */
+const ALLOWED_HOSTS = ['darekkk80-neuss.github.io', 'localhost', '127.0.0.1'];
+const HOST_OK = ALLOWED_HOSTS.indexOf(location.hostname) !== -1;
+const CLOUD = !!(SUPABASE_URL && SUPABASE_ANON_KEY && window.supabase && HOST_OK);
 const sb = CLOUD ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
 
 /* ============================== AUTH & PLAN ============================== */
