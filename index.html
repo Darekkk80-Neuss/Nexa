@@ -1901,6 +1901,11 @@ const sb = CLOUD ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 const BACKEND_V2 = false;
 const FN_URL = (name) => SUPABASE_URL + '/functions/v1/' + name;
 
+/* Berechtigungskonzept (Free/Medium/Premium, Modul-Sperren, 3-Tage-Ablauf,
+   KI-Sperren). Zum Testen AUS = false → alles freigeschaltet. Zum Scharfschalten
+   wieder auf true setzen. */
+const ENFORCE_TIERS = false;
+
 /* ============================== AUTH & PLAN ============================== */
 const ACC_KEY = 'nexa_account';
 const TRIAL0_KEY = 'nexa_trial0';
@@ -1953,13 +1958,14 @@ const tierRank = () => TIER_RANK[currentTier()] || 0;
 const isPremium = () => currentTier() === 'premium';
 const isPaid = () => tierRank() >= 1;
 /* Nur die Free-Stufe hat ein Zeitlimit (3 Tage). */
-const isTrialExpired = () => currentTier() === 'free' && !!account &&
+const isTrialExpired = () => ENFORCE_TIERS && currentTier() === 'free' && !!account &&
   Date.now() > (account.trialStart || Date.now()) + TRIAL_DAYS * 864e5;
 function trialDaysLeft() {
   if (!account) return TRIAL_DAYS;
   return Math.max(0, Math.ceil(((account.trialStart || Date.now()) + TRIAL_DAYS * 864e5 - Date.now()) / 864e5));
 }
 function moduleAllowed(view) {
+  if (!ENFORCE_TIERS) return true;                 // Berechtigungskonzept aus → alles offen
   const need = MODULE_MIN_TIER[view];
   return !need || tierRank() >= TIER_RANK[need];
 }
@@ -1978,6 +1984,7 @@ function aiPct() { const l = aiLimit(); return l ? Math.min(100, Math.round(aiUs
 const usingOwnKey = () => hasKey();                 // eigener Schlüssel = unbegrenzt, zählt nicht aufs Kontingent
 function canRealAI() {
   if (usingOwnKey()) return true;
+  if (!ENFORCE_TIERS) return false;                        // Konzept aus → echte KI nur mit eigenem Schlüssel, sonst Demo
   return BACKEND_V2 && isPremium() && aiRemaining() > 0;   // gehostete KI nur mit Backend + Premium + Kontingent
 }
 let _aiWarned90 = false;
@@ -1992,6 +1999,7 @@ function noteAIUsage() {
 /* Zentrale Prüfung vor echten KI-Aktionen. Gibt true zurück, wenn ausführbar. */
 function requireAI() {
   if (usingOwnKey()) return true;                    // eigener Schlüssel: direkt an Anthropic
+  if (!ENFORCE_TIERS) { toast('✨ Für echte KI einen eigenen API-Schlüssel in den Einstellungen hinterlegen.'); showView('settings'); return false; }
   if (!isPremium()) { toast('✨ Echte KI ist eine Premium-Funktion.'); showUpgrade(); return false; }
   if (aiRemaining() <= 0) { toast('Dein KI-Kontingent ist aufgebraucht – nachbestellen oder eigenen Schlüssel eingeben.'); showView('settings'); return false; }
   if (!BACKEND_V2) { toast('Die gehostete KI wird gerade aktiviert. Bitte hinterlege vorerst deinen eigenen Schlüssel in den Einstellungen.'); showView('settings'); return false; }
