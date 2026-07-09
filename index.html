@@ -607,6 +607,17 @@ input.invalid,textarea.invalid{border-color:var(--danger)!important;box-shadow:0
 @keyframes micPulse{0%,100%{box-shadow:0 0 0 0 rgba(248,113,113,.5)}50%{box-shadow:0 0 0 16px rgba(248,113,113,0)}}
 .v2p-status{font-size:13.5px;color:var(--muted);font-weight:600;text-align:center}
 .v2p-interim{min-height:20px;font-size:14px;color:var(--faint);font-style:italic;margin-bottom:10px;text-align:center}
+.v2p-hint{margin:0 auto 12px;max-width:520px;font-size:12.5px}
+.v2p-hint summary{cursor:pointer;color:var(--muted);text-align:center;list-style:none}
+.v2p-hint summary::-webkit-details-marker{display:none}
+.v2p-hint p{margin-top:8px;color:var(--faint);line-height:1.5;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:10px 12px}
+.v2p-hint b{color:var(--text)}
+.wq-chips{display:flex;flex-wrap:wrap;gap:8px;margin:2px 0 12px}
+.wq-chip{display:inline-flex;align-items:center;gap:6px;padding:9px 12px;border-radius:12px;border:1px solid var(--border);background:var(--card);color:var(--text);font-size:13px;font-weight:600;transition:.15s;cursor:pointer}
+.wq-chip span{font-weight:500;color:var(--muted);font-size:11px}
+.wq-chip:hover{border-color:var(--border2);transform:translateY(-1px)}
+.wq-chip.abs{border-color:rgba(56,189,248,.4)}
+.wq-chip.clr{border-color:rgba(248,113,113,.35);color:#fca5a5}
 #v2pTitle{margin-bottom:8px}
 #v2pText{margin-bottom:12px}
 .v2p-actions{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
@@ -987,6 +998,8 @@ body.lang-switching main,body.lang-switching .sidebar,body.lang-switching .topba
         <button class="v2p-mic" id="v2pMic"><svg viewBox="0 0 24 24"><use href="#icMic"/></svg></button>
         <div class="v2p-status" id="v2pStatus">Tippe aufs Mikrofon und leg los</div>
       </div>
+      <details class="v2p-hint"><summary>💡 Satzzeichen &amp; Absätze diktieren</summary>
+        <p>Sprich Satzzeichen einfach mit: <b>Komma</b>, <b>Punkt</b>, <b>Fragezeichen</b>, <b>Ausrufezeichen</b>, <b>Doppelpunkt</b>, <b>Klammer auf</b>/<b>Klammer zu</b>. Für Zeilen sag <b>neue Zeile</b>, für einen Absatz <b>neuer Absatz</b>.</p></details>
       <div class="v2p-interim" id="v2pInterim"></div>
       <input type="text" id="v2pTitle" placeholder="Titel (z. B. Besprechung Montag)" maxlength="60">
       <textarea id="v2pText" rows="7" placeholder="Dein gesprochener Text erscheint hier – du kannst ihn frei bearbeiten."></textarea>
@@ -3550,7 +3563,7 @@ $('#emRoot').addEventListener('keydown', e => {
 
 /* ============================== VOICE2PDF ============================== */
 const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
-let vRecog = null, vRecording = false;
+let vRecog = null, vRecording = false, vCommitted = 0;
 function updateMicUI() {
   const mic = $('#v2pMic'), st = $('#v2pStatus');
   if (!mic) return;
@@ -3558,21 +3571,70 @@ function updateMicUI() {
   st.textContent = vRecording ? '● Aufnahme läuft – tippe zum Stoppen' : 'Tippe aufs Mikrofon und leg los';
   if (!vRecording && $('#v2pInterim')) $('#v2pInterim').textContent = '';
 }
-function vStart() {
+/* Gesprochene Satzzeichen-/Absatz-Befehle in Zeichen umwandeln (z. B. „Komma" → „,").
+   Token-basiert, damit sich benachbarte Befehle nicht gegenseitig stören. */
+const V_SINGLE = { komma: ',', punkt: '.', fragezeichen: '?', ausrufezeichen: '!', ausrufungszeichen: '!', doppelpunkt: ':', semikolon: ';', strichpunkt: ';', bindestrich: '-', gedankenstrich: '-', anführungszeichen: '"', gänsefüßchen: '"', zeilenumbruch: '\n', zeilenwechsel: '\n' };
+function applyVoiceCommands(s) {
+  const words = String(s).split(/\s+/).filter(Boolean);
+  let out = '';
+  const addWord = (w) => { out += (out && !/[\n(]$/.test(out) ? ' ' : '') + w; };
+  for (let i = 0; i < words.length; i++) {
+    const w = words[i], lw = w.toLowerCase(), next = (words[i + 1] || '').toLowerCase();
+    if ((lw === 'neuer' || lw === 'neuen' || lw === 'neue') && next === 'absatz') { out += '\n\n'; i++; continue; }
+    if (lw === 'neue' && next === 'zeile') { out += '\n'; i++; continue; }
+    if (lw === 'klammer' && next === 'auf') { out += (out && !/\s$/.test(out) ? ' ' : '') + '('; i++; continue; }
+    if (lw === 'klammer' && next === 'zu') { out += ')'; i++; continue; }
+    if (V_SINGLE[lw] != null) { out += V_SINGLE[lw]; continue; }
+    addWord(w);
+  }
+  return out.replace(/\s+([,.;:!?)])/g, '$1').replace(/\(\s+/g, '(').replace(/[ \t]{2,}/g, ' ').replace(/[ \t]*\n[ \t]*/g, '\n').trim();
+}
+function vAppendFinal(text) {
+  const clean = applyVoiceCommands(text);
+  if (!clean) return;
+  const ta = $('#v2pText'); if (!ta) return;
+  let cur = ta.value;
+  /* Bindeglied bestimmen: kein Leerzeichen nach Zeilenumbruch/öffnender Klammer/vor Satzzeichen */
+  let joiner = '';
+  if (cur) {
+    if (/[\n(]$/.test(cur) || /^[,.;:!?)]/.test(clean)) joiner = '';
+    else if (!/\s$/.test(cur)) joiner = ' ';
+  }
+  ta.value = cur + joiner + clean;
+  ta.scrollTop = ta.scrollHeight;
+}
+async function vStart() {
   if (!SpeechRec) { toast('Live-Transkription braucht Chrome, Edge oder Safari'); return; }
+  /* Mikrofon-Zugriff explizit anfragen, damit der Browser den Freigabe-Dialog zeigt. */
+  if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+    const st = $('#v2pStatus'); if (st) st.textContent = '🎤 Bitte Mikrofon-Zugriff erlauben …';
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      stream.getTracks().forEach(tr => tr.stop());   // Stream wieder freigeben – Erkennung nutzt eigene Aufnahme
+    } catch (err) {
+      toast('🎤 Kein Mikrofon-Zugriff. Bitte in den Browser-Einstellungen für diese Seite erlauben.');
+      updateMicUI();
+      return;
+    }
+  }
   vRecog = new SpeechRec();
   vRecog.lang = 'de-DE'; vRecog.continuous = true; vRecog.interimResults = true;
+  vCommitted = 0;
   vRecog.onresult = e => {
     let interim = '';
     for (let i = e.resultIndex; i < e.results.length; i++) {
-      const t = e.results[i][0].transcript;
-      if (e.results[i].isFinal) { const ta = $('#v2pText'); ta.value = (ta.value ? ta.value.trim() + ' ' : '') + t.trim(); }
-      else interim += t;
+      const r = e.results[i];
+      if (r.isFinal) {
+        if (i >= vCommitted) { vAppendFinal(r[0].transcript); vCommitted = i + 1; }
+      } else interim += r[0].transcript;
     }
     if ($('#v2pInterim')) $('#v2pInterim').textContent = interim;
   };
-  vRecog.onerror = e => { if (e.error === 'not-allowed' || e.error === 'service-not-allowed') toast('Mikrofon-Zugriff abgelehnt'); };
-  vRecog.onend = () => { if (vRecording) { try { vRecog.start(); } catch (e) {} } };
+  vRecog.onerror = e => {
+    if (e.error === 'not-allowed' || e.error === 'service-not-allowed') { toast('🎤 Mikrofon-Zugriff abgelehnt'); vRecording = false; updateMicUI(); }
+    else if (e.error === 'no-speech') { /* Stille – Neustart über onend */ }
+  };
+  vRecog.onend = () => { if (vRecording) { vCommitted = 0; try { vRecog.start(); } catch (e) {} } };
   vRecording = true;
   try { vRecog.start(); } catch (e) {}
   updateMicUI();
@@ -3917,8 +3979,9 @@ const holidayName = (iso) => holMap(iso)[iso] || '';
 function ensureWork() {
   const w = store.work = store.work || {};
   w.settings = Object.assign({ weeklyHours: 40, hoursPerDay: 8, vacationDays: 30, childSickMax: 10, state: 'NW', autoBreak: true }, w.settings || {});
-  w.entries = w.entries || {}; w.shifts = w.shifts || []; w.absences = w.absences || [];
+  w.entries = w.entries || {}; w.shifts = w.shifts || []; w.absences = w.absences || []; w.shiftTemplates = w.shiftTemplates || [];
 }
+function tplNet(x) { return netMinutes({ start: x.start, end: x.end, breakMin: x.breakMin }); }
 function netMinutes(e) {
   if (!e || !e.start || !e.end) return 0;
   let gross = hm2min(e.end) - hm2min(e.start); if (gross < 0) gross += 1440;
@@ -3981,7 +4044,19 @@ function workEntryForm(iso) {
   return '<div class="kid-row" style="margin-bottom:8px"><div style="flex:1"><label class="fld">Beginn</label><input type="time" data-we="start" data-iso="' + iso + '" value="' + (e.start || '') + '"></div><div style="flex:1"><label class="fld">Ende</label><input type="time" data-we="end" data-iso="' + iso + '" value="' + (e.end || '') + '"></div></div>' +
     '<div class="kid-row" style="margin-bottom:8px"><div style="flex:1"><label class="fld">Pause von</label><input type="time" data-we="breakStart" data-iso="' + iso + '" value="' + (e.breakStart || '') + '"></div><div style="flex:1"><label class="fld">Pause bis</label><input type="time" data-we="breakEnd" data-iso="' + iso + '" value="' + (e.breakEnd || '') + '"></div></div>' +
     '<input type="text" data-we="note" data-iso="' + iso + '" placeholder="Notiz" maxlength="60" value="' + esc(e.note || '') + '" style="margin-bottom:10px">' +
-    '<div class="veh-stat"><b>' + hmDur(net) + ' h</b><span>Nettoarbeitszeit' + (auto ? ' · autom. Pause abgezogen' : '') + '</span></div>';
+    '<div class="veh-stat"><b>' + hmDur(net) + ' h</b><span>Nettoarbeitszeit' + (e.breakMin && !(e.breakStart && e.breakEnd) ? ' · Pause ' + e.breakMin + ' Min' : (auto ? ' · autom. Pause abgezogen' : '')) + '</span></div>';
+}
+function quickAssignChips(iso) {
+  const tpls = store.work.shiftTemplates || [];
+  let h = '<div class="wq-chips">';
+  tpls.forEach(x => {
+    h += '<button class="wq-chip" data-wa="applyTpl" data-id="' + x.id + '" data-iso="' + iso + '">🗂️ ' + esc(x.name) + ' <span>' + (x.start || '') + '–' + (x.end || '') + '</span></button>';
+  });
+  h += '<button class="wq-chip abs" data-wa="dayAbs" data-type="urlaub" data-iso="' + iso + '">🏖️ Urlaub</button>' +
+    '<button class="wq-chip abs" data-wa="dayAbs" data-type="krank" data-iso="' + iso + '">🤒 Krank</button>' +
+    '<button class="wq-chip clr" data-wa="clearDay" data-iso="' + iso + '">🗑️ Leeren</button></div>';
+  if (!tpls.length) h += '<p class="sub" style="margin:2px 0 10px">Tipp: Lege im Tab „🗂️ Dienste" Vorlagen an (z. B. Frühdienst) – dann weist du sie hier mit einem Klick zu.</p>';
+  return h;
 }
 function workHeute() {
   const iso = todayISO();
@@ -3994,6 +4069,7 @@ function workHeute() {
     '<div class="veh-stat"><b>' + hmDur(mo.workedMin) + '</b><span>Monat</span></div>' +
     '<div class="veh-stat"><b>' + (yr.overMin >= 0 ? '+' : '−') + hmDur(Math.abs(yr.overMin)) + '</b><span>Saldo (Jahr)</span></div></div>';
   h += '<div class="v2p-actions"><button class="btn btn-sm" data-wa="stampIn">▶️ Kommen</button><button class="btn btn-sm" data-wa="stampBreak">⏸️ Pause</button><button class="btn btn-sm" data-wa="stampBreakEnd">↩️ Weiter</button><button class="btn btn-sm" data-wa="stampOut">⏹️ Gehen</button></div>';
+  h += quickAssignChips(iso);
   h += '<div class="card">' + workEntryForm(iso) + '</div>';
   return h;
 }
@@ -4010,6 +4086,7 @@ function workKalender() {
   let h = '<div class="card"><div class="cal-head"><h2 style="text-transform:capitalize">' + first.toLocaleDateString('de-DE', { month: 'long', year: 'numeric' }) + '</h2><div class="cal-nav"><button class="icon-btn" data-wa="calPrev"><svg viewBox="0 0 24 24"><use href="#icLeft"/></svg></button><button class="icon-btn" data-wa="calNext"><svg viewBox="0 0 24 24"><use href="#icRight"/></svg></button></div></div><div class="cal-grid">' + grid + '</div>' + WD_LEGEND + '</div>';
   h += '<div class="sec-title"><h2>' + fmtDate(workSel) + '</h2></div>';
   if (isHoliday(workSel)) h += '<div class="mem"><span style="font-size:18px">🎉</span><div class="mem-info"><b>Feiertag</b><span>' + esc(holidayName(workSel)) + '</span></div></div>';
+  h += quickAssignChips(workSel);
   const ab = absenceOn(workSel);
   if (ab) h += '<div class="mem"><span style="font-size:18px">' + ABS_ICON[ab.type] + '</span><div class="mem-info"><b>' + ABS_LABEL[ab.type] + '</b><span>' + fmtDateShort(ab.from) + ' – ' + fmtDateShort(ab.to) + '</span></div></div>';
   else h += '<div class="card">' + workEntryForm(workSel) + '</div>';
@@ -4037,15 +4114,29 @@ function workAbwesenheit() {
   return h;
 }
 function workDienste() {
-  let h = '<input type="text" data-in="shName" placeholder="Dienstname (z. B. Frühschicht)" maxlength="40" style="margin-bottom:8px">' +
+  /* ---- Dienstvorlagen (wiederverwendbar, per Klick im Kalender zuweisbar) ---- */
+  let h = '<div class="sec-title"><h2>🗂️ Meine Dienstvorlagen</h2></div>' +
+    '<p class="sub" style="margin:-2px 0 10px">Einmal anlegen – im Kalender dann mit einem Klick jedem Tag zuweisen.</p>' +
+    '<input type="text" data-in="tplName" placeholder="Dienstname (z. B. Frühdienst)" maxlength="40" style="margin-bottom:8px">' +
+    '<div class="kid-row" style="margin-bottom:8px"><div style="flex:1"><label class="fld">Beginn</label><input type="time" data-in="tplStart"></div><div style="flex:1"><label class="fld">Ende</label><input type="time" data-in="tplEnd"></div><div style="flex:1"><label class="fld">Pause (Min)</label><input type="number" data-in="tplBreak" value="30" min="0" inputmode="numeric"></div></div>' +
+    '<button class="btn btn-primary btn-sm" data-wa="addTpl" style="width:100%;margin-bottom:14px">+ Vorlage speichern</button>';
+  const tpls = store.work.shiftTemplates || [];
+  if (!tpls.length) h += '<div class="empty" style="padding:10px">Noch keine Vorlagen.</div>';
+  tpls.forEach(x => {
+    h += '<div class="mem"><span style="font-size:18px">🗂️</span><div class="mem-info"><b>' + esc(x.name) + ' · ' + (x.start || '') + '–' + (x.end || '') + '</b><span>Pause ' + (x.breakMin || 0) + ' Min · ' + hmDur(tplNet(x)) + ' h netto</span></div>' +
+      '<button class="t-del" data-wa="delTpl" data-id="' + x.id + '"><svg viewBox="0 0 24 24"><use href="#icTrash"/></svg></button></div>';
+  });
+  /* ---- Einzelne Dienste terminlich planen (wie bisher) ---- */
+  h += '<div class="sec-title" style="margin-top:20px"><h2>📌 Einzelne Dienste planen</h2></div>' +
+    '<input type="text" data-in="shName" placeholder="Dienstname (z. B. Frühschicht)" maxlength="40" style="margin-bottom:8px">' +
     '<div class="kid-row" style="margin-bottom:8px"><input type="date" data-in="shDate"><input type="time" data-in="shStart"><input type="time" data-in="shEnd"></div>' +
     '<div class="kid-row" style="margin-bottom:8px"><input type="text" data-in="shLoc" placeholder="Standort" maxlength="40"><input type="text" data-in="shNote" placeholder="Notiz" maxlength="40"></div>' +
     '<div class="kid-row" style="margin-bottom:8px"><select data-in="shRecur"><option value="0">Einmalig</option><option value="4">4× wöchentlich</option><option value="8">8× wöchentlich</option><option value="12">12× wöchentlich</option></select></div>' +
     '<button class="btn btn-primary btn-sm" data-wa="addShift" style="width:100%;margin-bottom:14px">+ Dienst anlegen</button>';
   const sh = (store.work.shifts || []).slice().sort((a, b) => (a.date + (a.start || '')) < (b.date + (b.start || '')) ? 1 : -1);
-  if (!sh.length) h += '<div class="empty" style="padding:10px">Noch keine Dienste.</div>';
+  if (!sh.length) h += '<div class="empty" style="padding:10px">Noch keine geplanten Dienste.</div>';
   sh.forEach(x => {
-    h += '<div class="mem"><span style="font-size:18px">🗂️</span><div class="mem-info"><b>' + esc(x.name) + ' · ' + (x.start || '') + '–' + (x.end || '') + '</b><span>' + fmtDateShort(x.date) + (x.location ? ' · ' + esc(x.location) : '') + (x.note ? ' · ' + esc(x.note) : '') + '</span></div>' +
+    h += '<div class="mem"><span style="font-size:18px">📌</span><div class="mem-info"><b>' + esc(x.name) + ' · ' + (x.start || '') + '–' + (x.end || '') + '</b><span>' + fmtDateShort(x.date) + (x.location ? ' · ' + esc(x.location) : '') + (x.note ? ' · ' + esc(x.note) : '') + '</span></div>' +
       '<button class="ls-tpl" data-wa="copyShift" data-id="' + x.id + '" title="+1 Woche">⧉</button>' +
       '<button class="t-del" data-wa="delShift" data-id="' + x.id + '"><svg viewBox="0 0 24 24"><use href="#icTrash"/></svg></button></div>';
   });
@@ -4166,6 +4257,35 @@ $('#workRoot').addEventListener('click', e => {
       '<p>Sehr geehrte Damen und Herren,</p><div class="l-body"><p>hiermit beantrage ich Urlaub für den Zeitraum vom <b>' + esc(fmtDate(ab.from)) + '</b> bis <b>' + esc(fmtDate(ab.to)) + '</b> (' + days + ' Arbeitstag' + (days === 1 ? '' : 'e') + ').' + (ab.note ? ' ' + esc(ab.note) : '') + '</p><p>Ich bitte um Genehmigung und Bestätigung.</p></div><p style="margin-top:18px">Mit freundlichen Grüßen</p>' + (name ? '<p>' + esc(name) + '</p>' : '') + '</div>';
     window.print(); return;
   }
+  if (a === 'addTpl') {
+    const name = q('[data-in="tplName"]').value.trim();
+    if (!name) { toast('Bitte einen Dienstnamen angeben'); return; }
+    const start = q('[data-in="tplStart"]').value, end = q('[data-in="tplEnd"]').value;
+    if (!start || !end) { toast('Bitte Beginn und Ende angeben'); return; }
+    store.work.shiftTemplates = store.work.shiftTemplates || [];
+    store.work.shiftTemplates.push({ id: uid(), name, start, end, breakMin: Math.max(0, Math.round(+q('[data-in="tplBreak"]').value || 0)) });
+    save(); RENDERERS.work(); toast('Vorlage „' + name + '" gespeichert ✓'); return;
+  }
+  if (a === 'delTpl') { store.work.shiftTemplates = (store.work.shiftTemplates || []).filter(x => x.id !== b.dataset.id); save(); RENDERERS.work(); return; }
+  if (a === 'applyTpl') {
+    const di = b.dataset.iso, x = (store.work.shiftTemplates || []).find(t => t.id === b.dataset.id); if (!x) return;
+    store.work.absences = (store.work.absences || []).filter(z => !(z.from === di && z.to === di));   // evtl. Ganztags-Abwesenheit dieses Tages ersetzen
+    store.work.entries[di] = Object.assign({}, store.work.entries[di] || {}, { start: x.start, end: x.end, breakStart: '', breakEnd: '', breakMin: x.breakMin, note: x.name });
+    save(); RENDERERS.work(); toast('„' + x.name + '" zugewiesen ✓'); return;
+  }
+  if (a === 'dayAbs') {
+    const di = b.dataset.iso, type = b.dataset.type;
+    store.work.absences = (store.work.absences || []).filter(z => !(z.from === di && z.to === di));
+    if (store.work.entries[di]) { store.work.entries[di].start = ''; store.work.entries[di].end = ''; }
+    store.work.absences.push({ id: uid(), type, from: di, to: di, note: '' });
+    save(); RENDERERS.work(); toast((type === 'urlaub' ? '🏖️ Urlaub' : '🤒 Krank') + ' eingetragen ✓'); return;
+  }
+  if (a === 'clearDay') {
+    const di = b.dataset.iso;
+    delete store.work.entries[di];
+    store.work.absences = (store.work.absences || []).filter(z => !(z.from === di && z.to === di));
+    save(); RENDERERS.work(); toast('Tag geleert'); return;
+  }
   if (a === 'addShift') {
     const name = q('[data-in="shName"]').value.trim(), date = q('[data-in="shDate"]').value;
     if (!name || !date) { toast('Bitte Dienstname und Datum angeben'); return; }
@@ -4199,7 +4319,8 @@ $('#workRoot').addEventListener('change', e => {
 });
 $('#workRoot').addEventListener('keydown', e => {
   if (e.key !== 'Enter') return;
-  if (e.target.dataset.in === 'shName' || e.target.dataset.in === 'absNote') { const btn = $('#workRoot [data-wa="' + (e.target.dataset.in === 'shName' ? 'addShift' : 'addAbs') + '"]'); if (btn) btn.click(); }
+  const di = e.target.dataset.in, map = { shName: 'addShift', absNote: 'addAbs', tplName: 'addTpl' };
+  if (map[di]) { const btn = $('#workRoot [data-wa="' + map[di] + '"]'); if (btn) btn.click(); }
 });
 
 /* ============================== KI-ADAPTER ============================== */
