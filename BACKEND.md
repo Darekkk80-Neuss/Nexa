@@ -65,4 +65,64 @@ Dann committen und pushen – fertig. *(Oder gib mir die beiden Werte, dann trag
 
 ✅ Zentrale Konten (E-Mail + Passwort, gehasht bei Supabase) · ✅ Testphase serverseitig · ✅ Premium-Einlösung serverseitig, einmalig · ✅ Admin-Dashboard · ✅ Passwort-vergessen per E-Mail-Link
 
-⚠️ **Bewusst noch lokal:** Aufgaben, Termine, Dokumente und Chat bleiben auf dem Gerät (Datenschutz-Versprechen der App). ⚠️ Die **Anzeige**-Sperre in der App bleibt clientseitig – wirklich wasserdicht wird es erst mit dem KI-Proxy aus [KONZEPT.md](KONZEPT.md) Stufe 2, der bei jedem KI-Aufruf serverseitig Plan und Limit prüft. Das Backend hier ist dafür bereits die richtige Grundlage.
+⚠️ **Bewusst noch lokal:** Aufgaben, Termine, Dokumente und Chat bleiben auf dem Gerät (Datenschutz-Versprechen der App). ⚠️ Die **Anzeige**-Sperre in der App bleibt clientseitig – wirklich wasserdicht wird es erst mit dem KI-Proxy aus Phase 2 (siehe unten), der bei jedem KI-Aufruf serverseitig Plan und Limit prüft. Das Backend hier ist dafür bereits die richtige Grundlage.
+
+---
+
+# Phase 2 – Gehostete KI (Proxy) + Stripe-Bezahlung
+
+Damit läuft **Premium mit vom Anbieter gestelltem Schlüssel** sicher: Der echte Claude-Schlüssel liegt **nur auf dem Server**, das **500/Monat-Kontingent wird serverseitig** gezählt (fälschungssicher), und **Medium/Premium/Nachbestellung** werden per **Stripe** bezahlt.
+
+> Der Client ist vorbereitet, aber standardmäßig **aus**: In `index.html` steht `const BACKEND_V2 = false;`. Erst nach den folgenden Schritten auf `true` setzen, committen, pushen.
+
+## A. Datenbank erweitern
+SQL-Editor → **kompletten Inhalt** von [`supabase-tiers.sql`](supabase-tiers.sql) einfügen → **Run**. (Fügt Stufen-/Kontingent-Spalten und die RPCs `get_entitlements`, `consume_ai`, `apply_purchase` hinzu; setzt bestehende Premium-Nutzer auf `tier='premium'`.)
+
+## B. Supabase CLI installieren & anmelden
+```bash
+npm i -g supabase        # oder: scoop install supabase (Windows)
+supabase login
+supabase link --project-ref DEINE-PROJEKT-REF   # Ref = Subdomain der Project URL
+```
+
+## C. Secrets setzen
+```bash
+supabase secrets set ANTHROPIC_API_KEY=sk-ant-...        # der echte Claude-Schlüssel (gibst du mir/hier später)
+supabase secrets set STRIPE_SECRET_KEY=sk_test_...
+supabase secrets set STRIPE_WEBHOOK_SECRET=whsec_...      # aus Schritt E
+supabase secrets set STRIPE_PRICE_MEDIUM=price_...        # aus Schritt D
+supabase secrets set STRIPE_PRICE_PREMIUM=price_...
+supabase secrets set STRIPE_PRICE_TOPUP=price_...
+supabase secrets set APP_URL=https://darekkk80-neuss.github.io/Nexa/
+```
+`SUPABASE_URL`, `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY` sind in Functions automatisch vorhanden.
+
+## D. Stripe-Produkte anlegen
+[dashboard.stripe.com](https://dashboard.stripe.com) → **Test-Modus** → **Products**:
+- **Medium** – Einmalzahlung 4,99 € → Price-ID kopieren → `STRIPE_PRICE_MEDIUM`
+- **Premium** – wiederkehrend 4,99 €/Monat → `STRIPE_PRICE_PREMIUM`
+- **KI-Kontingent +500** – Einmalzahlung 4,99 € → `STRIPE_PRICE_TOPUP`
+
+## E. Functions deployen
+```bash
+supabase functions deploy claude-proxy
+supabase functions deploy stripe-checkout
+supabase functions deploy stripe-webhook --no-verify-jwt
+```
+(Der Webhook prüft die Stripe-Signatur selbst, daher `--no-verify-jwt`.)
+
+## F. Stripe-Webhook eintragen
+Stripe → **Developers → Webhooks → Add endpoint**
+- URL: `https://DEIN-PROJEKT.functions.supabase.co/stripe-webhook`
+- Events: `checkout.session.completed`, `invoice.paid`, `customer.subscription.deleted`
+- **Signing secret** (`whsec_…`) kopieren → als `STRIPE_WEBHOOK_SECRET` setzen (Schritt C) und `stripe-webhook` erneut deployen.
+
+## G. Aktivieren
+In `index.html`: `const BACKEND_V2 = true;` → committen & pushen. Fertig.
+
+### Danach automatisch
+- **Premium-Nutzer ohne eigenen Schlüssel** → KI läuft über den Proxy, jede Abfrage zählt serverseitig, Balken/Nachbestellen sind live, Reset am 1.
+- **Kauf-Buttons** öffnen Stripe-Checkout; nach Zahlung setzt der Webhook die Stufe. Bei Rückkehr (`?checkout=success`) gleicht die App den Stand ab.
+- **Eigener Schlüssel** in den Einstellungen bleibt die unbegrenzte Alternative (läuft direkt an Anthropic, kein Kontingentverbrauch).
+
+> Sicherheit: `consume_ai`/`apply_purchase` sind `security definer` und für normale Nutzer gesperrt – nur Proxy/Webhook (service_role) dürfen sie aufrufen. Der Anthropic-Schlüssel steht ausschließlich als Function-Secret, nie im Client.

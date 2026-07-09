@@ -1823,11 +1823,27 @@ function showUpgrade(lockedView) {
   }
   pw.classList.add('on');
 }
-/* Stripe-Checkout (Phase 2). Vorerst Hinweis + Code-Einlösung als Fallback. */
-function startCheckout(product) {
-  toast('💳 Kartenzahlung wird mit dem Backend (Stripe) aktiviert. Nutze vorerst einen Freischalt-Code.');
-  const d = $('#paywall .up-code'); if (d) d.open = true;
-  const c = $('#pwCode'); if (c) c.focus();
+/* Stripe-Checkout. Mit Backend: echte Kartenzahlung; sonst Code-Fallback. */
+async function startCheckout(product) {
+  if (!BACKEND_V2 || !CLOUD) {
+    toast('💳 Kartenzahlung wird mit dem Backend (Stripe) aktiviert. Nutze vorerst einen Freischalt-Code.');
+    const d = $('#paywall .up-code'); if (d) d.open = true;
+    const c = $('#pwCode'); if (c) c.focus();
+    return;
+  }
+  try {
+    const session = (await sb.auth.getSession()).data.session;
+    if (!session) { toast('Bitte melde dich erneut an.'); return; }
+    toast('Weiterleitung zur sicheren Zahlung …');
+    const res = await fetch(FN_URL('stripe-checkout'), {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', 'Authorization': 'Bearer ' + session.access_token },
+      body: JSON.stringify({ kind: product })
+    });
+    const data = await res.json().catch(() => ({}));
+    if (data.url) { location.href = data.url; return; }
+    toast('Zahlung konnte nicht gestartet werden. Bitte später erneut versuchen.');
+  } catch (e) { toast('Keine Verbindung zur Zahlung. Bist du online?'); }
 }
 
 $$('[data-view]').forEach(b => b.addEventListener('click', () => showView(b.dataset.view)));
@@ -1877,6 +1893,13 @@ const ALLOWED_HOSTS = ['darekkk80-neuss.github.io', 'localhost', '127.0.0.1'];
 const HOST_OK = ALLOWED_HOSTS.indexOf(location.hostname) !== -1;
 const CLOUD = !!(SUPABASE_URL && SUPABASE_ANON_KEY && window.supabase && HOST_OK);
 const sb = CLOUD ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+
+/* Phase-2-Backend: auf true setzen, sobald die Edge Functions + das SQL
+   (supabase-tiers.sql) deployt sind. Dann läuft gehostete KI über den Proxy
+   und die Käufe über Stripe. Solange false: Phase-1-Verhalten (eigener
+   Schlüssel + Freischalt-Codes), damit nichts bricht. */
+const BACKEND_V2 = false;
+const FN_URL = (name) => SUPABASE_URL + '/functions/v1/' + name;
 
 /* ============================== AUTH & PLAN ============================== */
 const ACC_KEY = 'nexa_account';
@@ -1955,8 +1978,7 @@ function aiPct() { const l = aiLimit(); return l ? Math.min(100, Math.round(aiUs
 const usingOwnKey = () => hasKey();                 // eigener Schlüssel = unbegrenzt, zählt nicht aufs Kontingent
 function canRealAI() {
   if (usingOwnKey()) return true;
-  if (!isPremium()) return false;                    // Hosted-KI nur für Premium
-  return aiRemaining() > 0;
+  return BACKEND_V2 && isPremium() && aiRemaining() > 0;   // gehostete KI nur mit Backend + Premium + Kontingent
 }
 let _aiWarned90 = false;
 function noteAIUsage() {
@@ -1972,9 +1994,72 @@ function requireAI() {
   if (usingOwnKey()) return true;                    // eigener Schlüssel: direkt an Anthropic
   if (!isPremium()) { toast('✨ Echte KI ist eine Premium-Funktion.'); showUpgrade(); return false; }
   if (aiRemaining() <= 0) { toast('Dein KI-Kontingent ist aufgebraucht – nachbestellen oder eigenen Schlüssel eingeben.'); showView('settings'); return false; }
-  /* Premium mit Kontingent, aber ohne Hosted-Backend (Phase 2): vorerst eigenen Schlüssel nutzen */
-  toast('Die gehostete KI wird mit dem Backend aktiviert. Bitte hinterlege vorerst deinen eigenen Schlüssel in den Einstellungen.');
-  showView('settings'); return false;
+  if (!BACKEND_V2) { toast('Die gehostete KI wird gerade aktiviert. Bitte hinterlege vorerst deinen eigenen Schlüssel in den Einstellungen.'); showView('settings'); return false; }
+  return true;   // Premium + Kontingent + Backend live → läuft über den Proxy
+}
+/* Kontingentstand vom Server übernehmen (Proxy-Antwort) + warnen */
+function applyServerUsage(used, limit) {
+  if (!account || typeof used !== 'number') return;
+  ensureAIQuota();
+  account.ai.used = used;
+  if (typeof limit === 'number') account.ai.extra = Math.max(0, limit - AI_MONTHLY_LIMIT);
+  saveAccount();
+  const pct = aiPct();
+  if (aiRemaining() === 0) toast('⚠️ KI-Kontingent aufgebraucht. In den Einstellungen nachbestellen oder eigenen Schlüssel hinterlegen.');
+  else if (pct >= 90 && !_aiWarned90) { _aiWarned90 = true; toast('ℹ️ 90 % deines KI-Kontingents verbraucht (' + aiUsed() + '/' + aiLimit() + ').'); }
+  if (pct < 90) _aiWarned90 = false;
+  if (currentView === 'settings') RENDERERS.settings();
+}
+/* Aktuellen Stufen-/Kontingentstand serverseitig holen (nach Login, nach Kauf) */
+async function syncEntitlements() {
+  if (!BACKEND_V2 || !CLOUD || !account || !account.loggedIn) return;
+  try {
+    const r = await sb.rpc('get_entitlements');
+    if (r && !r.error && r.data) {
+      account.tier = r.data.tier || account.tier || 'free';
+      account.ai = { month: r.data.usage_month, used: r.data.ai_used || 0, extra: Math.max(0, (r.data.ai_limit || AI_MONTHLY_LIMIT) - AI_MONTHLY_LIMIT) };
+      account.premiumUntil = r.data.premium_until || null;
+    }
+  } catch (e) { /* Backend evtl. noch nicht deployt – Phase-1-Werte behalten */ }
+}
+/* Rückkehr von Stripe (?checkout=success|cancel) auswerten */
+async function handleCheckoutReturn() {
+  const c = new URLSearchParams(location.search).get('checkout');
+  if (!c) return;
+  history.replaceState(null, '', location.pathname);
+  if (c === 'cancel') { toast('Zahlung abgebrochen.'); return; }
+  if (c === 'success') {
+    toast('✅ Zahlung erhalten – dein Zugang wird aktiviert …');
+    await syncEntitlements(); gate(); if (currentView === 'settings') RENDERERS.settings();
+    /* Webhook kann kurz brauchen – nach ein paar Sekunden erneut abgleichen */
+    setTimeout(async () => { await syncEntitlements(); gate(); if (currentView === 'settings') RENDERERS.settings(); }, 4000);
+  }
+}
+/* KI-Aufruf-Router: eigener Schlüssel → direkt; sonst → Proxy (Phase 2) */
+async function aiCall(payload) {
+  if (usingOwnKey()) return callClaude(payload);
+  return callClaudeHosted(payload);
+}
+async function callClaudeHosted(payload) {
+  let session;
+  try { session = (await sb.auth.getSession()).data.session; } catch (e) {}
+  if (!session) throw new Error('Bitte melde dich erneut an.');
+  let res;
+  try {
+    res = await fetch(FN_URL('claude-proxy'), {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', 'Authorization': 'Bearer ' + session.access_token },
+      body: JSON.stringify({ model: payload.model, max_tokens: payload.max_tokens, messages: payload.messages, system: payload.system })
+    });
+  } catch (e) { throw new Error('Keine Verbindung zur KI. Bist du online?'); }
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    if (data.error === 'quota_exceeded' || res.status === 402) { applyServerUsage(data.ai_used, data.ai_limit); throw new Error('KI-Kontingent aufgebraucht – nachbestellen oder eigenen Schlüssel eingeben.'); }
+    if (data.error === 'not_premium') throw new Error('Echte KI ist eine Premium-Funktion.');
+    throw new Error('KI-Anfrage fehlgeschlagen.' + (data.detail ? ' (' + data.detail + ')' : ''));
+  }
+  applyServerUsage(data.ai_used, data.ai_limit);
+  return (data.content || []).map(b => b.type === 'text' ? b.text : '').join('');
 }
 
 /* Zeigt je nach Zustand Login/Registrierung oder Paywall; sonst die App */
@@ -2081,6 +2166,7 @@ async function cloudAuth(pass, err) {
       await cloudSession(r.data.session);
       toast('Willkommen zurück' + (account.name ? ', ' + account.name : '') + ' 👋');
     }
+    await syncEntitlements();
     $('#auPass').value = '';
     gate();
     if (!isTrialExpired() && !store.onboarded) {
@@ -3007,11 +3093,10 @@ async function dgAI() {
   const t = curTpl(), cur = dgOverrideBody != null ? dgOverrideBody : t.body(dgValues, store.profile);
   toast('Effyra verbessert den Text …');
   try {
-    const out = await callClaude({
+    const out = await aiCall({
       model: store.settings.model, max_tokens: 1200,
       messages: [{ role: 'user', content: 'Du bist ein Assistent für deutsche Alltagsbriefe. Formuliere den folgenden Brieftext höflich, klar und professionell aus. Behalte alle Fakten, Namen, Nummern und Daten exakt bei. Gib ausschließlich den reinen Brieftext zurück – ohne Briefkopf, ohne Anrede ("Sehr geehrte…"), ohne Grußformel, ohne Unterschrift, ohne Erklärungen.\n\nText:\n' + cur }]
     });
-    noteAIUsage();
     dgOverrideBody = (out || '').trim() || cur;
     RENDERERS.docgen();
     toast('Text verbessert ✨');
@@ -4355,11 +4440,10 @@ async function workAIAnalyse() {
   const mname = new Date(y, m, 1).toLocaleDateString('de-DE', { month: 'long', year: 'numeric' });
   toast('Effyra analysiert deinen Monat …');
   try {
-    const out = await callClaude({
+    const out = await aiCall({
       model: store.settings.model, max_tokens: 900,
       messages: [{ role: 'user', content: 'Du bist ein freundlicher Arbeitszeit-Assistent. Analysiere kurz, klar und motivierend auf Deutsch (Du-Form) diesen Monat (' + mname + '): Ist-Stunden ' + hmDur(st.workedMin) + ', Soll ' + hmDur(st.sollMin) + ', Saldo ' + (st.overMin >= 0 ? '+' : '-') + hmDur(Math.abs(st.overMin)) + ', Arbeitstage ' + st.workDays + ', Urlaubstage ' + st.urlaub + ', Kranktage ' + st.krank + ', vergangene Arbeitstage ohne Zeiteintrag: ' + st.offen + '. Gib eine kurze Zusammenfassung, weise auf Überstunden/Minusstunden und fehlende Einträge hin und gib 2-3 konkrete Tipps zur Arbeitsplanung. Höchstens 8 Sätze, Fließtext.' }]
     });
-    noteAIUsage();
     workAI = (out || '').trim(); RENDERERS.work();
   } catch (e) { toast('⚠️ ' + e.message); }
 }
@@ -4506,7 +4590,7 @@ async function aiAnalyze(dataUrl) {
   const prompt = 'Du bist Effyra, ein KI-Alltagsassistent. Analysiere das fotografierte Dokument (Brief, Rechnung, Vertrag o. Ä.). Heute ist der ' + todayISO() + '. ' +
     'Antworte AUSSCHLIESSLICH mit einem JSON-Objekt, ohne Markdown und ohne Erklärtext, exakt in diesem Format: ' +
     '{"docType":"Rechnung|Mahnung|Vertrag|Behörde|Sonstiges","title":"kurzer Titel, max. 6 Wörter","sender":"Absender","explanation":"Erkläre das Dokument in 2-4 kurzen, einfachen Sätzen ohne Amtsdeutsch, duze den Leser","deadline":"YYYY-MM-DD oder null","urgency":"hoch|mittel|niedrig","todos":[{"title":"konkrete Aufgabe","due":"YYYY-MM-DD oder null"}],"replyDraft":"vollständiger, höflicher Antwortbrief falls sinnvoll, sonst null"}';
-  const text = await callClaude({
+  const text = await aiCall({
     model: store.settings.model,
     max_tokens: 1500,
     messages: [{
@@ -4600,10 +4684,9 @@ async function handleDocFile(file) {
     const thumb = await readAndResize(file, 200, 0.7);
     $('#scanImg').src = thumb;
     let result, demo;
-    if (hasKey()) {
+    if (canRealAI()) {
       const full = await readAndResize(file, 1568, 0.85);
       result = await aiAnalyze(full);
-      noteAIUsage();
       demo = false;
     } else {
       await new Promise(r => setTimeout(r, 3200));
@@ -4844,7 +4927,7 @@ function buildSystemPrompt() {
 
 async function realReply(text) {
   const history = store.chat.slice(-12).map(m => ({ role: m.role === 'user' ? 'user' : 'assistant', content: m.text }));
-  const raw = await callClaude({
+  const raw = await aiCall({
     model: store.settings.model,
     max_tokens: 1024,
     system: buildSystemPrompt(),
@@ -4874,9 +4957,8 @@ async function sendChat(text) {
   botTyping = true;
   RENDERERS.chat();
   try {
-    if (hasKey()) {
+    if (canRealAI()) {
       await realReply(text);
-      noteAIUsage();
     } else {
       await new Promise(r => setTimeout(r, 900 + Math.random() * 700));
       demoReply(text);
@@ -4922,6 +5004,7 @@ RENDERERS.settings = function () {
   $('#langCardSub').textContent = lm.flag + ' ' + lm.native + (inCur.toLowerCase() !== lm.native.toLowerCase() ? ' (' + inCur + ')' : '') + ' · ' + (lm.country || '');
   refreshAIStatus();
   renderAccountCard();
+  syncEntitlements().then(() => { if (currentView === 'settings') renderAccountCard(); });
 };
 
 $('#btnChangeLang').addEventListener('click', () => openLangPicker(false));
@@ -5048,6 +5131,7 @@ if (CLOUD) {
   sb.auth.getSession().then(async (r) => {
     if (!r.data.session) return;
     await cloudSession(r.data.session);
+    await syncEntitlements();
     gate();
     if (!isTrialExpired() && !store.onboarded) {
       $('#onboarding').classList.add('on');
@@ -5055,6 +5139,7 @@ if (CLOUD) {
       $('#obName').value = store.name || account.name || '';
     }
     refresh();
+    handleCheckoutReturn();
   });
 } else {
   gate();
