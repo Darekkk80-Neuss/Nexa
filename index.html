@@ -1033,7 +1033,7 @@ body.lang-switching main,body.lang-switching .sidebar,body.lang-switching .topba
 
       <div class="card set-card">
         <h3 data-i18n="set.lang_title">🌐 Sprache &amp; Region</h3>
-        <p class="sub" id="langCardSub"></p>
+        <p class="sub" id="langCardSub" data-noi18n></p>
         <button class="btn" id="btnChangeLang" data-i18n="set.change_lang">Sprache ändern</button>
       </div>
 
@@ -1412,15 +1412,22 @@ function applyLang(code, opts) {
     try { store.profile.dateFormat = new Intl.DateTimeFormat(l.locale).format(new Date(2026, 6, 8)); } catch (e) {}
     save();
   }
-  applyStaticI18n();
   if (!opts || !opts.silent) {
     document.body.classList.add('lang-switching');
     setTimeout(() => document.body.classList.remove('lang-switching'), 320);
   }
   refresh();
-  /* Übersetzungsdateien nachladen; bei Erfolg neu rendern */
+  if (curLang === 'de') { stopI18nObserver(); restoreGerman(document.body); }
+  else { startI18nObserver(); scheduleSweep(); }
+  /* Picker-/Datums-Übersetzungen (eigenes Dict) aus den JSON-Dateien nachladen */
   Promise.all([loadLangFile(l.code), l.code !== 'en' ? loadLangFile('en') : Promise.resolve(false)])
-    .then(res => { if (res[0] || res[1]) { applyStaticI18n(); refresh(); } });
+    .then(res => {
+      if (res[0] || res[1]) {
+        if ($('#langPicker').classList.contains('on')) renderLangPicker();
+        refresh();
+        if (curLang !== 'de') scheduleSweep();
+      }
+    });
 }
 
 /* ---- Sprachauswahl-Fenster (Picker) ---- */
@@ -1514,6 +1521,210 @@ function selectLang(code) {
   const s = $('#langSearch');
   if (s) s.addEventListener('input', function () { langQuery = s.value; $('#langList').innerHTML = langListHTML(); });
 })();
+
+/* ============================== VOLL-ÜBERSETZUNG ==============================
+   Deutsch ist die Quellsprache. Nach jedem Rendern übersetzt i18nSweep() den
+   sichtbaren DOM in curLang: zuerst über das kuratierte Wörterbuch TDICT
+   (sofort, offline, für alle), dann über den KI-Cache; fehlende Texte werden
+   – falls ein API-Schlüssel vorhanden ist – per Claude gebündelt übersetzt und
+   dauerhaft in localStorage zwischengespeichert. Der Sprach-Picker und Datums-
+   ausgaben sind ausgenommen (eigene Systeme). */
+
+/* Kuratiertes Wörterbuch: deutscher Quelltext -> Übersetzung je Sprache. */
+const TDICT_SRC = {
+  /* Navigation */
+  'Start': { en: 'Home', fr: 'Accueil', es: 'Inicio', it: 'Home', pl: 'Start' },
+  'Arbeitszeit': { en: 'Working hours', fr: 'Temps de travail', es: 'Horario laboral', it: 'Orario di lavoro', pl: 'Czas pracy' },
+  'Dokumentenscanner': { en: 'Document scanner', fr: 'Scanner de documents', es: 'Escáner de documentos', it: 'Scanner documenti', pl: 'Skaner dokumentów' },
+  'Dokumentenassistent': { en: 'Document assistant', fr: 'Assistant de documents', es: 'Asistente de documentos', it: 'Assistente documenti', pl: 'Asystent dokumentów' },
+  'Lebenslagen': { en: 'Life situations', fr: 'Situations de vie', es: 'Situaciones de vida', it: 'Situazioni di vita', pl: 'Sytuacje życiowe' },
+  'Aufgaben': { en: 'Tasks', fr: 'Tâches', es: 'Tareas', it: 'Attività', pl: 'Zadania' },
+  'Kalender': { en: 'Calendar', fr: 'Calendrier', es: 'Calendario', it: 'Calendario', pl: 'Kalendarz' },
+  'Kinder': { en: 'Kids', fr: 'Enfants', es: 'Niños', it: 'Bambini', pl: 'Dzieci' },
+  'Familienzentrale': { en: 'Family hub', fr: 'Espace famille', es: 'Centro familiar', it: 'Area famiglia', pl: 'Centrum rodziny' },
+  'Notfallbereich': { en: 'Emergency', fr: 'Urgences', es: 'Emergencia', it: 'Emergenza', pl: 'Nagły wypadek' },
+  'Auto & Motorrad': { en: 'Car & Motorcycle', fr: 'Auto & Moto', es: 'Coche y Moto', it: 'Auto & Moto', pl: 'Auto i Motocykl' },
+  'Einstellungen': { en: 'Settings', fr: 'Paramètres', es: 'Ajustes', it: 'Impostazioni', pl: 'Ustawienia' },
+  'Mehr': { en: 'More', fr: 'Plus', es: 'Más', it: 'Altro', pl: 'Więcej' },
+  'Assistent': { en: 'Assistant', fr: 'Assistant', es: 'Asistente', it: 'Assistente', pl: 'Asystent' },
+  /* Begrüßung + Dashboard-Kacheln */
+  'Guten Morgen': { en: 'Good morning', fr: 'Bonjour', es: 'Buenos días', it: 'Buongiorno', pl: 'Dzień dobry' },
+  'Guten Tag': { en: 'Hello', fr: 'Bonjour', es: 'Hola', it: 'Ciao', pl: 'Cześć' },
+  'Guten Abend': { en: 'Good evening', fr: 'Bonsoir', es: 'Buenas tardes', it: 'Buonasera', pl: 'Dobry wieczór' },
+  'Gute Nacht': { en: 'Good night', fr: 'Bonne nuit', es: 'Buenas noches', it: 'Buonanotte', pl: 'Dobranoc' },
+  'Offene Aufgaben': { en: 'Open tasks', fr: 'Tâches ouvertes', es: 'Tareas abiertas', it: 'Attività aperte', pl: 'Otwarte zadania' },
+  'Termine heute': { en: 'Today’s events', fr: 'Événements du jour', es: 'Eventos de hoy', it: 'Eventi di oggi', pl: 'Dzisiejsze wydarzenia' },
+  'Dokumente': { en: 'Documents', fr: 'Documents', es: 'Documentos', it: 'Documenti', pl: 'Dokumenty' },
+  'Foto analysieren': { en: 'Scan photo', fr: 'Scanner une photo', es: 'Escanear foto', it: 'Scansiona foto', pl: 'Skanuj zdjęcie' },
+  'Frag Effyra': { en: 'Ask Effyra', fr: 'Demander à Effyra', es: 'Preguntar a Effyra', it: 'Chiedi a Effyra', pl: 'Zapytaj Effyra' },
+  'Neue Aufgabe': { en: 'New task', fr: 'Nouvelle tâche', es: 'Nueva tarea', it: 'Nuova attività', pl: 'Nowe zadanie' },
+  '📅 Nächste Termine': { en: '📅 Upcoming events', fr: '📅 Prochains événements', es: '📅 Próximos eventos', it: '📅 Prossimi eventi', pl: '📅 Nadchodzące wydarzenia' },
+  '✅ Wichtige Aufgaben': { en: '✅ Important tasks', fr: '✅ Tâches importantes', es: '✅ Tareas importantes', it: '✅ Attività importanti', pl: '✅ Ważne zadania' },
+  'Keine anstehenden Termine – genieß die Ruhe 🌿': { en: 'No upcoming events – enjoy the calm 🌿', fr: 'Aucun événement à venir – profitez du calme 🌿', es: 'Sin eventos próximos – disfruta la calma 🌿', it: 'Nessun evento in arrivo – goditi la calma 🌿', pl: 'Brak nadchodzących wydarzeń – ciesz się spokojem 🌿' },
+  'Nichts offen – stark! 🎉': { en: 'Nothing open – great! 🎉', fr: 'Rien en attente – bravo ! 🎉', es: 'Nada pendiente – ¡genial! 🎉', it: 'Niente in sospeso – ottimo! 🎉', pl: 'Nic otwartego – super! 🎉' },
+  /* Häufige Aktionen / Buttons */
+  'Speichern': { en: 'Save', fr: 'Enregistrer', es: 'Guardar', it: 'Salva', pl: 'Zapisz' },
+  'Abbrechen': { en: 'Cancel', fr: 'Annuler', es: 'Cancelar', it: 'Annulla', pl: 'Anuluj' },
+  'Löschen': { en: 'Delete', fr: 'Supprimer', es: 'Eliminar', it: 'Elimina', pl: 'Usuń' },
+  'Schließen': { en: 'Close', fr: 'Fermer', es: 'Cerrar', it: 'Chiudi', pl: 'Zamknij' },
+  'Öffnen': { en: 'Open', fr: 'Ouvrir', es: 'Abrir', it: 'Apri', pl: 'Otwórz' },
+  'Alle': { en: 'All', fr: 'Tout', es: 'Todo', it: 'Tutto', pl: 'Wszystko' },
+  'Hinzufügen': { en: 'Add', fr: 'Ajouter', es: 'Añadir', it: 'Aggiungi', pl: 'Dodaj' },
+  'Weiter': { en: 'Next', fr: 'Suivant', es: 'Siguiente', it: 'Avanti', pl: 'Dalej' },
+  'Zurück': { en: 'Back', fr: 'Retour', es: 'Atrás', it: 'Indietro', pl: 'Wstecz' },
+  'Anzeigen': { en: 'Show', fr: 'Afficher', es: 'Mostrar', it: 'Mostra', pl: 'Pokaż' },
+  'Bearbeiten': { en: 'Edit', fr: 'Modifier', es: 'Editar', it: 'Modifica', pl: 'Edytuj' },
+  'Speichern ✓': { en: 'Saved ✓', fr: 'Enregistré ✓', es: 'Guardado ✓', it: 'Salvato ✓', pl: 'Zapisano ✓' },
+  'Abmelden': { en: 'Log out', fr: 'Se déconnecter', es: 'Cerrar sesión', it: 'Esci', pl: 'Wyloguj' },
+  'Anmelden': { en: 'Sign in', fr: 'Se connecter', es: 'Iniciar sesión', it: 'Accedi', pl: 'Zaloguj' },
+  'Konto erstellen': { en: 'Create account', fr: 'Créer un compte', es: 'Crear cuenta', it: 'Crea account', pl: 'Utwórz konto' },
+  'Kostenlos starten': { en: 'Start for free', fr: 'Commencer gratuitement', es: 'Empezar gratis', it: 'Inizia gratis', pl: 'Zacznij za darmo' },
+  /* Einstellungen-Überschriften */
+  'Dein Konto': { en: 'Your account', fr: 'Votre compte', es: 'Tu cuenta', it: 'Il tuo account', pl: 'Twoje konto' },
+  'Dein Name': { en: 'Your name', fr: 'Votre nom', es: 'Tu nombre', it: 'Il tuo nome', pl: 'Twoje imię' },
+  'So spricht Effyra dich an.': { en: 'This is how Effyra addresses you.', fr: 'C’est ainsi qu’Effyra vous appelle.', es: 'Así te llama Effyra.', it: 'Così Effyra ti chiama.', pl: 'Tak zwraca się do Ciebie Effyra.' },
+  'Daten': { en: 'Data', fr: 'Données', es: 'Datos', it: 'Dati', pl: 'Dane' },
+  'Über Effyra': { en: 'About Effyra', fr: 'À propos d’Effyra', es: 'Acerca de Effyra', it: 'Informazioni su Effyra', pl: 'O Effyra' },
+  'Alles bleibt lokal auf deinem Gerät.': { en: 'Everything stays local on your device.', fr: 'Tout reste en local sur votre appareil.', es: 'Todo permanece local en tu dispositivo.', it: 'Tutto resta locale sul tuo dispositivo.', pl: 'Wszystko pozostaje lokalnie na Twoim urządzeniu.' },
+  '🌐 Sprache & Region': { en: '🌐 Language & Region', fr: '🌐 Langue & Région', es: '🌐 Idioma y Región', it: '🌐 Lingua e Regione', pl: '🌐 Język i Region' },
+  'Sprache ändern': { en: 'Change language', fr: 'Changer de langue', es: 'Cambiar idioma', it: 'Cambia lingua', pl: 'Zmień język' }
+};
+
+/* TDICT[lang][deutscherText] = Übersetzung */
+const TDICT = {};
+['en', 'fr', 'es', 'it', 'pl'].forEach(L => {
+  TDICT[L] = {};
+  Object.keys(TDICT_SRC).forEach(de => { const v = TDICT_SRC[de][L]; if (v) TDICT[L][de] = v; });
+});
+
+/* KI-Cache (dauerhaft) */
+const I18N_CACHE_KEY = 'nexa_i18n_cache';
+let aiCache = (function () { try { return JSON.parse(localStorage.getItem(I18N_CACHE_KEY)) || {}; } catch (e) { return {}; } })();
+function saveAiCache() { try { localStorage.setItem(I18N_CACHE_KEY, JSON.stringify(aiCache)); } catch (e) {} }
+
+const I18N_ATTRS = ['placeholder', 'title', 'aria-label'];
+const srcMap = new WeakMap();   // Textknoten -> deutscher Originaltext
+const attrSrc = new WeakMap();  // Element -> { attr: deutscher Originaltext }
+const pendingStrings = new Set();
+let aiInFlight = false, sweepTimer = null, i18nObserver = null;
+
+function lookupTr(g) {
+  const d = TDICT[curLang]; if (d && d[g] != null) return d[g];
+  const c = aiCache[curLang]; if (c && c[g] != null) return c[g];
+  return null;
+}
+function isDateWord(s) {
+  return s === t('date.today') || s === t('date.tomorrow') || s === t('date.yesterday') ||
+    s === 'heute' || s === 'morgen' || s === 'gestern';
+}
+function looksLikeData(x) {
+  if (/^[\s\d.,:;/€$%+\-–—()]+$/.test(x)) return true;             // nur Zahlen/Zeichen
+  if (/\d{1,2}:\d{2}/.test(x)) return true;                          // Uhrzeit
+  if (/[€$%]/.test(x)) return true;                                  // Beträge/Prozent
+  if (/\b\d{4}\b/.test(x)) return true;                              // Jahreszahl
+  if (/^\d{1,2}\.\s*\S+/.test(x)) return true;                       // "15. August"
+  if (/\d\s?(h|km|kg|min|Std|Uhr|€|%)\b/.test(x)) return true;       // Einheiten
+  return false;
+}
+function translatableStr(s) {
+  if (!s) return false;
+  const x = s.trim();
+  if (x.length < 2) return false;
+  if (/@|:\/\//.test(x)) return false;         // E-Mail-Adressen / URLs überspringen
+  if (!/[A-Za-zÀ-ÿĀ-ž]/.test(x)) return false; // mind. ein Buchstabe (Emoji/Zeichen überspringen)
+  if (/\d/.test(x) && looksLikeData(x)) return false; // Datum/Uhrzeit/Beträge überspringen, Fließtext mit Zahlen erlauben
+  if (isDateWord(x)) return false;
+  return true;
+}
+const SKIP_SEL = '#langPicker, [data-noi18n], script, style, code, pre, svg, .view:not(.active), .gate:not(.on), #moreSheet:not(.on)';
+
+function i18nSweep(root) {
+  if (curLang === 'de') return;
+  root = root || document.body;
+  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+    acceptNode(node) {
+      const p = node.parentElement;
+      if (!p || p.closest(SKIP_SEL)) return NodeFilter.FILTER_REJECT;
+      const g = srcMap.has(node) ? srcMap.get(node) : node.nodeValue;
+      return translatableStr(g) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
+    }
+  });
+  const nodes = []; let nn; while ((nn = walker.nextNode())) nodes.push(nn);
+  nodes.forEach(node => {
+    let g = srcMap.get(node); if (g == null) { g = node.nodeValue; srcMap.set(node, g); }
+    const key = g.trim();
+    const tr = lookupTr(key);
+    if (tr != null) { if (node.nodeValue !== g.replace(key, tr)) node.nodeValue = g.replace(key, tr); }
+    else pendingStrings.add(key);
+  });
+  I18N_ATTRS.forEach(attr => {
+    root.querySelectorAll('[' + attr + ']').forEach(el => {
+      if (el.closest(SKIP_SEL)) return;
+      let s = attrSrc.get(el) || {};
+      let g = s[attr] != null ? s[attr] : el.getAttribute(attr);
+      if (!translatableStr(g)) return;
+      if (s[attr] == null) { s[attr] = g; attrSrc.set(el, s); }
+      const tr = lookupTr(g.trim());
+      if (tr != null) { if (el.getAttribute(attr) !== tr) el.setAttribute(attr, tr); }
+      else pendingStrings.add(g.trim());
+    });
+  });
+  if (pendingStrings.size) flushAI();
+}
+
+function restoreGerman(root) {
+  root = root || document.body;
+  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null);
+  let n; while ((n = walker.nextNode())) { if (srcMap.has(n) && n.nodeValue !== srcMap.get(n)) n.nodeValue = srcMap.get(n); }
+  I18N_ATTRS.forEach(attr => {
+    root.querySelectorAll('[' + attr + ']').forEach(el => { const s = attrSrc.get(el); if (s && s[attr] != null) el.setAttribute(attr, s[attr]); });
+  });
+}
+
+function scheduleSweep() {
+  if (curLang === 'de') return;
+  clearTimeout(sweepTimer);
+  sweepTimer = setTimeout(() => {
+    if (i18nObserver) i18nObserver.disconnect();
+    try { i18nSweep(document.body); } catch (e) {}
+    if (i18nObserver) { i18nObserver.takeRecords(); i18nObserver.observe(document.body, { childList: true, subtree: true, characterData: true, attributes: true, attributeFilter: I18N_ATTRS }); }
+  }, 60);
+}
+
+function startI18nObserver() {
+  if (!i18nObserver) i18nObserver = new MutationObserver(() => { if (curLang !== 'de') scheduleSweep(); });
+  i18nObserver.disconnect();
+  i18nObserver.observe(document.body, { childList: true, subtree: true, characterData: true, attributes: true, attributeFilter: I18N_ATTRS });
+}
+function stopI18nObserver() { if (i18nObserver) i18nObserver.disconnect(); }
+
+async function flushAI() {
+  if (aiInFlight || curLang === 'de') return;
+  if (!hasKey()) { pendingStrings.clear(); return; }   // Demo-Modus: kein KI-Abruf, Rest bleibt Deutsch
+  const batch = Array.from(pendingStrings).slice(0, 100);
+  if (!batch.length) return;
+  batch.forEach(s => pendingStrings.delete(s));
+  aiInFlight = true;
+  try {
+    const langName = langMeta(curLang).native;
+    const prompt = 'Du übersetzt die Oberfläche einer deutschen Alltags-App nach ' + langName + ' (' + curLang + '). ' +
+      'Übersetze jeden Eintrag knapp und natürlich im UI-Stil. Behalte Platzhalter ({n}, {name} …), Emojis, Zahlen, ' +
+      'Satzzeichen und führende/abschließende Symbole bei. Übersetze KEINE Eigennamen (Effyra, TÜV, PDF, Voice2PDF). ' +
+      'Antworte AUSSCHLIESSLICH mit einem JSON-Objekt {"t":[ ... ]}, dessen Array die Übersetzungen in exakt derselben ' +
+      'Reihenfolge wie die Eingabe enthält:\n' + JSON.stringify(batch);
+    const text = await callClaude({ model: store.settings.model, max_tokens: 4000, messages: [{ role: 'user', content: prompt }] });
+    const j = extractJSON(text);
+    const arr = j && j.t;
+    if (Array.isArray(arr)) {
+      aiCache[curLang] = aiCache[curLang] || {};
+      batch.forEach((g, i) => { if (typeof arr[i] === 'string' && arr[i]) aiCache[curLang][g] = arr[i]; });
+      saveAiCache();
+    }
+  } catch (e) { /* Rest bleibt Deutsch */ }
+  aiInFlight = false;
+  scheduleSweep();
+  if (pendingStrings.size) flushAI();
+}
 
 /* ============================== NAVIGATION ============================== */
 let currentView = 'dashboard';
@@ -1900,8 +2111,8 @@ const SOURCE_LABEL = { doc: 'aus Dokument', chat: 'aus Chat', life: 'aus Lebensl
 
 RENDERERS.dashboard = function () {
   const h = new Date().getHours();
-  const g = h < 5 ? t('dash.night') : h < 11 ? t('dash.morning') : h < 18 ? t('dash.day') : t('dash.evening');
-  $('#greetLine').innerHTML = esc(g) + (store.name ? ', <span class="grad-text">' + esc(store.name) + '</span>' : '') + ' 👋';
+  const g = h < 5 ? 'Gute Nacht' : h < 11 ? 'Guten Morgen' : h < 18 ? 'Guten Tag' : 'Guten Abend';
+  $('#greetLine').innerHTML = '<span>' + esc(g) + '</span>' + (store.name ? ', <span class="grad-text" data-noi18n>' + esc(store.name) + '</span>' : '') + ' 👋';
   $('#greetDate').textContent = new Date().toLocaleDateString(curLocale, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
 
   const slot = $('#trialSlot');
@@ -1918,15 +2129,15 @@ RENDERERS.dashboard = function () {
   const open = store.tasks.filter(t => !t.done).length;
   const evToday = eventsOn(todayISO()).length;
   $('#statRow').innerHTML =
-    '<div class="stat rise" style="--i:0"><b>' + open + '</b><span>' + esc(t('dash.stat_open')) + '</span></div>' +
-    '<div class="stat rise" style="--i:1"><b>' + evToday + '</b><span>' + esc(t('dash.stat_today')) + '</span></div>' +
-    '<div class="stat rise" style="--i:2"><b>' + store.docs.length + '</b><span>' + esc(t('dash.stat_docs')) + '</span></div>';
+    '<div class="stat rise" style="--i:0"><b>' + open + '</b><span>Offene Aufgaben</span></div>' +
+    '<div class="stat rise" style="--i:1"><b>' + evToday + '</b><span>Termine heute</span></div>' +
+    '<div class="stat rise" style="--i:2"><b>' + store.docs.length + '</b><span>Dokumente</span></div>';
 
   let html = '';
 
   const evs = upcomingEvents(3);
-  html += '<div class="sec-title"><h2>' + esc(t('dash.sec_appts')) + '</h2><button data-go="calendar">' + esc(t('dash.all')) + '</button></div><div class="mini-list">';
-  if (!evs.length) html += '<div class="empty">' + esc(t('dash.no_appts')) + '</div>';
+  html += '<div class="sec-title"><h2>📅 Nächste Termine</h2><button data-go="calendar">Alle</button></div><div class="mini-list">';
+  if (!evs.length) html += '<div class="empty">Keine anstehenden Termine – genieß die Ruhe 🌿</div>';
   evs.forEach((e, i) => {
     html += '<div class="mini rise" style="--i:' + i + '"><div class="mini-ic"><svg viewBox="0 0 24 24"><use href="#icCal"/></svg></div>' +
       '<div class="mini-tx"><b>' + esc(e.title) + '</b><span>' + esc(fmtDate(e.date)) + (e.time ? ' · ' + esc(e.time) + ' Uhr' : '') + '</span></div>' +
@@ -2009,8 +2220,8 @@ RENDERERS.dashboard = function () {
   }
 
   const tks = openTasksSorted().slice(0, 4);
-  html += '<div class="sec-title"><h2>' + esc(t('dash.sec_tasks')) + '</h2><button data-go="tasks">' + esc(t('dash.all')) + '</button></div><div class="mini-list">';
-  if (!tks.length) html += '<div class="empty">' + esc(t('dash.no_tasks')) + '</div>';
+  html += '<div class="sec-title"><h2>✅ Wichtige Aufgaben</h2><button data-go="tasks">Alle</button></div><div class="mini-list">';
+  if (!tks.length) html += '<div class="empty">Nichts offen – stark! 🎉</div>';
   tks.forEach((t, i) => {
     const late = t.due && dayDiff(t.due) < 0;
     html += '<div class="mini rise" style="--i:' + i + '"><div class="mini-ic"><svg viewBox="0 0 24 24"><use href="#icCheck2"/></svg></div>' +
