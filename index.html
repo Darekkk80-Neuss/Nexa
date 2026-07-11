@@ -327,6 +327,8 @@ label.fld{display:block;font-size:12.5px;font-weight:600;color:var(--muted);marg
 .theme-toggle button.active{background:var(--grad);color:#fff;box-shadow:0 2px 8px rgba(124,58,237,.35)}
 .fam-ai-row{display:flex;align-items:center;gap:6px;font-size:13px;margin-top:5px;color:var(--muted)}
 .fam-ai-row b{margin-left:auto;color:var(--text)}
+.auth-birth{display:block;font-size:12px;color:var(--muted);text-align:left;margin:4px 2px -4px;font-weight:600}
+.auth-birth span{font-weight:400;opacity:.82}
 .dash-sub{color:var(--muted);font-size:15px;line-height:1.45;margin-top:7px;max-width:46ch}
 .dash-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:26px}
 .dash-stats .stat{padding:13px 6px}
@@ -953,7 +955,10 @@ body.lang-switching main,body.lang-switching .sidebar,body.lang-switching .topba
     <p class="gate-sub" id="authSub">3 Tage kostenlos testen – alle Funktionen inklusive.</p>
     <div class="gate-fields">
       <input type="text" id="auName" placeholder="Vorname" maxlength="30" autocomplete="given-name">
+      <input type="text" id="auLast" placeholder="Nachname" maxlength="40" autocomplete="family-name">
       <input type="text" id="auEmail" placeholder="E-Mail-Adresse" maxlength="80" autocomplete="email" inputmode="email">
+      <label class="auth-birth" id="auBirthLbl" for="auBirth">🎂 Geburtsdatum <span>(zur Altersprüfung – Konten ab 18)</span></label>
+      <input type="date" id="auBirth" autocomplete="bday">
       <input type="password" id="auPass" placeholder="Passwort (mind. 6 Zeichen)" maxlength="80" autocomplete="current-password">
       <div class="auth-err" id="authErr"></div>
       <button class="btn btn-primary gate-cta" id="authGo">Kostenlos starten</button>
@@ -2296,11 +2301,23 @@ function gate() {
 
 let cloudAuthMode = 'reg';   /* Cloud-Modus: 'reg' | 'login' */
 
+/* Zusatzfelder der Registrierung (Nachname/Geburtsdatum) ein-/ausblenden. */
+function regFieldsShow(isReg) { ['#auLast', '#auBirth', '#auBirthLbl'].forEach(s => { const el = $(s); if (el) el.style.display = isReg ? '' : 'none'; }); }
+/* Geburtsdatum prüfen: vorhanden, plausibel, 18+. Kinderkonten nur über die Familienzentrale. */
+function regBirthOrErr(err) {
+  const bday = ($('#auBirth') && $('#auBirth').value) || '';
+  if (!bday) { err.textContent = 'Bitte gib dein Geburtsdatum an.'; return null; }
+  const age = ageFrom(bday);
+  if (age == null || age < 0 || age > 120) { err.textContent = 'Bitte ein gültiges Geburtsdatum angeben.'; return null; }
+  if (age < 18) { err.textContent = 'Konten gibt es erst ab 18. Kinderkonten legt ein Erwachsener in der Familienzentrale an.'; return null; }
+  return bday;
+}
 function setupAuthForm() {
   $('#authErr').textContent = '';
   if (CLOUD) {
     const isReg = cloudAuthMode === 'reg';
     $('#auName').style.display = isReg ? '' : 'none';
+    regFieldsShow(isReg);
     $('#auEmail').style.display = '';
     $('#authTitle').textContent = isReg ? 'Konto erstellen' : 'Anmelden';
     $('#authSub').textContent = isReg
@@ -2315,6 +2332,7 @@ function setupAuthForm() {
   }
   const isReg = !account;
   $('#auName').style.display = isReg ? '' : 'none';
+  regFieldsShow(isReg);
   $('#auEmail').style.display = isReg ? '' : 'none';
   $('#authTitle').textContent = isReg ? 'Konto erstellen' : 'Willkommen zurück';
   $('#authSub').textContent = isReg
@@ -2345,9 +2363,13 @@ async function cloudSession(session, fallbackName) {
     const r = await sb.from('profiles').select('name,plan,trial_start').eq('id', user.id).single();
     p = r.data;
   } catch (e) {}
+  const meta = user.user_metadata || {};
   account = {
     cloud: true,
-    name: (p && p.name) || fallbackName || (user.user_metadata && user.user_metadata.name) || '',
+    name: (p && p.name) || fallbackName || meta.name || '',
+    lastName: meta.last_name || '',
+    birthday: meta.birthday || '',
+    role: 'owner',
     email: user.email,
     plan: (p && p.plan) || 'free',
     trialStart: (p && p.trial_start) ? new Date(p.trial_start).getTime() : Date.now(),
@@ -2363,7 +2385,9 @@ async function cloudAuth(pass, err) {
   try {
     if (cloudAuthMode === 'reg') {
       const name = $('#auName').value.trim();
-      const r = await sb.auth.signUp({ email, password: pass, options: { data: { name } } });
+      const last = ($('#auLast') && $('#auLast').value.trim()) || '';
+      const bday = ($('#auBirth') && $('#auBirth').value) || '';
+      const r = await sb.auth.signUp({ email, password: pass, options: { data: { name, last_name: last, birthday: bday } } });
       if (r.error) { err.textContent = mapAuthError(r.error.message); return; }
       if (!r.data.session) {
         /* E-Mail-Bestätigung ist aktiviert: erst bestätigen, dann anmelden */
@@ -2401,9 +2425,13 @@ async function submitAuth() {
   err.textContent = '';
   const pass = $('#auPass').value;
   if (pass.length < 6) { err.textContent = 'Das Passwort braucht mindestens 6 Zeichen.'; return; }
+  const isReg = CLOUD ? (cloudAuthMode === 'reg') : !account;
+  if (isReg && !regBirthOrErr(err)) return;   // 18+-Pflicht, Geburtsdatum erforderlich
   if (CLOUD) { await cloudAuth(pass, err); return; }
   if (!account) {
     const name = $('#auName').value.trim();
+    const last = ($('#auLast') && $('#auLast').value.trim()) || '';
+    const bday = ($('#auBirth') && $('#auBirth').value) || '';
     const email = $('#auEmail').value.trim().toLowerCase();
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) { err.textContent = 'Bitte eine gültige E-Mail-Adresse eingeben.'; return; }
     const salt = uid();
@@ -2411,7 +2439,7 @@ async function submitAuth() {
     /* Trial-Start überlebt ein Konto-Zurücksetzen – kein Neustart der Testphase */
     let t0 = parseInt(localStorage.getItem(TRIAL0_KEY) || '0', 10);
     if (!t0) { t0 = Date.now(); try { localStorage.setItem(TRIAL0_KEY, String(t0)); } catch (e) {} }
-    account = { name, email, salt, hash, plan: 'free', trialStart: t0, createdAt: Date.now(), loggedIn: true };
+    account = { name, lastName: last, birthday: bday, role: 'owner', email, salt, hash, plan: 'free', trialStart: t0, createdAt: Date.now(), loggedIn: true };
     saveAccount();
     if (name && !store.name) { store.name = name; save(); }
     $('#auPass').value = '';
@@ -3678,6 +3706,9 @@ function ensureFamily() {
     if (m.role !== 'child' && typeof m.aiUsed !== 'number') m.aiUsed = 0;
   });
   if (!hasOwner && store.family.members[0]) store.family.members[0].role = 'owner';
+  /* Owner-Mitglied mit den Konto-Stammdaten (Name/Geburtsdatum) synchron halten. */
+  const owner = store.family.members.find(m => m.role === 'owner');
+  if (owner && account) { if (!owner.birthday && account.birthday) owner.birthday = account.birthday; if (account.name) owner.name = account.name; }
 }
 const famMember = (id) => store.family.members.find(m => m.id === id);
 function nextOccur(iso) {
