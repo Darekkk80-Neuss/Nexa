@@ -15,8 +15,8 @@ const CORS = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
 };
-const ALLOWED_MODELS = ['gpt-4o', 'gpt-4o-mini'];
-const DEFAULT_MODEL = 'gpt-4o-mini';
+const ALLOWED_MODELS = ['gpt-5-mini'];   // nur das im OpenAI-Projekt freigegebene Modell → alles andere wird darauf abgebildet
+const DEFAULT_MODEL = 'gpt-5-mini';
 
 function json(obj: unknown, status = 200) {
   return new Response(JSON.stringify(obj), { status, headers: { ...CORS, 'content-type': 'application/json' } });
@@ -45,7 +45,7 @@ Deno.serve(async (req) => {
   let body: any;
   try { body = await req.json(); } catch { return json({ error: 'bad_json' }, 400); }
   const model = ALLOWED_MODELS.includes(body?.model) ? body.model : DEFAULT_MODEL;
-  const max_tokens = Math.min(Math.max(1, Number(body?.max_tokens) || 1024), 2000);
+  const max_tokens = Math.min(Math.max(1, Number(body?.max_tokens) || 1024), 4000);
   const inMsgs = Array.isArray(body?.messages) ? body.messages : null;
   if (!inMsgs) return json({ error: 'bad_request' }, 400);
   // System-Prompt wird bei OpenAI als erste Nachricht im messages-Array gesendet
@@ -61,10 +61,13 @@ Deno.serve(async (req) => {
   }
 
   // 4) OpenAI aufrufen (echter Schlüssel, nur hier)
+  // GPT-5-/o-Modelle: max_completion_tokens + minimales Reasoning (sonst frisst das interne Denken das Budget)
+  const isReasoning = /^(gpt-5|o[0-9])/.test(model);
+  const tokenParam = isReasoning ? { max_completion_tokens: Math.max(max_tokens, 800), reasoning_effort: 'minimal' } : { max_tokens };
   const ar = await fetch('https://api.openai.com/v1/chat/completions', {
     method: 'POST',
     headers: { 'content-type': 'application/json', 'Authorization': `Bearer ${OPENAI_API_KEY}` },
-    body: JSON.stringify({ model, max_tokens, messages }),
+    body: JSON.stringify({ model, messages, ...tokenParam }),
   });
   const data = await ar.json();
   if (!ar.ok) return json({ error: 'ai_failed', detail: data?.error?.message || '' }, ar.status);

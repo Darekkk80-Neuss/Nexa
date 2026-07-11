@@ -1319,8 +1319,8 @@ body.lang-switching main,body.lang-switching .sidebar,body.lang-switching .topba
         <div style="margin-top:10px">
           <label class="fld" for="setModel">Modell</label>
           <select id="setModel">
-            <option value="gpt-4o-mini">GPT-4o mini – empfohlen &amp; günstig</option>
-            <option value="gpt-4o">GPT-4o – stärker</option>
+            <option value="gpt-5-mini">GPT-5 mini – empfohlen</option>
+            <option value="gpt-4o-mini">GPT-4o mini – nur mit eigenem Schlüssel</option>
           </select>
         </div>
         <div class="note-box">🔒 <b>Privat:</b> Der Schlüssel wird nur in deinem Browser gespeichert (localStorage) und direkt an die OpenAI-API gesendet – niemals an andere Server. Einen Schlüssel bekommst du unter <b>platform.openai.com</b>.</div>
@@ -1510,12 +1510,12 @@ const store = Object.assign({
   emergency: { contacts: [], phones: [], medical: {}, insurances: [], checkDone: {} }, // Notfallbereich (nur lokal)
   vehicles: [], // Auto & Motorrad
   work: { settings: { weeklyHours: 40, hoursPerDay: 8, vacationDays: 30, childSickMax: 10, state: 'NW', autoBreak: true }, entries: {}, shifts: [], absences: [] }, // Arbeitszeit
-  settings: { model: 'gpt-4o-mini', demoIdx: 0, theme: 'light' }
+  settings: { model: 'gpt-5-mini', demoIdx: 0, theme: 'light' }
 }, (() => {
   try { return JSON.parse(localStorage.getItem(DATA_KEY)) || {}; } catch (e) { return {}; }
 })());
-/* Migration: alte Claude-Modell-Werte auf OpenAI umstellen (Backend läuft jetzt über OpenAI). */
-if (store.settings && /^claude/i.test(store.settings.model || '')) store.settings.model = 'gpt-4o-mini';
+/* Migration: alte Modell-Werte (claude-*, gpt-4o*) auf das freigegebene OpenAI-Modell gpt-5-mini umstellen. */
+if (store.settings && !/^gpt-5/.test(store.settings.model || '')) store.settings.model = 'gpt-5-mini';
 
 function save() {
   try { localStorage.setItem(DATA_KEY, JSON.stringify(store)); }
@@ -4834,8 +4834,8 @@ $('#workRoot').addEventListener('keydown', e => {
 /* ============================== KI-ADAPTER ============================== */
 const API_URL = 'https://api.openai.com/v1/chat/completions';
 /* Auf erlaubte OpenAI-Modelle abbilden (Alt-Werte wie claude-* → günstiges Default). */
-const OPENAI_MODELS = ['gpt-4o', 'gpt-4o-mini'];
-const mapModel = (m) => OPENAI_MODELS.indexOf(m) >= 0 ? m : 'gpt-4o-mini';
+const OPENAI_MODELS = ['gpt-5-mini', 'gpt-5-nano', 'gpt-4o', 'gpt-4o-mini'];
+const mapModel = (m) => OPENAI_MODELS.indexOf(m) >= 0 ? m : 'gpt-5-mini';
 
 /* Direkter OpenAI-Aufruf mit eigenem Schlüssel (im Browser). System-Prompt = erste Nachricht. */
 async function callClaude(payload) {
@@ -4845,7 +4845,7 @@ async function callClaude(payload) {
     res = await fetch(API_URL, {
       method: 'POST',
       headers: { 'content-type': 'application/json', 'Authorization': 'Bearer ' + getKey() },
-      body: JSON.stringify({ model: mapModel(payload.model), max_tokens: payload.max_tokens, messages: messages })
+      body: JSON.stringify(Object.assign({ model: mapModel(payload.model), messages: messages }, /^(gpt-5|o[0-9])/.test(mapModel(payload.model)) ? { max_completion_tokens: Math.max(payload.max_tokens || 1024, 800), reasoning_effort: 'minimal' } : { max_tokens: payload.max_tokens }))
     });
   } catch (e) {
     throw new Error('Keine Verbindung zur KI möglich. Bist du online? (Eigene Schlüssel funktionieren im Browser evtl. nicht – dann Premium nutzen.)');
