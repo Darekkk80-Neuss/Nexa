@@ -329,6 +329,10 @@ label.fld{display:block;font-size:12.5px;font-weight:600;color:var(--muted);marg
 .fam-ai-row b{margin-left:auto;color:var(--text)}
 .auth-birth{display:block;font-size:12px;color:var(--muted);text-align:left;margin:4px 2px -4px;font-weight:600}
 .auth-birth span{font-weight:400;opacity:.82}
+.share-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 0;border-bottom:1px solid var(--border)}
+.share-lbl{font-size:14px;color:var(--text);font-weight:600}
+.share-toggle{flex:none;border:1px solid var(--border);background:var(--card2);color:var(--muted);border-radius:999px;padding:6px 12px;font-size:12.5px;font-weight:700;cursor:pointer;min-height:34px;transition:.15s}
+.share-toggle.on{background:var(--ok);color:#fff;border-color:var(--ok)}
 .dash-sub{color:var(--muted);font-size:15px;line-height:1.45;margin-top:7px;max-width:46ch}
 .dash-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:26px}
 .dash-stats .stat{padding:13px 6px}
@@ -3685,6 +3689,17 @@ function nextMonthFirstISO() { const d = new Date(); return toISO(new Date(d.get
 const isChildMember = (m) => !!m && m.role === 'child';
 /* Was darf ein Mitglied? Kinder nur Ansicht; Erwachsene/Owner alles (Phase-2-Zahlung ausgenommen). */
 function memberCan(m, cap) { if (!m) return false; if (m.role === 'child') return cap === 'view'; return true; }
+/* Sync-Freigabe pro Bereich (Erwachsene teilen einzeln; sensible Bereiche default aus). */
+const SHARE_AREAS = [
+  { key: 'calendar', icon: '📅', label: 'Kalender', def: true },
+  { key: 'appointments', icon: '⏰', label: 'Termine', def: true },
+  { key: 'tasks', icon: '✅', label: 'Aufgaben', def: true },
+  { key: 'reminders', icon: '🔔', label: 'Erinnerungen', def: true },
+  { key: 'documents', icon: '📄', label: 'Dokumente', def: false },
+  { key: 'expenses', icon: '💰', label: 'Ausgaben', def: false },
+  { key: 'household', icon: '🏠', label: 'Haushaltsinfos', def: false }
+];
+const isShared = (key) => !!(store.family && store.family.share && store.family.share[key]);
 let famTab = 'personen', famLastPull = 0;
 function ensureFamily() {
   if (!store.family) store.family = { members: [], occasions: [], code: null };
@@ -3692,6 +3707,8 @@ function ensureFamily() {
   if (!store.family.occasions) store.family.occasions = [];
   if (!store.family.tasks) store.family.tasks = [];   // Familienaufgaben (an Mitglieder vergeben)
   if (!store.family.ai) store.family.ai = { limit: FAMILY_AI_LIMIT, resetDate: nextMonthFirstISO() };
+  if (!store.family.share) store.family.share = { calendar: true, appointments: true, tasks: true, reminders: true, documents: false, expenses: false, household: false };
+  SHARE_AREAS.forEach(a => { if (typeof store.family.share[a.key] !== 'boolean') store.family.share[a.key] = a.def; });
   if (!store.family.members.length) {
     store.family.members.push({ id: uid(), name: (account && account.name) || store.name || 'Ich', role: 'owner', color: KID_COLORS[0], birthday: '', aiUsed: 0 });
     save();
@@ -3881,18 +3898,29 @@ function famAnlaesse() {
   });
   return h;
 }
+function famShareCard() {
+  let h = '<div class="card"><h3 style="margin-bottom:4px">🔐 Sync-Freigaben</h3>' +
+    '<p class="sub" style="color:var(--muted);font-size:13px;margin-bottom:12px">Lege pro Bereich fest, was mit der Familie geteilt wird. Nur Erwachsene teilen – Kinder sehen ausschließlich Freigegebenes.</p>';
+  SHARE_AREAS.forEach(a => {
+    const on = isShared(a.key);
+    h += '<div class="share-row"><span class="share-lbl">' + a.icon + ' ' + a.label + '</span>' +
+      '<button class="share-toggle' + (on ? ' on' : '') + '" data-fam="toggleShare" data-area="' + a.key + '">' + (on ? '✅ Erlaubt' : '❌ Aus') + '</button></div>';
+  });
+  h += '<div class="sub" style="font-size:12px;color:var(--faint);margin-top:10px">Diese Freigaben werden gespeichert und im Live-Sync mit dem Backend voll wirksam (Phase 2). Heute teilen sich Personen, Kalender & Anlässe wie bisher.</div>';
+  return h + '</div>';
+}
 function famSync() {
-  if (!CLOUD) return '<div class="card"><h3 style="margin-bottom:6px">🔗 Partner-Synchronisierung</h3><p class="sub" style="color:var(--muted);font-size:13px">Die Synchronisierung benötigt das Cloud-Backend (Supabase). Ohne Cloud funktioniert die Familienzentrale lokal auf diesem Gerät.</p></div>';
-  if (!store.family.code) {
-    return '<div class="card"><h3 style="margin-bottom:6px">Mit dem Partner synchronisieren</h3><p class="sub" style="color:var(--muted);font-size:13px;margin-bottom:14px">Erstelle eine Familie und teile den Code – oder tritt mit einem Code bei. Personen, Kalender und Anlässe werden dann automatisch geteilt.</p>' +
-      '<button class="btn btn-primary" data-fam="create" style="width:100%;margin-bottom:12px">👪 Familie erstellen</button>' +
-      '<div class="set-row"><input type="text" id="joinCode" placeholder="Code eingeben" maxlength="6" style="text-transform:uppercase"><button class="btn" data-fam="join">Beitreten</button></div></div>';
-  }
-  return '<div class="card" style="text-align:center"><h3>Familie verbunden ✓</h3><p class="sub" style="color:var(--muted);font-size:13px">Teile diesen Code mit deinem Partner:</p>' +
+  let conn;
+  if (!CLOUD) conn = '<div class="card"><h3 style="margin-bottom:6px">🔗 Partner-Synchronisierung</h3><p class="sub" style="color:var(--muted);font-size:13px">Die Synchronisierung benötigt das Cloud-Backend (Supabase). Ohne Cloud funktioniert die Familienzentrale lokal auf diesem Gerät.</p></div>';
+  else if (!store.family.code) conn = '<div class="card"><h3 style="margin-bottom:6px">Mit dem Partner synchronisieren</h3><p class="sub" style="color:var(--muted);font-size:13px;margin-bottom:14px">Erstelle eine Familie und teile den Code – oder tritt mit einem Code bei. Personen, Kalender und Anlässe werden dann automatisch geteilt.</p>' +
+    '<button class="btn btn-primary" data-fam="create" style="width:100%;margin-bottom:12px">👪 Familie erstellen</button>' +
+    '<div class="set-row"><input type="text" id="joinCode" placeholder="Code eingeben" maxlength="6" style="text-transform:uppercase"><button class="btn" data-fam="join">Beitreten</button></div></div>';
+  else conn = '<div class="card" style="text-align:center"><h3>Familie verbunden ✓</h3><p class="sub" style="color:var(--muted);font-size:13px">Teile diesen Code mit deinem Partner:</p>' +
     '<div class="fam-code">' + esc(store.family.code) + '</div>' +
     '<button class="btn btn-sm" data-fam="copyCode" style="margin-bottom:10px">📋 Code kopieren</button><br>' +
     '<button class="btn btn-sm btn-danger" data-fam="leave">Verbindung trennen</button>' +
     '<div class="em-priv">Änderungen werden automatisch geteilt, sobald ihr online seid.</div></div>';
+  return conn + famShareCard();
 }
 $('#famRoot').addEventListener('click', e => {
   const tab = e.target.closest('[data-ftab]');
@@ -3914,6 +3942,13 @@ $('#famRoot').addEventListener('click', e => {
     famChanged(); toast(type === 'child' ? 'Kinderkonto hinzugefügt ✓' : 'Person hinzugefügt ✓'); return;
   }
   if (a === 'delMem') { store.family.members = store.family.members.filter(m => m.id !== b.dataset.id); famChanged(); return; }
+  if (a === 'toggleShare') {
+    const area = b.dataset.area; ensureFamily();
+    store.family.share[area] = !store.family.share[area];
+    save(); RENDERERS.family();
+    if (store.family.code) famPush();
+    return;
+  }
   if (a === 'addEv') {
     const title = q('#fevTitle').value.trim(), date = q('#fevDate').value;
     if (!title || !date) { toast('Bitte Titel und Datum angeben'); return; }
