@@ -113,6 +113,22 @@ Reset: 01.08.2026
 - **Client (`index.html`):** interne Stufe `account.tier` ∈ `free | basic | ai | family`, Rolle `account.role`, Abo-Status `account.status`. 14-Tage-Testphase, Credit-Anzeige, Paywall mit Monats-/Jahres-Umschalter, Credit-Boost, Kinder-Sperren. Enforcement steht per `ENFORCE_TIERS`/`BACKEND_V2` bis zum Scharfschalten auf `false`.
 - **Backend (`supabase-tiers.sql`):** Spalten für Stufe/Status/Rolle/Credits, RPCs `get_entitlements`, `consume_credits` (Credit-Kosten je Aktion, Family-Pool, Kinder-Sperre), `apply_purchase` (alle Kauf-Arten), `add_family_member`. Einrichtung → [BACKEND.md](BACKEND.md).
 
+## Status & offene Punkte
+
+**Fertig (dieses Update):**
+- ✅ 14-Tage-Testphase, Stufen `free/basic/ai/family`, Rollen & Abo-Status
+- ✅ Effyra Credits (Anzeige, Limits 500/1500, Boost) + Credit-Kosten-Tabelle
+- ✅ Paywall mit drei Karten + Monats-/Jahres-Umschalter
+- ✅ Kinder-Sperren im Client (keine KI/Credits/API-Key)
+- ✅ Backend-RPCs inkl. Family-Pool, Kinder-Sperre und Migration aus `medium/premium`
+
+**Noch offen (nächste Schritte):**
+- ⏳ **Familien-Provisionierung im Client** – Familienzentrale-Flow: Mitglied einladen/anlegen (Erwachsener 3,99 € / Kind 0,99 €), Rollen zuweisen, `add_family_member` aufrufen. Backend ist vorbereitet, die Client-Oberfläche fehlt noch.
+- ⏳ **Kinderkonten-Onboarding** – Anlage, Verknüpfung mit der Familie, eingeschränkte Ansicht (Aufgaben/Termine/Erinnerungen ohne KI).
+- ⏳ **Scharfschalten** – `ENFORCE_TIERS`/`BACKEND_V2` auf `true`, KI-Proxy + Stripe-Produkte/Preise anlegen und deployen (siehe [BACKEND.md](BACKEND.md), Phase 2).
+- ⏳ **Credit-Kosten im Proxy** – `consume_credits(user, cost)` je Aktion mit den Werten aus Abschnitt 7 verdrahten (einfache Frage 1 … große Analyse 20).
+- ⏳ **Alterprüfung (ab 18)** für Effyra AI Premium serverseitig durchsetzen.
+
 ## Ehrliche Einordnung
 
 Effyra ist eine reine Client-App: Solange die Enforcement-Schalter aus sind bzw. ohne KI-Proxy, ist die Sperre eine **Komfort-/Produktsperre**, kein wasserdichter Schutz. Wirklich fälschungssicher wird das Credit- und Rollenmodell erst mit dem serverseitigen Proxy aus Phase 2 (siehe [BACKEND.md](BACKEND.md)), der bei jedem KI-Aufruf Stufe, Rolle und Credits prüft. Das Supabase-Backend hier ist bereits die richtige Grundlage dafür.
