@@ -370,7 +370,10 @@
   .btn:focus-visible{outline:2px solid var(--a2);outline-offset:2px}
   .btn.primary{background:var(--grad);border:none;color:#fff}
   .btn.off{opacity:.5;text-decoration:line-through}
-  .hint{opacity:.7;max-width:460px}
+  .hint{opacity:.7;max-width:480px}
+  .vsel{display:inline-flex;align-items:center;gap:7px;font-size:12.5px;font-weight:600;color:#8a93a6}
+  .vsel select{appearance:none;background:#121724;color:#e8ebf2;border:1px solid #2b3446;border-radius:99px;padding:8px 30px 8px 14px;font:inherit;font-weight:700;font-size:12.5px;max-width:220px;cursor:pointer}
+  .vsel select:focus-visible{outline:2px solid var(--a2);outline-offset:2px}
   .replay{position:absolute;inset:auto 0 0 0;z-index:60;margin:0 auto 6cqw;width:max-content;background:rgba(10,12,18,.6);backdrop-filter:blur(8px);color:#fff;border:1px solid rgba(255,255,255,.2);padding:3cqw 6cqw;border-radius:99px;font-weight:700;font-size:3.6cqw;cursor:pointer;opacity:0;pointer-events:none;transition:opacity .5s}
   .replay.show{opacity:1;pointer-events:auto}
   @media (prefers-reduced-motion: reduce){
@@ -568,7 +571,7 @@
           <path d="M42 87 q-4 -1 -5 -5" stroke-width="1.8" fill="none"/>
         </g>
       </svg>
-      <p class="cap">Einfach mal da&nbsp;sein.</p>
+      <p class="cap">Zeit zum&nbsp;Leben.</p>
       <div class="vig" style="box-shadow:inset 0 0 22cqw 4cqw rgba(40,95,52,.16)"></div>
     </section>
 
@@ -605,7 +608,11 @@
       <button class="btn" id="music" aria-pressed="false">🎵 Musik</button>
       <button class="btn" id="voice" aria-pressed="false">🎙 Stimme</button>
     </div>
-    <span class="hint">Vollbild + Bildschirmaufnahme (9:16) = dein Video. Musik &amp; Stimme sind eingebaut — für ein eigenes, professionelles Voice‑over die <b>Stimme</b> ausschalten und im Schnitt ersetzen.</span>
+    <div class="row">
+      <label class="vsel">🗣 Stimme: <select id="voiceSel"></select></label>
+      <button class="btn" id="voiceTest">▶ Testen</button>
+    </div>
+    <span class="hint">Für eine <b>menschliche, weibliche</b> Stimme den Spot in <b>Microsoft Edge</b> öffnen und oben eine <b>★‑Stimme (Online/Natural)</b> wählen – die klingen fast echt. Die Windows‑Standardstimme klingt technisch. Höchste Qualität: <b>Stimme</b> aus und ein echtes/KI‑Voice‑over (Sprecher‑Skript liegt vor) im Schnitt drüberlegen.</span>
   </div>
 
 <script>
@@ -822,13 +829,30 @@
     [15.7, 'Und Effyra plant deine ganze Woche. Ganz von allein.', 0.97, 1.0],
     [19.3, 'Einfach abfotografieren – den Rest übernimmt Effyra.', 0.98, 1.0],
     [23.6, 'Rechnung erkannt, Termin gespeichert. Wie von selbst.', 0.96, 1.0],
-    [28.2, 'Und abends? Bist du einfach da. Ganz ohne Handy.', 0.9, 1.02],
+    [28.2, 'Dein Alltag ist geplant – und du gewinnst echte Lebenszeit zurück.', 0.93, 1.04],
     [32.5, 'Effyra. Ruhe für deinen Alltag. Probier es kostenlos aus.', 0.95, 1.02]
   ];
+  const DE_NATURAL = /(natural|neural|online)/i;                                  // Edge/Chrome-Neuralstimmen klingen fast echt
+  const DE_FEMALE = /(Katja|Amala|Klara|Louisa|Maja|Seraphina|Gisela|Marlene|Vicki|Petra|Google)/i;   // ohne Hedda – die klingt am robotischsten
+  let deVoices = [];
   function pickVoice(){
     if (!('speechSynthesis' in window)) return;
-    const vs = speechSynthesis.getVoices().filter(v => /^de/i.test(v.lang));
-    pickedVoice = vs.find(v => /google/i.test(v.name)) || vs.find(v => /(Conrad|Stefan|Markus|Katja|Hedda|Google)/i.test(v.name)) || vs[0] || null;
+    deVoices = speechSynthesis.getVoices().filter(v => /^de/i.test(v.lang));
+    const nat = deVoices.filter(v => DE_NATURAL.test(v.name));
+    pickedVoice =
+      nat.find(v => DE_FEMALE.test(v.name)) ||       // beste: neurale, weibliche Stimme
+      nat[0] ||                                      // sonst irgendeine neurale
+      deVoices.find(v => /google/i.test(v.name)) ||  // Google Deutsch (weiblich, natürlich)
+      deVoices.find(v => DE_FEMALE.test(v.name)) ||  // z. B. Katja (weiblicher, natürlicher als Hedda)
+      deVoices.find(v => /Hedda/i.test(v.name)) ||   // Hedda nur als weiblicher Notnagel
+      deVoices[0] || null;
+    populateVoiceSelect();
+  }
+  function populateVoiceSelect(){
+    const sel = document.getElementById('voiceSel'); if (!sel) return;
+    sel.innerHTML = deVoices.length
+      ? deVoices.map(v => '<option value="' + v.voiceURI + '"' + (pickedVoice && v.voiceURI === pickedVoice.voiceURI ? ' selected' : '') + '>' + (DE_NATURAL.test(v.name) ? '★ ' : '') + v.name.replace('Microsoft ', '') + '</option>').join('')
+      : '<option>keine deutsche Stimme gefunden</option>';
   }
   if ('speechSynthesis' in window){ pickVoice(); speechSynthesis.onvoiceschanged = pickVoice; }
   function clearVoice(){ voTimers.forEach(clearTimeout); voTimers = []; if ('speechSynthesis' in window) speechSynthesis.cancel(); utters = []; }
@@ -840,7 +864,7 @@
       if (!voiceOn) return;
       const u = new SpeechSynthesisUtterance(line[1]);
       if (pickedVoice) u.voice = pickedVoice;
-      u.lang = 'de-DE'; u.rate = line[2]; u.pitch = line[3]; u.volume = 1;
+      u.lang = 'de-DE'; u.rate = line[2] * 0.97; u.pitch = Math.min(1.5, line[3] + 0.08); u.volume = 1;   // wärmer, freundlicher
       utters.push(u); speechSynthesis.speak(u);
     }, line[0] * 1000)));
   }
@@ -854,6 +878,17 @@
   voiceBtn.addEventListener('click', () => {
     voiceOn = !voiceOn; voiceBtn.classList.toggle('off', !voiceOn); voiceBtn.setAttribute('aria-pressed', String(!voiceOn));
     if (!voiceOn) clearVoice();
+  });
+  const voiceSel = document.getElementById('voiceSel');
+  if (voiceSel) voiceSel.addEventListener('change', () => { pickedVoice = deVoices.find(v => v.voiceURI === voiceSel.value) || pickedVoice; });
+  const voiceTest = document.getElementById('voiceTest');
+  if (voiceTest) voiceTest.addEventListener('click', () => {
+    if (!('speechSynthesis' in window)) return;
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance('Hallo! So klingt Effyra. Dein Alltag ist geplant – und du gewinnst echte Lebenszeit zurück.');
+    if (pickedVoice) u.voice = pickedVoice;
+    u.lang = 'de-DE'; u.rate = 0.95; u.pitch = 1.12; u.volume = 1;
+    speechSynthesis.speak(u);
   });
   replay.addEventListener('click', () => play(true));
   playBtn.addEventListener('click', () => play(true));
