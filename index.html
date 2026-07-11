@@ -6054,6 +6054,12 @@ function vaRunLocal(text) {
     return true;
   }
 
+  /* Ab hier: generische Aktionen (Tanken, Einnahme, Ausgabe, Termin, Aufgabe, Notiz …).
+     Ist die echte KI verfügbar, übernimmt der AGENT (versteht beliebige Formulierungen, Wort-Zahlen,
+     relative Daten, Mehrfach-Aktionen) → hier abbrechen, damit sendChat an agentReply() weiterreicht.
+     Ohne KI (offline) laufen die regelbasierten Erkenner unten als Fallback. */
+  if (canRealAI()) return false;
+
   /* Fahrzeug: Tankvorgang */
   if (/\b(getankt|tanke|tanken|tankvorgang|vollgetankt|betankt|sprit)\b/.test(t)) {
     const cost = vaParseAmount(t);
@@ -6188,6 +6194,201 @@ function vaRunLocal(text) {
   return false;
 }
 
+/* ============================== EFFYRA AGENT (Intent → Tools → echte Aktion) ==============================
+   Zentrale Agenten-Schicht: Die KI antwortet nicht nur, sondern erkennt die Absicht und gibt strukturierte
+   Tool-Aufrufe zurück, die hier client-seitig validiert und über die echten Datenfunktionen ausgeführt werden.
+   Neue Fähigkeiten = einfach ein Eintrag in AGENT_TOOLS (der System-Prompt wird daraus automatisch erzeugt). */
+function agentNum(v) {
+  if (v == null) return null;
+  if (typeof v === 'number') return isFinite(v) ? v : null;
+  let s = String(v).replace(/[^0-9.,-]/g, '');
+  if (s.indexOf(',') > -1 && s.indexOf('.') > -1) s = s.replace(/\./g, '').replace(',', '.');
+  else if (s.indexOf(',') > -1) s = s.replace(',', '.');
+  const n = parseFloat(s); return isFinite(n) ? n : null;
+}
+function agentDate(v) {
+  if (!v) return todayISO();
+  const s = String(v).toLowerCase().trim();
+  if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
+  if (/heute|today/.test(s)) return todayISO();
+  if (/übermorgen|uebermorgen/.test(s)) return addDays(todayISO(), 2);
+  if (/morgen|tomorrow/.test(s)) return addDays(todayISO(), 1);
+  if (/gestern|yesterday/.test(s)) return addDays(todayISO(), -1);
+  return vaParseDate(s) || todayISO();
+}
+function agentTime(v) {
+  if (!v) return null;
+  const m = String(v).match(/(\d{1,2})[:.h ]?(\d{2})?/);
+  if (m) return pad(+m[1]) + ':' + pad(+(m[2] || 0));
+  return vaParseTime(String(v));
+}
+/* Tool-Registry – jede Fähigkeit der App, die per Sprache/Text steuerbar ist. */
+const AGENT_TOOLS = {
+  create_expense: {
+    desc: 'Geld ausgegeben, gekauft, bezahlt → Ausgabe in den Finanzen anlegen.',
+    params: 'amount:Zahl(€), category:(Lebensmittel|Mobilität|Wohnen|Freizeit|Restaurant|Gesundheit|Kleidung|Kinder|Sonstiges), description:Text, date, recurring:bool',
+    run(p) {
+      const a = agentNum(p.amount); if (a == null) return null;
+      ensureBudget();
+      const label = vaCap(String(p.category || p.description || 'Ausgabe').trim());
+      store.budget.entries.push({ id: uid(), kind: 'expense', label, amount: a, recurring: !!p.recurring, date: agentDate(p.date) });
+      save(); vaContext = { type: 'expense', label };
+      return '🧾 Ausgabe erfasst: ' + eur(a) + ' – „' + label + '"' + (p.recurring ? ' (monatlich)' : '') + '.';
+    }
+  },
+  create_income: {
+    desc: 'Geld eingenommen/erhalten (Gehalt, Gutschrift) → Einnahme anlegen.',
+    params: 'amount:Zahl(€), label:Text, date, recurring:bool',
+    run(p) {
+      const a = agentNum(p.amount); if (a == null) return null;
+      ensureBudget();
+      const label = vaCap(String(p.label || p.description || 'Einnahme').trim());
+      store.budget.entries.push({ id: uid(), kind: 'income', label, amount: a, recurring: !!p.recurring, date: agentDate(p.date) });
+      save(); vaContext = { type: 'income', label };
+      return '💶 Einnahme erfasst: ' + eur(a) + ' – „' + label + '"' + (p.recurring ? ' (monatlich)' : '') + '.';
+    }
+  },
+  create_vehicle_expense: {
+    desc: 'Getankt/Sprit/Fahrzeug-Kosten → Tankvorgang im Fahrzeug-Log (Bereich Auto & Motorrad).',
+    params: 'amount:Zahl(€), liters:Zahl, km:Zahl, vehicle:(Auto|Motorrad|Name), date',
+    run(p) {
+      const cost = agentNum(p.amount), liters = agentNum(p.liters) || 0, km = agentNum(p.km) || 0;
+      if (cost == null && !liters) return null;
+      const vn = String(p.vehicle || '').toLowerCase(); let v;
+      if (/motorrad|roller|bike/.test(vn)) v = (store.vehicles || []).find(x => x.type === 'motorrad') || pickOrCreateVehicle('Motorrad');
+      else if (/auto|wagen|pkw|fahrzeug/.test(vn) || !vn) v = (store.vehicles || []).find(x => x.type === 'auto') || (store.vehicles && store.vehicles[0]) || pickOrCreateVehicle('Auto');
+      else v = pickOrCreateVehicle(p.vehicle);
+      v.fuel = v.fuel || [];
+      v.fuel.push({ id: uid(), date: agentDate(p.date), km, liters, cost: cost || 0, full: true });
+      save(); vaContext = { type: 'vehicle' };
+      return '⛽ Tankvorgang für „' + v.name + '": ' + (liters ? liters.toLocaleString('de-DE') + ' L ' : '') + (cost != null ? eur(cost) : '') + (km ? ' bei ' + km.toLocaleString('de-DE') + ' km' : '') + '.';
+    }
+  },
+  create_event: {
+    desc: 'Termin/Kalendereintrag (Arzt, Treffen, Meeting) → Kalender.',
+    params: 'title:Text, date, time:HH:MM',
+    run(p) {
+      const ev = addEvent(vaCap(String(p.title || 'Termin').trim()), agentDate(p.date), agentTime(p.time), 'per Effyra AI', 'chat');
+      if (!ev) return null; if (currentView === 'chat') RENDERERS.chat(); vaContext = { type: 'event' };
+      return '📅 Termin: „' + ev.title + '" am ' + fmtDate(ev.date) + (ev.time ? ' um ' + ev.time + ' Uhr' : '') + '.';
+    }
+  },
+  create_task: {
+    desc: 'Aufgabe/To-do/„ich muss …" → Aufgabenliste.',
+    params: 'title:Text, due:date, priority:(high|med|low)',
+    run(p) {
+      const pr = /hoch|high|dringend/.test(String(p.priority || '')) ? 'high' : /nied|low/.test(String(p.priority || '')) ? 'low' : 'med';
+      const t = addTask(vaCap(String(p.title || '').trim()), p.due ? agentDate(p.due) : null, pr, 'chat');
+      if (!t) return null; if (currentView === 'chat') RENDERERS.chat(); vaContext = { type: 'task' };
+      return '✅ Aufgabe: „' + t.title + '"' + (t.due ? ' – fällig ' + fmtDate(t.due) : '') + '.';
+    }
+  },
+  create_reminder: {
+    desc: 'Erinnerung („erinnere mich …") → Aufgabe mit Fälligkeit.',
+    params: 'title:Text, due:date',
+    run(p) {
+      const t = addTask('🔔 ' + vaCap(String(p.title || '').trim()), p.due ? agentDate(p.due) : todayISO(), 'med', 'chat');
+      if (!t) return null; if (currentView === 'chat') RENDERERS.chat(); vaContext = { type: 'task' };
+      return '🔔 Erinnerung: „' + t.title.replace(/^🔔 /, '') + '"' + (t.due ? ' – ' + fmtDate(t.due) : '') + '.';
+    }
+  },
+  create_shopping_item: {
+    desc: 'Etwas einkaufen/besorgen → Einkaufs-Aufgabe.',
+    params: 'item:Text, quantity:Text, due:date',
+    run(p) {
+      const it = String(p.item || p.title || '').trim(); if (!it) return null;
+      const t = addTask('🛒 ' + (p.quantity ? p.quantity + ' ' : '') + vaCap(it), p.due ? agentDate(p.due) : null, 'low', 'chat');
+      if (!t) return null; if (currentView === 'chat') RENDERERS.chat();
+      return '🛒 Einkauf: „' + t.title.replace(/^🛒 /, '') + '".';
+    }
+  },
+  create_note: {
+    desc: 'Notiz/„merk dir …" → Notiz (als Aufgabe abrufbar).',
+    params: 'text:Text',
+    run(p) {
+      const n = String(p.text || p.title || '').trim(); if (!n) return null;
+      const t = addTask('📝 ' + vaCap(n), null, 'low', 'chat'); if (!t) return null; if (currentView === 'chat') RENDERERS.chat();
+      return '📝 Notiz: „' + t.title.replace(/^📝 /, '') + '".';
+    }
+  },
+  create_recurring_reminder: {
+    desc: 'Wiederkehrende Erinnerung („jeden Freitag …") → nächster Kalendertermin, wöchentlich markiert.',
+    params: 'title:Text, weekday:(montag..sonntag), time:HH:MM',
+    run(p) {
+      const map = { sonntag: 0, montag: 1, dienstag: 2, mittwoch: 3, donnerstag: 4, freitag: 5, samstag: 6, sonnabend: 6 };
+      const wd = map[String(p.weekday || '').toLowerCase()];
+      let date = todayISO();
+      if (wd != null) { const d = new Date(); for (let i = 1; i <= 7; i++) { const nx = new Date(d.getTime() + i * 864e5); if (nx.getDay() === wd) { date = nx.toISOString().slice(0, 10); break; } } }
+      const title = '🔁 ' + vaCap(String(p.title || '').trim()) + (p.weekday ? ' (jeden ' + vaCap(String(p.weekday)) + ')' : '');
+      const ev = addEvent(title, date, agentTime(p.time), 'wöchentlich', 'chat'); if (!ev) return null; if (currentView === 'chat') RENDERERS.chat();
+      return '🔁 Wiederkehrend: „' + ev.title + '" – nächster Termin ' + fmtDate(ev.date) + '.';
+    }
+  },
+  create_medication: {
+    desc: 'Medikament für ein Familienmitglied → Medikamentenplan (Familienzentrale).',
+    params: 'name:Text, member:Text, dose:Text, time:HH:MM, date (leer=täglich)',
+    run(p) {
+      if (typeof ensureFamily === 'function') ensureFamily();
+      const members = (store.family && store.family.members) || [];
+      if (!members.length) return '💊 Bitte zuerst ein Familienmitglied in der Familienzentrale anlegen.';
+      let mem = members[0];
+      if (p.member) { const q = String(p.member).toLowerCase(); mem = members.find(m => (m.name || '').toLowerCase().indexOf(q) >= 0) || mem; }
+      store.family.meds = store.family.meds || [];
+      const tm = agentTime(p.time);
+      store.family.meds.push({ id: uid(), memberId: mem.id, name: vaCap(String(p.name || 'Medikament')), dose: String(p.dose || ''), date: p.date ? agentDate(p.date) : '', times: tm ? [tm] : [], createdAt: Date.now() });
+      save();
+      return '💊 Medikament für ' + mem.name + ': „' + vaCap(String(p.name || '')) + '"' + (tm ? ' um ' + tm + ' Uhr' : ' (täglich)') + '.';
+    }
+  }
+};
+function buildAgentPrompt() {
+  const wd = ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'][new Date().getDay()];
+  const tools = Object.keys(AGENT_TOOLS).map(k => '- ' + k + ': ' + AGENT_TOOLS[k].desc + ' | params: ' + AGENT_TOOLS[k].params).join('\n');
+  const veh = ((store.vehicles || []).map(v => v.name).join(', ')) || 'keine';
+  const fam = (((store.family && store.family.members) || []).map(m => m.name).join(', ')) || 'keine';
+  return [
+    'Du bist Effyra, ein handelnder KI-Assistent (Agent) in einer deutschen Alltags-App.',
+    'Erkenne die Absicht der Nutzernachricht und entscheide, welche AKTIONEN auszuführen sind. Handle OHNE Rückfrage, wenn die Absicht klar ist.',
+    'Antworte AUSSCHLIESSLICH mit EINEM JSON-Objekt (kein Text davor/danach, kein Codeblock):',
+    '{"reply":"kurze, freundliche Bestätigung/Antwort auf Deutsch","actions":[{"tool":"NAME","params":{...}}]}',
+    'Ist keine App-Aktion nötig (reine Frage/Smalltalk), gib "actions":[] und beantworte hilfreich in "reply".',
+    'Heute ist ' + todayISO() + ' (' + wd + '). Währung EUR. Datum als YYYY-MM-DD (auch "today"/"tomorrow"/"yesterday"). Beträge als reine Zahl (100, nicht "100 €").',
+    'Verfügbare Tools:',
+    tools,
+    'Kontext – Fahrzeuge: ' + veh + '. Familienmitglieder: ' + fam + '.',
+    'Regeln: Erfinde keine Beträge/Daten. Mehrere Aktionen sind erlaubt. Wähle die passendste Kategorie. Für „getankt/Sprit" nutze create_vehicle_expense, sonst create_expense.'
+  ].join('\n');
+}
+function parseAgentJSON(raw) {
+  if (!raw) return null;
+  let s = String(raw).trim().replace(/^```(?:json)?/i, '').replace(/```$/, '').trim();
+  const i = s.indexOf('{'), j = s.lastIndexOf('}');
+  if (i < 0 || j < 0 || j < i) return null;
+  try { const o = JSON.parse(s.slice(i, j + 1)); if (o && typeof o === 'object' && ('actions' in o || 'reply' in o)) return o; } catch (e) {}
+  return null;
+}
+async function agentReply(text) {
+  const history = store.chat.slice(-8).filter(m => m.text).map(m => ({ role: m.role === 'user' ? 'user' : 'assistant', content: m.text }));
+  const raw = await aiCall({
+    op: vaLastSpoken ? 'voice' : 'question',
+    model: store.settings.model,
+    max_tokens: 900,
+    system: buildAgentPrompt() + (activeDocContext ? '\n\nDer Nutzer bezieht sich evtl. auf dieses gescannte Dokument „' + activeDocContext.title + '":\n' + activeDocContext.text : ''),
+    messages: history.length ? history : [{ role: 'user', content: text }]
+  });
+  const plan = parseAgentJSON(raw);
+  if (!plan) { pushBot(String(raw || '').replace(/```/g, '').trim() || 'Ok.'); return; }
+  const done = [];
+  (Array.isArray(plan.actions) ? plan.actions : []).forEach(a => {
+    if (!a || !a.tool) return; const tool = AGENT_TOOLS[a.tool]; if (!tool) return;
+    try { const s = tool.run(a.params || {}); if (s) done.push(s); } catch (e) { /* Aktion übersprungen */ }
+  });
+  let msg = (plan.reply || '').trim();
+  if (done.length) msg = (msg ? msg + '\n\n' : '') + done.join('\n');
+  if (!msg) msg = 'Erledigt. ✅';
+  pushBot(msg);
+}
+
 async function sendChat(text, spoken) {
   text = (text || '').trim();
   if (!text || botTyping) return;
@@ -6197,15 +6398,15 @@ async function sendChat(text, spoken) {
   RENDERERS.chat();
   /* 1) offene Ja/Nein-Bestätigung */
   if (vaPending) { vaHandleConfirm(text); return; }
-  /* 2) lokale Intent-Engine (funktioniert für Sprache UND Text) */
-  try { if (vaRunLocal(text)) return; } catch (e) { /* bei Parser-Fehler an KI/Demo weiterreichen */ }
-  /* 3) freie KI-Antwort bzw. Demo */
+  /* 2) lokale Intent-Engine (schnell/offline für häufige Formulierungen) */
+  try { if (vaRunLocal(text)) return; } catch (e) { /* bei Parser-Fehler an Agent/Demo weiterreichen */ }
+  /* 3) Agent (KI erkennt Absicht → führt Aktionen aus) bzw. Demo */
   botTyping = true;
   RENDERERS.chat();
   vaSetStatus('processing');
   try {
     if (canRealAI()) {
-      await realReply(text);
+      await agentReply(text);
     } else {
       await new Promise(r => setTimeout(r, 800 + Math.random() * 500));
       demoReply(text);
