@@ -1453,8 +1453,13 @@ async function copyText(text) {
 }
 
 /* ============================== STORE ============================== */
-const DATA_KEY = 'nexa_data';
-const KEY_KEY = 'nexa_key';
+const DATA_KEY = 'effyra_data';
+const KEY_KEY = 'effyra_key';
+/* Einmalige Migration alter „nexa_*"-Schlüssel auf „effyra_*" (kein Datenverlust beim Rebrand). */
+(function () {
+  const pairs = [['nexa_data', 'effyra_data'], ['nexa_key', 'effyra_key'], ['nexa_i18n_cache', 'effyra_i18n_cache'], ['nexa_account', 'effyra_account'], ['nexa_trial0', 'effyra_trial0']];
+  try { pairs.forEach(function (p) { const v = localStorage.getItem(p[0]); if (v != null && localStorage.getItem(p[1]) == null) localStorage.setItem(p[1], v); }); } catch (e) {}
+})();
 
 const store = Object.assign({
   onboarded: false,
@@ -1844,7 +1849,7 @@ const TDICT = {};
 });
 
 /* KI-Cache (dauerhaft) */
-const I18N_CACHE_KEY = 'nexa_i18n_cache';
+const I18N_CACHE_KEY = 'effyra_i18n_cache';
 let aiCache = (function () { try { return JSON.parse(localStorage.getItem(I18N_CACHE_KEY)) || {}; } catch (e) { return {}; } })();
 function saveAiCache() { try { localStorage.setItem(I18N_CACHE_KEY, JSON.stringify(aiCache)); } catch (e) {} }
 
@@ -2091,8 +2096,8 @@ const FN_URL = (name) => SUPABASE_URL + '/functions/v1/' + name;
 const ENFORCE_TIERS = false;
 
 /* ============================== AUTH & PLAN ============================== */
-const ACC_KEY = 'nexa_account';
-const TRIAL0_KEY = 'nexa_trial0';
+const ACC_KEY = 'effyra_account';
+const TRIAL0_KEY = 'effyra_trial0';
 const TRIAL_DAYS = 3;
 /* SHA-256-Hashes gültiger Freischalt-Codes – die Codes selbst stehen nicht im Quelltext */
 const PREMIUM_HASHES = [

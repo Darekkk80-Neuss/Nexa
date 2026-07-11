@@ -7,7 +7,7 @@
 //   STRIPE_PRICE_MEDIUM      (price_… für 4,99 € einmalig)
 //   STRIPE_PRICE_PREMIUM     (price_… für 4,99 €/Monat, wiederkehrend)
 //   STRIPE_PRICE_TOPUP       (price_… für 4,99 € einmalig, +500 Abfragen)
-//   APP_URL                  (z. B. https://darekkk80-neuss.github.io/Nexa/)
+//   APP_URL                  (z. B. https://darekkk80-neuss.github.io/Effyra/)
 // Automatisch vorhanden: SUPABASE_URL, SUPABASE_ANON_KEY, SUPABASE_SERVICE_ROLE_KEY
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';

@@ -4,7 +4,7 @@
 
 Effyra ist ein Alltagshelfer als Web-App: Briefe fotografieren und in einfachen Worten verstehen, Fristen automatisch erkennen, Aufgaben und Termine organisieren – und ein KI-Chat, der den Alltag plant.
 
-**➡️ Live ausprobieren: https://darekkk80-neuss.github.io/Nexa/**
+**➡️ Live ausprobieren: https://darekkk80-neuss.github.io/Effyra/**
 
 ## Funktionen
 

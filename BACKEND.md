@@ -1,4 +1,4 @@
-# NEXA – Backend einrichten (Supabase, kostenlos)
+# Effyra – Backend einrichten (Supabase, kostenlos)
 
 Mit dem Backend werden Nutzer **zentral verwaltet**: Du siehst alle Konten in einem Dashboard, die 3-Tage-Testphase startet serverseitig (nicht manipulierbar), und Premium-Codes sind einmalig einlösbar. Der kostenlose Tarif reicht für bis zu **50.000 monatlich aktive Nutzer**.
 
@@ -14,7 +14,7 @@ Die App erkennt automatisch, ob das Backend konfiguriert ist:
 [supabase.com](https://supabase.com) → **Start your project** → am einfachsten **mit GitHub anmelden** (kostenlos, keine Kreditkarte).
 
 ### 2. Projekt anlegen
-**New project** → Name z. B. `nexa`, Region **Central EU (Frankfurt)** (Datenschutz/DSGVO), Datenbank-Passwort generieren lassen und sicher notieren. Dann ~2 Minuten warten, bis das Projekt bereit ist.
+**New project** → Name z. B. `effyra`, Region **Central EU (Frankfurt)** (Datenschutz/DSGVO), Datenbank-Passwort generieren lassen und sicher notieren. Dann ~2 Minuten warten, bis das Projekt bereit ist.
 
 ### 3. Datenbank einrichten
 Linke Seitenleiste → **SQL Editor** → **New query** → den **kompletten Inhalt** der Datei [`supabase-setup.sql`](supabase-setup.sql) einfügen → **Run**. Unten sollte „Success" erscheinen.
@@ -27,7 +27,7 @@ Linke Seitenleiste → **SQL Editor** → **New query** → den **kompletten Inh
 > Warum? Im kostenlosen Tarif verschickt Supabase nur ~2 Bestätigungs-Mails pro Stunde – neue Nutzer könnten sich sonst nicht sofort anmelden. Später (mit eigenem SMTP-Server, z. B. Resend kostenlos) kannst du die Bestätigung wieder aktivieren.
 
 ### 5. Site-URL eintragen (für „Passwort vergessen")
-**Authentication → URL Configuration** → **Site URL**: `https://darekkk80-neuss.github.io/Nexa/` → Save.
+**Authentication → URL Configuration** → **Site URL**: `https://darekkk80-neuss.github.io/Effyra/` → Save.
 
 ### 6. Die zwei Schlüsselwerte kopieren
 **Project Settings (Zahnrad) → API**:
@@ -93,7 +93,7 @@ supabase secrets set STRIPE_WEBHOOK_SECRET=whsec_...      # aus Schritt E
 supabase secrets set STRIPE_PRICE_MEDIUM=price_...        # aus Schritt D
 supabase secrets set STRIPE_PRICE_PREMIUM=price_...
 supabase secrets set STRIPE_PRICE_TOPUP=price_...
-supabase secrets set APP_URL=https://darekkk80-neuss.github.io/Nexa/
+supabase secrets set APP_URL=https://darekkk80-neuss.github.io/Effyra/
 ```
 `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY` sind in Functions automatisch vorhanden.
 

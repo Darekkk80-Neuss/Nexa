@@ -1,4 +1,4 @@
-# NEXA – Berechtigungskonzept & Kostenmodell
+# Effyra – Berechtigungskonzept & Kostenmodell
 
 ## 1. Rollen & Rechte
 
@@ -19,14 +19,14 @@
 
 ## 3. Ehrliche Einordnung (wichtig)
 
-NEXA ist eine reine Client-App ohne Server. Das Berechtigungssystem läuft vollständig im Browser und ist damit eine **Komfort- und Produkt-Sperre, kein echter Schutz**: Wer die Entwicklerkonsole öffnet, kann sie umgehen. Für die aktuelle Phase (Prototyp, Freunde & Familie, Validierung der Idee) ist das völlig ausreichend und branchenüblich. Sobald echtes Geld fließt, braucht es die Architektur aus Abschnitt 5.
+Effyra ist eine reine Client-App ohne Server. Das Berechtigungssystem läuft vollständig im Browser und ist damit eine **Komfort- und Produkt-Sperre, kein echter Schutz**: Wer die Entwicklerkonsole öffnet, kann sie umgehen. Für die aktuelle Phase (Prototyp, Freunde & Familie, Validierung der Idee) ist das völlig ausreichend und branchenüblich. Sobald echtes Geld fließt, braucht es die Architektur aus Abschnitt 5.
 
 ## 4. KI-Kostenmodell – Empfehlung
 
 **Das Kernproblem:** Echte KI (Foto-Analyse, freier Chat) kostet pro Anfrage Geld bei Anthropic. Irgendjemand muss das bezahlen. Drei Modelle, als Ausbaustufen gedacht:
 
 ### Stufe 1 – Heute: BYOK („Bring Your Own Key") + Demo-Modus
-Genau das, was NEXA jetzt macht: Ohne Schlüssel Demo-Modus, mit eigenem Anthropic-API-Key echte KI. **Kosten für den Betreiber: 0 €.** Jeder Nutzer zahlt seine eigene KI-Nutzung direkt bei Anthropic. Nachteil: Normale Nutzer haben keinen API-Key – das skaliert nicht für „Millionen von Menschen", ist aber perfekt zum Validieren.
+Genau das, was Effyra jetzt macht: Ohne Schlüssel Demo-Modus, mit eigenem Anthropic-API-Key echte KI. **Kosten für den Betreiber: 0 €.** Jeder Nutzer zahlt seine eigene KI-Nutzung direkt bei Anthropic. Nachteil: Normale Nutzer haben keinen API-Key – das skaliert nicht für „Millionen von Menschen", ist aber perfekt zum Validieren.
 
 ### Stufe 2 – Bei ersten zahlenden Nutzern: Du zahlst die KI, Nutzer zahlen dich
 Das klassische Freemium-Modell aus deiner Idee (8–15 €/Monat). Die Rechnung geht auf, weil KI-Anfragen sehr günstig sind (Preise Stand Juli 2026, Claude Sonnet 5: 3 $ Input / 15 $ Output je Mio. Token; Haiku 4.5: 1 $/5 $):
