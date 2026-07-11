@@ -319,7 +319,12 @@ label.fld{display:block;font-size:12.5px;font-weight:600;color:var(--muted);marg
 .mini .mini-when.warn{color:var(--warn)}
 .mini .mini-when.late{color:var(--danger)}
 /* ---- Cockpit: Hero-Header, kompakte Stats, Themen-Container ---- */
-.dash-hero{margin-bottom:20px}
+.dash-hero{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:20px}
+.dash-hero-main{flex:1;min-width:0}
+.theme-toggle{flex:none;display:inline-flex;gap:2px;padding:3px;border-radius:999px;background:var(--card2);border:1px solid var(--border)}
+.theme-toggle button{width:32px;height:32px;border:none;background:none;border-radius:999px;cursor:pointer;font-size:14px;line-height:1;display:inline-flex;align-items:center;justify-content:center;color:var(--muted);font-weight:800;transition:.15s}
+.theme-toggle button:hover{color:var(--text)}
+.theme-toggle button.active{background:var(--grad);color:#fff;box-shadow:0 2px 8px rgba(124,58,237,.35)}
 .dash-sub{color:var(--muted);font-size:15px;line-height:1.45;margin-top:7px;max-width:46ch}
 .dash-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:26px}
 .dash-stats .stat{padding:13px 6px}
@@ -1084,9 +1089,16 @@ body.lang-switching main,body.lang-switching .sidebar,body.lang-switching .topba
     <!-- ============================== DASHBOARD ============================== -->
     <section class="view" id="view-dashboard">
       <header class="dash-hero">
-        <h1 id="greetLine">Guten Tag<span class="grad-text"></span></h1>
-        <p id="greetSub" class="dash-sub"></p>
-        <div id="trialSlot"></div>
+        <div class="dash-hero-main">
+          <h1 id="greetLine">Guten Tag<span class="grad-text"></span></h1>
+          <p id="greetSub" class="dash-sub"></p>
+          <div id="trialSlot"></div>
+        </div>
+        <div class="theme-toggle" id="themeQuick" role="group" aria-label="Erscheinungsbild">
+          <button type="button" data-theme-set="auto" title="Automatisch (System)" aria-label="Automatisch">A</button>
+          <button type="button" data-theme-set="light" title="Heller Modus" aria-label="Hell">☀️</button>
+          <button type="button" data-theme-set="dark" title="Dunkler Modus" aria-label="Dunkel">🌙</button>
+        </div>
       </header>
       <div class="dash-stats" id="statRow"></div>
       <div id="weatherWidget"></div>
@@ -1498,7 +1510,10 @@ function applyTheme() {
   const prefersLight = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches;
   const light = t === 'light' || (t === 'auto' && prefersLight);
   document.documentElement.dataset.theme = light ? 'light' : 'dark';
+  syncThemeSegs();
 }
+/* Aktiv-Zustand aller Theme-Umschalter (#themeQuick im Dashboard + #themeSeg in den Einstellungen) angleichen. */
+function syncThemeSegs() { try { $$('[data-theme-set]').forEach(b => b.classList.toggle('active', b.dataset.themeSet === themePref())); } catch (e) {} }
 try {
   const mq = window.matchMedia('(prefers-color-scheme: light)');
   mq.addEventListener ? mq.addEventListener('change', () => { if (themePref() === 'auto') applyTheme(); })
@@ -5734,7 +5749,10 @@ $('#btnChangeLang').addEventListener('click', () => openLangPicker(false));
 $('#themeSeg').addEventListener('click', e => {
   const b = e.target.closest('[data-theme-set]'); if (!b) return;
   store.settings.theme = b.dataset.themeSet; save(); applyTheme();
-  $$('#themeSeg button').forEach(x => x.classList.toggle('active', x === b));
+});
+$('#themeQuick').addEventListener('click', e => {
+  const b = e.target.closest('[data-theme-set]'); if (!b) return;
+  store.settings.theme = b.dataset.themeSet; save(); applyTheme();
 });
 
 function renderAccountCard() {
