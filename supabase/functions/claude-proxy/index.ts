@@ -17,6 +17,8 @@ const CORS = {
 };
 const ALLOWED_MODELS = ['gpt-5-mini'];   // nur das im OpenAI-Projekt freigegebene Modell → alles andere wird darauf abgebildet
 const DEFAULT_MODEL = 'gpt-5-mini';
+// Credit-Kosten je Operation (serverseitig = fälschungssicher, Client kann sie nicht drücken)
+const OP_COST: Record<string, number> = { question: 1, text: 2, voice: 2, scan: 5, invoice: 10, weekplan: 5 };
 
 function json(obj: unknown, status = 200) {
   return new Response(JSON.stringify(obj), { status, headers: { ...CORS, 'content-type': 'application/json' } });
@@ -52,8 +54,9 @@ Deno.serve(async (req) => {
   const messages = body.system ? [{ role: 'system', content: body.system }, ...inMsgs] : inMsgs;
 
   // 3) Kontingent serverseitig verbrauchen (atomar, prüft Premium + Restmenge)
+  const cost = OP_COST[String(body?.op || '')] || 1;   // Credits je nach Operation
   const admin = createClient(SUPABASE_URL, SERVICE);
-  const { data: consumed, error: cerr } = await admin.rpc('consume_ai', { p_user: uid, p_n: 1 });
+  const { data: consumed, error: cerr } = await admin.rpc('consume_ai', { p_user: uid, p_n: cost });
   if (cerr) return json({ error: 'quota_error' }, 500);
   if (!consumed?.ok) {
     // reason: not_premium | quota_exceeded | no_profile

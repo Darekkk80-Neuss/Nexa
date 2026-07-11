@@ -332,6 +332,15 @@ label.fld{display:block;font-size:12.5px;font-weight:600;color:var(--muted);marg
 .auth-birth span{font-weight:400;opacity:.82}
 /* Play-Store-sicher: alle In-App-Kauf-Buttons ausblenden (Freischalt-Code bleibt) */
 body.store-safe [data-buy]{display:none!important}
+/* Credit-Verbrauch-Übersicht */
+.credit-info{margin-top:10px}
+.credit-info summary{cursor:pointer;font-size:12.5px;color:var(--muted);font-weight:600;list-style:none}
+.credit-info summary::-webkit-details-marker{display:none}
+.credit-table{width:100%;border-collapse:collapse;margin-top:8px;font-size:13px}
+.credit-table th{text-align:left;color:var(--faint);font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.3px;padding:2px 0}
+.credit-table th:last-child,.credit-table td:last-child{text-align:right}
+.credit-table td{padding:5px 0;border-top:1px solid var(--border);color:var(--text)}
+.credit-table td:last-child{font-weight:800;color:var(--focus)}
 .share-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 0;border-bottom:1px solid var(--border)}
 .share-lbl{font-size:14px;color:var(--text);font-weight:600}
 .share-toggle{flex:none;border:1px solid var(--border);background:var(--card2);color:var(--muted);border-radius:999px;padding:6px 12px;font-size:12.5px;font-weight:700;cursor:pointer;min-height:34px;transition:.15s}
@@ -2333,7 +2342,7 @@ async function callClaudeHosted(payload) {
     res = await fetch(FN_URL('claude-proxy'), {
       method: 'POST',
       headers: { 'content-type': 'application/json', 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + session.access_token },
-      body: JSON.stringify({ model: payload.model, max_tokens: payload.max_tokens, messages: payload.messages, system: payload.system })
+      body: JSON.stringify({ op: payload.op, model: payload.model, max_tokens: payload.max_tokens, messages: payload.messages, system: payload.system })
     });
   } catch (e) { throw new Error('Keine Verbindung zur KI. Bist du online?'); }
   const data = await res.json().catch(() => ({}));
@@ -3348,7 +3357,7 @@ async function dgAI() {
   toast('Effyra verbessert den Text …');
   try {
     const out = await aiCall({
-      model: store.settings.model, max_tokens: 1200,
+      op: 'text', model: store.settings.model, max_tokens: 1200,
       messages: [{ role: 'user', content: 'Du bist ein Assistent für deutsche Alltagsbriefe. Formuliere den folgenden Brieftext höflich, klar und professionell aus. Behalte alle Fakten, Namen, Nummern und Daten exakt bei. Gib ausschließlich den reinen Brieftext zurück – ohne Briefkopf, ohne Anrede ("Sehr geehrte…"), ohne Grußformel, ohne Unterschrift, ohne Erklärungen.\n\nText:\n' + cur }]
     });
     dgOverrideBody = (out || '').trim() || cur;
@@ -3887,6 +3896,21 @@ RENDERERS.family = function () {
     famPull().then(changed => { if (changed && currentView === 'family') RENDERERS.family(); });
   }
 };
+/* Credit-Abrechnungsgrundlage (muss zu OP_COST im Proxy passen). Transparent für Nutzer angezeigt. */
+const CREDIT_TABLE = [
+  { label: 'Einfache KI-Frage', cost: 1 },
+  { label: 'Text / Brief erstellen', cost: 2 },
+  { label: 'Sprachassistent', cost: 2 },
+  { label: 'Foto / Dokument scannen', cost: 5 },
+  { label: 'Rechnung analysieren', cost: 10 },
+  { label: 'Wochenplan erstellen', cost: 5 }
+];
+function creditTableHtml() {
+  let h = '<details class="credit-info"><summary>ℹ️ Credit-Verbrauch je Funktion</summary><table class="credit-table"><tr><th>Funktion</th><th>Credits</th></tr>';
+  CREDIT_TABLE.forEach(r => { h += '<tr><td>' + r.label + '</td><td>' + r.cost + '</td></tr>'; });
+  h += '</table><div class="sub" style="margin-top:4px">Credits werden nur bei echter KI-Nutzung abgezogen. Kinderkonten verbrauchen keine.</div></details>';
+  return h;
+}
 function famAiPanel() {
   const adults = store.family.members.filter(m => m.role !== 'child');
   const used = adults.reduce((s, m) => s + (m.aiUsed || 0), 0);
@@ -3897,7 +3921,7 @@ function famAiPanel() {
     '<div class="quota-bar"><div class="quota-fill ' + (pct >= 100 ? 'full' : pct >= 90 ? 'warn' : '') + '" style="width:' + pct + '%"></div></div>' +
     '<span class="sub">' + used + ' / ' + limit + ' Credits · Reset ' + esc(reset) + '</span>';
   adults.forEach(m => { h += '<div class="fam-ai-row"><span class="kid-dot" style="background:' + m.color + '"></span>' + esc(m.name) + (m.role === 'owner' ? ' 👑' : '') + '<b>' + (m.aiUsed || 0) + '</b></div>'; });
-  h += '<div class="sub" style="margin-top:6px">Nur Erwachsene verbrauchen KI – Kinder haben keinen KI-Zugriff.</div></div>';
+  h += '<div class="sub" style="margin-top:6px">Nur Erwachsene verbrauchen KI – Kinder haben keinen KI-Zugriff.</div>' + creditTableHtml() + '</div>';
   return h;
 }
 function famPersonen() {
@@ -4812,7 +4836,7 @@ async function workAIAnalyse() {
   toast('Effyra analysiert deinen Monat …');
   try {
     const out = await aiCall({
-      model: store.settings.model, max_tokens: 900,
+      op: 'weekplan', model: store.settings.model, max_tokens: 900,
       messages: [{ role: 'user', content: 'Du bist ein freundlicher Arbeitszeit-Assistent. Analysiere kurz, klar und motivierend auf Deutsch (Du-Form) diesen Monat (' + mname + '): Ist-Stunden ' + hmDur(st.workedMin) + ', Soll ' + hmDur(st.sollMin) + ', Saldo ' + (st.overMin >= 0 ? '+' : '-') + hmDur(Math.abs(st.overMin)) + ', Arbeitstage ' + st.workDays + ', Urlaubstage ' + st.urlaub + ', Kranktage ' + st.krank + ', vergangene Arbeitstage ohne Zeiteintrag: ' + st.offen + '. Gib eine kurze Zusammenfassung, weise auf Überstunden/Minusstunden und fehlende Einträge hin und gib 2-3 konkrete Tipps zur Arbeitsplanung. Höchstens 8 Sätze, Fließtext.' }]
     });
     workAI = (out || '').trim(); RENDERERS.work();
@@ -4981,6 +5005,7 @@ async function aiAnalyze(dataUrl) {
     '- note: {"type":"note","title":"..."}\n' +
     'Ein Dokument darf mehrere findings ergeben (Werkstattrechnung → expense + deadline + event + vehicle). Erfinde nichts – nur real Vorhandenes.';
   const text = await aiCall({
+    op: 'scan',
     model: store.settings.model,
     max_tokens: 2000,
     messages: [{
@@ -5470,6 +5495,7 @@ function buildSystemPrompt() {
 async function realReply(text) {
   const history = store.chat.slice(-12).map(m => ({ role: m.role === 'user' ? 'user' : 'assistant', content: m.text }));
   const raw = await aiCall({
+    op: vaLastSpoken ? 'voice' : 'question',
     model: store.settings.model,
     max_tokens: 1024,
     system: buildSystemPrompt() + (activeDocContext ? '\n\nDer Nutzer bezieht sich auf dieses gescannte Dokument „' + activeDocContext.title + '":\n' + activeDocContext.text : ''),
@@ -5988,9 +6014,9 @@ function renderAccountCard() {
     const used = aiUsed(), lim = aiLimit(), pct = aiPct(), cls = pct >= 100 ? 'full' : pct >= 90 ? 'warn' : '';
     html += '<div class="note-box" style="margin-bottom:12px"><b>KI-Kontingent (' + aiMonthKey() + ')</b>' +
       '<div class="quota-bar"><div class="quota-fill ' + cls + '" style="width:' + Math.min(100, pct) + '%"></div></div>' +
-      '<span class="sub">' + used + ' / ' + lim + ' Abfragen · noch ' + aiRemaining() + ' übrig</span>' +
+      '<span class="sub">' + used + ' / ' + lim + ' Credits · noch ' + aiRemaining() + ' übrig</span>' +
       (pct >= 90 && !STORE_SAFE ? '<div style="margin-top:8px"><button class="btn btn-sm btn-primary" data-buy="topup">+500 nachbestellen · 4,99 €</button></div>' : '') +
-      '<div class="sub" style="margin-top:6px">Reset am 1. des Folgemonats. Alternativ eigenen Schlüssel (unten) für unbegrenzte Nutzung.</div></div>';
+      '<div class="sub" style="margin-top:6px">Reset am 1. des Folgemonats. Alternativ eigenen Schlüssel (unten) für unbegrenzte Nutzung.</div>' + creditTableHtml() + '</div>';
   } else if (tier === 'premium' && usingOwnKey()) {
     html += '<div class="note-box" style="margin-bottom:12px">🔑 Eigener API-Schlüssel aktiv – <b>unbegrenzte</b> KI, kein Kontingentverbrauch.</div>';
   }
