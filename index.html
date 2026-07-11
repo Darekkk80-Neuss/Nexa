@@ -329,6 +329,8 @@ label.fld{display:block;font-size:12.5px;font-weight:600;color:var(--muted);marg
 .fam-ai-row b{margin-left:auto;color:var(--text)}
 .auth-birth{display:block;font-size:12px;color:var(--muted);text-align:left;margin:4px 2px -4px;font-weight:600}
 .auth-birth span{font-weight:400;opacity:.82}
+/* Play-Store-sicher: alle In-App-Kauf-Buttons ausblenden (Freischalt-Code bleibt) */
+body.store-safe [data-buy]{display:none!important}
 .share-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 0;border-bottom:1px solid var(--border)}
 .share-lbl{font-size:14px;color:var(--text);font-weight:600}
 .share-toggle{flex:none;border:1px solid var(--border);background:var(--card2);color:var(--muted);border-radius:999px;padding:6px 12px;font-size:12.5px;font-weight:700;cursor:pointer;min-height:34px;transition:.15s}
@@ -2160,6 +2162,9 @@ const ALLOWED_HOSTS = ['darekkk80-neuss.github.io', 'localhost', '127.0.0.1'];
 const HOST_OK = ALLOWED_HOSTS.indexOf(location.hostname) !== -1;
 const CLOUD = !!(SUPABASE_URL && SUPABASE_ANON_KEY && window.supabase && HOST_OK);
 const sb = CLOUD ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+/* Play-Store-sicher: keine sichtbaren In-App-Käufe, solange Google Play Billing nicht verdrahtet ist.
+   (Sichtbare Preis-/Kauf-Buttons ohne Play Billing führen sonst zur Ablehnung.) Freischalt-Code bleibt. */
+const STORE_SAFE = true;
 
 /* Phase-2-Backend: auf true setzen, sobald die Edge Functions + das SQL
    (supabase-tiers.sql) deployt sind. Dann läuft gehostete KI über den Proxy
@@ -5945,13 +5950,13 @@ function renderAccountCard() {
     html += '<div class="note-box" style="margin-bottom:12px"><b>KI-Kontingent (' + aiMonthKey() + ')</b>' +
       '<div class="quota-bar"><div class="quota-fill ' + cls + '" style="width:' + Math.min(100, pct) + '%"></div></div>' +
       '<span class="sub">' + used + ' / ' + lim + ' Abfragen · noch ' + aiRemaining() + ' übrig</span>' +
-      (pct >= 90 ? '<div style="margin-top:8px"><button class="btn btn-sm btn-primary" data-buy="topup">+500 nachbestellen · 4,99 €</button></div>' : '') +
+      (pct >= 90 && !STORE_SAFE ? '<div style="margin-top:8px"><button class="btn btn-sm btn-primary" data-buy="topup">+500 nachbestellen · 4,99 €</button></div>' : '') +
       '<div class="sub" style="margin-top:6px">Reset am 1. des Folgemonats. Alternativ eigenen Schlüssel (unten) für unbegrenzte Nutzung.</div></div>';
   } else if (tier === 'premium' && usingOwnKey()) {
     html += '<div class="note-box" style="margin-bottom:12px">🔑 Eigener API-Schlüssel aktiv – <b>unbegrenzte</b> KI, kein Kontingentverbrauch.</div>';
   }
 
-  if (tier !== 'premium') html += '<button class="btn btn-primary" id="btnUpgrade" style="width:100%;margin-bottom:12px">⭐ Plan ansehen / upgraden</button>';
+  if (tier !== 'premium' && !STORE_SAFE) html += '<button class="btn btn-primary" id="btnUpgrade" style="width:100%;margin-bottom:12px">⭐ Plan ansehen / upgraden</button>';
 
   html += '<label class="fld" for="setCode">Freischalt-Code</label>' +
     '<div class="set-row"><input type="text" id="setCode" placeholder="Code" maxlength="20" autocomplete="off">' +
@@ -6069,6 +6074,7 @@ if (CLOUD) {
     $('#obName').value = store.name || account.name || '';
   }
 }
+if (STORE_SAFE) document.body.classList.add('store-safe');   // Play-sicher: Kauf-Buttons ausblenden
 showView('dashboard');
 
 })();
