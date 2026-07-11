@@ -318,6 +318,47 @@ label.fld{display:block;font-size:12.5px;font-weight:600;color:var(--muted);marg
 .mini .mini-when{font-size:12px;color:var(--muted);font-weight:600;white-space:nowrap}
 .mini .mini-when.warn{color:var(--warn)}
 .mini .mini-when.late{color:var(--danger)}
+/* ---- Cockpit: Hero-Header, kompakte Stats, Themen-Container ---- */
+.dash-hero{margin-bottom:20px}
+.dash-sub{color:var(--muted);font-size:15px;line-height:1.45;margin-top:7px;max-width:46ch}
+.dash-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:26px}
+.dash-stats .stat{padding:13px 6px}
+.dash-stats .stat b{font-size:21px}
+.dash-stats .stat span{font-size:11px;margin-top:2px}
+.dash-section{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:16px}
+.dash-section+.dash-section{margin-top:12px}
+.dsec-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px}
+.dsec-title{font-size:15px;font-weight:700;letter-spacing:.2px;display:inline-flex;align-items:center;gap:8px;color:var(--text)}
+.dsec-head button{background:none;border:none;color:#7c3aed;font-size:12.5px;font-weight:600;padding:6px 8px;margin:-6px -8px;border-radius:9px;min-height:0;transition:.15s}
+.dsec-head button:hover{color:#6d28d9}
+.dsec-body{display:flex;flex-direction:column;gap:10px}
+.drow{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:11px 12px;border-radius:13px;border:1px solid var(--border);background:var(--card2);color:var(--text);transition:transform .18s,border-color .18s,box-shadow .18s}
+.drow[data-go]{cursor:pointer}
+.drow[data-go]:hover{border-color:var(--border2);transform:translateY(-1px);box-shadow:0 4px 16px rgba(0,0,0,.12)}
+.drow[data-go]:active{transform:translateY(0) scale(.99)}
+.drow-ic{width:38px;height:38px;flex:none;border-radius:11px;display:flex;align-items:center;justify-content:center;background:var(--card);color:#8b5cf6;font-size:18px}
+.drow-ic svg{width:18px;height:18px}
+.drow-tx{flex:1;min-width:0}
+.drow-tx b{display:block;font-size:14.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.drow-tx span{display:block;font-size:12.5px;color:var(--faint);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.drow-meta{flex:none;font-size:12px;font-weight:700;color:var(--muted);white-space:nowrap}
+.chip-status{flex:none;font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;white-space:nowrap}
+.chip-accent{color:#7c3aed;background:rgba(139,92,246,.14)}
+.chip-warn{color:var(--warn);background:rgba(251,191,36,.15)}
+.chip-danger{color:var(--danger);background:rgba(248,113,113,.15)}
+.chip-ok{color:var(--ok);background:rgba(52,211,153,.15)}
+.dsec-empty{font-size:13.5px;color:var(--faint);padding:4px 2px;line-height:1.5}
+.dfin{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:14px}
+.dfin-rest b{font-size:23px;font-weight:800;display:block;line-height:1.1}
+.dfin-rest span{font-size:12px;color:var(--faint)}
+.dfin-bars{flex:1;display:flex;flex-direction:column;gap:9px;max-width:60%}
+.dfin-bar{display:flex;align-items:center;gap:10px}
+.dfin-bar .lbl{font-size:12px;color:var(--muted);width:64px;flex:none}
+.dfin-bar .val{font-size:12px;font-weight:700;width:84px;text-align:right;flex:none}
+.dfin-track{flex:1;height:9px;border-radius:6px;background:var(--border);overflow:hidden}
+.dfin-fill{height:100%;border-radius:6px}
+.dfin-fill.inc{background:linear-gradient(90deg,#10b981,#34d399)}
+.dfin-fill.exp{background:linear-gradient(90deg,#f97316,#f87171)}
 
 /* ============================== DOKUMENTE ============================== */
 .dropzone{position:relative;border:1.5px dashed rgba(167,139,250,.5);border-radius:20px;
@@ -1029,13 +1070,13 @@ body.lang-switching main,body.lang-switching .sidebar,body.lang-switching .topba
 
     <!-- ============================== DASHBOARD ============================== -->
     <section class="view" id="view-dashboard">
-      <div class="greet">
+      <header class="dash-hero">
         <h1 id="greetLine">Guten Tag<span class="grad-text"></span></h1>
-        <p id="greetDate"></p>
+        <p id="greetSub" class="dash-sub"></p>
         <div id="trialSlot"></div>
-      </div>
+      </header>
+      <div class="dash-stats" id="statRow"></div>
       <div id="weatherWidget"></div>
-      <div id="budgetWidget"></div>
       <div class="qa-row">
         <button class="qa qa-1 rise" style="--i:0" id="qaDoc">
           <span class="qa-ic"><svg viewBox="0 0 24 24"><use href="#icCam"/></svg></span><span data-i18n="dash.qa_photo">Foto analysieren</span></button>
@@ -1044,7 +1085,7 @@ body.lang-switching main,body.lang-switching .sidebar,body.lang-switching .topba
         <button class="qa qa-3 rise" style="--i:2" id="qaTask">
           <span class="qa-ic"><svg viewBox="0 0 24 24"><use href="#icPlus"/></svg></span><span data-i18n="dash.qa_task">Neue Aufgabe</span></button>
       </div>
-      <div class="stat-row" id="statRow"></div>
+      <div id="budgetWidget" hidden></div>
       <div id="dashWidgets"></div>
     </section>
 
@@ -2505,142 +2546,84 @@ const upcomingEvents = (n) => store.events.filter(e => e.date >= todayISO())
 const SOURCE_LABEL = { doc: 'aus Dokument', chat: 'aus Chat', life: 'aus Lebenslage', family: 'Familie', veh: 'Fahrzeug' };
 
 RENDERERS.dashboard = function () {
-  const h = new Date().getHours();
-  const g = h < 5 ? 'Gute Nacht' : h < 11 ? 'Guten Morgen' : h < 18 ? 'Guten Tag' : 'Guten Abend';
+  const H = new Date().getHours();
+  const g = H < 5 ? 'Gute Nacht' : H < 11 ? 'Guten Morgen' : H < 18 ? 'Guten Tag' : 'Guten Abend';
   $('#greetLine').innerHTML = '<span>' + esc(g) + '</span>' + (store.name ? ', <span class="grad-text" data-noi18n>' + esc(store.name) + '</span>' : '') + ' 👋';
-  $('#greetDate').textContent = new Date().toLocaleDateString(curLocale, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+
+  const today = todayISO();
+  const evTodayList = eventsOn(today);
+  const open = store.tasks.filter(t => !t.done).length;
+  const evToday = evTodayList.length;
+  const attention = store.tasks.filter(t => !t.done && t.due && dayDiff(t.due) <= 0).length;
+  const cap = s => s ? s.charAt(0).toUpperCase() + s.slice(1) : s;
+  const dstr = cap(new Date().toLocaleDateString(curLocale, { weekday: 'long', day: 'numeric', month: 'long' }));
+  if (evToday || open) {
+    const parts = [];
+    if (evToday) parts.push(evToday + ' Termin' + (evToday !== 1 ? 'e' : ''));
+    if (open) parts.push(open + ' offene Aufgabe' + (open !== 1 ? 'n' : ''));
+    $('#greetSub').textContent = dstr + ' — heute ' + parts.join(' und ') + '.';
+  } else $('#greetSub').textContent = dstr + ' — alles im Griff, nichts Dringendes. 🌿';
 
   const slot = $('#trialSlot');
-  if (account && isPremium()) {
-    slot.innerHTML = '<span class="trial-pill premium">💎 Premium – alles inklusive</span>';
-  } else if (account) {
-    const d = trialDaysLeft();
-    slot.innerHTML = '<button class="trial-pill" id="trialGo">⏳ Testphase: noch ' + d + ' Tag' + (d === 1 ? '' : 'e') + ' · <b>Premium freischalten</b></button>';
-    $('#trialGo').addEventListener('click', () => showView('settings'));
-  } else {
-    slot.innerHTML = '';
-  }
+  if (account && isPremium()) slot.innerHTML = '<span class="trial-pill premium">💎 Premium – alles inklusive</span>';
+  else if (account) { const d = trialDaysLeft(); slot.innerHTML = '<button class="trial-pill" id="trialGo">⏳ Testphase: noch ' + d + ' Tag' + (d === 1 ? '' : 'e') + ' · <b>Premium freischalten</b></button>'; $('#trialGo').addEventListener('click', () => showView('settings')); }
+  else slot.innerHTML = '';
 
-  const open = store.tasks.filter(t => !t.done).length;
-  const evToday = eventsOn(todayISO()).length;
-  $('#statRow').innerHTML =
-    '<div class="stat rise" style="--i:0"><b>' + open + '</b><span>Offene Aufgaben</span></div>' +
-    '<div class="stat rise" style="--i:1"><b>' + evToday + '</b><span>Termine heute</span></div>' +
-    '<div class="stat rise" style="--i:2"><b>' + store.docs.length + '</b><span>Dokumente</span></div>';
+  const stat = (n, l, go, i) => '<button class="stat rise" style="--i:' + i + '" data-go="' + go + '"><b>' + n + '</b><span>' + l + '</span></button>';
+  $('#statRow').innerHTML = stat(open, 'Offen', 'tasks', 0) + stat(evToday, 'Heute', 'calendar', 1) + stat(store.docs.length, 'Dokumente', 'docs', 2) + stat(attention, 'Fällig', 'tasks', 3);
+
+  const dsec = (title, go, goLabel, body, attrs) => '<section class="dash-section"><div class="dsec-head"><span class="dsec-title">' + title + '</span>' + (go ? '<button data-go="' + go + '"' + (attrs || '') + '>' + (goLabel || 'Alle anzeigen') + '</button>' : '') + '</div><div class="dsec-body">' + body + '</div></section>';
+  const drow = o => { const tag = o.go ? 'button' : 'div'; const ic = o.svg ? '<svg viewBox="0 0 24 24"><use href="#' + o.svg + '"/></svg>' : (o.emoji || ''); return '<' + tag + ' class="drow"' + (o.go ? ' data-go="' + o.go + '"' + (o.attrs || '') : '') + '><span class="drow-ic"' + (o.iconColor ? ' style="color:' + o.iconColor + '"' : '') + '>' + ic + '</span><span class="drow-tx"><b>' + esc(o.title) + '</b>' + (o.sub ? '<span>' + esc(o.sub) + '</span>' : '') + '</span>' + (o.chip ? '<span class="chip-status ' + o.chip.cls + '">' + esc(o.chip.text) + '</span>' : (o.meta ? '<span class="drow-meta">' + esc(o.meta) + '</span>' : '')) + '</' + tag + '>'; };
 
   let html = '';
 
-  const evs = upcomingEvents(3);
-  html += '<div class="sec-title"><h2>📅 Nächste Termine</h2><button data-go="calendar">Alle</button></div><div class="mini-list">';
-  if (!evs.length) html += '<div class="empty">Keine anstehenden Termine – genieß die Ruhe 🌿</div>';
-  evs.forEach((e, i) => {
-    html += '<div class="mini rise" style="--i:' + i + '"><div class="mini-ic"><svg viewBox="0 0 24 24"><use href="#icCal"/></svg></div>' +
-      '<div class="mini-tx"><b>' + esc(e.title) + '</b><span>' + esc(fmtDate(e.date)) + (e.time ? ' · ' + esc(e.time) + ' Uhr' : '') + '</span></div>' +
-      '<div class="mini-when' + (dayDiff(e.date) <= 1 ? ' warn' : '') + '">' + esc(relDay(e.date)) + '</div></div>';
+  /* HEUTE – Fokus: was heute/dringend zählt */
+  const focus = [];
+  evTodayList.forEach(e => focus.push({ svg: 'icCal', title: e.title, sub: e.time ? e.time + ' Uhr' : 'Ganztägig', chip: { cls: 'chip-accent', text: 'Heute' }, go: 'calendar', k: '1' + (e.time || '00:00') }));
+  store.tasks.filter(t => !t.done && t.due && dayDiff(t.due) <= 0).forEach(t => { const late = dayDiff(t.due) < 0; focus.push({ svg: 'icCheck2', title: t.title, sub: late ? 'überfällig' : 'heute fällig', chip: { cls: late ? 'chip-danger' : 'chip-warn', text: late ? 'Überfällig' : 'Heute' }, go: 'tasks', k: late ? '0' : '2' }); });
+  (store.vehicles || []).filter(v => v.tuev && dayDiff(v.tuev) <= 14).forEach(v => { const late = dayDiff(v.tuev) < 0; focus.push({ emoji: v.type === 'motorrad' ? '🏍️' : '🚗', title: 'HU/TÜV: ' + v.name, sub: fmtDate(v.tuev), chip: { cls: late ? 'chip-danger' : 'chip-warn', text: late ? 'überfällig' : relDay(v.tuev) }, go: 'vehicles', k: '3' }); });
+  focus.sort((a, b) => a.k < b.k ? -1 : 1);
+  const focusTop = focus.slice(0, 3);
+  html += dsec('☀️ Heute', focusTop.length ? 'calendar' : null, 'Kalender', focusTop.length ? focusTop.map(drow).join('') : '<div class="dsec-empty">Für heute steht nichts Dringendes an. Genieß den Tag. 🌿</div>');
+
+  /* NÄCHSTE TERMINE – ab morgen, die nächsten 3 */
+  const upcoming = store.events.filter(e => e.date > today).sort((a, b) => (a.date + (a.time || '')) < (b.date + (b.time || '')) ? -1 : 1).slice(0, 3);
+  if (upcoming.length) html += dsec('📅 Nächste Termine', 'calendar', 'Alle', upcoming.map(e => drow({ svg: 'icCal', title: e.title, sub: cap(fmtDate(e.date)) + (e.time ? ' · ' + e.time + ' Uhr' : ''), meta: relDay(e.date), go: 'calendar' })).join(''));
+
+  /* AUFGABEN – die 3 wichtigsten (ohne die bereits unter „Heute“) */
+  const upTasks = openTasksSorted().filter(t => !(t.due && dayDiff(t.due) <= 0)).slice(0, 3);
+  if (upTasks.length) { const pc = { high: 'chip-danger', med: 'chip-warn', low: 'chip-ok' }, pl = { high: 'Hoch', med: 'Mittel', low: 'Niedrig' }; html += dsec('✅ Wichtige Aufgaben', 'tasks', 'Alle', upTasks.map(t => drow({ svg: 'icCheck2', title: t.title, sub: t.due ? 'fällig ' + relDay(t.due) : 'ohne Datum', chip: { cls: pc[t.prio] || 'chip-warn', text: pl[t.prio] || 'Mittel' }, go: 'tasks' })).join('')); }
+
+  /* FINANZEN – Monatsbudget auf einen Blick */
+  ensureBudget();
+  if (store.budget.entries.length) {
+    const bt = budTotals(), mx = Math.max(bt.income, bt.expense, 1);
+    const fin = '<div class="dfin"><div class="dfin-rest"><b class="' + (bt.rest >= 0 ? 'bud-pos' : 'bud-neg') + '">' + eur(bt.rest) + '</b><span>verbleibend diesen Monat</span></div><div class="dfin-bars">' +
+      '<div class="dfin-bar"><span class="lbl">Einnahmen</span><div class="dfin-track"><div class="dfin-fill inc" style="width:' + (bt.income / mx * 100) + '%"></div></div><span class="val">' + eur(bt.income) + '</span></div>' +
+      '<div class="dfin-bar"><span class="lbl">Ausgaben</span><div class="dfin-track"><div class="dfin-fill exp" style="width:' + (bt.expense / mx * 100) + '%"></div></div><span class="val">' + eur(bt.expense) + '</span></div></div></div>';
+    html += dsec('💰 Finanzen', 'family', 'Verwalten', fin, ' data-tab="budget"');
+  }
+
+  /* FAMILIE – Kinder, Schule, Termine, Geburtstage zusammengefasst */
+  const famRows = [];
+  (store.kids || []).forEach(kid => {
+    const td = new Date().getDay(); let sd = 0, lb = '';
+    for (let o = 0; o < 7; o++) { const d = (td + o) % 7; if (d >= 1 && d <= 5 && kid.sched && kid.sched[d] && kid.sched[d].subjects.length) { sd = d; lb = o === 0 ? 'heute' : o === 1 ? 'morgen' : DAY_SHORT[d]; break; } }
+    if (sd) { const sl = lessonSlots(kid, sd); famRows.push({ emoji: '🎒', iconColor: kid.color, title: kid.name + ' · ' + sl[0].start + '–' + sl[sl.length - 1].end, sub: sl.map(s => s.subject).join(', '), meta: lb, go: 'school', k: lb === 'heute' ? '0' : '1' }); }
   });
-  html += '</div>';
+  store.events.filter(e => e.source === 'kind' && e.date >= today).sort((a, b) => a.date < b.date ? -1 : 1).slice(0, 2).forEach(e => famRows.push({ emoji: '📌', title: e.title, sub: cap(fmtDate(e.date)), meta: relDay(e.date), go: 'school', k: '2' }));
+  ((store.family && store.family.members) ? store.family.members : []).filter(m => m.birthday).map(m => ({ name: m.name, color: m.color, next: nextOccur(m.birthday), age: ageOn(m.birthday) })).filter(b => dayDiff(b.next) <= 30).forEach(b => famRows.push({ emoji: '🎂', iconColor: b.color, title: b.name + ' wird ' + b.age, sub: cap(fmtDate(b.next)), meta: relDay(b.next), go: 'family', k: '3' }));
+  famRows.sort((a, b) => a.k < b.k ? -1 : 1);
+  if (famRows.length) html += dsec('👪 Familie', 'school', 'Alle', famRows.slice(0, 3).map(drow).join(''));
 
-  if (store.kids.length) {
-    html += '<div class="sec-title"><h2>🎒 Kinder – Schule</h2><button data-go="school">Alle</button></div><div class="mini-list">';
-    const todayDow = new Date().getDay();
-    store.kids.forEach((kid, i) => {
-      let showDay = 0, label = '';
-      for (let o = 0; o < 7; o++) {
-        const d = (todayDow + o) % 7;
-        if (d >= 1 && d <= 5 && kid.sched[d] && kid.sched[d].subjects.length) {
-          showDay = d;
-          label = o === 0 ? 'heute' : (o === 1 ? 'morgen' : DAY_SHORT[d]);
-          break;
-        }
-      }
-      if (!showDay) {
-        html += '<div class="mini rise" style="--i:' + i + '"><div class="mini-ic" style="color:' + kid.color + '"><svg viewBox="0 0 24 24"><use href="#icSchool"/></svg></div>' +
-          '<div class="mini-tx"><b>' + esc(kid.name) + '</b><span>Noch kein Stundenplan hinterlegt</span></div></div>';
-        return;
-      }
-      const slots = lessonSlots(kid, showDay);
-      html += '<div class="mini rise" style="--i:' + i + '"><div class="mini-ic" style="color:' + kid.color + '"><svg viewBox="0 0 24 24"><use href="#icSchool"/></svg></div>' +
-        '<div class="mini-tx"><b>' + esc(kid.name) + ' · ' + slots[0].start + '–' + slots[slots.length - 1].end + '</b>' +
-        '<span>' + esc(slots.map(s => s.subject).join(', ')) + '</span></div>' +
-        '<div class="mini-when' + (label === 'heute' ? ' warn' : '') + '">' + label + '</div></div>';
-    });
-    html += '</div>';
-  }
-
-  const activeLife = LIFE.filter(l => { const st = store.life[l.id]; return st && (st.startDate || Object.values(st.done).some(Boolean)); });
-  if (activeLife.length) {
-    html += '<div class="sec-title"><h2>🧭 Deine Lebenslagen</h2><button data-go="life">Alle</button></div><div class="mini-list">';
-    activeLife.forEach((l, i) => {
-      const pr = lifeProgress(l);
-      html += '<div class="mini rise" style="--i:' + i + '"><div class="mini-ic" style="font-size:18px">' + l.icon + '</div>' +
-        '<div class="mini-tx"><b>' + esc(l.title) + '</b><span>' + pr.done + ' von ' + pr.total + ' erledigt</span></div>' +
-        '<div class="mini-when' + (pr.pct === 100 ? '' : ' warn') + '">' + pr.pct + '%</div></div>';
-    });
-    html += '</div>';
-  }
-
-  const bdayMembers = (store.family && store.family.members ? store.family.members : []).filter(m => m.birthday)
-    .map(m => ({ name: m.name, color: m.color, next: nextOccur(m.birthday), age: ageOn(m.birthday) }))
-    .filter(b => dayDiff(b.next) <= 30).sort((a, b) => a.next < b.next ? -1 : 1);
-  if (bdayMembers.length) {
-    html += '<div class="sec-title"><h2>🎂 Bald Geburtstag</h2><button data-go="family">Alle</button></div><div class="mini-list">';
-    bdayMembers.forEach((b, i) => {
-      html += '<div class="mini rise" style="--i:' + i + '"><div class="mini-ic" style="color:' + b.color + ';font-size:18px">🎂</div>' +
-        '<div class="mini-tx"><b>' + esc(b.name) + ' wird ' + b.age + '</b><span>' + esc(fmtDate(b.next)) + '</span></div>' +
-        '<div class="mini-when' + (dayDiff(b.next) <= 7 ? ' warn' : '') + '">' + relDay(b.next) + '</div></div>';
-    });
-    html += '</div>';
-  }
-
-  if (store.work && (Object.keys(store.work.entries || {}).length || (store.work.absences || []).length)) {
-    ensureWork();
-    const iso = todayISO(), wr = weekRange(iso), wk = rangeStats(wr[0], wr[1]), yr = rangeStats(...yearRange(new Date().getFullYear()));
-    const rest = store.work.settings.vacationDays - yr.urlaub;
-    html += '<div class="sec-title"><h2>🕒 Arbeitszeit</h2><button data-go="work">Öffnen</button></div><div class="mini-list">' +
-      '<div class="mini"><div class="mini-ic" style="color:#34d399">🕒</div><div class="mini-tx"><b>Heute ' + hmDur(netMinutes(store.work.entries[iso])) + ' h · Woche ' + hmDur(wk.workedMin) + ' h</b>' +
-      '<span>Resturlaub ' + rest + ' Tage · ' + yr.offen + ' offene Tage</span></div>' +
-      (yr.offen ? '<div class="mini-when warn">' + yr.offen + ' offen</div>' : '') + '</div></div>';
-  }
-
-  const tuevDue = (store.vehicles || []).filter(v => v.tuev && dayDiff(v.tuev) <= 45).sort((a, b) => a.tuev < b.tuev ? -1 : 1);
-  if (tuevDue.length) {
-    html += '<div class="sec-title"><h2>🔧 TÜV steht an</h2><button data-go="vehicles">Alle</button></div><div class="mini-list">';
-    tuevDue.forEach((v, i) => {
-      const d = dayDiff(v.tuev);
-      html += '<div class="mini rise" style="--i:' + i + '"><div class="mini-ic" style="font-size:18px">' + (v.type === 'motorrad' ? '🏍️' : '🚗') + '</div>' +
-        '<div class="mini-tx"><b>' + esc(v.name) + '</b><span>HU ' + esc(fmtDate(v.tuev)) + '</span></div>' +
-        '<div class="mini-when' + (d < 0 ? ' late' : ' warn') + '">' + (d < 0 ? 'überfällig' : relDay(v.tuev)) + '</div></div>';
-    });
-    html += '</div>';
-  }
-
-  const tks = openTasksSorted().slice(0, 4);
-  html += '<div class="sec-title"><h2>✅ Wichtige Aufgaben</h2><button data-go="tasks">Alle</button></div><div class="mini-list">';
-  if (!tks.length) html += '<div class="empty">Nichts offen – stark! 🎉</div>';
-  tks.forEach((t, i) => {
-    const late = t.due && dayDiff(t.due) < 0;
-    html += '<div class="mini rise" style="--i:' + i + '"><div class="mini-ic"><svg viewBox="0 0 24 24"><use href="#icCheck2"/></svg></div>' +
-      '<div class="mini-tx"><b>' + esc(t.title) + '</b><span>' + (t.due ? 'fällig ' + esc(relDay(t.due)) : 'ohne Datum') + '</span></div>' +
-      (t.due ? '<div class="mini-when' + (late ? ' late' : dayDiff(t.due) <= 1 ? ' warn' : '') + '">' + (late ? 'überfällig' : esc(relDay(t.due))) + '</div>' : '') +
-      '</div>';
-  });
-  html += '</div>';
-
-  const docs = store.docs.slice(-2).reverse();
-  if (docs.length) {
-    html += '<div class="sec-title"><h2>📄 Zuletzt analysiert</h2><button data-go="docs">Alle</button></div><div class="mini-list">';
-    docs.forEach((d, i) => {
-      html += '<div class="mini rise" style="--i:' + i + '"><div class="mini-ic"><svg viewBox="0 0 24 24"><use href="#icDoc"/></svg></div>' +
-        '<div class="mini-tx"><b>' + esc(d.title) + '</b><span>' + esc(d.sender || d.docType) + '</span></div>' +
-        (d.deadline ? '<div class="mini-when warn">Frist ' + esc(relDay(d.deadline)) + '</div>' : '') + '</div>';
-    });
-    html += '</div>';
-  }
+  /* DOKUMENTE – zuletzt analysiert */
+  const rdocs = store.docs.slice(-3).reverse();
+  if (rdocs.length) html += dsec('📄 Dokumente', 'docs', 'Alle', rdocs.map(d => drow({ svg: 'icDoc', title: d.title, sub: d.sender || d.docType, chip: d.deadline ? { cls: dayDiff(d.deadline) < 0 ? 'chip-danger' : 'chip-warn', text: 'Frist ' + relDay(d.deadline) } : null, meta: d.deadline ? null : cap(new Date(d.createdAt).toLocaleDateString(curLocale, { day: 'numeric', month: 'short' })), go: 'docs' })).join(''));
 
   $('#dashWidgets').innerHTML = html;
-  $$('#dashWidgets [data-go]').forEach(b => b.addEventListener('click', () => showView(b.dataset.go)));
+  $$('#dashWidgets [data-go]').forEach(b => b.addEventListener('click', () => { if (b.dataset.tab && b.dataset.go === 'family') famTab = b.dataset.tab; showView(b.dataset.go); }));
+  $$('#statRow [data-go]').forEach(b => b.addEventListener('click', () => showView(b.dataset.go)));
   renderWeather();
-  renderBudgetWidget();
 };
 
 $('#qaDoc').addEventListener('click', () => { showView('docs'); setTimeout(() => $('#docInput').click(), 250); });
