@@ -5705,15 +5705,31 @@ let vaPending = null;   // { run:fn->msg, summary:str } – wartet auf Ja/Nein
 let vaContext = null;   // letzter Intent für Nachfassen („noch 20 Euro …")
 
 /* --- Sprachausgabe (TTS): echte OpenAI-Stimme, Fallback Browser-WebSpeech --- */
-let vaAudioEl = null;
+let vaAudioEl = null, vaBrowserVoice = null;
 function cleanForTTS(text) {
   return String(text || '').replace(/[\u{1F000}-\u{1FAFF}\u{2190}-\u{21FF}\u{2300}-\u{27BF}\u{2B00}-\u{2BFF}\u{FE0F}]/gu, ' ').replace(/[„“”"]/g, '').replace(/\s{2,}/g, ' ').trim();
 }
+/* Beste deutsche Browser-Stimme wählen – bevorzugt „Google Deutsch" (vom Nutzer gewünscht), dann Edge-Neuralstimmen. */
+function pickBrowserVoice() {
+  try {
+    if (!('speechSynthesis' in window)) return null;
+    const vs = speechSynthesis.getVoices().filter(v => /^de/i.test(v.lang));
+    vaBrowserVoice =
+      vs.find(v => /google/i.test(v.name)) ||
+      vs.find(v => /(natural|neural|online)/i.test(v.name)) ||
+      vs.find(v => /(Katja|Klara|Amala|Louisa|Marlene|Petra|Vicki)/i.test(v.name)) ||
+      vs[0] || null;
+  } catch (e) {}
+  return vaBrowserVoice;
+}
+function hasGoodBrowserVoice() { const v = vaBrowserVoice || pickBrowserVoice(); return !!(v && /google|natural|neural|online/i.test(v.name)); }
 function vaSpeakBrowser(clean) {
   try {
     if (!('speechSynthesis' in window) || !clean) return;
+    if (!vaBrowserVoice) pickBrowserVoice();
     const u = new SpeechSynthesisUtterance(clean);
-    u.lang = 'de-DE'; u.rate = 1.0; u.pitch = 1.05;
+    if (vaBrowserVoice) u.voice = vaBrowserVoice;
+    u.lang = 'de-DE'; u.rate = 1.0; u.pitch = 1.0;
     speechSynthesis.cancel(); speechSynthesis.speak(u);
   } catch (e) {}
 }
@@ -5722,6 +5738,9 @@ async function vaSpeak(text) {
   if (!clean) return;
   try { speechSynthesis.cancel(); } catch (e) {}
   if (vaAudioEl) { try { vaAudioEl.pause(); } catch (e) {} vaAudioEl = null; }
+  // Nutzer bevorzugt die Google-/Browser-Stimme → nimm sie, wenn eine gute deutsche Browser-Stimme verfügbar ist
+  if (hasGoodBrowserVoice()) { vaSpeakBrowser(clean); return; }
+  // sonst: echte OpenAI-Stimme (besser als eine robotische lokale Stimme)
   if (AI_VOICE && aiTtsOk && canRealAI()) {
     try {
       const r = await callAudioHosted({ op: 'tts', text: clean, voice: TTS_VOICE });
@@ -5734,6 +5753,7 @@ async function vaSpeak(text) {
   }
   vaSpeakBrowser(clean);
 }
+if ('speechSynthesis' in window) { pickBrowserVoice(); try { speechSynthesis.addEventListener('voiceschanged', pickBrowserVoice); } catch (e) {} }
 
 /* --- Status-Anzeige mit Animation --- */
 function vaSetStatus(state, extra) {
