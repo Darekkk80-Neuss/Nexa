@@ -573,10 +573,10 @@ input.invalid,textarea.invalid{border-color:var(--danger)!important;box-shadow:0
 /* ============================== FAMILIE & NOTFALL ============================== */
 .fam-tabs,.em-tabs{margin-bottom:14px}
 .fam-tabs button,.em-tabs button{font-size:12px;padding:7px 4px;white-space:nowrap}
-.mem{display:flex;align-items:center;gap:12px;padding:11px 13px;border-radius:13px;border:1px solid var(--border);background:var(--card);margin-bottom:8px}
+.mem{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:13px;border:1px solid var(--border);background:var(--card);margin-bottom:8px}
 .mem-info{flex:1;min-width:0}
-.mem-info b{display:block;font-size:14.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.mem-info span{font-size:12.5px;color:var(--muted)}
+.mem-info b{display:block;font-size:14.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mem-info span{font-size:12.5px;color:var(--faint)}
 .fam-code{font-family:var(--font-head);font-size:30px;letter-spacing:6px;text-align:center;background:var(--card2);
   border:1px dashed var(--border2);border-radius:14px;padding:16px 8px;margin:12px 0;color:#a78bfa}
 .notruf{display:grid;grid-template-columns:repeat(2,1fr);gap:9px;margin-bottom:16px}
@@ -698,12 +698,13 @@ input.invalid,textarea.invalid{border-color:var(--danger)!important;box-shadow:0
 .veh-chip span{font-size:16px}
 .veh-chip.active{border-color:transparent;background:var(--grad);color:#fff;box-shadow:0 4px 14px rgba(124,58,237,.4)}
 .veh-tabs{display:flex;flex-wrap:wrap;gap:4px;padding:4px;border-radius:14px;background:var(--card);border:1px solid var(--border);margin-bottom:12px}
-.veh-tabs button{flex:1 1 30%;padding:7px 4px;border:none;border-radius:10px;background:none;color:var(--muted);font-size:11.5px;font-weight:600;white-space:nowrap;transition:.2s}
+.veh-tabs button{flex:1 1 30%;min-height:36px;padding:8px 6px;border:none;border-radius:10px;background:none;color:var(--muted);font-size:12px;font-weight:600;white-space:nowrap;transition:.15s}
+.veh-tabs button:active{transform:scale(.97)}
 .veh-tabs button.active{background:var(--card2);color:var(--text);box-shadow:0 1px 6px rgba(0,0,0,.3)}
 .veh-stats{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:14px}
-.veh-stat{background:rgba(0,0,0,.25);border:1px solid var(--border);border-radius:12px;padding:11px 8px;text-align:center}
-.veh-stat b{display:block;font-size:19px;font-family:var(--font-head);background:var(--grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
-.veh-stat span{font-size:11px;color:var(--muted)}
+.veh-stat{background:rgba(0,0,0,.25);border:1px solid var(--border);border-radius:12px;padding:12px 8px;text-align:center}
+.veh-stat b{display:block;font-size:19px;font-weight:700;font-family:var(--font-head);color:var(--text);line-height:1.15}
+.veh-stat span{display:block;margin-top:2px;font-size:12px;color:var(--muted)}
 .veh-badge{display:inline-flex;align-items:center;gap:5px;padding:4px 11px;border-radius:20px;font-size:12px;font-weight:700}
 .b-ok{background:rgba(52,211,153,.14);color:#6ee7b7}
 .b-soon{background:rgba(251,191,36,.14);color:#fcd34d}
