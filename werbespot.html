@@ -246,7 +246,7 @@
   @keyframes capB{0%{opacity:0;transform:translateY(2cqw);filter:blur(.6cqw)}14%{opacity:1;transform:none;filter:blur(0)}100%{opacity:1}}
 
   /* ===== SCENE 5 — CALM LIFE ===== */
-  .s5 .bg{background:linear-gradient(180deg,#fff5e9 0%,#ffe6cf 46%,#ffd9c2 100%); animation:push5 5s ease both}
+  .s5 .bg{background:linear-gradient(180deg,#eafbe6 0%,#d6f4cf 42%,#bfead1 100%); animation:push5 5s ease both}
   @keyframes push5{from{transform:scale(1.1)}to{transform:scale(1)}}
   .rays{position:absolute; left:50%; top:-30cqw; width:170cqw;height:170cqw;margin-left:-85cqw; z-index:2;
     background:conic-gradient(from 0deg, rgba(255,255,255,0) 0deg, rgba(255,255,255,.5) 6deg, rgba(255,255,255,0) 12deg,
@@ -257,10 +257,10 @@
     opacity:.6; filter:blur(2cqw); animation:spin3 40s linear infinite}
   @keyframes spin3{to{transform:rotate(360deg)}}
   .sun{position:absolute;left:50%;top:8cqw;width:42cqw;height:42cqw;margin-left:-21cqw;border-radius:50%;z-index:2;
-    background:radial-gradient(circle,rgba(255,244,214,.95) 0%,rgba(255,224,178,.4) 45%,transparent 70%);filter:blur(1cqw);animation:sunpulse 5s ease-in-out infinite}
+    background:radial-gradient(circle,rgba(255,251,224,.98) 0%,rgba(255,236,150,.5) 42%,rgba(190,235,160,.15) 66%,transparent 78%);filter:blur(1cqw);animation:sunpulse 5s ease-in-out infinite}
   @keyframes sunpulse{0%,100%{transform:scale(1);opacity:.9}50%{transform:scale(1.08);opacity:1}}
   .family{position:absolute;left:0;right:0;bottom:0;height:60cqw;z-index:4}
-  .s5 .cap{color:#5a3d28; text-shadow:0 2px 14px rgba(255,255,255,.6); bottom:11cqw; font-size:5.2cqw; font-weight:700}
+  .s5 .cap{color:#2a5f34; text-shadow:0 1px 10px rgba(255,255,255,.7); bottom:46cqw; font-size:5.2cqw; font-weight:800}
 
   /* ===== SCENE 6 — LOGO & CTA ===== */
   .s6 .bg{background:radial-gradient(80% 60% at 50% 38%,#ffffff 0%,#f4f6fb 100%)}
@@ -536,19 +536,40 @@
       <div class="bg"></div><div class="rays"></div><div class="sun"></div>
       <div class="sparks" data-fill="mote:14"></div>
       <svg class="family" viewBox="0 0 200 120" preserveAspectRatio="xMidYMax meet" aria-hidden="true">
-        <ellipse cx="100" cy="112" rx="92" ry="12" fill="rgba(120,70,40,.18)"/>
-        <rect x="34" y="86" width="132" height="10" rx="5" fill="rgba(120,70,40,.5)"/>
-        <rect x="40" y="94" width="8" height="24" rx="3" fill="rgba(120,70,40,.45)"/>
-        <rect x="152" y="94" width="8" height="24" rx="3" fill="rgba(120,70,40,.45)"/>
-        <g fill="#7a4a2c">
-          <g><circle cx="58" cy="52" r="12"/><path d="M42 90 q0-24 16-24 t16 24 z"/></g>
-          <g><circle cx="142" cy="52" r="12"/><path d="M126 90 q0-24 16-24 t16 24 z"/></g>
-          <g fill="#8a5636"><circle cx="88" cy="62" r="9"/><path d="M76 90 q0-18 12-18 t12 18 z"/></g>
-          <g fill="#8a5636"><circle cx="114" cy="62" r="9"/><path d="M102 90 q0-18 12-18 t12 18 z"/></g>
+        <defs>
+          <linearGradient id="hA" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#cdf3bb"/><stop offset="1" stop-color="#96dd85"/></linearGradient>
+          <linearGradient id="hB" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#88d97b"/><stop offset="1" stop-color="#52b854"/></linearGradient>
+          <linearGradient id="hC" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5fc45d"/><stop offset="1" stop-color="#37a044"/></linearGradient>
+          <radialGradient id="glow" cx="0.5" cy="0.5" r="0.5"><stop offset="0" stop-color="rgba(255,248,200,.85)"/><stop offset="1" stop-color="rgba(255,248,200,0)"/></radialGradient>
+        </defs>
+        <ellipse cx="103" cy="80" rx="80" ry="42" fill="url(#glow)"/>
+        <path fill="url(#hA)" opacity=".92" d="M0 60 Q 52 46 108 56 Q 158 62 200 52 V120 H0 Z"/>
+        <g stroke="#4a8a52" stroke-width="1.3" fill="none" stroke-linecap="round" opacity=".6">
+          <path d="M150 24 q3 -3 6 0 q3 -3 6 0"/><path d="M168 32 q2.6 -2.6 5.2 0 q2.6 -2.6 5.2 0"/><path d="M142 37 q2.3 -2.3 4.6 0 q2.3 -2.3 4.6 0"/>
+        </g>
+        <g transform="translate(28,40)">
+          <rect x="-2.4" y="20" width="5" height="30" rx="2.4" fill="#6f4a29"/>
+          <circle cx="0" cy="12" r="14" fill="#3f9a4a"/><circle cx="-10" cy="19" r="9.5" fill="#4aa957"/><circle cx="10" cy="19" r="9.5" fill="#4aa957"/><circle cx="0" cy="22" r="9.5" fill="#57b563"/>
+        </g>
+        <g>
+          <path d="M172 56 q-3 8 -2 16" stroke="#8aa892" stroke-width=".8" fill="none"/>
+          <ellipse cx="173" cy="49" rx="6.5" ry="8" fill="#8b5cf6"/><ellipse cx="171" cy="46" rx="2" ry="2.6" fill="rgba(255,255,255,.5)"/>
+          <path d="M187 62 q-2 8 -1 15" stroke="#8aa892" stroke-width=".8" fill="none"/>
+          <ellipse cx="187" cy="56" rx="5.5" ry="7" fill="#06b6d4"/><ellipse cx="185" cy="53" rx="1.7" ry="2.2" fill="rgba(255,255,255,.5)"/>
+        </g>
+        <path fill="url(#hB)" d="M0 78 Q 62 66 122 74 Q 172 78 200 72 V120 H0 Z"/>
+        <path fill="url(#hC)" d="M0 94 Q 54 84 104 88 Q 158 92 200 86 V120 H0 Z"/>
+        <g fill="#1f5a2b" stroke="#1f5a2b" stroke-linecap="round">
+          <g><circle cx="130" cy="55" r="8.5"/><path d="M121 92 q0 -26 9 -26 q9 0 9 26 z" stroke="none"/><path d="M137 70 L150 52" stroke-width="5.4" fill="none"/></g>
+          <g><circle cx="109" cy="60" r="7.5"/><path d="M101 92 q0 -24 8 -24 q8 0 8 24 z" stroke="none"/><path d="M102 74 L94 86" stroke-width="4.4" fill="none"/></g>
+          <g><circle cx="90" cy="70" r="6"/><path d="M84 94 q0 -18 6 -18 q6 0 6 18 z" stroke="none"/><path d="M86 80 L80 66" stroke-width="4" fill="none"/><path d="M94 80 L100 66" stroke-width="4" fill="none"/></g>
+          <g><circle cx="71" cy="75" r="5.4"/><path d="M66 94 q0 -15 5 -15 q5 0 5 15 z" stroke="none"/></g>
+          <g stroke="none"><ellipse cx="50" cy="90" rx="8" ry="4"/><circle cx="58" cy="87" r="3.4"/><rect x="45" y="90" width="1.8" height="5" rx=".9"/><rect x="55" y="90" width="1.8" height="5" rx=".9"/></g>
+          <path d="M42 87 q-4 -1 -5 -5" stroke-width="1.8" fill="none"/>
         </g>
       </svg>
       <p class="cap">Einfach mal da&nbsp;sein.</p>
-      <div class="vig" style="box-shadow:inset 0 0 22cqw 4cqw rgba(150,90,40,.2)"></div>
+      <div class="vig" style="box-shadow:inset 0 0 22cqw 4cqw rgba(40,95,52,.16)"></div>
     </section>
 
     <!-- SCENE 6 -->
