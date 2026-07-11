@@ -3716,6 +3716,7 @@ function ensureFamily() {
   if (!store.family.members) store.family.members = [];
   if (!store.family.occasions) store.family.occasions = [];
   if (!store.family.tasks) store.family.tasks = [];   // Familienaufgaben (an Mitglieder vergeben)
+  if (!store.family.accounts) store.family.accounts = [];   // Effyra-Family-Konten (Erwachsene/Kinder mit Rolle & Abrechnung)
   if (!store.family.members.length) {
     store.family.members.push({ id: uid(), name: (account && account.name) || store.name || 'Ich', role: 'Ich', color: KID_COLORS[0], birthday: '' });
     save();
@@ -3785,9 +3786,9 @@ async function famLeave() {
 RENDERERS.family = function () {
   ensureFamily();
   let h = '<div class="view-head"><h1>Familienzentrale</h1><p>Gemeinsamer Kalender, Geburtstage und Sync mit dem Partner.</p></div>';
-  h += '<div class="seg fam-tabs">' + [['personen', '👪 Personen'], ['ftasks', '✅ Aufgaben'], ['budget', '💰 Budget'], ['kalender', '📅 Kalender'], ['anlaesse', '🎂 Anlässe'], ['sync', '🔗 Sync']].map(x =>
+  h += '<div class="seg fam-tabs">' + [['personen', '👪 Personen'], ['mitglieder', '👥 Mitglieder'], ['ftasks', '✅ Aufgaben'], ['budget', '💰 Budget'], ['kalender', '📅 Kalender'], ['anlaesse', '🎂 Anlässe'], ['sync', '🔗 Sync']].map(x =>
     '<button data-ftab="' + x[0] + '" class="' + (famTab === x[0] ? 'active' : '') + '">' + x[1] + '</button>').join('') + '</div>';
-  h += famTab === 'ftasks' ? famTasks() : famTab === 'budget' ? famBudget() : famTab === 'kalender' ? famKalender() : famTab === 'anlaesse' ? famAnlaesse() : famTab === 'sync' ? famSync() : famPersonen();
+  h += famTab === 'mitglieder' ? famMitglieder() : famTab === 'ftasks' ? famTasks() : famTab === 'budget' ? famBudget() : famTab === 'kalender' ? famKalender() : famTab === 'anlaesse' ? famAnlaesse() : famTab === 'sync' ? famSync() : famPersonen();
   $('#famRoot').innerHTML = h;
   if (store.family.code && CLOUD && Date.now() - famLastPull > 8000) {
     famLastPull = Date.now();
@@ -3805,6 +3806,54 @@ function famPersonen() {
       '<span>' + esc(m.role) + (bd ? ' · ' + bd : '') + '</span></div>' +
       '<button class="t-del" data-fam="delMem" data-id="' + m.id + '"><svg viewBox="0 0 24 24"><use href="#icTrash"/></svg></button></div>';
   });
+  return h;
+}
+/* Mitglieder-Verwaltung: Effyra-Family-Konten (Rollen + Abrechnung + Credit-Pool) */
+const FAM_INCL_ADULTS = 1, FAM_INCL_CHILDREN = 3;
+function famAcctRow(m, color, sub) {
+  const badge = m.status === 'active'
+    ? '<span class="badge b-ok">Aktiv</span>'
+    : '<span class="badge b-soon">Ausstehend</span>';
+  return '<div class="mem"><span class="kid-dot" style="background:' + color + '"></span>' +
+    '<div class="mem-info"><b>' + esc(m.name) + '</b><span>' + sub + '</span></div>' + badge +
+    '<button class="t-del" data-fam="delAcct" data-id="' + m.id + '"><svg viewBox="0 0 24 24"><use href="#icTrash"/></svg></button></div>';
+}
+function famMitglieder() {
+  ensureFamily();
+  const tier = currentTier(), isOwner = currentRole() === ROLE.OWNER;
+  const accts = store.family.accounts;
+  const adults = accts.filter(a => a.role === ROLE.ADULT_MEMBER);
+  const kids = accts.filter(a => a.role === ROLE.CHILD_MEMBER);
+  let h = '<p class="sub" style="margin:-2px 0 12px">Effyra-Family-Konten mit Rollen und geteiltem Credit-Pool. Erweiterungen laufen über „Mitglied hinzufügen".</p>';
+
+  if (tier !== 'family') {
+    h += '<div class="note-box" style="margin-bottom:12px">👪 <b>Mitgliederverwaltung gehört zu Effyra Family.</b><br>Damit holst du 1 weiteren Erwachsenen und bis zu 3 Kinder in einen gemeinsamen Bereich – inklusive 1500 geteilter Credits.</div>' +
+      '<button class="btn btn-primary" data-fam="famUpgrade" style="width:100%">⭐ Effyra Family ansehen</button>';
+    return h;
+  }
+
+  const used = aiUsed(), lim = aiLimit();
+  h += '<div class="note-box" style="margin-bottom:12px"><b>Geteilter Credit-Pool</b>' +
+    '<div class="sub" style="margin-top:4px">' + used + ' / ' + lim + ' Credits · nur Erwachsene verbrauchen Credits, Kinder nie.</div></div>';
+
+  // Administrator (aktuelles Konto)
+  h += '<div class="mem"><span class="kid-dot" style="background:' + KID_COLORS[0] + '"></span>' +
+    '<div class="mem-info"><b>' + esc((account && account.name) || 'Ich') + '</b><span>Administrator · verwaltet die Familie</span></div>' +
+    '<span class="badge b-ok">Aktiv</span></div>';
+  adults.forEach((m, i) => { h += famAcctRow(m, KID_COLORS[(i + 1) % KID_COLORS.length], 'Erwachsen · 500 Credits im Pool'); });
+  kids.forEach((m, i) => { h += famAcctRow(m, KID_COLORS[(i + 4) % KID_COLORS.length], 'Kind · ohne KI &amp; Credits'); });
+
+  if (!isOwner) { h += '<div class="sub" style="margin-top:10px">Nur der Administrator kann Mitglieder verwalten.</div>'; return h; }
+
+  const nextAdultPaid = adults.length >= FAM_INCL_ADULTS;
+  const nextChildPaid = kids.length >= FAM_INCL_CHILDREN;
+  h += '<div style="margin-top:14px"><label class="fld" for="famAcctName">Mitglied hinzufügen</label>' +
+    '<input type="text" id="famAcctName" placeholder="Name des Mitglieds" maxlength="30" style="margin-bottom:8px">' +
+    '<div class="kid-row">' +
+    '<button class="btn btn-primary btn-sm" data-fam="addAdult">+ Erwachsener · ' + (nextAdultPaid ? '3,99 €/Mon.' : 'enthalten') + '</button>' +
+    '<button class="btn btn-primary btn-sm" data-fam="addChild">+ Kind · ' + (nextChildPaid ? '0,99 €/Mon.' : 'enthalten') + '</button>' +
+    '</div>' +
+    '<div class="sub" style="margin-top:8px">Im Family-Abo enthalten: 1 Erwachsener + bis zu 3 Kinder. Darüber hinaus: Erwachsener 3,99 €/Mon., Kind 0,99 €/Mon. Kinder erhalten nie KI, Credits oder einen eigenen Schlüssel.</div></div>';
   return h;
 }
 function famTasks() {
@@ -3898,6 +3947,28 @@ $('#famRoot').addEventListener('click', e => {
     famChanged(); toast('Person hinzugefügt ✓'); return;
   }
   if (a === 'delMem') { store.family.members = store.family.members.filter(m => m.id !== b.dataset.id); famChanged(); return; }
+  if (a === 'famUpgrade') { showUpgrade(); return; }
+  if (a === 'addAdult' || a === 'addChild') {
+    if (currentTier() !== 'family') { showUpgrade(); return; }
+    if (currentRole() !== ROLE.OWNER) { toast('Nur der Administrator kann Mitglieder hinzufügen.'); return; }
+    const name = q('#famAcctName').value.trim(); if (!name) { q('#famAcctName').focus(); return; }
+    const role = a === 'addAdult' ? ROLE.ADULT_MEMBER : ROLE.CHILD_MEMBER;
+    const incl = role === ROLE.ADULT_MEMBER ? FAM_INCL_ADULTS : FAM_INCL_CHILDREN;
+    const count = store.family.accounts.filter(x => x.role === role).length;
+    const paid = count >= incl;   // enthaltenes Kontingent erschöpft → kostenpflichtige Erweiterung
+    store.family.accounts.push({ id: uid(), name, role, status: 'pending', paid, addedAt: Date.now() });
+    famChanged();
+    const label = role === ROLE.ADULT_MEMBER ? 'Erwachsener' : 'Kind';
+    if (paid) { toast(label + ' „' + name + '" hinzugefügt – Zahlung wird gestartet …'); startCheckout(role === ROLE.ADULT_MEMBER ? 'add_adult' : 'add_child'); }
+    else toast(label + ' „' + name + '" hinzugefügt ✓');
+    return;
+  }
+  if (a === 'delAcct') {
+    const m = store.family.accounts.find(x => x.id === b.dataset.id);
+    if (m && !confirm('„' + m.name + '" aus der Familie entfernen?')) return;
+    store.family.accounts = store.family.accounts.filter(x => x.id !== b.dataset.id);
+    famChanged(); toast('Mitglied entfernt'); return;
+  }
   if (a === 'addEv') {
     const title = q('#fevTitle').value.trim(), date = q('#fevDate').value;
     if (!title || !date) { toast('Bitte Titel und Datum angeben'); return; }
