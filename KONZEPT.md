@@ -122,8 +122,12 @@ Reset: 01.08.2026
 - ✅ Kinder-Sperren im Client (keine KI/Credits/API-Key)
 - ✅ Backend-RPCs inkl. Family-Pool, Kinder-Sperre und Migration aus `medium/premium`
 
+**Zusätzlich umgesetzt:**
+- ✅ **Familienzentrale → Mitglieder verwalten** – Roster mit Rollen, geteilter Credit-Pool, „Mitglied hinzufügen" (Erwachsener 3,99 € / Kind 0,99 €, enthaltenes Kontingent + Erweiterungen via Checkout). Server-seitiges Konten-Linking läuft nach Zahlung über den Webhook (`add_family_member`).
+- ✅ **Medikamentenplan (Wochen-Vergabe)** – pro Person, mit Einnahmezeiten & Wochentagen, „Heute als Aufgaben eintragen", synchronisiert über die Familie.
+
 **Noch offen (nächste Schritte):**
-- ⏳ **Familien-Provisionierung im Client** – Familienzentrale-Flow: Mitglied einladen/anlegen (Erwachsener 3,99 € / Kind 0,99 €), Rollen zuweisen, `add_family_member` aufrufen. Backend ist vorbereitet, die Client-Oberfläche fehlt noch.
+- ⏳ **Konten-Einladung/-Anlage** – echte Auth-Verknüpfung der Family-Mitglieder (Einladungslink/E-Mail) + Webhook-Provisionierung via `add_family_member`.
 - ⏳ **Kinderkonten-Onboarding** – Anlage, Verknüpfung mit der Familie, eingeschränkte Ansicht (Aufgaben/Termine/Erinnerungen ohne KI).
 - ⏳ **Scharfschalten** – `ENFORCE_TIERS`/`BACKEND_V2` auf `true`, KI-Proxy + Stripe-Produkte/Preise anlegen und deployen (siehe [BACKEND.md](BACKEND.md), Phase 2).
 - ⏳ **Credit-Kosten im Proxy** – `consume_credits(user, cost)` je Aktion mit den Werten aus Abschnitt 7 verdrahten (einfache Frage 1 … große Analyse 20).
