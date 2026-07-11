@@ -2903,13 +2903,33 @@ RENDERERS.school = function () {
 function kidCard(kid) {
   ensureKid(kid);
   const sec = kidSection[kid.id] || 'plan';
-  const tabs = [['plan', '📅 Plan'], ['termine', '🩺 Termine'], ['hobbys', '⚽ Hobbys'], ['pack', '🎒 Packen']];
+  const tabs = [['plan', '📅 Plan'], ['termine', '🩺 Termine'], ['meds', '💊 Medis'], ['hobbys', '⚽ Hobbys'], ['pack', '🎒 Packen']];
   let h = '<div class="card kid-card" data-kid="' + kid.id + '">' +
     '<div class="kid-head"><span class="kid-dot" style="background:' + kid.color + '"></span><h3>' + esc(kid.name) + '</h3>' +
     '<button class="t-del" data-act="delKid" title="Kind entfernen"><svg viewBox="0 0 24 24"><use href="#icTrash"/></svg></button></div>' +
     '<div class="seg kid-tabs">' + tabs.map(x => '<button data-sec="' + x[0] + '" class="' + (sec === x[0] ? 'active' : '') + '">' + x[1] + '</button>').join('') + '</div>';
-  h += sec === 'termine' ? kidTermine(kid) : sec === 'hobbys' ? kidHobbys(kid) : sec === 'pack' ? kidPack(kid) : kidPlan(kid);
+  h += sec === 'termine' ? kidTermine(kid) : sec === 'meds' ? kidMeds(kid) : sec === 'hobbys' ? kidHobbys(kid) : sec === 'pack' ? kidPack(kid) : kidPlan(kid);
   return h + '</div>';
+}
+/* Medikamente eines Kindes – gemeinsame Quelle mit der Familienzentrale (store.family.meds) */
+function kidMeds(kid) {
+  ensureFamily();
+  const meds = (store.family.meds || []).filter(m => m.member === kid.id);
+  let h = '<p class="sub" style="margin:-2px 0 10px">Medikamente für ' + esc(kid.name) + ' – auch in der Familienzentrale sichtbar, mit Erinnerung zur Uhrzeit.</p>' +
+    '<input type="text" data-in="kmedName" placeholder="Medikament (z. B. Hustensaft)" maxlength="40" style="margin-bottom:8px">' +
+    '<input type="text" data-in="kmedDose" placeholder="Dosis (z. B. 5 ml)" maxlength="30" style="margin-bottom:8px">' +
+    '<div class="med-days" data-kmedslots style="margin-bottom:2px">' +
+    MED_SLOTS.map(s => '<span class="med-slot" data-act="kmedSlot" data-slot="' + s[0] + '">' + s[1] + '</span>').join('') + '</div>' +
+    '<button class="btn btn-primary btn-sm" data-act="addKidMed" style="width:100%;margin:10px 0 14px">+ Hinzufügen (täglich)</button>';
+  if (!meds.length) h += '<div class="empty" style="padding:12px">Noch keine Medikamente für ' + esc(kid.name) + '.</div>';
+  meds.forEach(m => {
+    const daysTxt = m.days === 'daily' ? 'Täglich' : (Array.isArray(m.days) ? m.days.map(i => MED_WD[i]).join(' ') : 'Täglich');
+    h += '<div class="lesson"><span style="font-size:18px">💊</span>' +
+      '<div class="ls-main"><div class="ls-t">' + esc(m.name) + (m.dose ? ' · ' + esc(m.dose) : '') + '</div>' +
+      '<div class="ls-note">' + daysTxt + ' · ' + ((m.slots && m.slots.length) ? m.slots.map(medSlotFull).join(', ') : 'ganztags') + '</div></div>' +
+      '<button class="l-btn del" data-act="delKidMed" data-id="' + m.id + '"><svg viewBox="0 0 24 24" width="14" height="14"><use href="#icTrash"/></svg></button></div>';
+  });
+  return h;
 }
 function kidPlan(kid) {
   const day = kidDay[kid.id] || defaultDay();
@@ -3039,6 +3059,16 @@ $('#kidList').addEventListener('click', e => {
     RENDERERS.school(); toast('Termin gespeichert – auch im Kalender ✓'); return;
   }
   if (a === 'delAppt') { store.events = store.events.filter(ev => ev.id !== act.dataset.id); save(); RENDERERS.school(); return; }
+  if (a === 'kmedSlot') { act.classList.toggle('on'); return; }
+  if (a === 'addKidMed') {
+    ensureFamily();
+    const inp = q('[data-in="kmedName"]'); const name = inp.value.trim(); if (!name) { inp.focus(); return; }
+    const slots = Array.from(card.querySelectorAll('[data-kmedslots] .med-slot.on')).map(el => el.dataset.slot);
+    if (!slots.length) { toast('Bitte mindestens eine Einnahmezeit wählen'); return; }
+    store.family.meds.push({ id: uid(), name, dose: q('[data-in="kmedDose"]').value.trim(), member: kid.id, slots, days: 'daily', createdAt: Date.now() });
+    save(); famPush(); RENDERERS.school(); toast('Medikament für ' + kid.name + ' hinzugefügt ✓'); return;
+  }
+  if (a === 'delKidMed') { store.family.meds = (store.family.meds || []).filter(m => m.id !== act.dataset.id); save(); famPush(); RENDERERS.school(); return; }
   if (a === 'addHobby') {
     const name = q('[data-in="hobName"]').value.trim(); if (!name) { toast('Bitte einen Namen angeben'); return; }
     kid.hobbies.push({ id: uid(), name, day: q('[data-in="hobDay"]').value, time: q('[data-in="hobTime"]').value, place: q('[data-in="hobPlace"]').value.trim() });
@@ -3064,6 +3094,7 @@ $('#kidList').addEventListener('keydown', e => {
   const t = e.target, card = t.closest('.kid-card'); if (!card) return;
   if (t.matches('[data-fach]')) card.querySelector('[data-act="addFach"]').click();
   else if (t.matches('[data-in="apptTitle"]')) card.querySelector('[data-act="addAppt"]').click();
+  else if (t.matches('[data-in="kmedName"]') || t.matches('[data-in="kmedDose"]')) card.querySelector('[data-act="addKidMed"]').click();
   else if (t.matches('[data-in="hobName"]')) card.querySelector('[data-act="addHobby"]').click();
   else if (t.matches('[data-in="listName"]')) card.querySelector('[data-act="addList"]:not([data-tpl])').click();
   else if (t.matches('[data-in="packItem"]')) card.querySelector('[data-act="addItem"][data-list="' + t.dataset.list + '"]').click();
@@ -3867,21 +3898,77 @@ function famMitglieder() {
 /* --- Medikamentenplan (Wochen-Vergabe je Person, synchronisiert) --- */
 const MED_SLOTS = [['morgens', '🌅 Morgens'], ['mittags', '☀️ Mittags'], ['abends', '🌆 Abends'], ['nachts', '🌙 Nachts']];
 const MED_WD = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'];
+/* Standard-Uhrzeiten je Einnahmezeit – Grundlage für Erinnerungen */
+const SLOT_TIME = { morgens: '08:00', mittags: '12:00', abends: '18:00', nachts: '22:00' };
 const todayWdIdx = () => (new Date().getDay() + 6) % 7;   // 0 = Mo … 6 = So
 const medDaysActive = (m, wd) => m.days === 'daily' || (Array.isArray(m.days) && m.days.indexOf(wd) !== -1);
 function medSlotLabel(s) { const f = MED_SLOTS.find(x => x[0] === s); return f ? f[1] : s; }
-function medWhoName(id) { const m = id ? famMember(id) : null; return m ? m.name : ((account && account.name) || 'Ich'); }
-function medWhoColor(id) { const m = id ? famMember(id) : null; return m ? m.color : KID_COLORS[0]; }
+function medSlotFull(s) { const t = SLOT_TIME[s]; return medSlotLabel(s) + (t ? ' · ' + t : ''); }
+/* Person eines Medikaments – Familienmitglied ODER angelegtes Kind (Kinder-Bereich) */
+function medPerson(id) { if (!id) return null; return famMember(id) || (store.kids || []).find(k => k.id === id) || null; }
+function medWhoName(id) { const m = medPerson(id); return m ? m.name : ((account && account.name) || 'Ich'); }
+function medWhoColor(id) { const m = medPerson(id); return m ? m.color : KID_COLORS[0]; }
+
+/* --- Erinnerungen zur Uhrzeit (Vordergrund: läuft, solange Effyra offen ist) --- */
+let _medTimer = null;
+async function enableMedReminders() {
+  ensureFamily();
+  if ('Notification' in window && Notification.permission === 'default') { try { await Notification.requestPermission(); } catch (e) {} }
+  store.family.medReminders = true; save();
+  startMedScheduler(); checkMedReminders();
+  if (currentView === 'family') RENDERERS.family();
+  toast(('Notification' in window && Notification.permission === 'granted') ? 'Erinnerungen aktiv 🔔' : 'Erinnerungen aktiv (als Hinweis in der App)');
+}
+function fireMedReminder(m, s) {
+  const title = '💊 ' + m.name + (m.dose ? ' · ' + m.dose : '');
+  const body = medWhoName(m.member) + ' · ' + medSlotFull(s);
+  if ('Notification' in window && Notification.permission === 'granted') { try { new Notification(title, { body, tag: m.id + s }); return; } catch (e) {} }
+  if (document.visibilityState === 'visible') toast('🔔 ' + title + ' – ' + body);
+}
+function checkMedReminders() {
+  if (!store.family || !store.family.medReminders || !store.family.meds) return;
+  const dk = todayISO(), wd = todayWdIdx();
+  const now = new Date(), hhmm = pad(now.getHours()) + ':' + pad(now.getMinutes());
+  let changed = false;
+  if (!store.family.medFired || store.family.medFired.date !== dk) {
+    // Neuer Tag / erste Prüfung: bereits vergangene Zeiten als „erledigt" markieren – kein Nachfeuern
+    store.family.medFired = { date: dk, keys: [] };
+    store.family.meds.filter(m => medDaysActive(m, wd)).forEach(m => (m.slots || []).forEach(s => { const t = SLOT_TIME[s]; if (t && hhmm >= t) store.family.medFired.keys.push(dk + '|' + m.id + '|' + s); }));
+    changed = true;
+  }
+  const fired = store.family.medFired.keys;
+  store.family.meds.filter(m => medDaysActive(m, wd)).forEach(m => (m.slots || []).forEach(s => {
+    const t = SLOT_TIME[s]; if (!t) return;
+    const key = dk + '|' + m.id + '|' + s;
+    if (hhmm >= t && fired.indexOf(key) === -1) { fired.push(key); changed = true; fireMedReminder(m, s); }
+  }));
+  if (changed) save();
+}
+function startMedScheduler() {
+  if (_medTimer) return;
+  _medTimer = setInterval(checkMedReminders, 60000);
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') checkMedReminders(); });
+}
 function famMeds() {
   ensureFamily();
   const meds = store.family.meds, members = store.family.members, wd = todayWdIdx();
   let h = '<p class="sub" style="margin:-2px 0 12px">Medikamentenplan für die Woche – für dich oder einzelne Familienmitglieder. Wird mit der Familie synchronisiert.</p>';
 
+  // Erinnerungen zur Uhrzeit
+  const remOn = !!store.family.medReminders;
+  h += '<div class="note-box" style="margin-bottom:12px;display:flex;align-items:center;gap:10px;justify-content:space-between">' +
+    '<div><b>🔔 Erinnerungen zur Uhrzeit</b><div class="sub" style="margin-top:2px">' +
+    (remOn ? 'Aktiv – meldet sich zur Einnahmezeit (' + Object.values(SLOT_TIME).join(' / ') + '), solange Effyra geöffnet ist.' : 'Aus – aktivieren für Hinweise zur Einnahmezeit.') +
+    '</div></div><button class="btn btn-sm ' + (remOn ? '' : 'btn-primary') + '" data-fam="toggleMedRem">' + (remOn ? 'Aus' : 'An') + '</button></div>';
+
   // Eingabe
+  const kids = store.kids || [];
   h += '<input type="text" id="medName" placeholder="Medikament (z. B. Vitamin D)" maxlength="40" style="margin-bottom:8px">' +
     '<div class="kid-row" style="margin-bottom:8px"><input type="text" id="medDose" placeholder="Dosis (z. B. 1 Tablette)" maxlength="30">' +
     '<select id="medWho"><option value="">👤 Für mich</option>' +
-    members.filter(m => m.role !== 'Ich').map(m => '<option value="' + m.id + '">' + esc(m.name) + '</option>').join('') + '</select></div>' +
+    members.filter(m => m.role !== 'Ich').map(m => '<option value="' + m.id + '">' + esc(m.name) + '</option>').join('') +
+    (kids.length ? '<optgroup label="Kinder">' + kids.map(k => '<option value="' + k.id + '">' + esc(k.name) + '</option>').join('') + '</optgroup>' : '') +
+    '</select></div>' +
     '<div style="margin-bottom:6px"><span class="sub">Einnahmezeit</span><div class="med-days" id="medSlots">' +
     MED_SLOTS.map(s => '<span class="med-slot" data-fam="medSlot" data-slot="' + s[0] + '">' + s[1] + '</span>').join('') + '</div></div>' +
     '<div style="margin-bottom:8px"><span class="sub">Wochentage</span><div class="med-days" id="medWd">' +
@@ -3896,7 +3983,7 @@ function famMeds() {
     todays.forEach(m => {
       h += '<div class="mem"><span class="kid-dot" style="background:' + medWhoColor(m.member) + '"></span>' +
         '<div class="mem-info"><b>💊 ' + esc(m.name) + (m.dose ? ' · ' + esc(m.dose) : '') + '</b>' +
-        '<span>' + esc(medWhoName(m.member)) + ' · ' + (m.slots && m.slots.length ? m.slots.map(medSlotLabel).join(' · ') : 'ganztags') + '</span></div></div>';
+        '<span>' + esc(medWhoName(m.member)) + ' · ' + (m.slots && m.slots.length ? m.slots.map(medSlotFull).join(' · ') : 'ganztags') + '</span></div></div>';
     });
     h += '<button class="btn btn-sm" data-fam="medTasksToday" style="margin:2px 0 16px">🔔 Heute als Aufgaben eintragen</button>';
   }
@@ -3908,7 +3995,7 @@ function famMeds() {
     const daysHtml = m.days === 'daily'
       ? '<span class="med-day on">Täglich</span>'
       : MED_WD.map((d, i) => '<span class="med-day' + (Array.isArray(m.days) && m.days.indexOf(i) !== -1 ? ' on' : '') + '">' + d + '</span>').join('');
-    const slotsHtml = (m.slots && m.slots.length) ? m.slots.map(s => '<span class="med-slot on">' + medSlotLabel(s) + '</span>').join('') : '';
+    const slotsHtml = (m.slots && m.slots.length) ? m.slots.map(s => '<span class="med-slot on">' + medSlotFull(s) + '</span>').join('') : '';
     h += '<div class="mem" style="align-items:flex-start"><span class="kid-dot" style="background:' + medWhoColor(m.member) + ';margin-top:3px"></span>' +
       '<div class="mem-info"><b>💊 ' + esc(m.name) + (m.dose ? ' · ' + esc(m.dose) : '') + '</b>' +
       '<span>' + esc(medWhoName(m.member)) + '</span>' +
@@ -4029,6 +4116,11 @@ $('#famRoot').addEventListener('click', e => {
     if (m && !confirm('„' + m.name + '" aus der Familie entfernen?')) return;
     store.family.accounts = store.family.accounts.filter(x => x.id !== b.dataset.id);
     famChanged(); toast('Mitglied entfernt'); return;
+  }
+  if (a === 'toggleMedRem') {
+    if (store.family.medReminders) { store.family.medReminders = false; save(); RENDERERS.family(); toast('Erinnerungen aus'); }
+    else enableMedReminders();
+    return;
   }
   if (a === 'medSlot' || a === 'medWd') { b.classList.toggle('on'); return; }
   if (a === 'addMed') {
@@ -6096,6 +6188,7 @@ $('#btnWipe').addEventListener('click', async () => {
    die Geräteerkennung schlägt beim Ersteinrichtungs-Fenster eine Sprache vor. */
 applyLang((store.profile && store.profile.lang) || 'de', { silent: true, persist: !!(store.profile && store.profile.lang) });
 refreshAIStatus();
+if (store.family && store.family.medReminders) { startMedScheduler(); checkMedReminders(); }   // Medikamenten-Erinnerungen fortsetzen
 if (CLOUD && store.family && store.family.code) famPull().then(c => { if (c && currentView === 'dashboard') RENDERERS.dashboard(); });
 if (CLOUD) {
   account = null;   /* lokales Konto ignorieren – Cloud entscheidet */

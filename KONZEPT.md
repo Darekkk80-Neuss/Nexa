@@ -124,7 +124,7 @@ Reset: 01.08.2026
 
 **Zusätzlich umgesetzt:**
 - ✅ **Familienzentrale → Mitglieder verwalten** – Roster mit Rollen, geteilter Credit-Pool, „Mitglied hinzufügen" (Erwachsener 3,99 € / Kind 0,99 €, enthaltenes Kontingent + Erweiterungen via Checkout). Server-seitiges Konten-Linking läuft nach Zahlung über den Webhook (`add_family_member`).
-- ✅ **Medikamentenplan (Wochen-Vergabe)** – pro Person, mit Einnahmezeiten & Wochentagen, „Heute als Aufgaben eintragen", synchronisiert über die Familie.
+- ✅ **Medikamentenplan (Wochen-Vergabe)** – pro Person, mit Einnahmezeiten & Wochentagen, „Heute als Aufgaben eintragen", **Erinnerungen zur Uhrzeit** (Notification-API im Vordergrund) und **Integration im Kinder-Bereich** (eigener „Medis"-Tab je Kind); synchronisiert über die Familie.
 
 **Noch offen (nächste Schritte):**
 - ⏳ **Konten-Einladung/-Anlage** – echte Auth-Verknüpfung der Family-Mitglieder (Einladungslink/E-Mail) + Webhook-Provisionierung via `add_family_member`.
