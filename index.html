@@ -4733,9 +4733,9 @@ async function aiAnalyze(dataUrl) {
     '- task: {"type":"task","title":"...","date":"YYYY-MM-DD|null","priority":"hoch|mittel|niedrig"}\n' +
     '- event: {"type":"event","title":"...","date":"YYYY-MM-DD","time":"HH:MM|null"}\n' +
     '- deadline: {"type":"deadline","title":"...","date":"YYYY-MM-DD"}\n' +
-    '- vehicle (TÜV/HU/AU/Service/Reifen/Versicherung): {"type":"vehicle","title":"...","date":"YYYY-MM-DD|null"}\n' +
+    '- vehicle (TÜV/HU/AU/Service/Reifen/Ölwechsel/Versicherung/Kilometerstand): {"type":"vehicle","title":"...","subtype":"tuev|service|reifen|oel|versicherung|kilometer","vehicleName":"z. B. Yamaha Fazer","date":"YYYY-MM-DD|null","amount":Kosten,"km":Zahl}\n' +
     '- work (Schicht/Dienst/Urlaub/Krank): {"type":"work","title":"...","category":"urlaub|krank|kinderkrank|dienst","from":"YYYY-MM-DD|null","to":"YYYY-MM-DD|null"}\n' +
-    '- child (Schule/Elternbrief/Klassenfahrt/Impfung): {"type":"child","title":"...","date":"YYYY-MM-DD|null","time":"HH:MM|null"}\n' +
+    '- child (Schule/Elternbrief/Klassenfahrt/Impfung/Arzt): {"type":"child","title":"...","childName":"Name des Kindes oder leer","apptKind":"arzt|impf|schule|sonst","date":"YYYY-MM-DD|null","time":"HH:MM|null"}\n' +
     '- family: {"type":"family","title":"...","date":"YYYY-MM-DD|null"}\n' +
     '- life (Steuer/Versicherung/Rente/Behörde/Gesundheit/Verträge): {"type":"life","title":"...","category":"..."}\n' +
     '- emergency (Blutgruppe/Allergien/Medikamente): {"type":"emergency","title":"...","category":"blutgruppe|allergien|medikamente|vorerkrankungen|notiz"}\n' +
@@ -4775,8 +4775,26 @@ function demoAnalyses() {
         { type: 'expense', title: 'Werkstattrechnung Inspektion (Yamaha Fazer)', amount: 89.99, category: 'Fahrzeug' },
         { type: 'deadline', title: 'Werkstattrechnung bezahlen', date: addDays(T, 35) },
         { type: 'event', title: 'Reifenwechsel-Termin Werkstatt', date: addDays(T, 41), time: '09:30' },
-        { type: 'vehicle', title: 'Nächste Inspektion Yamaha Fazer', date: addDays(T, 400) },
-        { type: 'task', title: 'Rechnung ablegen & Allianz-Versicherung prüfen', priority: 'niedrig' }
+        { type: 'vehicle', subtype: 'service', vehicleName: 'Yamaha Fazer', title: 'Inspektion (Zweirad Meyer)', date: T, amount: 89.99, km: 24500 },
+        { type: 'vehicle', subtype: 'versicherung', vehicleName: 'Yamaha Fazer', title: 'Allianz' },
+        { type: 'task', title: 'Rechnung ablegen', priority: 'niedrig' }
+      ],
+      replyDraft: null
+    },
+    {
+      docType: 'Behörde', title: 'Elternbrief Grundschule', sender: 'Grundschule Am Ring',
+      explanation: 'Elternbrief der Grundschule: Es steht ein Elternabend an und eine Klassenfahrt wird angekündigt. Der Rückmeldezettel muss unterschrieben zurück.',
+      deadline: addDays(T, 12), urgency: 'mittel', priority: 'mittel',
+      summary: 'Elternbrief mit Elternabend, Klassenfahrt und Rückmeldezettel (Frist).',
+      keyPoints: ['Elternabend am Abendtermin', 'Klassenfahrt angekündigt', 'Rückmeldezettel unterschreiben'],
+      risks: ['Rückmeldung fristgerecht abgeben'],
+      recommendations: ['Elternabend in den Kalender', 'Zettel rechtzeitig unterschreiben'],
+      keywords: ['Schule', 'Elternabend', 'Klassenfahrt', 'Rückmeldung'],
+      todos: [{ title: 'Rückmeldezettel unterschreiben', due: addDays(T, 12) }],
+      findings: [
+        { type: 'child', apptKind: 'schule', title: 'Elternabend Grundschule', date: addDays(T, 9), time: '19:00' },
+        { type: 'child', apptKind: 'schule', title: 'Klassenfahrt', date: addDays(T, 60) },
+        { type: 'task', title: 'Rückmeldezettel unterschreiben & abgeben', date: addDays(T, 12), priority: 'hoch' }
       ],
       replyDraft: null
     },
@@ -4907,15 +4925,43 @@ async function handleDocFile(file) {
 /* ---- Modulare Verteil-Engine: erkannte Infos → passende Module ----
    Neuen Modul-/Dokumenttyp ergänzen = einen Eintrag hier hinzufügen. */
 const EM_MED_KEYS = { blutgruppe: 'blood', blood: 'blood', allergien: 'allergies', allergies: 'allergies', medikamente: 'meds', meds: 'meds', vorerkrankungen: 'conditions', conditions: 'conditions' };
+/* Passendes Fahrzeug finden (nach Name), sonst aktives/erstes, sonst neu anlegen. */
+function pickOrCreateVehicle(name) {
+  store.vehicles = store.vehicles || [];
+  const n = (name || '').toLowerCase().trim();
+  let v = null;
+  if (n) v = store.vehicles.find(x => x.name && (x.name.toLowerCase().includes(n) || n.includes(x.name.toLowerCase())));
+  if (!v && vehActive) v = store.vehicles.find(x => x.id === vehActive);
+  if (!v) v = store.vehicles[0];
+  if (!v) {
+    const isMoto = /motorrad|yamaha|honda|kawasaki|ktm|ducati|suzuki|fazer|roller|vespa|harley/i.test(n);
+    v = { id: uid(), name: name || 'Mein Fahrzeug', type: isMoto ? 'motorrad' : 'auto', plate: '', color: KID_COLORS[store.vehicles.length % KID_COLORS.length], tuev: '', insurance: {}, serviceEvery: { km: 0, months: 0 }, lastService: '', lastServiceKm: 0, fuel: [], trips: [], services: [], tires: [], tours: [], parking: null };
+    store.vehicles.push(v);
+  }
+  return v;
+}
+/* Passendes Kind finden (nach Name), sonst erstes; null wenn keins angelegt. */
+function pickKid(name) {
+  if (!store.kids || !store.kids.length) return null;
+  const n = (name || '').toLowerCase().trim();
+  if (n) { const k = store.kids.find(x => x.name && x.name.toLowerCase().includes(n)); if (k) return k; }
+  return store.kids[0];
+}
 const FINDING_TYPES = {
   expense:   { icon: '🧾', group: 'Ausgaben', val: 'money', apply: f => { ensureBudget(); store.budget.entries.push({ id: uid(), kind: 'expense', label: f.title, amount: +f.amount || 0, recurring: !!f.recurring, date: f.date || todayISO() }); } },
   income:    { icon: '💶', group: 'Einnahmen', val: 'money', apply: f => { ensureBudget(); store.budget.entries.push({ id: uid(), kind: 'income', label: f.title, amount: +f.amount || 0, recurring: !!f.recurring, date: f.date || todayISO() }); } },
   task:      { icon: '✅', group: 'Aufgaben', val: 'date', apply: f => addTask(f.title, f.date || null, f.priority === 'hoch' ? 'high' : f.priority === 'niedrig' ? 'low' : 'med', 'doc') },
   event:     { icon: '📅', group: 'Kalender', val: 'date', apply: f => addEvent(f.title, f.date || todayISO(), f.time || null, f.note || '', 'doc') },
   deadline:  { icon: '⏰', group: 'Fristen', val: 'date', apply: f => addEvent('⏰ Frist: ' + f.title, f.date || todayISO(), null, f.note || '', 'doc') },
-  vehicle:   { icon: '🔧', group: 'Auto & Motorrad', val: 'date', apply: f => { if (f.date) { addEvent('🔧 ' + f.title, f.date, null, f.note || '', 'veh'); addTask(f.title, f.date, 'med', 'doc'); } } },
-  work:      { icon: '🕒', group: 'Arbeitszeit', val: 'date', apply: f => { ensureWork(); if (f.from && f.to && /urlaub|krank|kinder/.test(f.category || '')) store.work.absences.push({ id: uid(), type: f.category, from: f.from, to: f.to, note: f.title }); else addTask(f.title, f.date || null, 'med', 'doc'); } },
-  child:     { icon: '🎒', group: 'Kinder', val: 'date', apply: f => addEvent('🎒 ' + f.title, f.date || todayISO(), f.time || null, 'Kinder', 'family') },
+  vehicle:   { icon: '🔧', group: 'Auto & Motorrad', val: 'date', apply: f => {
+    const v = pickOrCreateVehicle(f.vehicleName), sub = (f.subtype || '').toLowerCase();
+    if (/tuev|tüv|hu|au|hauptunter/.test(sub) && f.date) { v.tuev = f.date; addTask('TÜV/HU: ' + v.name, addDays(f.date, -14), 'high', 'veh'); addEvent('🔧 TÜV fällig: ' + v.name, f.date, null, v.plate || '', 'veh'); }
+    else if (/versicher|insurance/.test(sub)) { v.insurance = v.insurance || {}; v.insurance.company = f.title.replace(/^versicherung:?\s*/i, '') || v.insurance.company; }
+    else if (/kilometer|mileage|km/.test(sub) && f.km) { v.lastServiceKm = +f.km; }
+    else { v.services = v.services || []; v.services.push({ id: uid(), date: f.date || todayISO(), km: +f.km || 0, title: f.title, cost: +f.amount || 0 }); if (f.date) v.lastService = f.date; }   // Service/Reifen/Öl/Werkstatt → Serviceheft
+  } },
+  work:      { icon: '🕒', group: 'Arbeitszeit', val: 'date', apply: f => { ensureWork(); if (f.from && f.to && /urlaub|krank|kinder/.test(f.category || '')) store.work.absences.push({ id: uid(), type: f.category, from: f.from, to: f.to, note: f.title }); else if (/dienst|schicht/.test(f.category || '') && f.date) store.work.shifts.push({ id: uid(), name: f.title, date: f.date, start: f.time || '', end: '' }); else addTask(f.title, f.date || null, 'med', 'doc'); } },
+  child:     { icon: '🎒', group: 'Kinder', val: 'date', apply: f => { const kid = pickKid(f.childName); const kind = ['arzt', 'impf', 'schule', 'sonst'].indexOf(f.apptKind) >= 0 ? f.apptKind : 'schule'; if (kid) addEvent(APPT_KIND[kind].i + ' ' + f.title, f.date || todayISO(), f.time || null, kid.name, 'kind', { kidId: kid.id, apptKind: kind }); else addEvent('🎒 ' + f.title, f.date || todayISO(), f.time || null, 'Kinder', 'family'); } },
   family:    { icon: '👪', group: 'Familie', val: 'date', apply: f => addEvent(f.title, f.date || todayISO(), f.time || null, '', 'family') },
   life:      { icon: '📂', group: 'Lebenslagen', val: 'text', apply: f => addTask('Einsortieren: ' + f.title + (f.category ? ' (' + f.category + ')' : ''), null, 'low', 'doc') },
   emergency: { icon: '🚨', group: 'Notfall', val: 'text', consent: true, apply: f => { store.emergency = store.emergency || { contacts: [], phones: [], medical: {}, insurances: [], checkDone: {} }; store.emergency.medical = store.emergency.medical || {}; const k = EM_MED_KEYS[(f.category || '').toLowerCase()] || 'notes'; store.emergency.medical[k] = (k === 'notes' && store.emergency.medical.notes ? store.emergency.medical.notes + '\n' : '') + f.title; } },
@@ -4932,6 +4978,7 @@ function normalizeFindings(arr, fallbackPrio) {
     amount: f.amount != null ? +f.amount : null,
     date: (f.date && /^\d{4}-\d{2}-\d{2}$/.test(f.date)) ? f.date : null,
     time: f.time || null, category: f.category || '', from: f.from || null, to: f.to || null,
+    subtype: f.subtype || '', vehicleName: f.vehicleName || '', childName: f.childName || '', apptKind: f.apptKind || '', km: f.km != null ? +f.km : null,
     recurring: !!f.recurring, priority: f.priority || fallbackPrio || 'mittel',
     consent: !!FINDING_TYPES[f.type].consent, selected: !FINDING_TYPES[f.type].consent, applied: false
   }));
