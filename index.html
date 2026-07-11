@@ -1518,8 +1518,50 @@ const store = Object.assign({
 if (store.settings && !/^gpt-5/.test(store.settings.model || '')) store.settings.model = 'gpt-5-mini';
 
 function save() {
+  if (!syncApplying) store._ts = Date.now();   // lokaler Änderungszeitpunkt (für Cloud-Sync-LWW)
   try { localStorage.setItem(DATA_KEY, JSON.stringify(store)); }
   catch (e) { toast('⚠️ Speicher voll – ältestes Dokument entfernen'); }
+  if (!syncApplying) schedulePush();
+}
+/* ===== CLOUD-STATE-SYNC (local-first + Mehrgeräte-Backup) =====
+   Gerät bleibt Hauptablage; ausgewählte Bereiche werden pro Nutzer in Supabase (Tabelle user_state,
+   RLS: nur eigene Zeile) gesichert und geräteübergreifend abgeglichen (Last-Write-Wins über _ts).
+   Bewusst NICHT synchronisiert: emergency (Notfall/Gesundheit) & budget (sensibel, lokal), docs
+   (große Vorschaubilder), chat/weather (transient), family (eigener RPC-Sync). */
+const SYNC_KEYS = ['name', 'onboarded', 'tasks', 'events', 'kids', 'life', 'vehicles', 'work', 'profile', 'docFavs', 'settings', 'weatherLoc'];
+let syncApplying = false, _pushTimer = null;
+function stateSnapshot() {
+  const s = { _ts: store._ts || Date.now() };
+  SYNC_KEYS.forEach(k => { if (store[k] !== undefined) s[k] = store[k]; });
+  return s;
+}
+function schedulePush() {
+  if (!CLOUD || !sb || !(account && account.loggedIn)) return;
+  clearTimeout(_pushTimer);
+  _pushTimer = setTimeout(statePush, 2000);
+}
+async function statePush() {
+  if (!CLOUD || !sb || !(account && account.loggedIn)) return;
+  try {
+    const u = (await sb.auth.getUser()).data.user; if (!u) return;
+    await sb.from('user_state').upsert({ user_id: u.id, data: stateSnapshot(), updated_at: new Date().toISOString() });
+  } catch (e) { /* Tabelle evtl. noch nicht angelegt – App läuft lokal weiter */ }
+}
+async function statePull() {
+  if (!CLOUD || !sb || !(account && account.loggedIn)) return;
+  try {
+    const u = (await sb.auth.getUser()).data.user; if (!u) return;
+    const r = await sb.from('user_state').select('data').eq('user_id', u.id).maybeSingle();
+    const d = r.data && r.data.data;
+    if (!d || typeof d._ts !== 'number' || d._ts <= (store._ts || 0)) return;   // nur wenn Cloud neuer ist
+    syncApplying = true;
+    SYNC_KEYS.forEach(k => { if (d[k] !== undefined) store[k] = d[k]; });
+    store._ts = d._ts;
+    save();
+    syncApplying = false;
+    try { refresh(); } catch (e) {}
+    toast('☁️ Daten von deinem anderen Gerät geladen');
+  } catch (e) { /* Tabelle evtl. noch nicht angelegt */ }
 }
 const getKey = () => { try { return localStorage.getItem(KEY_KEY) || ''; } catch (e) { return ''; } };
 const hasKey = () => getKey().length > 8;
@@ -2394,6 +2436,7 @@ async function cloudSession(session, fallbackName) {
     loggedIn: true
   };
   if (account.name && !store.name) { store.name = account.name; save(); }
+  statePull();   // Cloud-Zustand geräteübergreifend abgleichen (nicht awaiten – läuft im Hintergrund)
 }
 
 async function cloudAuth(pass, err) {
