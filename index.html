@@ -329,6 +329,11 @@ label.fld{display:block;font-size:12.5px;font-weight:600;color:var(--muted);marg
 .theme-toggle button{width:32px;height:32px;border:none;background:none;border-radius:999px;cursor:pointer;font-size:14px;line-height:1;display:inline-flex;align-items:center;justify-content:center;color:var(--muted);font-weight:800;transition:.15s}
 .theme-toggle button:hover{color:var(--text)}
 .theme-toggle button.active{background:var(--grad);color:#fff;box-shadow:0 2px 8px rgba(124,58,237,.35)}
+.dash-hero-actions{flex:none;display:flex;align-items:center;gap:8px}
+.back-btn{display:none;align-items:center;gap:5px;margin:0 0 14px;padding:7px 13px 7px 9px;border:1px solid var(--border);background:var(--card2);color:var(--muted);border-radius:999px;font-size:13.5px;font-weight:600;cursor:pointer;min-height:38px;transition:.15s}
+.back-btn svg{width:18px;height:18px}
+.back-btn:hover{color:var(--text);border-color:var(--border2)}
+.back-btn:active{transform:scale(.97)}
 .fam-ai-row{display:flex;align-items:center;gap:6px;font-size:13px;margin-top:5px;color:var(--muted)}
 .fam-ai-row b{margin-left:auto;color:var(--text)}
 .auth-birth{display:block;font-size:12px;color:var(--muted);text-align:left;margin:4px 2px -4px;font-weight:600}
@@ -1119,6 +1124,7 @@ body.lang-switching main,body.lang-switching .sidebar,body.lang-switching .topba
   </header>
 
   <main>
+    <button class="back-btn" id="backBtn" aria-label="Zurück"><svg viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Zurück</button>
 
     <!-- ============================== DASHBOARD ============================== -->
     <section class="view" id="view-dashboard">
@@ -1128,10 +1134,13 @@ body.lang-switching main,body.lang-switching .sidebar,body.lang-switching .topba
           <p id="greetSub" class="dash-sub"></p>
           <div id="trialSlot"></div>
         </div>
-        <div class="theme-toggle" id="themeQuick" role="group" aria-label="Erscheinungsbild">
-          <button type="button" data-theme-set="auto" title="Automatisch (System)" aria-label="Automatisch">A</button>
-          <button type="button" data-theme-set="light" title="Heller Modus" aria-label="Hell">☀️</button>
-          <button type="button" data-theme-set="dark" title="Dunkler Modus" aria-label="Dunkel">🌙</button>
+        <div class="dash-hero-actions">
+          <div class="theme-toggle" id="themeQuick" role="group" aria-label="Erscheinungsbild">
+            <button type="button" data-theme-set="auto" title="Automatisch (System)" aria-label="Automatisch">A</button>
+            <button type="button" data-theme-set="light" title="Heller Modus" aria-label="Hell">☀️</button>
+            <button type="button" data-theme-set="dark" title="Dunkler Modus" aria-label="Dunkel">🌙</button>
+          </div>
+          <button class="icon-btn" id="dashLogout" title="Abmelden" aria-label="Abmelden"><svg viewBox="0 0 24 24"><path d="M14 8V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h7a2 2 0 0 0 2-2v-2M9 12h12m0 0l-3.5-3.5M21 12l-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
         </div>
       </header>
       <div class="dash-stats" id="statRow"></div>
@@ -2075,9 +2084,11 @@ let currentView = 'dashboard';
 const RENDERERS = {};
 
 const MORE_VIEWS = ['work', 'docs', 'school', 'calendar', 'life', 'family', 'emergency', 'vehicles', 'settings'];
+let viewHistory = [], _navBack = false;
 function showView(name) {
   /* Modul für die aktuelle Stufe gesperrt? → Upgrade-Ansicht statt Modul */
   if (account && account.loggedIn && !isTrialExpired() && !moduleAllowed(name)) { showUpgrade(name); return; }
+  if (!_navBack && currentView && currentView !== name) viewHistory.push(currentView);   // Verlauf für „Zurück"
   currentView = name;
   if (name !== 'chat' && typeof vaStopMic === 'function') vaStopMic();
   gate();
@@ -2085,9 +2096,17 @@ function showView(name) {
   $$('.view').forEach(v => v.classList.toggle('active', v.id === 'view-' + name));
   $$('[data-view]').forEach(b => b.classList.toggle('active', b.dataset.view === name));
   $('#moreTab').classList.toggle('active', MORE_VIEWS.includes(name));
+  const bb = $('#backBtn'); if (bb) bb.style.display = (name === 'dashboard') ? 'none' : 'inline-flex';
   if (RENDERERS[name]) RENDERERS[name]();
   window.scrollTo(0, 0);
 }
+/* Eine Seite zurück (Verlauf); ohne Verlauf → Dashboard */
+function goBack() {
+  if (viewHistory.length) { _navBack = true; const prev = viewHistory.pop(); showView(prev); _navBack = false; }
+  else showView('dashboard');
+}
+if ($('#backBtn')) $('#backBtn').addEventListener('click', goBack);
+if ($('#dashLogout')) $('#dashLogout').addEventListener('click', () => logout());
 function refresh() { if (RENDERERS[currentView]) RENDERERS[currentView](); }
 
 const viewLabel = (v) => { try { return t('nav.' + v); } catch (e) { return v; } };
