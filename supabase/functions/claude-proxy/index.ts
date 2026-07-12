@@ -83,6 +83,28 @@ Deno.serve(async (req) => {
     usage = { ai_used: consumed.ai_used, ai_limit: consumed.ai_limit };
   }
 
+  // 4z) Realtime-Live-Modus: kurzlebiges Session-Token (ephemeral) für gpt-realtime.
+  //     Der echte Key bleibt hier; der Client verbindet sich per WebRTC mit diesem Token direkt zu OpenAI.
+  if (op === 'realtime_token') {
+    let r = await fetch('https://api.openai.com/v1/realtime/client_secrets', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', Authorization: `Bearer ${OPENAI_API_KEY}` },
+      body: JSON.stringify({ session: { type: 'realtime', model: 'gpt-realtime' } }),
+    });
+    let d: any = await r.json().catch(() => ({}));
+    if (!r.ok) {   // Fallback: ältere Sessions-Endpoint-Form
+      r = await fetch('https://api.openai.com/v1/realtime/sessions', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json', Authorization: `Bearer ${OPENAI_API_KEY}`, 'OpenAI-Beta': 'realtime=v1' },
+        body: JSON.stringify({ model: 'gpt-realtime' }),
+      });
+      d = await r.json().catch(() => ({}));
+    }
+    if (!r.ok) return json({ error: 'ai_failed', detail: d?.error?.message || JSON.stringify(d).slice(0, 200) }, r.status);
+    const token = d?.value || d?.client_secret?.value || null;
+    return json({ token, expires_at: d?.expires_at || d?.client_secret?.expires_at || null }, 200);
+  }
+
   // 4a) Sprache → Text (Transkription, gpt-4o-mini-transcribe). Client schickt { op:'transcribe', audio:<base64>, mime }
   if (op === 'transcribe') {
     const b64 = String(body?.audio || '');
