@@ -719,6 +719,17 @@ input.invalid,textarea.invalid{border-color:var(--danger)!important;box-shadow:0
 .t-meta .fam-assignee{font-weight:700;color:var(--muted)}
 .fam-code{font-family:var(--font-head);font-size:30px;letter-spacing:6px;text-align:center;background:var(--card2);
   border:1px dashed var(--border2);border-radius:14px;padding:16px 8px;margin:12px 0;color:#a78bfa}
+.fam-join-block{margin-top:14px;padding:14px;border:1px solid var(--border);border-radius:14px;background:var(--card2)}
+.fam-join-h{font-weight:700;font-size:15px}
+.fam-or{display:flex;align-items:center;gap:12px;color:var(--faint);font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;margin:14px 2px}
+.fam-or::before,.fam-or::after{content:"";flex:1;height:1px;background:var(--border)}
+.fam-join-row{display:flex;gap:8px;margin:8px 0 2px}
+.fam-join-inp{flex:1;text-transform:uppercase;letter-spacing:.26em;text-align:center;font-size:21px;font-weight:700;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+.fam-join-row .btn{flex:none;min-width:48px;font-size:17px}
+.fam-join-status{min-height:18px;font-size:12.5px;margin:4px 0 10px;color:var(--faint)}
+.fam-join-status.err{color:#f87171}
+.fam-join-status.busy{color:var(--muted)}
+:root[data-theme="light"] .fam-join-status.err{color:#dc2626}
 .notruf{display:grid;grid-template-columns:repeat(2,1fr);gap:9px;margin-bottom:16px}
 .notruf a{display:flex;align-items:center;padding:14px;border-radius:15px;color:#fff;text-decoration:none;
   box-shadow:0 6px 18px rgba(0,0,0,.3);text-shadow:0 1px 2px rgba(0,0,0,.3)}
@@ -2337,7 +2348,26 @@ const TDICT_SRC = {
   '📋 Vollständige Extraktion': { en: '📋 Full extraction', fr: '📋 Extraction complète', es: '📋 Extracción completa', it: '📋 Estrazione completa', pl: '📋 Pełna ekstrakcja' },
   '❓ Kurze Rückfrage:': { en: '❓ Quick question:', fr: '❓ Petite question :', es: '❓ Pregunta rápida:', it: '❓ Domanda veloce:', pl: '❓ Krótkie pytanie:' },
   'Kinder · Plan': { en: 'Kids · Plan', fr: 'Enfants · Plan', es: 'Niños · Plan', it: 'Bambini · Piano', pl: 'Dzieci · Plan' },
-  'Arbeitszeit · Plan': { en: 'Working hours · Plan', fr: 'Temps de travail · Plan', es: 'Horario · Plan', it: 'Orario · Piano', pl: 'Czas pracy · Plan' }
+  'Arbeitszeit · Plan': { en: 'Working hours · Plan', fr: 'Temps de travail · Plan', es: 'Horario · Plan', it: 'Orario · Piano', pl: 'Czas pracy · Plan' },
+  /* ===== Familien-Sync (Erstellen & Beitreten) ===== */
+  'Mit dem Partner synchronisieren': { en: 'Sync with your partner', fr: 'Synchroniser avec votre partenaire', es: 'Sincronizar con tu pareja', it: 'Sincronizza con il partner', pl: 'Synchronizuj z partnerem' },
+  'Zwei Wege: Erstelle eine Familie und teile den Code – oder tritt mit dem Code deines Partners bei. Nur freigegebene Bereiche werden synchronisiert.': { en: 'Two ways: create a family and share the code – or join with your partner’s code. Only shared areas are synced.', fr: 'Deux options : créez une famille et partagez le code – ou rejoignez avec le code de votre partenaire. Seules les zones partagées sont synchronisées.', es: 'Dos opciones: crea una familia y comparte el código, o únete con el código de tu pareja. Solo se sincronizan las áreas compartidas.', it: 'Due modi: crea una famiglia e condividi il codice – oppure unisciti con il codice del partner. Si sincronizzano solo le aree condivise.', pl: 'Dwie drogi: utwórz rodzinę i udostępnij kod – albo dołącz kodem partnera. Synchronizowane są tylko udostępnione obszary.' },
+  '👪 Familie erstellen': { en: '👪 Create family', fr: '👪 Créer une famille', es: '👪 Crear familia', it: '👪 Crea famiglia', pl: '👪 Utwórz rodzinę' },
+  'Erzeuge einen 6-stelligen Code und teile ihn mit deinem Partner.': { en: 'Generate a 6-character code and share it with your partner.', fr: 'Générez un code à 6 caractères et partagez-le avec votre partenaire.', es: 'Genera un código de 6 caracteres y compártelo con tu pareja.', it: 'Genera un codice di 6 caratteri e condividilo con il partner.', pl: 'Wygeneruj 6-znakowy kod i udostępnij go partnerowi.' },
+  'Code erzeugen': { en: 'Generate code', fr: 'Générer le code', es: 'Generar código', it: 'Genera codice', pl: 'Wygeneruj kod' },
+  'oder': { en: 'or', fr: 'ou', es: 'o', it: 'oppure', pl: 'lub' },
+  '🔗 Familie beitreten': { en: '🔗 Join family', fr: '🔗 Rejoindre une famille', es: '🔗 Unirse a la familia', it: '🔗 Unisciti alla famiglia', pl: '🔗 Dołącz do rodziny' },
+  'Gib den 6-stelligen Code deines Partners ein (Buchstaben & Zahlen).': { en: "Enter your partner’s 6-character code (letters & numbers).", fr: 'Saisissez le code à 6 caractères de votre partenaire (lettres et chiffres).', es: 'Introduce el código de 6 caracteres de tu pareja (letras y números).', it: 'Inserisci il codice di 6 caratteri del partner (lettere e numeri).', pl: 'Wpisz 6-znakowy kod partnera (litery i cyfry).' },
+  'Verbinden': { en: 'Connect', fr: 'Se connecter', es: 'Conectar', it: 'Connetti', pl: 'Połącz' },
+  'Familie verbunden ✓': { en: 'Family connected ✓', fr: 'Famille connectée ✓', es: 'Familia conectada ✓', it: 'Famiglia connessa ✓', pl: 'Rodzina połączona ✓' },
+  'Teile diesen Code mit deinem Partner:': { en: 'Share this code with your partner:', fr: 'Partagez ce code avec votre partenaire :', es: 'Comparte este código con tu pareja:', it: 'Condividi questo codice con il partner:', pl: 'Udostępnij ten kod partnerowi:' },
+  '📋 Code kopieren': { en: '📋 Copy code', fr: '📋 Copier le code', es: '📋 Copiar código', it: '📋 Copia codice', pl: '📋 Kopiuj kod' },
+  'Verbindung trennen': { en: 'Disconnect', fr: 'Déconnecter', es: 'Desconectar', it: 'Disconnetti', pl: 'Rozłącz' },
+  'Änderungen werden automatisch geteilt, sobald ihr online seid.': { en: 'Changes are shared automatically once you’re online.', fr: 'Les modifications sont partagées automatiquement dès que vous êtes en ligne.', es: 'Los cambios se comparten automáticamente cuando estáis en línea.', it: 'Le modifiche si condividono automaticamente quando siete online.', pl: 'Zmiany są udostępniane automatycznie, gdy jesteście online.' },
+  '🔐 Sync-Freigaben': { en: '🔐 Sync permissions', fr: '🔐 Autorisations de synchro', es: '🔐 Permisos de sincronización', it: '🔐 Permessi di sync', pl: '🔐 Uprawnienia synchronizacji' },
+  'Lege pro Bereich fest, was mit der Familie geteilt wird. Nur Erwachsene teilen – Kinder sehen ausschließlich Freigegebenes.': { en: 'Set per area what is shared with the family. Only adults share – children only see what’s shared.', fr: 'Définissez par zone ce qui est partagé avec la famille. Seuls les adultes partagent – les enfants ne voient que ce qui est partagé.', es: 'Define por área qué se comparte con la familia. Solo los adultos comparten; los niños solo ven lo compartido.', it: 'Imposta per area cosa condividere con la famiglia. Solo gli adulti condividono – i bambini vedono solo ciò che è condiviso.', pl: 'Ustaw dla każdego obszaru, co jest udostępniane rodzinie. Udostępniają tylko dorośli – dzieci widzą wyłącznie udostępnione.' },
+  '✅ Erlaubt': { en: '✅ Allowed', fr: '✅ Autorisé', es: '✅ Permitido', it: '✅ Consentito', pl: '✅ Dozwolone' },
+  '❌ Aus': { en: '❌ Off', fr: '❌ Désactivé', es: '❌ Desactivado', it: '❌ Disattivato', pl: '❌ Wyłączone' }
 };
 
 /* TDICT[lang][deutscherText] = Übersetzung */
@@ -4367,18 +4397,26 @@ async function famCreate() {
     toast('Familie erstellt – teile den Code 👪');
   } catch (e) { toast('Fehler beim Erstellen'); }
 }
+function joinStatus(msg, cls) { const st = $('#famRoot #joinStatus'); if (st) { st.textContent = msg || ''; st.className = 'fam-join-status' + (cls ? ' ' + cls : ''); } }
 async function famJoin(code) {
   code = (code || '').trim().toUpperCase();
-  if (!code) return;
+  const btn = $('#famRoot #joinBtn');
+  if (!/^[A-Z0-9]{6}$/.test(code)) { joinStatus('Bitte 6-stelligen Code eingeben (Buchstaben & Zahlen).', 'err'); return; }
+  if (!CLOUD) { joinStatus('Sync benötigt das Cloud-Backend.', 'err'); return; }
+  if (store.family.code) {   // schon verbunden → kein Selbst-Pairing / Doppel-Beitritt
+    joinStatus(code === store.family.code ? 'Das ist dein eigener Code.' : 'Du bist bereits mit einer Familie verbunden.', 'err');
+    toast('Du bist bereits verbunden – erst „Verbindung trennen".'); return;
+  }
+  joinStatus('Prüfe Code …', 'busy'); if (btn) btn.disabled = true;
   try {
     const r = await sb.rpc('join_family', { p_code: code });
-    if (r.error) { toast('Fehler – SQL ausgeführt?'); return; }
-    if (!r.data) { toast('Code nicht gefunden'); return; }
+    if (r.error) { joinStatus('Verbindung fehlgeschlagen. Bitte erneut versuchen.', 'err'); toast('Verbindung fehlgeschlagen.'); if (btn) btn.disabled = false; return; }
+    if (!r.data) { joinStatus('Kein Familiencode gefunden. Bitte prüfen.', 'err'); toast('Code nicht gefunden'); if (btn) btn.disabled = false; return; }
     store.family.code = r.data.code; save();
     await famPull();
     RENDERERS.family();
     toast('Mit Familie verbunden ✓');
-  } catch (e) { toast('Keine Verbindung'); }
+  } catch (e) { joinStatus('Verbindung fehlgeschlagen. Bitte erneut versuchen.', 'err'); if (btn) btn.disabled = false; }
 }
 async function famLeave() {
   if (!confirm('Verbindung zur Familie wirklich trennen?')) return;
@@ -4607,9 +4645,18 @@ function famShareCard() {
 function famSync() {
   let conn;
   if (!CLOUD) conn = '<div class="card"><h3 style="margin-bottom:6px">🔗 Partner-Synchronisierung</h3><p class="sub" style="color:var(--muted);font-size:13px">Die Synchronisierung benötigt das Cloud-Backend (Supabase). Ohne Cloud funktioniert die Familienzentrale lokal auf diesem Gerät.</p></div>';
-  else if (!store.family.code) conn = '<div class="card"><h3 style="margin-bottom:6px">Mit dem Partner synchronisieren</h3><p class="sub" style="color:var(--muted);font-size:13px;margin-bottom:14px">Erstelle eine Familie und teile den Code – oder tritt mit einem Code bei. Personen, Kalender und Anlässe werden dann automatisch geteilt.</p>' +
-    '<button class="btn btn-primary" data-fam="create" style="width:100%;margin-bottom:12px">👪 Familie erstellen</button>' +
-    '<div class="set-row"><input type="text" id="joinCode" placeholder="Code eingeben" maxlength="6" style="text-transform:uppercase"><button class="btn" data-fam="join">Beitreten</button></div></div>';
+  else if (!store.family.code) conn = '<div class="card"><h3 style="margin-bottom:6px">Mit dem Partner synchronisieren</h3>' +
+    '<p class="sub" style="color:var(--muted);font-size:13px">Zwei Wege: Erstelle eine Familie und teile den Code – oder tritt mit dem Code deines Partners bei. Nur freigegebene Bereiche werden synchronisiert.</p>' +
+    '<div class="fam-join-block"><div class="fam-join-h">👪 Familie erstellen</div>' +
+    '<p class="sub" style="color:var(--faint);font-size:12.5px;margin:2px 0 10px">Erzeuge einen 6-stelligen Code und teile ihn mit deinem Partner.</p>' +
+    '<button class="btn btn-primary" data-fam="create" style="width:100%">Code erzeugen</button></div>' +
+    '<div class="fam-or">oder</div>' +
+    '<div class="fam-join-block"><div class="fam-join-h">🔗 Familie beitreten</div>' +
+    '<p class="sub" style="color:var(--faint);font-size:12.5px;margin:2px 0 8px">Gib den 6-stelligen Code deines Partners ein (Buchstaben &amp; Zahlen).</p>' +
+    '<div class="fam-join-row"><input type="text" id="joinCode" class="fam-join-inp" inputmode="latin" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="C57A36" maxlength="6" aria-label="Familiencode eingeben">' +
+    '<button class="btn" data-fam="pasteCode" title="Aus Zwischenablage einfügen" aria-label="Aus Zwischenablage einfügen">📋</button></div>' +
+    '<div class="fam-join-status" id="joinStatus"></div>' +
+    '<button class="btn btn-primary" data-fam="join" id="joinBtn" style="width:100%" disabled>Verbinden</button></div></div>';
   else conn = '<div class="card" style="text-align:center"><h3>Familie verbunden ✓</h3><p class="sub" style="color:var(--muted);font-size:13px">Teile diesen Code mit deinem Partner:</p>' +
     '<div class="fam-code">' + esc(store.family.code) + '</div>' +
     '<button class="btn btn-sm" data-fam="copyCode" style="margin-bottom:10px">📋 Code kopieren</button><br>' +
@@ -4617,6 +4664,15 @@ function famSync() {
     '<div class="em-priv">Änderungen werden automatisch geteilt, sobald ihr online seid.</div></div>';
   return conn + famShareCard();
 }
+/* Familiencode-Feld: Auto-Uppercase, Filter, Live-Validierung des „Verbinden"-Buttons */
+$('#famRoot').addEventListener('input', e => {
+  const inp = e.target.closest('#joinCode'); if (!inp) return;
+  const v = inp.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6);
+  if (inp.value !== v) inp.value = v;
+  const btn = $('#famRoot #joinBtn'); if (btn) btn.disabled = !/^[A-Z0-9]{6}$/.test(v);
+  joinStatus(v.length > 0 && v.length < 6 ? 'Noch ' + (6 - v.length) + ' Zeichen …' : '', 'busy');
+});
+$('#famRoot').addEventListener('keydown', e => { if (e.key === 'Enter' && e.target.closest('#joinCode')) { e.preventDefault(); const b = $('#famRoot #joinBtn'); if (b && !b.disabled) famJoin(e.target.value); } });
 $('#famRoot').addEventListener('click', e => {
   const tab = e.target.closest('[data-ftab]');
   if (tab) { famTab = tab.dataset.ftab; RENDERERS.family(); return; }
@@ -4704,7 +4760,16 @@ $('#famRoot').addEventListener('click', e => {
   if (a === 'toggleFTask') { ensureFamily(); const t = store.family.tasks.find(x => x.id === b.dataset.id); if (t) { t.done = !t.done; famChanged(); } return; }
   if (a === 'delFTask') { ensureFamily(); store.family.tasks = store.family.tasks.filter(x => x.id !== b.dataset.id); famChanged(); return; }
   if (a === 'create') { famCreate(); return; }
-  if (a === 'join') { famJoin(q('#joinCode').value); return; }
+  if (a === 'join') { const inp = q('#joinCode'); famJoin(inp ? inp.value : ''); return; }
+  if (a === 'pasteCode') {
+    if (!navigator.clipboard || !navigator.clipboard.readText) { toast('Einfügen hier nicht möglich – bitte manuell eintippen.'); return; }
+    navigator.clipboard.readText().then(txt => {
+      const inp = q('#joinCode'); if (!inp) return;
+      inp.value = String(txt || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6);
+      inp.dispatchEvent(new Event('input', { bubbles: true })); inp.focus();
+    }).catch(() => toast('Einfügen nicht möglich – bitte manuell eintippen.'));
+    return;
+  }
   if (a === 'copyCode') { copyText(store.family.code).then(ok => toast(ok ? 'Code kopiert ✓' : 'Kopieren nicht möglich')); return; }
   if (a === 'leave') { famLeave(); return; }
 });
