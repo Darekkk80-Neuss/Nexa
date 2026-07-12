@@ -7199,6 +7199,24 @@ const AGENT_TOOLS = {
       const label = type === 'urlaub' ? 'Urlaub' : type === 'kinderkrank' ? 'Kind-krank' : 'Krank';
       return '🗓️ ' + label + ' im Bereich Arbeitszeit eingetragen: ' + fmtDate(from) + (to && to !== from ? ' – ' + fmtDate(to) : '') + '.';
     }
+  },
+  assign_family_task: {
+    desc: 'Aufgabe an ein FAMILIENMITGLIED zuweisen („weise Sandra … zu", „Papa soll …", „Aufgabe für Emma"). Nutze dies statt create_task, sobald eine bestimmte Person genannt ist. Ohne Namen = ganze Familie.',
+    params: 'title:Text, member:Name des Familienmitglieds (leer=ganze Familie), due:date, priority:(high|med|low)',
+    run(p) {
+      ensureFamily();
+      const title = vaCap(String(p.title || '').trim()); if (!title) return null;
+      const pr = /hoch|high|dringend/.test(String(p.priority || '')) ? 'high' : /nied|low/.test(String(p.priority || '')) ? 'low' : 'med';
+      const nm = String(p.member || '').trim().toLowerCase();
+      let m = null;
+      if (nm) { const ms = store.family.members || []; m = ms.find(x => (x.name || '').toLowerCase() === nm) || ms.find(x => { const n = (x.name || '').toLowerCase(); return n && (n.indexOf(nm) >= 0 || nm.indexOf(n) >= 0); }); }
+      const task = { id: uid(), title, assignee: m ? m.id : '', prio: pr, due: p.due ? agentDate(p.due) : null, done: false, createdAt: Date.now() };
+      store.family.tasks.push(task); save();
+      if (typeof famPush === 'function') { try { famPush(); } catch (e) {} }
+      if (currentView === 'family') RENDERERS.family();
+      vaContext = { type: 'famtask' };
+      return '👪 Familienaufgabe: „' + title + '" ' + (m ? '→ ' + m.name : '(ganze Familie)') + (task.due ? ' · fällig ' + fmtDate(task.due) : '') + '.' + (nm && !m ? ' (Mitglied „' + esc(String(p.member)) + '" nicht gefunden – der ganzen Familie zugewiesen.)' : '');
+    }
   }
 };
 function buildAgentPrompt() {
@@ -7221,6 +7239,7 @@ function buildAgentPrompt() {
     '- ARBEITSZEIT: Sobald es um „gearbeitet", „Schicht", „Arbeitszeit", „im Büro" (mit Uhrzeiten von–bis) geht → IMMER log_worktime, NIEMALS create_event/Kalender.',
     '- ABWESENHEIT: „Urlaub", „krank", „kinderkrank", „frei" → IMMER log_absence, NIEMALS Kalender.',
     '- FAHRZEUG: „getankt", „Sprit", „Auto/Motorrad-Kosten" → IMMER create_vehicle_expense (das legt den Eintrag im Fahrzeug-Bereich an UND bucht die Ausgabe automatisch in die Finanzen). NICHT zusätzlich create_expense dafür verwenden.',
+    '- FAMILIENAUFGABE: Wird eine Aufgabe einer bestimmten PERSON aus der Familie zugewiesen („weise Sandra … zu", „Papa soll den Müll rausbringen", „Aufgabe für Emma") → IMMER assign_family_task mit member=Name, NICHT create_task. Der Name im Feld member sollte einem der obigen Familienmitglieder entsprechen.',
     '- Sonstige Ausgaben/Käufe → create_expense.'
   ].join('\n');
 }
