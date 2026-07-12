@@ -707,6 +707,14 @@ input.invalid,textarea.invalid{border-color:var(--danger)!important;box-shadow:0
 /* ============================== FAMILIE & NOTFALL ============================== */
 .fam-tabs,.em-tabs{margin-bottom:14px}
 .fam-tabs button,.em-tabs button{font-size:12px;padding:7px 4px;white-space:nowrap}
+/* Familienzentrale-Navigation: umbrechende Chips statt seitlichem Scrollen – alle Bereiche sichtbar */
+.fam-nav{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-bottom:18px}
+.fam-nav button{display:inline-flex;align-items:center;gap:7px;min-height:44px;padding:10px 15px;
+  border:1px solid var(--border);border-radius:999px;background:var(--card2);color:var(--muted);
+  font-size:13.5px;font-weight:700;cursor:pointer;transition:.15s;white-space:nowrap}
+.fam-nav button:hover{color:var(--text);border-color:var(--border2)}
+.fam-nav button:active{transform:scale(.96)}
+.fam-nav button.active{color:#fff;border-color:transparent;background:linear-gradient(135deg,#7c3aed,#06b6d4);box-shadow:0 6px 16px rgba(124,58,237,.35)}
 .mem{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:13px;border:1px solid var(--border);background:var(--card);margin-bottom:8px}
 .mem-info{flex:1;min-width:0}
 .mem-info b{display:block;font-size:14.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -4439,7 +4447,7 @@ async function famLeave() {
 RENDERERS.family = function () {
   ensureFamily();
   let h = '<div class="view-head"><h1>Familienzentrale</h1><p>Gemeinsamer Kalender, Geburtstage und Sync mit dem Partner.</p></div>';
-  h += '<div class="seg fam-tabs">' + [['personen', '👪 Personen'], ['ftasks', '✅ Aufgaben'], ['meds', '💊 Medikamente'], ['budget', '💰 Budget'], ['kalender', '📅 Kalender'], ['anlaesse', '🎂 Anlässe'], ['sync', '🔗 Sync']].map(x =>
+  h += '<div class="fam-nav" role="tablist">' + [['personen', '👪 Personen'], ['ftasks', '✅ Aufgaben'], ['meds', '💊 Medikamente'], ['budget', '💰 Budget'], ['kalender', '📅 Kalender'], ['anlaesse', '🎂 Anlässe'], ['sync', '🔗 Sync']].map(x =>
     '<button data-ftab="' + x[0] + '" class="' + (famTab === x[0] ? 'active' : '') + '">' + x[1] + '</button>').join('') + '</div>';
   h += famTab === 'ftasks' ? famTasks() : famTab === 'meds' ? famMeds() : famTab === 'budget' ? famBudget() : famTab === 'kalender' ? famKalender() : famTab === 'anlaesse' ? famAnlaesse() : famTab === 'sync' ? famSync() : famPersonen();
   $('#famRoot').innerHTML = h;
