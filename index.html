@@ -2970,7 +2970,9 @@ async function cloudAuth(pass, err) {
       const name = $('#auName').value.trim();
       const last = ($('#auLast') && $('#auLast').value.trim()) || '';
       const bday = ($('#auBirth') && $('#auBirth').value) || '';
-      const r = await sb.auth.signUp({ email, password: pass, options: { data: { name, last_name: last, birthday: bday } } });
+      /* Rücksprung nach E-Mail-Bestätigung explizit auf die App-URL (verhindert 404 durch falsche Supabase-Site-URL).
+         Voraussetzung: diese URL muss in Supabase unter Auth → URL Configuration → Redirect URLs erlaubt sein. */
+      const r = await sb.auth.signUp({ email, password: pass, options: { data: { name, last_name: last, birthday: bday }, emailRedirectTo: location.origin + location.pathname } });
       if (r.error) { err.textContent = mapAuthError(r.error.message); return; }
       if (!r.data.session) {
         /* E-Mail-Bestätigung ist aktiviert: erst bestätigen, dann anmelden */
