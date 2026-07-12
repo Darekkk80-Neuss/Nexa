@@ -5811,11 +5811,12 @@ async function vaRecordOpenAI() {
 }
 async function vaToggleMic() {
   if (vaListening) { vaStopMic(); return; }
-  /* Bevorzugt echte OpenAI-Sprache (bessere Erkennung), sonst Browser-Spracherkennung als Fallback. */
-  if (AI_VOICE && aiSttOk && canRealAI() && window.MediaRecorder && navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-    return vaRecordOpenAI();
+  /* Bevorzugt Browser-Spracherkennung (Google in Chrome/Edge: genau, kostenlos, KEINE OpenAI-Modell-Sperren).
+     Nur wenn der Browser keine Spracherkennung hat, wird die OpenAI-Transkription genutzt. */
+  if (!VASpeechRec) {
+    if (AI_VOICE && aiSttOk && canRealAI() && window.MediaRecorder && navigator.mediaDevices && navigator.mediaDevices.getUserMedia) return vaRecordOpenAI();
+    toast('Sprachsteuerung braucht Chrome, Edge oder Safari'); return;
   }
-  if (!VASpeechRec) { toast('Sprachsteuerung braucht Chrome, Edge oder Safari'); return; }
   if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
     vaSetStatus('listening', 'Mikrofon erlauben …');
     try { const s = await navigator.mediaDevices.getUserMedia({ audio: true }); s.getTracks().forEach(tr => tr.stop()); }
