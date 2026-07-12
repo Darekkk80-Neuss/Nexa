@@ -13,7 +13,7 @@
 create table if not exists public.families (
   id         uuid primary key default gen_random_uuid(),
   code       text unique not null,
-  created_by uuid references auth.users(id),
+  created_by uuid references auth.users(id) on delete set null,
   data       jsonb not null default '{}',
   updated_at timestamptz not null default now(),
   created_at timestamptz not null default now()
@@ -112,5 +112,14 @@ revoke execute on function public.create_family(), public.join_family(text), pub
   public.save_family(jsonb), public.leave_family(), public.my_family_id() from public, anon;
 grant execute on function public.create_family(), public.join_family(text), public.get_family(),
   public.save_family(jsonb), public.leave_family(), public.my_family_id() to authenticated;
+
+-- ------------------------------------------------------------
+-- Migration für bereits bestehende Tabellen: created_by-FK auf ON DELETE SET NULL
+-- setzen, damit sich Nutzer im Dashboard löschen lassen (sonst blockiert der FK).
+-- ------------------------------------------------------------
+alter table public.families drop constraint if exists families_created_by_fkey;
+alter table public.families
+  add constraint families_created_by_fkey
+  foreign key (created_by) references auth.users(id) on delete set null;
 
 notify pgrst, 'reload schema';
