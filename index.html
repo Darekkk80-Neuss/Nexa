@@ -6076,11 +6076,13 @@ function vaRunLocal(text) {
     else if (vname && !/^(euro|liter|litern)$/.test(vname)) v = pickOrCreateVehicle(vm[1]);
     else { store.vehicles = store.vehicles || []; v = (vehActive ? store.vehicles.find(x => x.id === vehActive) : null) || store.vehicles[0] || pickOrCreateVehicle('Mein Fahrzeug'); }
     const full = !/\b(nicht voll|teilget|teilbet|halb voll)\b/.test(t);
+    const fdate = vaParseDate(t) || todayISO();
     v.fuel = v.fuel || [];
-    v.fuel.push({ id: uid(), date: vaParseDate(t) || todayISO(), km, liters, cost: cost || 0, full });
+    v.fuel.push({ id: uid(), date: fdate, km, liters, cost: cost || 0, full });
+    if (cost != null && cost > 0) { ensureBudget(); store.budget.entries.push({ id: uid(), kind: 'expense', label: 'Tanken – ' + v.name, amount: cost, recurring: false, date: fdate, cat: 'mobilitaet', vehicleId: v.id }); }
     save();
     vaContext = { type: 'vehicle' };
-    vaReply('⛽ Tankvorgang für „' + v.name + '" gespeichert: ' + (liters ? liters.toLocaleString('de-DE') + ' L' : '') + (cost != null ? (liters ? ' für ' : '') + eur(cost) : '') + (km ? ' bei ' + km.toLocaleString('de-DE') + ' km' : '') + (full ? ' (vollgetankt)' : '') + '.');
+    vaReply('⛽ Tankvorgang für „' + v.name + '" gespeichert: ' + (liters ? liters.toLocaleString('de-DE') + ' L' : '') + (cost != null ? (liters ? ' für ' : '') + eur(cost) : '') + (km ? ' bei ' + km.toLocaleString('de-DE') + ' km' : '') + (full ? ' (vollgetankt)' : '') + (cost != null && cost > 0 ? ' – auch in Finanzen verbucht' : '') + '.');
     return true;
   }
 
@@ -6258,10 +6260,18 @@ const AGENT_TOOLS = {
       if (/motorrad|roller|bike/.test(vn)) v = (store.vehicles || []).find(x => x.type === 'motorrad') || pickOrCreateVehicle('Motorrad');
       else if (/auto|wagen|pkw|fahrzeug/.test(vn) || !vn) v = (store.vehicles || []).find(x => x.type === 'auto') || (store.vehicles && store.vehicles[0]) || pickOrCreateVehicle('Auto');
       else v = pickOrCreateVehicle(p.vehicle);
+      const iso = agentDate(p.date);
       v.fuel = v.fuel || [];
-      v.fuel.push({ id: uid(), date: agentDate(p.date), km, liters, cost: cost || 0, full: true });
+      v.fuel.push({ id: uid(), date: iso, km, liters, cost: cost || 0, full: true });
+      /* Zusätzlich als Ausgabe in Finanzen/Budget verbuchen (mindert das Budget) – im Fahrzeug-Log nachweisbar. */
+      let budgetNote = '';
+      if (cost != null && cost > 0) {
+        ensureBudget();
+        store.budget.entries.push({ id: uid(), kind: 'expense', label: 'Tanken – ' + v.name, amount: cost, recurring: false, date: iso, cat: 'mobilitaet', vehicleId: v.id });
+        budgetNote = ' + als Ausgabe in Finanzen verbucht';
+      }
       save(); vaContext = { type: 'vehicle' };
-      return '⛽ Tankvorgang für „' + v.name + '": ' + (liters ? liters.toLocaleString('de-DE') + ' L ' : '') + (cost != null ? eur(cost) : '') + (km ? ' bei ' + km.toLocaleString('de-DE') + ' km' : '') + '.';
+      return '⛽ Tankvorgang für „' + v.name + '": ' + (liters ? liters.toLocaleString('de-DE') + ' L ' : '') + (cost != null ? eur(cost) : '') + (km ? ' bei ' + km.toLocaleString('de-DE') + ' km' : '') + budgetNote + '.';
     }
   },
   create_event: {
@@ -6339,6 +6349,34 @@ const AGENT_TOOLS = {
       save();
       return '💊 Medikament für ' + mem.name + ': „' + vaCap(String(p.name || '')) + '"' + (tm ? ' um ' + tm + ' Uhr' : ' (täglich)') + '.';
     }
+  },
+  log_worktime: {
+    desc: 'Gearbeitet / Schicht / Arbeitszeit mit Uhrzeiten (z. B. „von 8 bis 16, 30 Min Pause") → Bereich ARBEITSZEIT. NIEMALS in den Kalender.',
+    params: 'start:HH:MM, end:HH:MM, breakMin:Zahl(Minuten), date',
+    run(p) {
+      const start = agentTime(p.start), end = agentTime(p.end);
+      if (!start || !end) return null;
+      if (typeof ensureWork === 'function') ensureWork();
+      const iso = agentDate(p.date), breakMin = agentNum(p.breakMin) || 0;
+      store.work.entries[iso] = Object.assign({}, store.work.entries[iso] || {}, { start, end, breakStart: '', breakEnd: '', breakMin, note: 'per Effyra AI' });
+      save();
+      const net = netMinutes({ start, end, breakMin });
+      return '🕒 Arbeitszeit erfasst: ' + fmtDate(iso) + ', ' + start + '–' + end + (breakMin ? ' (Pause ' + breakMin + ' Min)' : '') + ' – netto ' + hmDur(net) + ' Std.';
+    }
+  },
+  log_absence: {
+    desc: 'Urlaub / krank / kinderkrank / frei → Bereich ARBEITSZEIT (Abwesenheit). NIEMALS in den Kalender.',
+    params: 'type:(urlaub|krank|kinderkrank), from:date, to:date',
+    run(p) {
+      if (typeof ensureWork === 'function') ensureWork();
+      const ty = String(p.type || '').toLowerCase();
+      const type = /kinderkrank|kind/.test(ty) ? 'kinderkrank' : /krank/.test(ty) ? 'krank' : 'urlaub';
+      const from = agentDate(p.from || p.date), to = agentDate(p.to || p.from || p.date);
+      store.work.absences.push({ id: uid(), type, from, to, note: 'per Effyra AI' });
+      save();
+      const label = type === 'urlaub' ? 'Urlaub' : type === 'kinderkrank' ? 'Kind-krank' : 'Krank';
+      return '🗓️ ' + label + ' im Bereich Arbeitszeit eingetragen: ' + fmtDate(from) + (to && to !== from ? ' – ' + fmtDate(to) : '') + '.';
+    }
   }
 };
 function buildAgentPrompt() {
@@ -6356,7 +6394,12 @@ function buildAgentPrompt() {
     'Verfügbare Tools:',
     tools,
     'Kontext – Fahrzeuge: ' + veh + '. Familienmitglieder: ' + fam + '.',
-    'Regeln: Erfinde keine Beträge/Daten. Mehrere Aktionen sind erlaubt. Wähle die passendste Kategorie. Für „getankt/Sprit" nutze create_vehicle_expense, sonst create_expense.'
+    'Regeln:',
+    '- Erfinde keine Beträge/Daten. Mehrere Aktionen pro Nachricht sind erlaubt. Wähle die passendste Kategorie.',
+    '- ARBEITSZEIT: Sobald es um „gearbeitet", „Schicht", „Arbeitszeit", „im Büro" (mit Uhrzeiten von–bis) geht → IMMER log_worktime, NIEMALS create_event/Kalender.',
+    '- ABWESENHEIT: „Urlaub", „krank", „kinderkrank", „frei" → IMMER log_absence, NIEMALS Kalender.',
+    '- FAHRZEUG: „getankt", „Sprit", „Auto/Motorrad-Kosten" → IMMER create_vehicle_expense (das legt den Eintrag im Fahrzeug-Bereich an UND bucht die Ausgabe automatisch in die Finanzen). NICHT zusätzlich create_expense dafür verwenden.',
+    '- Sonstige Ausgaben/Käufe → create_expense.'
   ].join('\n');
 }
 function parseAgentJSON(raw) {
