@@ -792,6 +792,8 @@ input.invalid,textarea.invalid{border-color:var(--danger)!important;box-shadow:0
 .va-live{flex:none;height:36px;padding:0 13px;border-radius:99px;border:1.5px solid var(--border2);background:var(--card2);color:var(--muted);font-weight:700;font-size:12.5px;cursor:pointer;transition:.2s;display:inline-flex;align-items:center;gap:4px;white-space:nowrap}
 .va-live:hover{border-color:#ef4444;color:#ef4444}
 .va-live.on{background:linear-gradient(135deg,#ef4444,#f97316);border-color:transparent;color:#fff;box-shadow:0 4px 14px rgba(239,68,68,.4);animation:micPulse 1.5s ease-in-out infinite}
+.va-status.live-on::before{content:'';display:inline-block;width:7px;height:7px;border-radius:50%;background:currentColor;margin-right:7px;vertical-align:middle;box-shadow:0 0 8px currentColor;animation:livePulse 1.3s ease-in-out infinite}
+@keyframes livePulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.65)}}
 .v2p-status{font-size:13.5px;color:var(--muted);font-weight:600;text-align:center}
 .v2p-interim{min-height:20px;font-size:14px;color:var(--faint);font-style:italic;margin-bottom:10px;text-align:center}
 .v2p-hint{margin:0 auto 12px;max-width:520px;font-size:12.5px}
@@ -5980,7 +5982,7 @@ function rtToolSchemas() {
     return { type: 'function', name, description: t.desc, parameters: { type: 'object', properties: props, required: [] } };
   });
 }
-function rtSetStatus(txt, cls) { const st = $('#vaStatus'); if (st) { st.textContent = txt; st.className = 'va-status on va-' + (cls || 'listening'); } }
+function rtSetStatus(txt, cls) { const st = $('#vaStatus'); if (st) { st.textContent = txt; st.className = 'va-status on live-on va-' + (cls || 'listening'); } }
 async function rtToggle() { if (RT && RT.active) { rtStop('Live-Gespräch beendet.'); return; } await rtStart(); }
 async function rtStart() {
   if (!canRealAI()) { toast('Bitte melde dich an, um den Live-Modus zu nutzen.'); return; }
@@ -5999,9 +6001,9 @@ async function rtStart() {
   pc.ontrack = e => { try { audioEl.srcObject = e.streams[0]; audioEl.play().catch(() => {}); } catch (er) {} };
   try { pc.addTrack(stream.getAudioTracks()[0], stream); } catch (e) {}
   const dc = pc.createDataChannel('oai-events');
-  RT = { pc, dc, stream, audioEl, active: true };
+  RT = { pc, dc, stream, audioEl, active: true, responding: false };
   dc.onopen = () => {
-    rtSetStatus('🎧 Live – sprich einfach …', 'listening');
+    rtSetStatus('🟢 Live – sprich einfach …', 'listening');
     rtSend({ type: 'session.update', session: {
       type: 'realtime',
       instructions: buildAgentPrompt() + '\n\nDu bist im LIVE-Sprachmodus. Antworte KURZ und natürlich auf Deutsch. Nutze für jede Alltags-Aktion die passende Funktion (Tool) und bestätige knapp, was du getan hast.',
@@ -6035,7 +6037,19 @@ function rtOnEvent(ev) {
   let m; try { m = JSON.parse(ev.data); } catch (e) { return; }
   const type = m.type || '';
   if (!/audio\.delta|audio_transcript\.delta|output_audio\.delta/.test(type)) console.debug('[Effyra RT]', type);
-  if (type === 'conversation.item.input_audio_transcription.completed' && m.transcript) {
+  if (type === 'input_audio_buffer.speech_started') {
+    // Nutzer beginnt zu sprechen → wenn Effyra gerade redet: sofort unterbrechen (Barge-in)
+    if (RT && RT.responding) { rtSend({ type: 'response.cancel' }); RT.responding = false; if (RT.audioEl) RT.audioEl.muted = true; }   // Rest-Audio kappen
+    rtSetStatus('🎧 Ich höre zu …', 'listening');
+  } else if (type === 'input_audio_buffer.speech_stopped') {
+    rtSetStatus('🧠 Einen Moment …', 'processing');
+  } else if (type === 'response.created') {
+    if (RT) { RT.responding = true; if (RT.audioEl) RT.audioEl.muted = false; }   // neue Antwort → Ton wieder an
+    rtSetStatus('🗣️ Effyra spricht …', 'acting');
+  } else if (type === 'response.done' || type === 'response.audio.done' || type === 'response.output_audio.done') {
+    if (RT) RT.responding = false;
+    rtSetStatus('🟢 Live – sprich einfach …', 'listening');
+  } else if (type === 'conversation.item.input_audio_transcription.completed' && m.transcript) {
     store.chat.push({ role: 'user', text: String(m.transcript).trim(), actions: [] }); save(); if (currentView === 'chat') RENDERERS.chat();
   } else if ((type === 'response.audio_transcript.done' || type === 'response.output_audio_transcript.done') && m.transcript) {
     pushBot(String(m.transcript).trim()); if (currentView === 'chat') RENDERERS.chat();
