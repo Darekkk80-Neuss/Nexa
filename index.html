@@ -4443,16 +4443,22 @@ async function famJoin(code) {
     if (!confirm('Zu einer anderen Familie wechseln? Deine aktuelle Verbindung (' + store.family.code + ') wird getrennt.')) { joinStatus('', ''); return; }
   }
   joinStatus('Prüfe Code …', 'busy'); if (btn) btn.disabled = true;
-  if (!await famAuth()) { joinStatus('Sitzung abgelaufen. Bitte lade die App neu und melde dich an.', 'err'); if (btn) btn.disabled = false; return; }
+  if (!await famAuth()) { joinStatus('Nicht angemeldet / Sitzung abgelaufen. Bitte melde dich neu an (E-Mail bestätigt?).', 'err'); if (btn) btn.disabled = false; return; }
   try {
     const r = await sb.rpc('join_family', { p_code: code });
-    if (r.error) { joinStatus('Verbindung fehlgeschlagen. Bitte lade die App neu und versuche es erneut.', 'err'); toast('Verbindung fehlgeschlagen.'); if (btn) btn.disabled = false; return; }
-    if (!r.data) { joinStatus('Kein Familiencode gefunden. Bitte prüfen.', 'err'); toast('Code nicht gefunden'); if (btn) btn.disabled = false; return; }
+    if (r.error) {
+      const m = String(r.error.message || r.error.code || '');
+      console.warn('[Effyra join_family] error:', r.error);
+      const auth = /jwt|auth|not authenticated|expired|permission|denied|token/i.test(m);
+      joinStatus(auth ? 'Anmeldung ungültig – bitte App neu laden und (mit bestätigter E-Mail) neu anmelden.' : ('Verbindung fehlgeschlagen: ' + (m || 'unbekannt').slice(0, 80)), 'err');
+      toast('Verbindung fehlgeschlagen.'); if (btn) btn.disabled = false; return;
+    }
+    if (!r.data) { joinStatus('Kein Familiencode gefunden. Bitte prüfen (Groß-/Kleinschreibung egal).', 'err'); toast('Code nicht gefunden'); if (btn) btn.disabled = false; return; }
     store.family.code = r.data.code; save();
     await famPull();
     RENDERERS.family();
     toast('Mit Familie verbunden ✓');
-  } catch (e) { joinStatus('Verbindung fehlgeschlagen. Bitte erneut versuchen.', 'err'); if (btn) btn.disabled = false; }
+  } catch (e) { console.warn('[Effyra join]', e); joinStatus('Verbindung fehlgeschlagen: ' + String(e.message || '').slice(0, 80), 'err'); if (btn) btn.disabled = false; }
 }
 async function famLeave() {
   if (!confirm('Verbindung zur Familie wirklich trennen?')) return;
