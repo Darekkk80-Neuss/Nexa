@@ -3353,7 +3353,15 @@ function addEvent(title, date, time, note, source, extra) {
   save();
   return ev;
 }
-const eventsOn = (iso) => store.events.filter(e => e.date === iso)
+/* Deckt ein (evtl. mehrtägiger/wiederkehrender) Termin dieses Datum ab? */
+function eventCoversDate(e, iso) {
+  const start = e.date, end = e.endDate || e.date;
+  if (!e.rrule) return iso >= start && iso <= end;
+  if (iso < start) return false;
+  return (typeof eventOccurrences === 'function' ? eventOccurrences(start, end, e.rrule, addDays(iso, 1), 500) : [{ start: start, end: end }])
+    .some(o => iso >= o.start && iso <= o.end);
+}
+const eventsOn = (iso) => store.events.filter(e => eventCoversDate(e, iso))
   .sort((a, b) => (a.time || '99') < (b.time || '99') ? -1 : 1);
 const upcomingEvents = (n) => store.events.filter(e => e.date >= todayISO())
   .sort((a, b) => (a.date + (a.time || '')) < (b.date + (b.time || '')) ? -1 : 1).slice(0, n);
@@ -7653,6 +7661,17 @@ function vaRunLocal(text) {
     return true;
   }
 
+  /* Termin anlegen mit Mehrtages-Zeitraum und/oder Wiederholung – deterministisch (online wie offline),
+     damit Range → Start/Ende, „alle zwei Wochen" → RRULE und die Konfliktprüfung garantiert greifen. */
+  if (/\b(termin|kalender|kalendereintrag|treffen|meeting|verabredung)\b/.test(t) && !/\b(verschieb|verleg|umbuch|lösch|loesch|entfern|streich|welche|was steht)\b/.test(t)) {
+    const range = parseDateRange(raw), rec = parseRecurrence(raw), single = vaParseDate(t);
+    if (range || rec.hadPhrase || single) {
+      const start = range ? range.start : (single || todayISO());
+      vaReply(runSmartEvent(vaEventTitle(raw), { start: start, end: range ? range.end : start, time: vaParseTime(t), recurrenceText: raw, source: 'chat' }));
+      return true;
+    }
+  }
+
   /* Ab hier: generische Aktionen (Tanken, Einnahme, Ausgabe, Termin, Aufgabe, Notiz …).
      Ist die echte KI verfügbar, übernimmt der AGENT (versteht beliebige Formulierungen, Wort-Zahlen,
      relative Daten, Mehrfach-Aktionen) → hier abbrechen, damit sendChat an agentReply() weiterreicht.
@@ -7823,6 +7842,167 @@ function agentTime(v) {
   if (m) return pad(+m[1]) + ':' + pad(+(m[2] || 0));
   return vaParseTime(String(v));
 }
+/* ==================== SMART-TERMIN: Mehrtages-Range, Wiederholung (iCal-RRULE), Konfliktprüfung ==================== */
+const ICAL_WD = { montag: 'MO', dienstag: 'TU', mittwoch: 'WE', donnerstag: 'TH', freitag: 'FR', samstag: 'SA', sonnabend: 'SA', sonntag: 'SU' };
+const ICAL_WD_NUM = { SU: 0, MO: 1, TU: 2, WE: 3, TH: 4, FR: 5, SA: 6 };
+
+/* „von X bis Y" → {start, end} (ISO), sonst null. Wochengrenze wird berücksichtigt. */
+function parseDateRange(text) {
+  const clean = String(text || '').toLowerCase()
+    .replace(/\b(alle\s+\S+\s+wochen?|alle\s+\S+\s+monate?|jede\s+woche|wöchentlich|jeden\s+\S+|monatlich|jeden\s+monat|täglich|jeden\s+tag|jährlich|jedes\s+jahr)\b[\s\S]*$/, '');
+  if (!/\bbis\b/.test(clean)) return null;
+  const parts = clean.split(/\bbis\b/);
+  let before = parts[0].replace(/^[\s\S]*\bvon\b/, '').trim();
+  const after = parts[1].trim();
+  const start = vaParseDate(before);
+  let end = vaParseDate(after);
+  if (!start || !end) return null;
+  if (end < start) end = addDays(end, 7);   // z. B. „Sonntag bis Dienstag" über die Woche hinweg
+  return { start, end };
+}
+
+/* Deutsche Wiederholungsmuster → {rrule, hadPhrase, recognized}. Nicht raten: unbekannt ⇒ recognized:false. */
+function parseRecurrence(text) {
+  const t = ' ' + String(text || '').toLowerCase() + ' ';
+  const hadPhrase = /\b(alle|jede|jeden|jedes|wöchentlich|monatlich|täglich|jährlich)\b/.test(t);
+  if (/\btäglich\b|\bjeden tag\b/.test(t)) return { rrule: 'FREQ=DAILY;INTERVAL=1', hadPhrase: true, recognized: true };
+  let m = t.match(/\bjede[nrs]?\s+(ersten|zweiten|dritten|vierten|letzten)\s+(montag|dienstag|mittwoch|donnerstag|freitag|samstag|sonnabend|sonntag)\b/);
+  if (m) { const ord = { ersten: 1, zweiten: 2, dritten: 3, vierten: 4, letzten: -1 }[m[1]]; return { rrule: 'FREQ=MONTHLY;INTERVAL=1;BYDAY=' + ord + ICAL_WD[m[2]], hadPhrase: true, recognized: true }; }
+  m = t.match(/\bjede[nrs]?\s+(montag|dienstag|mittwoch|donnerstag|freitag|samstag|sonnabend|sonntag)\b/);
+  if (m) return { rrule: 'FREQ=WEEKLY;INTERVAL=1;BYDAY=' + ICAL_WD[m[1]], hadPhrase: true, recognized: true };
+  m = t.match(/\balle\s+(zwei|drei|vier|fünf|sechs|acht|zwölf|\d{1,2})\s+wochen\b/);
+  if (m) { const map = { zwei: 2, drei: 3, vier: 4, 'fünf': 5, sechs: 6, acht: 8, 'zwölf': 12 }; const n = map[m[1]] || parseInt(m[1], 10) || 1; return { rrule: 'FREQ=WEEKLY;INTERVAL=' + n, hadPhrase: true, recognized: true }; }
+  if (/\bjede woche\b|\bwöchentlich\b/.test(t)) return { rrule: 'FREQ=WEEKLY;INTERVAL=1', hadPhrase: true, recognized: true };
+  m = t.match(/\balle\s+(zwei|drei|vier|\d{1,2})\s+monate?\b/);
+  if (m) { const map = { zwei: 2, drei: 3, vier: 4 }; const n = map[m[1]] || parseInt(m[1], 10) || 1; return { rrule: 'FREQ=MONTHLY;INTERVAL=' + n, hadPhrase: true, recognized: true }; }
+  if (/\bmonatlich\b|\bjeden monat\b/.test(t)) return { rrule: 'FREQ=MONTHLY;INTERVAL=1', hadPhrase: true, recognized: true };
+  if (/\bjährlich\b|\bjedes jahr\b/.test(t)) return { rrule: 'FREQ=YEARLY;INTERVAL=1', hadPhrase: true, recognized: true };
+  return { rrule: null, hadPhrase: hadPhrase, recognized: false };
+}
+function parseRRULE(rrule) {
+  const o = { freq: '', interval: 1, byday: '' };
+  String(rrule || '').split(';').forEach(part => { const kv = part.split('='); if (kv[0] === 'FREQ') o.freq = kv[1]; else if (kv[0] === 'INTERVAL') o.interval = +kv[1] || 1; else if (kv[0] === 'BYDAY') o.byday = kv[1]; });
+  return o;
+}
+function rruleHuman(rrule) {
+  const p = parseRRULE(rrule);
+  if (p.freq === 'DAILY') return p.interval > 1 ? 'alle ' + p.interval + ' Tage' : 'täglich';
+  if (p.freq === 'WEEKLY') return p.interval > 1 ? 'alle ' + p.interval + ' Wochen' : 'jede Woche';
+  if (p.freq === 'MONTHLY') return p.byday ? 'monatlich (fester Wochentag)' : (p.interval > 1 ? 'alle ' + p.interval + ' Monate' : 'monatlich');
+  if (p.freq === 'YEARLY') return 'jährlich';
+  return rrule;
+}
+function nthWeekdayOfMonth(year, month0, ord, wdCode) {
+  const wd = ICAL_WD_NUM[wdCode];
+  if (ord > 0) { const firstWd = new Date(year, month0, 1).getDay(); return toISO(new Date(year, month0, 1 + ((wd - firstWd + 7) % 7) + (ord - 1) * 7)); }
+  const last = new Date(year, month0 + 1, 0); return toISO(new Date(year, month0, last.getDate() - ((last.getDay() - wd + 7) % 7)));
+}
+function nextRuleStart(iso, p) {
+  if (p.freq === 'DAILY') return addDays(iso, p.interval);
+  if (p.freq === 'WEEKLY') return addDays(iso, 7 * p.interval);
+  if (p.freq === 'YEARLY') { const d = parseISO(iso); d.setFullYear(d.getFullYear() + p.interval); return toISO(d); }
+  if (p.freq === 'MONTHLY') {
+    if (p.byday) { const m = p.byday.match(/(-?\d+)([A-Z]{2})/); const d = parseISO(iso); let mo = d.getMonth() + p.interval, y = d.getFullYear() + Math.floor(mo / 12); mo = ((mo % 12) + 12) % 12; return nthWeekdayOfMonth(y, mo, +m[1], m[2]); }
+    const d = parseISO(iso); d.setMonth(d.getMonth() + p.interval); return toISO(d);
+  }
+  return null;
+}
+/* Vorkommen [{start,end}] eines (evtl. wiederkehrenden) Termins bis horizonEnd (ISO). Dauer bleibt konstant. */
+function eventOccurrences(startISO, endISO, rrule, horizonEndISO, maxN) {
+  const durDays = Math.round((parseISO(endISO || startISO) - parseISO(startISO)) / 86400000);
+  if (!rrule) return [{ start: startISO, end: addDays(startISO, durDays) }];
+  const p = parseRRULE(rrule), out = []; let cur = startISO, guard = 0; const cap = maxN || 200;
+  while (cur && cur <= horizonEndISO && guard < cap) { out.push({ start: cur, end: addDays(cur, durDays) }); cur = nextRuleStart(cur, p); guard++; }
+  return out;
+}
+/* Datetime-Intervall [s,e) eines Vorkommens: mehrtägig oder ohne Uhrzeit = ganztägig, einzeln+Uhrzeit = 60 Min. */
+function occInterval(occ, time) {
+  const s0 = parseISO(occ.start).getTime();
+  if (occ.end > occ.start || !time) return { s: s0, e: parseISO(occ.end).getTime() + 86400000 };
+  const m = String(time).match(/(\d{1,2}):(\d{2})/), mins = m ? (+m[1] * 60 + +m[2]) : 0, s = s0 + mins * 60000;
+  return { s: s, e: s + 3600000 };
+}
+const intervalsOverlap = (a, b) => a.s < b.e && b.s < a.e;   // (StartA < EndeB) und (StartB < EndeA)
+/* Konflikte gegen die intern gespeicherten Effyra-Events – je Vorkommen. */
+function findEventConflicts(startISO, endISO, time, rrule, excludeId) {
+  const winEnd = rrule ? addDays(startISO, 366) : endISO;
+  const newOccs = eventOccurrences(startISO, endISO, rrule, winEnd, 60).map(o => ({ o: o, iv: occInterval(o, time) }));
+  const lastNew = newOccs.length ? newOccs[newOccs.length - 1].o.end : endISO;
+  const conflicts = [];
+  store.events.forEach(e => {
+    if (excludeId && e.id === excludeId) return;
+    const eStart = e.date, eEnd = e.endDate || e.date;
+    if (!e.rrule && (eEnd < startISO || eStart > lastNew)) return;   // liegt außerhalb des Fensters
+    eventOccurrences(eStart, eEnd, e.rrule || null, addDays(lastNew, 1), 300).forEach(eo => {
+      const eiv = occInterval(eo, e.time);
+      newOccs.forEach(n => { if (intervalsOverlap(n.iv, eiv)) conflicts.push({ start: n.o.start, end: n.o.end, ev: e, evAt: eo.start }); });
+    });
+  });
+  return conflicts;
+}
+/* Nächste freie Blöcke gleicher Dauer/Uhrzeit (Serie wird als Ganzes verschoben). */
+function suggestFreeSlots(startISO, endISO, time, rrule, maxSuggest) {
+  const out = []; let off = 1, guard = 0;
+  while (out.length < (maxSuggest || 2) && guard < 120) {
+    const ns = addDays(startISO, off), ne = addDays(endISO, off);
+    if (!findEventConflicts(ns, ne, time, rrule, null).length) out.push({ start: ns, end: ne });
+    off++; guard++;
+  }
+  return out;
+}
+/* Zentrale Anlage: Range + Wiederholung + Konfliktprüfung. Legt bei Konflikt NICHT an, sondern meldet + schlägt vor. */
+function smartCreateEvent(title, o) {
+  const start = o.start || todayISO();
+  let end = o.end || start; if (end < start) end = start;
+  const time = o.time || null;
+  const rec = (o.rrule !== undefined) ? { rrule: o.rrule, hadPhrase: !!o.rrule, recognized: true } : parseRecurrence(o.recurrenceText || '');
+  const conflicts = findEventConflicts(start, end, time, rec.rrule, null);
+  if (conflicts.length) return { ok: false, title: title, start: start, end: end, time: time, rec: rec, conflicts: conflicts, alts: suggestFreeSlots(start, end, time, rec.rrule, 2) };
+  const extra = {}; if (end !== start) extra.endDate = end; if (rec.rrule) extra.rrule = rec.rrule;
+  const ev = addEvent(title, start, time, o.note || 'per Effyra AI', o.source || 'chat', extra);
+  return { ok: true, ev: ev, title: title, start: start, end: end, time: time, rec: rec };
+}
+const fmtEvRange = (s, e) => fmtDateShort(s) + (e && e !== s ? ' – ' + fmtDateShort(e) : '');
+function formatEventResult(r) {
+  if (r.ok) {
+    let msg = '📅 Termin „' + r.ev.title + '": ' + fmtEvRange(r.start, r.end) + (r.time ? ' um ' + r.time + ' Uhr' : '');
+    if (r.rec.rrule) msg += ' · 🔁 ' + rruleHuman(r.rec.rrule);
+    msg += ' eingetragen.';
+    if (r.rec.hadPhrase && !r.rec.recognized) msg += ' ⚠️ Die Wiederholung habe ich nicht sicher erkannt – ich habe ihn als einmaligen Termin angelegt. Sag es mir gern anders (z. B. „alle zwei Wochen").';
+    return msg;
+  }
+  const uniqDates = Array.from(new Set(r.conflicts.map(c => c.start)));
+  const names = Array.from(new Set(r.conflicts.map(c => c.ev.title))).slice(0, 3);
+  let msg = '⚠️ Terminkonflikt: „' + r.title + '" (' + fmtEvRange(r.start, r.end) + (r.time ? ' um ' + r.time + ' Uhr' : '') + ')';
+  if (r.rec.rrule) msg += ' als Serie (' + rruleHuman(r.rec.rrule) + ')';
+  msg += ' überschneidet sich mit ' + names.map(n => '„' + n + '"').join(', ');
+  if (r.rec.rrule && uniqDates.length > 1) msg += ' – betroffen: ' + uniqDates.slice(0, 4).map(fmtDateShort).join(', ') + (uniqDates.length > 4 ? ' …' : '');
+  msg += '. ';
+  if (r.alts.length) msg += 'Frei wäre z. B. ' + r.alts.map(a => fmtEvRange(a.start, a.end)).join(' oder ') + '. Sag „ja" für den ersten Vorschlag oder nenn einen anderen Zeitpunkt.';
+  else msg += 'Ich habe kurzfristig keinen freien Block gefunden – nenn mir bitte einen anderen Zeitpunkt.';
+  return msg;
+}
+/* Termin über den Smart-Layer anlegen und antworten (gemeinsam für KI-Tool & Offline-Erkenner). */
+function runSmartEvent(title, o) {
+  const r = smartCreateEvent(title, o);
+  if (!r.ok && r.alts.length) {
+    const a = r.alts[0];
+    vaPending = { summary: 'Alternativtermin annehmen?', run: function () { const rr = smartCreateEvent(r.title, { start: a.start, end: a.end, time: r.time, rrule: r.rec.rrule, source: o.source }); if (currentView === 'chat') RENDERERS.chat(); vaContext = { type: 'event' }; return formatEventResult(rr); } };
+  } else if (r.ok && currentView === 'chat') RENDERERS.chat();
+  vaContext = { type: 'event' };
+  return formatEventResult(r);
+}
+/* Titel aus einer Termin-Ansage extrahieren (Füll-, Zeit-, Datums-, Wiederholungswörter entfernen). */
+function vaEventTitle(raw) {
+  let s = ' ' + String(raw || '').toLowerCase() + ' ';
+  s = s.replace(/\b(alle\s+\S+\s+wochen?|alle\s+\S+\s+monate?|jede\s+woche|wöchentlich|jede[nrs]?\s+\S+|monatlich|jeden\s+monat|täglich|jeden\s+tag|jährlich|jedes\s+jahr)\b/g, ' ');
+  s = s.replace(/\b(stelle|erstelle|erstell|leg|lege|trag|trage|mach|mache|plane|setze|bitte|einen|eine|ein|neuen|neuer|neue|mir|mich|den|die|das|im|kalender(?:eintrag)?|termin|treffen|meeting|verabredung|ist|um|am|von|bis|uhr|für)\b/g, ' ');
+  s = s.replace(/\b(montag|dienstag|mittwoch|donnerstag|freitag|samstag|sonnabend|sonntag|heute|morgen|übermorgen|vorgestern|gestern|nächsten|naechsten|kommenden|ersten|zweiten|dritten|vierten|letzten|woche|wochen|monat|monate|tag|tage|jahr)\b/g, ' ');
+  s = s.replace(/\d{1,2}\.\d{1,2}\.?(?:\d{2,4})?/g, ' ').replace(/\d{1,2}(?:[:.]\d{2})?/g, ' ');
+  s = s.replace(/[.,;]/g, ' ').replace(/\s+/g, ' ').trim();
+  return s ? vaCap(s) : 'Termin';
+}
+
 /* Tool-Registry – jede Fähigkeit der App, die per Sprache/Text steuerbar ist. */
 const AGENT_TOOLS = {
   create_expense: {
@@ -7874,12 +8054,16 @@ const AGENT_TOOLS = {
     }
   },
   create_event: {
-    desc: 'Termin/Kalendereintrag (Arzt, Treffen, Meeting) → Kalender.',
-    params: 'title:Text, date, time:HH:MM',
+    desc: 'Termin/Kalendereintrag (Arzt, Treffen, Meeting) → Kalender. Unterstützt mehrtägige Zeiträume und Wiederholungen; prüft vor dem Anlegen auf Terminkonflikte.',
+    params: 'title:Text, date:(Startdatum), endDate:(Enddatum NUR bei mehrtägigem Zeitraum „von…bis…", sonst leer), time:HH:MM, recurrence:(wörtliche Wiederholung wie „alle zwei Wochen"/„jeden Montag"/„jeden ersten Montag im Monat", sonst leer)',
     run(p) {
-      const ev = addEvent(vaCap(String(p.title || 'Termin').trim()), agentDate(p.date), agentTime(p.time), 'per Effyra AI', 'chat');
-      if (!ev) return null; if (currentView === 'chat') RENDERERS.chat(); vaContext = { type: 'event' };
-      return '📅 Termin: „' + ev.title + '" am ' + fmtDate(ev.date) + (ev.time ? ' um ' + ev.time + ' Uhr' : '') + '.';
+      return runSmartEvent(vaCap(String(p.title || 'Termin').trim()), {
+        start: agentDate(p.date),
+        end: p.endDate ? agentDate(p.endDate) : null,
+        time: p.time ? agentTime(p.time) : null,
+        recurrenceText: p.recurrence || '',
+        source: 'chat'
+      });
     }
   },
   create_task: {
