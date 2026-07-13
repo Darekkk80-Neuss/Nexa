@@ -1189,6 +1189,7 @@ body.lang-switching main,body.lang-switching .sidebar,body.lang-switching .topba
       <button data-view="vault"><svg viewBox="0 0 24 24"><use href="#icDoc"/></svg><span data-i18n="nav.vault">Dokumenten-Tresor</span></button>
       <button data-view="shopping"><svg viewBox="0 0 24 24"><use href="#icCheck2"/></svg><span data-i18n="nav.shopping">Einkaufsliste</span></button>
       <button data-view="waste"><svg viewBox="0 0 24 24"><use href="#icCal"/></svg><span data-i18n="nav.waste">Müllkalender</span></button>
+      <button data-view="checkup"><svg viewBox="0 0 24 24"><use href="#icCheck2"/></svg><span data-i18n="nav.checkup">Vorsorge &amp; Erinnerungen</span></button>
       <button data-view="settings"><svg viewBox="0 0 24 24"><use href="#icGear"/></svg><span data-i18n="nav.settings">Einstellungen</span></button>
     </nav>
     <div class="foot">
@@ -1232,6 +1233,7 @@ body.lang-switching main,body.lang-switching .sidebar,body.lang-switching .topba
         <button class="qa qa-3 rise" style="--i:2" id="qaTask">
           <span class="qa-ic"><svg viewBox="0 0 24 24"><use href="#icPlus"/></svg></span><span data-i18n="dash.qa_task">Neue Aufgabe</span></button>
       </div>
+      <div class="task-add" style="margin-bottom:14px"><input type="text" id="captureInput" placeholder="⚡ Schnell erfassen – tipp einfach los, ich sortiere es ein …" maxlength="300"><button class="btn btn-primary" id="captureBtn" aria-label="Erfassen"><svg viewBox="0 0 24 24"><use href="#icSpark"/></svg></button></div>
       <div id="budgetWidget" hidden></div>
       <div id="dashWidgets"></div>
     </section>
@@ -1432,6 +1434,22 @@ body.lang-switching main,body.lang-switching .sidebar,body.lang-switching .topba
       <div id="wasteRoot"></div>
     </section>
 
+    <!-- ============================== VORSORGE & ERINNERUNGEN ============================== -->
+    <section class="view" id="view-checkup">
+      <div class="view-head">
+        <h1>Vorsorge &amp; Erinnerungen</h1>
+        <p>Zahnarzt, Vorsorge, TÜV &amp; Co. – werde rechtzeitig erinnert.</p>
+      </div>
+      <div class="card">
+        <div class="kid-row" style="margin-bottom:8px"><select id="cuPreset" style="flex:1"><option value="">Vorlage wählen …</option><option value="6|Zahnarzt-Kontrolle">Zahnarzt-Kontrolle (alle 6 Mon.)</option><option value="6|Professionelle Zahnreinigung">Zahnreinigung (alle 6 Mon.)</option><option value="12|Vorsorge Hausarzt">Vorsorge Hausarzt (12 Mon.)</option><option value="24|Hautkrebs-Screening">Hautkrebs-Screening (24 Mon.)</option><option value="24|Augenarzt">Augenarzt (24 Mon.)</option><option value="24|TÜV/HU Fahrzeug">TÜV/HU (24 Mon.)</option><option value="120|Tetanus-Auffrischung">Tetanus-Auffrischung (10 J.)</option></select></div>
+        <div class="kid-row" style="margin-bottom:8px"><input type="text" id="cuTitle" placeholder="Bezeichnung (z. B. Zahnarzt)" maxlength="60"><input type="number" id="cuInterval" placeholder="Monate" inputmode="numeric" min="1" style="flex:none;width:90px"></div>
+        <div class="kid-row" style="margin-bottom:6px"><label style="align-self:center;color:var(--muted);font-size:13px;flex:none">zuletzt am</label><input type="date" id="cuLast" style="flex:1"></div>
+        <div class="sub" style="color:var(--faint);font-size:12px;margin:0 2px 12px">Leer lassen = „steht noch aus". Nach jedem Termin auf „Erledigt" tippen – der nächste wird automatisch berechnet.</div>
+        <button class="btn btn-primary" id="cuAddBtn" style="width:100%">+ Erinnerung anlegen</button>
+      </div>
+      <div id="checkupRoot"></div>
+    </section>
+
     <!-- ============================== CHAT ============================== -->
     <section class="view" id="view-chat">
       <div class="chat-msgs" id="chatMsgs"></div>
@@ -1556,6 +1574,7 @@ body.lang-switching main,body.lang-switching .sidebar,body.lang-switching .topba
       <button data-view="vault"><span class="mi">🔐</span><span data-i18n="nav.vault">Dokumenten-Tresor</span></button>
       <button data-view="shopping"><span class="mi">🛒</span><span data-i18n="nav.shopping">Einkaufsliste</span></button>
       <button data-view="waste"><span class="mi">🗑️</span><span data-i18n="nav.waste">Müllkalender</span></button>
+      <button data-view="checkup"><span class="mi">🩺</span><span data-i18n="nav.checkup">Vorsorge</span></button>
       <button data-view="settings"><span class="mi">⚙️</span><span data-i18n="nav.settings">Einstellungen</span></button>
     </div>
   </div>
@@ -1707,6 +1726,7 @@ const store = Object.assign({
   contracts: [], // Verträge & Abos: {id,name,provider,cat,cost,interval,cancelBy,notice,done,createdAt}
   vault: [], // Dokumenten-Tresor (lokal): {id,title,cat,tags,note,thumb,img,createdAt}; volle Bilder in IndexedDB
   waste: [], // Müllkalender (lokal): {id,type,weekday,freq}
+  checkups: [], // Vorsorge-Erinnerungen (lokal): {id,title,intervalMonths,lastDate,note,createdAt}
   work: { settings: { weeklyHours: 40, hoursPerDay: 8, vacationDays: 30, childSickMax: 10, state: 'NW', autoBreak: true }, entries: {}, shifts: [], absences: [] }, // Arbeitszeit
   settings: { model: 'gpt-5-mini', demoIdx: 0, theme: 'light', rtSilenceMs: 700 }
 }, (() => {
@@ -2652,7 +2672,7 @@ async function flushAI() {
 let currentView = 'dashboard';
 const RENDERERS = {};
 
-const MORE_VIEWS = ['work', 'docs', 'school', 'calendar', 'life', 'family', 'emergency', 'vehicles', 'contracts', 'vault', 'shopping', 'waste', 'settings'];
+const MORE_VIEWS = ['work', 'docs', 'school', 'calendar', 'life', 'family', 'emergency', 'vehicles', 'contracts', 'vault', 'shopping', 'waste', 'checkup', 'settings'];
 let viewHistory = [], _navBack = false;
 function showView(name) {
   /* Modul für die aktuelle Stufe gesperrt? → Upgrade-Ansicht statt Modul */
@@ -3434,6 +3454,13 @@ RENDERERS.dashboard = function () {
   if (wSoon.length) html += dsec('🗑️ Abholung', 'waste', 'Alle', wSoon.map(x => {
     const d = dayDiff(x.next);
     return drow({ emoji: wType(x.w.type).i, title: wType(x.w.type).l, sub: fmtDateShort(x.next), chip: { cls: d <= 0 ? 'chip-danger' : 'chip-warn', text: d === 0 ? 'heute' : d === 1 ? 'morgen' : 'in ' + d + ' Tg.' }, go: 'waste' });
+  }).join(''));
+
+  /* VORSORGE – fällige/anstehende Gesundheitstermine */
+  const cuSoon = cuUpcoming(14);
+  if (cuSoon.length) html += dsec('🩺 Vorsorge', 'checkup', 'Alle', cuSoon.slice(0, 4).map(x => {
+    const d = dayDiff(x.next), pend = !x.c.lastDate;
+    return drow({ emoji: '🩺', title: x.c.title, sub: 'alle ' + x.c.intervalMonths + ' Monate', chip: { cls: (pend || d < 0) ? 'chip-danger' : 'chip-warn', text: pend ? 'steht aus' : d < 0 ? 'überfällig' : d === 0 ? 'heute' : 'in ' + d + ' Tg.' }, go: 'checkup' });
   }).join(''));
 
   $('#dashWidgets').innerHTML = html;
@@ -5957,6 +5984,59 @@ if ($('#wasteRoot')) $('#wasteRoot').addEventListener('click', e => {
   const b = e.target.closest('[data-wst]'); if (!b) return;
   if (b.dataset.wst === 'del') { store.waste = (store.waste || []).filter(x => x.id !== b.dataset.id); save(); RENDERERS.waste(); toast('Gelöscht'); return; }
 });
+
+/* ============================== VORSORGE & ERINNERUNGEN (lokal) ============================== */
+function addMonths(iso, m) { const d = parseISO(iso); d.setMonth(d.getMonth() + Number(m)); return toISO(d); }
+function cuNext(c) { return addMonths(c.lastDate, c.intervalMonths); }
+function cuUpcoming(maxDays) {
+  const lim = maxDays == null ? 14 : maxDays;
+  return (store.checkups || []).map(c => ({ c, next: c.lastDate ? cuNext(c) : todayISO() })).filter(x => dayDiff(x.next) <= lim).sort((a, b) => a.next < b.next ? -1 : 1);
+}
+RENDERERS.checkup = function () {
+  const box = $('#checkupRoot'); if (!box) return;
+  const all = store.checkups || [];
+  if (!all.length) { box.innerHTML = '<div class="empty" style="margin-top:16px"><span class="big">🩺</span>Noch keine Vorsorge-Erinnerungen.<br>Wähle oben eine Vorlage oder trage eigene ein.</div>'; return; }
+  const list = all.map(c => ({ c, next: c.lastDate ? cuNext(c) : todayISO() })).sort((a, b) => a.next < b.next ? -1 : 1);
+  let h = '';
+  list.forEach(({ c, next }) => {
+    const dd = dayDiff(next), pending = !c.lastDate;
+    const cls = (pending || dd < 0) ? 'chip-danger' : dd <= 30 ? 'chip-warn' : 'chip-accent';
+    const txt = pending ? 'steht aus' : dd < 0 ? 'überfällig' : dd === 0 ? 'heute fällig' : 'fällig ' + fmtDateShort(next);
+    h += '<div class="task" style="align-items:flex-start">' +
+      '<span style="font-size:20px;width:34px;text-align:center;flex:none;line-height:1.2">🩺</span>' +
+      '<div class="t-main"><span class="t-title">' + esc(c.title) + '</span>' +
+      '<div class="t-meta">alle ' + c.intervalMonths + ' Monate' + (c.lastDate ? ' · zuletzt ' + esc(fmtDateShort(c.lastDate)) : '') + '</div>' +
+      '<div style="margin-top:6px"><span class="chip-status ' + cls + '">' + txt + '</span></div>' +
+      '<div class="kid-row" style="margin-top:8px;gap:6px"><button class="btn btn-sm btn-primary" data-cu="done" data-id="' + c.id + '">✓ Erledigt (heute)</button></div>' +
+      '</div>' +
+      '<button class="t-del" data-cu="del" data-id="' + c.id + '" aria-label="Löschen"><svg viewBox="0 0 24 24"><use href="#icTrash"/></svg></button></div>';
+  });
+  box.innerHTML = h;
+};
+if ($('#cuPreset')) $('#cuPreset').addEventListener('change', () => {
+  const v = $('#cuPreset').value; if (!v) return;
+  const i = v.indexOf('|'); $('#cuInterval').value = v.slice(0, i); $('#cuTitle').value = v.slice(i + 1); $('#cuPreset').value = '';
+});
+if ($('#cuAddBtn')) $('#cuAddBtn').addEventListener('click', () => {
+  const title = $('#cuTitle').value.trim(); if (!title) { $('#cuTitle').focus(); return; }
+  store.checkups = store.checkups || [];
+  store.checkups.push({ id: uid(), title, intervalMonths: Math.max(1, parseInt($('#cuInterval').value, 10) || 12), lastDate: $('#cuLast').value || '', note: '', createdAt: Date.now() });
+  save(); ['cuTitle', 'cuInterval', 'cuLast'].forEach(id => { const el = $('#' + id); if (el) el.value = ''; });
+  RENDERERS.checkup(); toast('Erinnerung angelegt ✓');
+});
+if ($('#checkupRoot')) $('#checkupRoot').addEventListener('click', e => {
+  const b = e.target.closest('[data-cu]'); if (!b) return;
+  const c = (store.checkups || []).find(x => x.id === b.dataset.id); if (!c) return;
+  if (b.dataset.cu === 'done') { c.lastDate = todayISO(); save(); RENDERERS.checkup(); toast('Erledigt – nächster Termin in ' + c.intervalMonths + ' Monaten'); return; }
+  if (b.dataset.cu === 'del') { store.checkups = store.checkups.filter(x => x.id !== c.id); save(); RENDERERS.checkup(); toast('Gelöscht'); return; }
+});
+
+/* ============================== SCHNELL-ERFASSUNG (Dashboard → KI-Agent) ============================== */
+if ($('#captureBtn')) $('#captureBtn').addEventListener('click', () => {
+  const i = $('#captureInput'), v = (i.value || '').trim(); if (!v) { i.focus(); return; }
+  i.value = ''; showView('chat'); if (typeof sendChat === 'function') sendChat(v);
+});
+if ($('#captureInput')) $('#captureInput').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); $('#captureBtn').click(); } });
 
 function ensureWork() {
   const w = store.work = store.work || {};
