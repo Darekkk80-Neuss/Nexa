@@ -6649,25 +6649,66 @@ if ($('#vaultRoot')) $('#vaultRoot').addEventListener('click', e => {
 if ($('#vtSearch')) $('#vtSearch').addEventListener('input', () => RENDERERS.vault());
 
 /* ============================== EINKAUFSLISTE (Familie, synchronisiert) ============================== */
-/* Warenkategorien → Emoji (Icons + Vorschlags-Emojis). Schlüsselwörter greifen als Teilstring;
-   Reihenfolge = Priorität (Obst/Back/Milch/Fleisch vor Vorrat, um Kollisionen zu vermeiden). */
-const SHOP_CATS = [
-  { key: 'obst', icon: '🥦', kw: ['apfel', 'äpfel', 'banane', 'tomate', 'gurke', 'salat', 'zwiebel', 'kartoffel', 'möhre', 'karotte', 'paprika', 'zitrone', 'orange', 'birne', 'traube', 'beere', 'avocado', 'brokkoli', 'spinat', 'knoblauch', 'obst', 'gemüse', 'zucchini', 'mango', 'ananas', 'kiwi'] },
-  { key: 'backwaren', icon: '🍞', kw: ['brot', 'brötchen', 'semmel', 'toast', 'baguette', 'croissant', 'brezel', 'kuchen', 'mehl', 'hefe'] },
-  { key: 'milch', icon: '🥛', kw: ['milch', 'käse', 'joghurt', 'quark', 'butter', 'sahne', 'frischkäse', ' ei ', 'eier', 'mozzarella', 'feta', 'pudding', 'margarine'] },
-  { key: 'fleisch', icon: '🥩', kw: ['fleisch', 'hähnchen', 'hühnchen', 'hack', 'wurst', 'schinken', 'salami', 'speck', 'steak', 'schnitzel', 'aufschnitt', 'fisch', 'lachs', 'thunfisch', 'garnele', 'frikadelle'] },
-  { key: 'tiefkuehl', icon: '🧊', kw: ['tiefkühl', 'pizza', ' eis', 'pommes', 'fischstäbchen'] },
-  { key: 'vorrat', icon: '🥫', kw: ['nudel', 'pasta', 'spaghetti', 'reis', 'zucker', 'salz', 'pfeffer', 'gewürz', 'öl', 'essig', 'soße', 'sauce', 'ketchup', 'senf', 'konserve', 'bohnen', 'linsen', 'mais', 'müsli', 'haferflocken', 'honig', 'marmelade', 'nutella', 'brühe', 'kaffee', 'tee'] },
-  { key: 'getraenke', icon: '🥤', kw: ['wasser', 'saft', 'cola', 'limo', 'limonade', 'bier', 'wein', 'sekt', 'sprudel', 'getränk', 'schorle', 'eistee'] },
-  { key: 'suess', icon: '🍫', kw: ['schokolade', 'schoko', 'keks', 'chips', 'süßigkeit', 'bonbon', 'gummibär', 'riegel', 'waffel', 'snack', 'nüsse'] },
-  { key: 'haushalt', icon: '🧻', kw: ['klopapier', 'toilettenpapier', 'küchenrolle', 'spülmittel', 'waschmittel', 'weichspüler', 'reiniger', 'müllbeutel', 'alufolie', 'frischhalte', 'backpapier', 'serviette', 'kerze', 'batterie'] },
-  { key: 'hygiene', icon: '🧴', kw: ['shampoo', 'duschgel', 'zahnpasta', 'zahnbürste', 'seife', 'deo', 'creme', 'rasier', 'tampon', 'taschentücher', 'sonnencreme'] },
-  { key: 'baby', icon: '🍼', kw: ['windel', 'feuchttücher', 'babybrei', 'babynahrung', 'schnuller'] }
+/* Artikel → passendes Emoji. WICHTIG: pro Artikel ein spezifisches Icon (nicht ein Emoji je Kategorie),
+   sonst zeigen z. B. Eier/Butter/Käse alle „🥛". Reihenfolge = Priorität: SPEZIFISCH zuerst, generische
+   Fallbacks zuletzt. Schlüsselwörter greifen als Teilstring; „ ei " ist bewusst mit Leerzeichen gepaddet. */
+const SHOP_ICONS = [
+  // Obst & Gemüse (je Sorte eigenes Icon)
+  { i: '🍌', kw: ['banane'] }, { i: '🍓', kw: ['erdbeere', 'himbeere', 'heidelbeere', 'brombeere', 'beere'] },
+  { i: '🍎', kw: ['apfel', 'äpfel'] }, { i: '🍐', kw: ['birne'] }, { i: '🍅', kw: ['tomate'] },
+  { i: '🥒', kw: ['gurke', 'zucchini'] }, { i: '🥔', kw: ['kartoffel'] }, { i: '🧅', kw: ['zwiebel', 'lauch', 'porree'] },
+  { i: '🧄', kw: ['knoblauch'] }, { i: '🥕', kw: ['möhre', 'karotte', 'mohrrübe'] }, { i: '🫑', kw: ['paprika'] },
+  { i: '🥬', kw: ['salat', 'kohl', 'spinat', 'rucola'] }, { i: '🥦', kw: ['brokkoli'] }, { i: '🍄', kw: ['pilz', 'champignon'] },
+  { i: '🍋', kw: ['zitrone', 'limette'] }, { i: '🍊', kw: ['orange', 'mandarine', 'clementine'] }, { i: '🍇', kw: ['traube', 'weintraube'] },
+  { i: '🥑', kw: ['avocado'] }, { i: '🍍', kw: ['ananas'] }, { i: '🥭', kw: ['mango'] }, { i: '🥝', kw: ['kiwi'] },
+  { i: '🍑', kw: ['pfirsich', 'nektarine', 'aprikose'] }, { i: '🍒', kw: ['kirsche'] }, { i: '🍉', kw: ['melone'] },
+  { i: '🌽', kw: ['mais'] }, { i: '🍆', kw: ['aubergine'] },
+  // Molkerei & Eier
+  { i: '🥚', kw: ['eier', ' ei '] }, { i: '🧈', kw: ['butter', 'margarine'] },
+  { i: '🧀', kw: ['käse', 'gouda', 'feta', 'mozzarella', 'frischkäse', 'parmesan'] },
+  { i: '🥛', kw: ['milch', 'joghurt', 'quark', 'sahne', 'buttermilch', 'kefir', 'pudding'] },
+  // Backwaren
+  { i: '🥐', kw: ['croissant'] }, { i: '🥨', kw: ['brezel', 'laugen'] }, { i: '🥖', kw: ['baguette'] },
+  { i: '🎂', kw: ['kuchen', 'torte'] }, { i: '🌾', kw: ['mehl', 'hefe'] }, { i: '🍞', kw: ['brot', 'brötchen', 'semmel', 'toast', 'wecken'] },
+  // Fleisch & Fisch
+  { i: '🍗', kw: ['hähnchen', 'hühnchen', 'huhn', 'geflügel', 'pute'] }, { i: '🌭', kw: ['wurst', 'würstchen', 'bratwurst', 'wiener'] },
+  { i: '🥓', kw: ['speck', 'bacon'] }, { i: '🍖', kw: ['schinken', 'kotelett', 'kasseler'] },
+  { i: '🥪', kw: ['aufschnitt', 'salami', 'mortadella'] }, { i: '🐟', kw: ['fisch', 'lachs', 'thunfisch', 'forelle', 'hering', 'kabeljau'] },
+  { i: '🦐', kw: ['garnele', 'shrimp', 'scampi'] }, { i: '🥩', kw: ['fleisch', 'hack', 'steak', 'gulasch', 'frikadelle', 'rind', 'schwein', 'schnitzel'] },
+  // Tiefkühl
+  { i: '🍕', kw: ['pizza'] }, { i: '🍟', kw: ['pommes'] }, { i: '🍨', kw: [' eis', 'speiseeis', 'eiscreme'] }, { i: '🧊', kw: ['tiefkühl', 'fischstäbchen'] },
+  // Getränke
+  { i: '💧', kw: ['wasser', 'sprudel', 'mineralwasser'] }, { i: '🧃', kw: ['saft', 'schorle', 'nektar'] },
+  { i: '🥤', kw: ['cola', 'limo', 'limonade', 'softdrink', 'energy'] }, { i: '🍺', kw: ['bier'] }, { i: '🍷', kw: ['wein'] },
+  { i: '🍾', kw: ['sekt', 'prosecco', 'champagner'] }, { i: '☕', kw: ['kaffee'] }, { i: '🍵', kw: ['tee '] },
+  // Vorrat
+  { i: '🍝', kw: ['nudel', ' pasta', 'spaghetti', 'penne', 'makkaroni'] }, { i: '🍚', kw: ['reis'] },
+  { i: '🥣', kw: ['müsli', 'haferflocken', 'cornflakes', 'porridge'] }, { i: '🍯', kw: ['honig'] },
+  { i: '🍫', kw: ['schokolade', 'schoko', 'nutella', 'riegel', 'praline'] }, { i: '🫒', kw: ['öl', 'olivenöl'] },
+  { i: '🍶', kw: ['essig', 'sojasoße'] }, { i: '🧂', kw: ['salz', 'pfeffer', 'gewürz'] },
+  { i: '🥫', kw: ['konserve', 'dose', 'bohnen', 'linsen', 'kichererbsen', 'suppe', 'soße', 'sauce', 'ketchup', 'senf', 'brühe', 'tomatenmark', 'passata'] },
+  { i: '🍮', kw: ['marmelade', 'konfitüre', 'gelee'] }, { i: '🥄', kw: ['zucker', 'süßstoff'] },
+  // Süßes & Snacks
+  { i: '🍪', kw: ['keks', 'cookie', 'waffel'] }, { i: '🍬', kw: ['bonbon', 'süßigkeit', 'gummibär', 'lakritz'] },
+  { i: '🍿', kw: ['chips', 'popcorn', 'salzstange', 'cracker', 'snack'] }, { i: '🥜', kw: ['nüsse', 'nuss', 'mandel', 'erdnuss', 'cashew'] },
+  // Haushalt
+  { i: '🧻', kw: ['klopapier', 'toilettenpapier', 'küchenrolle', 'taschentücher', 'serviette', 'papiertücher'] },
+  { i: '🧽', kw: ['schwamm', 'spültuch', 'lappen'] }, { i: '🗑️', kw: ['müllbeutel', 'müllsäcke', 'mülltüte'] },
+  { i: '📦', kw: ['alufolie', 'frischhalte', 'backpapier', 'gefrierbeutel'] }, { i: '🕯️', kw: ['kerze', 'teelicht'] },
+  { i: '🔋', kw: ['batterie', 'akku'] }, { i: '💡', kw: ['glühbirne', 'leuchtmittel'] },
+  // Drogerie & Hygiene
+  { i: '🦷', kw: ['zahnpasta', 'zahncreme'] }, { i: '🪥', kw: ['zahnbürste', 'zahnseide'] }, { i: '🧼', kw: ['seife', 'waschlotion'] },
+  { i: '🪒', kw: ['rasier'] }, { i: '🩹', kw: ['pflaster', 'verband'] }, { i: '🩸', kw: ['tampon', 'binde'] },
+  { i: '🧴', kw: ['shampoo', 'duschgel', 'creme', 'lotion', 'deo', 'spülung', 'sonnencreme', 'waschmittel', 'weichspüler', 'spülmittel', 'reiniger', 'putzmittel', 'allzweck'] },
+  // Baby
+  { i: '🧷', kw: ['windel', 'feuchttücher'] }, { i: '🍼', kw: ['baby', 'schnuller', 'fläschchen'] },
+  // generische Fallbacks
+  { i: '🥬', kw: ['gemüse'] }, { i: '🍎', kw: ['obst'] }
 ];
 function shopCat(name) {
   const s = ' ' + String(name || '').toLowerCase() + ' ';
-  for (let i = 0; i < SHOP_CATS.length; i++) { const c = SHOP_CATS[i]; for (let j = 0; j < c.kw.length; j++) { if (s.indexOf(c.kw[j]) >= 0) return c; } }
-  return { key: 'sonstiges', icon: '🛒', kw: [] };
+  for (let i = 0; i < SHOP_ICONS.length; i++) { const r = SHOP_ICONS[i]; for (let j = 0; j < r.kw.length; j++) { if (s.indexOf(r.kw[j]) >= 0) return { icon: r.i }; } }
+  return { icon: '🛒' };
 }
 /* Häufige Artikel für Schnell-Hinzufügen + Autovervollständigung (deutscher Markt). */
 const SHOP_COMMON = ['Milch', 'Brot', 'Eier', 'Butter', 'Käse', 'Joghurt', 'Bananen', 'Äpfel', 'Tomaten', 'Gurke', 'Kartoffeln', 'Zwiebeln', 'Salat', 'Hähnchen', 'Hackfleisch', 'Aufschnitt', 'Nudeln', 'Reis', 'Kaffee', 'Wasser', 'Saft', 'Klopapier', 'Küchenrolle', 'Spülmittel', 'Zahnpasta', 'Windeln', 'Schokolade', 'Müsli', 'Mehl', 'Zucker'];
@@ -6870,19 +6911,26 @@ if ($('#wasteRoot')) $('#wasteRoot').addEventListener('click', e => {
 /* ============================== VORSORGE & ERINNERUNGEN (lokal) ============================== */
 function addMonths(iso, m) { const d = parseISO(iso); d.setMonth(d.getMonth() + Number(m)); return toISO(d); }
 /* Vordefinierte Vorsorge-/Gesundheits-Themen (Titel + Intervall in Monaten). Rein Gesundheit –
-   Fahrzeug-TÜV gehört NICHT hierher (der lebt bei Auto & Motorrad). ≥30 Vorlagen. */
+   Fahrzeug-TÜV gehört NICHT hierher (der lebt bei Auto & Motorrad). 50+ Vorlagen. */
 const CHECKUP_TPL = [
   { t: 'Zahnarzt-Kontrolle', m: 6 }, { t: 'Professionelle Zahnreinigung', m: 6 }, { t: 'Kieferorthopädie-Kontrolle', m: 3 },
-  { t: 'Hausarzt Gesundheits-Check', m: 36 }, { t: 'Blutbild / Blutwerte', m: 12 }, { t: 'Blutdruck-Kontrolle', m: 12 },
-  { t: 'Cholesterin-Kontrolle', m: 24 }, { t: 'Blutzucker / Diabetes-Check', m: 12 }, { t: 'Schilddrüsen-Kontrolle', m: 12 },
-  { t: 'Herz-Check / EKG', m: 24 }, { t: 'Hautkrebs-Screening', m: 24 }, { t: 'Muttermal-Kontrolle', m: 12 },
-  { t: 'Augenarzt / Sehtest', m: 24 }, { t: 'Augeninnendruck (Glaukom)', m: 24 }, { t: 'Hörtest (HNO)', m: 36 },
-  { t: 'Gynäkologische Vorsorge', m: 12 }, { t: 'Krebsvorsorge (Frau)', m: 12 }, { t: 'Mammographie', m: 24 },
-  { t: 'Urologische Vorsorge', m: 12 }, { t: 'Prostata-Vorsorge (PSA)', m: 12 }, { t: 'Darmkrebs-Test (Stuhl)', m: 12 },
-  { t: 'Darmspiegelung (Koloskopie)', m: 120 }, { t: 'Osteoporose / Knochendichte', m: 24 }, { t: 'Lungenfunktion (Asthma/COPD)', m: 12 },
-  { t: 'Tetanus-Auffrischung', m: 120 }, { t: 'Diphtherie/Keuchhusten-Impfung', m: 120 }, { t: 'Grippeimpfung', m: 12 },
-  { t: 'COVID-19-Auffrischung', m: 12 }, { t: 'FSME-Impfung (Zecken)', m: 36 }, { t: 'Impfpass prüfen', m: 24 },
-  { t: 'Reise-Impfberatung', m: 12 }, { t: 'Physiotherapie / Rezept', m: 6 }, { t: 'U-Untersuchung (Kind)', m: 12 }, { t: 'Zahnvorsorge (Kind)', m: 6 }
+  { t: 'Zahn-Röntgen', m: 24 }, { t: 'Hausarzt Gesundheits-Check', m: 36 }, { t: 'Blutbild / Blutwerte', m: 12 },
+  { t: 'Blutdruck-Kontrolle', m: 12 }, { t: 'Cholesterin-Kontrolle', m: 24 }, { t: 'Blutzucker / Diabetes-Check', m: 12 },
+  { t: 'Schilddrüsen-Kontrolle', m: 12 }, { t: 'Nierenwerte-Kontrolle', m: 12 }, { t: 'Leberwerte-Kontrolle', m: 12 },
+  { t: 'Vitamin-D-Kontrolle', m: 12 }, { t: 'Eisenwert / Ferritin', m: 12 }, { t: 'Herz-Check / EKG', m: 24 },
+  { t: 'Venen-Check (Krampfadern)', m: 24 }, { t: 'Hautkrebs-Screening', m: 24 }, { t: 'Muttermal-Kontrolle', m: 12 },
+  { t: 'Allergietest', m: 24 }, { t: 'Augenarzt / Sehtest', m: 24 }, { t: 'Augeninnendruck (Glaukom)', m: 24 },
+  { t: 'Hörtest (HNO)', m: 36 }, { t: 'Gynäkologische Vorsorge', m: 12 }, { t: 'Krebsvorsorge (Frau)', m: 12 },
+  { t: 'Mammographie', m: 24 }, { t: 'Urologische Vorsorge', m: 12 }, { t: 'Prostata-Vorsorge (PSA)', m: 12 },
+  { t: 'Darmkrebs-Test (Stuhl)', m: 12 }, { t: 'Darmspiegelung (Koloskopie)', m: 120 }, { t: 'Osteoporose / Knochendichte', m: 24 },
+  { t: 'Lungenfunktion (Asthma/COPD)', m: 12 }, { t: 'Schlafapnoe-Check', m: 24 }, { t: 'Diabetischer Fußcheck', m: 12 },
+  { t: 'Ernährungsberatung', m: 12 }, { t: 'Tetanus-Auffrischung', m: 120 }, { t: 'Diphtherie/Keuchhusten-Impfung', m: 120 },
+  { t: 'Grippeimpfung', m: 12 }, { t: 'COVID-19-Auffrischung', m: 12 }, { t: 'FSME-Impfung (Zecken)', m: 36 },
+  { t: 'Pneumokokken-Impfung', m: 72 }, { t: 'Gürtelrose-Impfung (Zoster)', m: 60 }, { t: 'HPV-Impfung', m: 60 },
+  { t: 'MMR-Impfung (Masern)', m: 120 }, { t: 'Hepatitis-Impfung', m: 120 }, { t: 'Impfpass prüfen', m: 24 },
+  { t: 'Reise-Impfberatung', m: 12 }, { t: 'Physiotherapie / Rezept', m: 6 }, { t: 'Ergotherapie / Rezept', m: 6 },
+  { t: 'Fußpflege (medizinisch)', m: 3 }, { t: 'Betriebsärztliche Untersuchung', m: 24 }, { t: 'Bildschirmarbeitsplatz (Augen G37)', m: 36 },
+  { t: 'U-Untersuchung (Kind)', m: 12 }, { t: 'J1-Jugenduntersuchung', m: 12 }, { t: 'Kinderarzt-Vorsorge', m: 12 }, { t: 'Zahnvorsorge (Kind)', m: 6 }
 ];
 function cuIntLabel(m) { return (m % 12 === 0) ? (m / 12) + ' J.' : m + ' Mon.'; }
 function cuNext(c) { return addMonths(c.lastDate, c.intervalMonths); }
