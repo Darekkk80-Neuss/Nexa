@@ -6918,13 +6918,27 @@ RENDERERS.work = function () {
   h += workTab === 'kalender' ? workKalender() : workTab === 'abwesenheit' ? workAbwesenheit() : workTab === 'dienste' ? workDienste() : workTab === 'jahr' ? workJahr() : workTab === 'bericht' ? workBericht() : workHeute();
   $('#workRoot').innerHTML = h;
 };
+/* Persistenz: wurden auf einem Tag mit zugeordnetem Standard-Dienst die Zeiten/Pause geändert,
+   werden sie als neue Vorgabe DIESES Dienstes gespeichert – und gelten so lange, bis der Nutzer
+   sie erneut ändert (fixt „Werte verschwinden nach jedem Eintrag / jeder Tageszuordnung"). */
+function workSyncShiftDef(iso) {
+  const e = store.work.entries[iso];
+  if (!e || !e.shift || !WORK_SHIFTS[e.shift] || !WORK_SHIFTS[e.shift].shift) return;
+  ensureWork();
+  const d = store.work.shiftDefs[e.shift] = store.work.shiftDefs[e.shift] || {};
+  d.start = e.start || ''; d.end = e.end || '';
+  d.breakMin = (e.breakMin === '' || e.breakMin == null) ? '' : e.breakMin;
+}
 function workEntryForm(iso) {
   const e = store.work.entries[iso] || {}, s = store.work.settings, net = netMinutes(e);
-  const auto = s.autoBreak && !(e.breakStart && e.breakEnd) && !e.breakMin && net > 0;
+  const bm = (e.breakMin === '' || e.breakMin == null) ? '' : e.breakMin;
+  const auto = s.autoBreak && !bm && !(e.breakStart && e.breakEnd) && net > 0;
+  const presets = [15, 30, 60].map(n => '<button type="button" class="btn btn-sm' + (String(bm) === String(n) ? ' btn-primary' : '') + '" data-wb="' + n + '" data-iso="' + iso + '">' + n + '</button>').join('');
   return '<div class="kid-row" style="margin-bottom:8px"><div style="flex:1"><label class="fld">Beginn</label><input type="time" data-we="start" data-iso="' + iso + '" value="' + (e.start || '') + '"></div><div style="flex:1"><label class="fld">Ende</label><input type="time" data-we="end" data-iso="' + iso + '" value="' + (e.end || '') + '"></div></div>' +
-    '<div class="kid-row" style="margin-bottom:8px"><div style="flex:1"><label class="fld">Pause von</label><input type="time" data-we="breakStart" data-iso="' + iso + '" value="' + (e.breakStart || '') + '"></div><div style="flex:1"><label class="fld">Pause bis</label><input type="time" data-we="breakEnd" data-iso="' + iso + '" value="' + (e.breakEnd || '') + '"></div></div>' +
+    '<div style="margin-bottom:8px"><label class="fld">Pause (Minuten)</label><div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">' + presets +
+    '<input type="number" data-we="breakMin" data-iso="' + iso + '" min="0" max="480" inputmode="numeric" placeholder="manuell" value="' + bm + '" style="flex:1;min-width:90px"></div></div>' +
     '<input type="text" data-we="note" data-iso="' + iso + '" placeholder="Notiz" maxlength="60" value="' + esc(e.note || '') + '" style="margin-bottom:10px">' +
-    '<div class="veh-stat"><b>' + hmDur(net) + ' h</b><span>Nettoarbeitszeit' + (e.breakMin && !(e.breakStart && e.breakEnd) ? ' · Pause ' + e.breakMin + ' Min' : (auto ? ' · autom. Pause abgezogen' : '')) + '</span></div>';
+    '<div class="veh-stat"><b>' + hmDur(net) + ' h</b><span>Nettoarbeitszeit' + (bm ? ' · Pause ' + bm + ' Min' : (e.breakStart && e.breakEnd ? ' · Pause ' + e.breakStart + '–' + e.breakEnd : (auto ? ' · autom. Pause abgezogen' : ''))) + '</span></div>';
 }
 function quickAssignChips(iso) {
   let h = '<div class="wq-chips">';
@@ -7210,9 +7224,19 @@ $('#workRoot').addEventListener('change', e => {
   if (t.dataset.we) {
     const i = t.dataset.iso, f = t.dataset.we;
     store.work.entries[i] = store.work.entries[i] || {};
-    store.work.entries[i][f] = t.value;
+    store.work.entries[i][f] = (f === 'breakMin') ? (t.value === '' ? '' : Math.max(0, Math.round(+t.value || 0))) : t.value;
+    if (f === 'start' || f === 'end' || f === 'breakMin') workSyncShiftDef(i);   // Dienst-Vorgabe mitziehen
     save(); RENDERERS.work();
   }
+});
+/* Pausen-Presets (15/30/60 Min) im Tagesformular */
+$('#workRoot').addEventListener('click', e => {
+  const b = e.target.closest('[data-wb]'); if (!b) return;
+  const iso = b.dataset.iso, min = +b.dataset.wb;
+  const en = store.work.entries[iso] = store.work.entries[iso] || {};
+  en.breakMin = min; en.breakStart = ''; en.breakEnd = '';
+  workSyncShiftDef(iso);
+  save(); RENDERERS.work();
 });
 $('#workRoot').addEventListener('keydown', e => {
   if (e.key !== 'Enter') return;
