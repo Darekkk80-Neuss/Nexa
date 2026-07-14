@@ -5036,6 +5036,9 @@ const KUENDIGUNG_FORMEN = {
 };
 const KUENDIGUNG_ARTEN = ['arbeit', 'miete', 'handy', 'strom', 'streaming', 'fitness', 'versicherung', 'verein', 'sonstiges'];
 function kuendCfg(art) { return KUENDIGUNG_FORMEN[art] || KUENDIGUNG_FORMEN.sonstiges; }
+/* Der Kündigungsform-Prüf-Assistent gilt NUR für deutsches Recht → nur bei App-Sprache Deutsch anzeigen.
+   Für die anderen 5 Sprachen bleibt der Brief-Generator wie zuvor (ohne Prüfhilfe/Pflicht-Checkbox). */
+function kuendActive(t) { return !!(t && t.kuend) && curLang === 'de'; }
 /* Ergebnis-Box der Prüfhilfe (Formanforderung + Empfehlung + „keine Rechtsberatung"). */
 function kuendHintHTML(art) {
   const c = kuendCfg(art);
@@ -5120,7 +5123,7 @@ function dgFormHTML() {
   const t = curTpl();
   let h = '<button class="btn btn-ghost btn-sm" data-dg="back">‹ Zurück zur Auswahl</button>';
   h += '<div class="view-head" style="margin-top:12px"><h1>' + esc(t.title) + '</h1><p>Deine Daten sind schon eingetragen – ergänze nur noch die Angaben unten.</p></div>';
-  if (t.kuend) h += kuendFormBlock(t);   // Kündigungsform-Prüfhinweis + Prüfhilfe + Pflicht-Bestätigung
+  if (kuendActive(t)) h += kuendFormBlock(t);   // Kündigungsform-Prüfhinweis + Prüfhilfe + Pflicht-Bestätigung (nur DE)
   if (t.type !== 'checklist') {
     h += '<details class="card dg-mydata"' + (dgProfileOpen ? ' open' : '') + '><summary>👤 Meine Daten (Absender)</summary><div class="dg-grid2">' +
       pField('name', 'Vor- und Nachname') + pField('street', 'Straße & Hausnummer') + pField('zip', 'PLZ') + pField('city', 'Ort') +
@@ -5131,7 +5134,7 @@ function dgFormHTML() {
   if (!t.noRecipient && t.type !== 'checklist') h += fField(t, 'empfEmail?');
   h += '</div>';
   if (t.type !== 'checklist') h += '<label class="dg-check"><input type="checkbox" id="dgSignChk"' + (dgSign ? ' checked' : '') + '> Mit Unterschrift (Name in Schreibschrift)</label>';
-  const kGate = !!t.kuend && !dgKuendConfirmed;   // erst nach Pflicht-Bestätigung erstellbar
+  const kGate = kuendActive(t) && !dgKuendConfirmed;   // erst nach Pflicht-Bestätigung erstellbar (nur DE)
   h += '<button class="btn btn-primary" data-dg="gen" style="width:100%"' + (kGate ? ' disabled aria-disabled="true"' : '') + '>' + (t.type === 'checklist' ? '✓ Checkliste erstellen' : '📝 Brief erstellen') + '</button>';
   if (kGate) h += '<div class="kf-gatehint">Bitte oben bestätigen, dass du die zulässige Kündigungsform geprüft hast.</div>';
   h += '</div>';
@@ -5147,7 +5150,7 @@ function dgResultHTML() {
   if (t.deadline && dgValues.datum) h += '<span class="btn btn-sm" style="cursor:default;opacity:.8" title="Automatisch in Aufgaben & Kalender übernommen" data-noi18n>⏰ Frist gemerkt</span>';
   if (t.type !== 'checklist') h += '<button class="btn btn-sm" data-dg="ai">✨ Mit KI verbessern</button>';
   h += '</div><div id="dgLetter">' + letterHTML(t, dgValues, store.profile) + '</div>';
-  if (t.kuend) h += kuendVersandHTML(t);   // Zustellung & Nachweis (Einschreiben/E-Mail speichern)
+  if (kuendActive(t)) h += kuendVersandHTML(t);   // Zustellung & Nachweis (Einschreiben/E-Mail speichern; nur DE)
   return h;
 }
 function letterHTML(t, v, p) {
@@ -5194,7 +5197,7 @@ function dgGenerate() {
   $$('#dgRoot [data-key]').forEach(inp => { dgValues[inp.dataset.key] = inp.value.trim(); });
   const sc = $('#dgSignChk'); if (sc) dgSign = sc.checked;
   const kc = $('#dgKuendConfirm'); if (kc) dgKuendConfirmed = kc.checked;
-  if (t.kuend && !dgKuendConfirmed) { toast('Bitte bestätige zuerst, dass du die zulässige Kündigungsform geprüft hast.'); if (kc) kc.focus(); return; }
+  if (kuendActive(t) && !dgKuendConfirmed) { toast('Bitte bestätige zuerst, dass du die zulässige Kündigungsform geprüft hast.'); if (kc) kc.focus(); return; }
   if (t.type !== 'checklist' && !store.profile.name) { dgProfileOpen = true; toast('Bitte trage oben deinen Namen ein'); RENDERERS.docgen(); return; }
   let miss = null;
   $$('#dgRoot [data-key]').forEach(inp => {
@@ -5211,7 +5214,7 @@ function dgPrint() {
 }
 function dgMail() {
   const t = curTpl(), v = dgValues;
-  if (t.kuend) {   // Schriftform-Vertragsarten: E-Mail ist meist unwirksam -> bewusste Rückfrage
+  if (kuendActive(t)) {   // Schriftform-Vertragsarten: E-Mail ist meist unwirksam -> bewusste Rückfrage (nur DE)
     const c = kuendCfg(dgKuendArt || t.kuend);
     if (c.level === 'schrift' && !confirm('Für diese Vertragsart ist eine Kündigung per E-Mail meist NICHT rechtswirksam (Schriftform nötig). Trotzdem eine E-Mail vorbereiten?')) return;
   }
