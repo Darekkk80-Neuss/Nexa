@@ -3868,6 +3868,17 @@ async function kidResume(session) {
     gate(); try { await famPull(); } catch (e) {} showView('dashboard'); refresh();
   } else { try { await sb.auth.signOut(); } catch (e) {} account = null; gate(); }
 }
+/* Kind hakt die EIGENE Familienaufgabe ab (v2) – serverseitig auf member_id begrenzt. */
+async function childTaskDone(taskId, done) {
+  try {
+    await famAuth();
+    const r = await sb.rpc('child_task_done', { p_task_id: taskId, p_done: done });
+    if (r.error) { toast(/not your/i.test(String(r.error.message || '')) ? 'Du kannst nur deine eigenen Aufgaben abhaken.' : 'Konnte nicht speichern.'); return; }
+    toast(done ? '✅ Erledigt – super!' : 'Wieder offen');
+    try { await famPull(); } catch (e) {}
+    if (currentView === 'family') RENDERERS.family(); else if (currentView === 'dashboard') RENDERERS.dashboard();
+  } catch (e) { toast('Keine Verbindung.'); }
+}
 
 async function activatePremium(code, errEl) {
   errEl.textContent = '';
@@ -5057,7 +5068,9 @@ RENDERERS.dashboard = function () {
   $$('#dashBlocks [data-go]').forEach(b => b.addEventListener('click', () => { if (b.dataset.tab && b.dataset.go === 'family') famTab = b.dataset.tab; showView(b.dataset.go); }));
   /* Familienaufgabe direkt vom Dashboard abhaken (ohne in die Familienzentrale zu springen) */
   $$('#dashBlocks [data-ftoggle]').forEach(b => b.addEventListener('click', e => {
-    e.stopPropagation(); ensureFamily();
+    e.stopPropagation();
+    if (isKidMode()) { childTaskDone(b.dataset.ftoggle, true); return; }   // Kind: nur eigene, serverseitig geprüft
+    ensureFamily();
     const tk = (store.family.tasks || []).find(x => x.id === b.dataset.ftoggle);
     if (!tk) return;
     tk.done = true; save();
@@ -7312,19 +7325,21 @@ function pruneMedTaken() {
 function famTasks() {
   ensureFamily();
   const members = store.family.members;
-  const list = (store.family.tasks || []).slice().sort((a, b) => {
+  let list = (store.family.tasks || []).slice().sort((a, b) => {
     if (a.done !== b.done) return a.done ? 1 : -1;
     if (a.due && b.due) return a.due < b.due ? -1 : 1;
     if (a.due) return -1; if (b.due) return 1;
     const P = { high: 0, med: 1, low: 2 }; return (P[a.prio] == null ? 1 : P[a.prio]) - (P[b.prio] == null ? 1 : P[b.prio]);
   });
+  if (isKidMode()) list = list.filter(t => !t.assignee || (account && t.assignee === account.memberId));   // Kind: eigene + Familien-Aufgaben
   const openN = list.filter(t => !t.done).length;
-  let h = '<p class="sub" style="margin:-2px 0 12px">Aufgaben an Familienmitglieder verteilen – mit Priorität und Termin.</p>' +
+  let h = isKidMode() ? '<p class="sub" style="margin:-2px 0 12px">Deine Aufgaben – hake ab, was du erledigt hast. ✅</p>' :
+    ('<p class="sub" style="margin:-2px 0 12px">Aufgaben an Familienmitglieder verteilen – mit Priorität und Termin.</p>' +
     '<input type="text" id="ftTitle" placeholder="Aufgabe (z. B. Müll rausbringen)" maxlength="80" style="margin-bottom:8px">' +
     '<div class="kid-row" style="margin-bottom:8px"><select id="ftWho"><option value="">👪 Ganze Familie</option>' +
     members.map(m => '<option value="' + m.id + '">' + esc(m.name) + '</option>').join('') + '</select>' +
     '<select id="ftPrio"><option value="high">🔴 Hoch</option><option value="med" selected>🟡 Mittel</option><option value="low">🟢 Niedrig</option></select></div>' +
-    '<div class="kid-row" style="margin-bottom:14px"><input type="date" id="ftDue" title="Fällig am"><input type="time" id="ftTime" title="Uhrzeit (optional)"><button class="btn btn-primary" data-fam="addFTask">+ Zuweisen</button></div>';
+    '<div class="kid-row" style="margin-bottom:14px"><input type="date" id="ftDue" title="Fällig am"><input type="time" id="ftTime" title="Uhrzeit (optional)"><button class="btn btn-primary" data-fam="addFTask">+ Zuweisen</button></div>');
   if (openN) h += '<div class="veh-stats" style="grid-template-columns:1fr;margin-bottom:12px"><div class="veh-stat"><b>' + openN + '</b><span>offene Familienaufgabe' + (openN === 1 ? '' : 'n') + '</span></div></div>';
   if (!list.length) h += '<div class="empty" style="padding:14px">Noch keine Familienaufgaben. Verteil die erste ✨</div>';
   const myId = famSelfId();
@@ -7335,14 +7350,14 @@ function famTasks() {
     const readByAssignee = aAuth && readBy.indexOf(aAuth) >= 0;   // Empfänger hat gelesen → Sender sieht das
     const iAmAssignee = m && myId && m.authId === myId, iRead = myId && readBy.indexOf(myId) >= 0;
     h += '<div class="task' + (t.done ? ' done' : '') + '">' +
-      '<button class="tcheck" data-fam="toggleFTask" data-id="' + t.id + '" title="Erledigt" aria-label="Erledigt"><svg viewBox="0 0 24 24"><use href="#icCheck"/></svg></button>' +
+      '<button class="tcheck"' + ((!isKidMode() || (account && t.assignee === account.memberId)) ? ' data-fam="toggleFTask" data-id="' + t.id + '"' : ' disabled') + ' title="Erledigt" aria-label="Erledigt"><svg viewBox="0 0 24 24"><use href="#icCheck"/></svg></button>' +
       '<span class="prio prio-' + safePrio(t.prio) + '"></span>' +
       '<div class="t-main"><span class="t-title">' + esc(t.title) + '</span>' +
       '<div class="t-meta"><span class="fam-assignee"' + (m ? ' style="color:' + safeColor(m.color) + '"' : '') + '>' + (m ? esc(m.name) : '👪 Familie') + '</span>' +
       (t.due ? '<span class="' + (late ? 'late' : isToday ? 'today' : '') + '">· ' + (late ? 'überfällig' : esc(relDay(t.due))) + (t.time ? ' ' + esc(oclock(t.time)) : '') + '</span>' : (t.time ? '<span>· ' + esc(oclock(t.time)) + '</span>' : '')) +
       (readByAssignee && !t.done ? '<span class="fam-read">👁 gelesen</span>' : '') + '</div></div>' +
       (iAmAssignee && !iRead && !t.done ? '<button class="fam-readbtn" data-fam="readFTask" data-id="' + t.id + '" title="Als gelesen bestätigen">👁 Gelesen</button>' : '') +
-      '<button class="t-del" data-fam="delFTask" data-id="' + t.id + '" aria-label="Löschen"><svg viewBox="0 0 24 24"><use href="#icTrash"/></svg></button></div>';
+      (isKidMode() ? '' : '<button class="t-del" data-fam="delFTask" data-id="' + t.id + '" aria-label="Löschen"><svg viewBox="0 0 24 24"><use href="#icTrash"/></svg></button>') + '</div>';
   });
   return h;
 }
@@ -7532,7 +7547,7 @@ $('#famRoot').addEventListener('click', e => {
     if (ftM && ftM.authId) pushNotifyMember(ftM.authId, '👪 Neue Aufgabe für dich', title + (ftTime ? ' – ' + ftTime + ' Uhr' : ''));
     toast('Aufgabe zugewiesen ✓'); return;
   }
-  if (a === 'toggleFTask') { ensureFamily(); const t = store.family.tasks.find(x => x.id === b.dataset.id); if (t) { t.done = !t.done; famChanged(); } return; }
+  if (a === 'toggleFTask') { const t = (store.family.tasks || []).find(x => x.id === b.dataset.id); if (isKidMode()) { childTaskDone(b.dataset.id, !(t && t.done)); return; } ensureFamily(); if (t) { t.done = !t.done; famChanged(); } return; }
   if (a === 'readFTask') { if (markFamTaskRead(b.dataset.id)) toast('👁 Als gelesen bestätigt'); RENDERERS.family(); return; }
   if (a === 'delFTask') { ensureFamily(); store.family.tasks = store.family.tasks.filter(x => x.id !== b.dataset.id); famChanged(); return; }
   if (a === 'create') { famCreate(); return; }

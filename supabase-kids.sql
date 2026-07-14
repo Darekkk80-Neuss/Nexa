@@ -114,10 +114,38 @@ revoke execute on function public.create_child_code(text), public.revoke_child_c
 grant  execute on function public.create_child_code(text), public.revoke_child_code(text) to authenticated;   -- Erwachsene
 grant  execute on function public.join_as_child(text) to authenticated;                                       -- anonym angemeldete Kinder (Rolle 'authenticated')
 
+-- ------------------------------------------------------------
+-- 7) child_task_done(task_id, done): Kind hakt die EIGENE Familienaufgabe ab (v2).
+--    Eng begrenzt: nur eine Aufgabe, deren assignee == member_id des Kindes. Sonst Fehler.
+--    Atomarer jsonb-Update auf families.data.tasks – kein Überschreiben des ganzen Blobs.
+-- ------------------------------------------------------------
+create or replace function public.child_task_done(p_task_id text, p_done boolean default true)
+returns json language plpgsql security definer set search_path = public as $$
+declare v_fid uuid; v_mid text; v_data jsonb; v_tasks jsonb; v_idx int; v_found boolean := false;
+begin
+  if auth.uid() is null then raise exception 'not authenticated'; end if;
+  select family_id, member_id into v_fid, v_mid from public.family_members where user_id = auth.uid() and role = 'child';
+  if v_fid is null then raise exception 'not a child'; end if;
+  select data into v_data from public.families where id = v_fid for update;
+  v_tasks := coalesce(v_data->'tasks', '[]'::jsonb);
+  for v_idx in 0 .. greatest(jsonb_array_length(v_tasks) - 1, -1) loop
+    if (v_tasks->v_idx->>'id') = p_task_id then
+      if (v_tasks->v_idx->>'assignee') is distinct from v_mid then raise exception 'not your task'; end if;   -- nur eigene
+      v_tasks := jsonb_set(v_tasks, array[v_idx::text, 'done'], to_jsonb(coalesce(p_done, true)));
+      v_found := true; exit;
+    end if;
+  end loop;
+  if not v_found then raise exception 'task not found'; end if;
+  update public.families set data = jsonb_set(v_data, '{tasks}', v_tasks), updated_at = now() where id = v_fid;
+  return json_build_object('ok', true);
+end; $$;
+revoke execute on function public.child_task_done(text, boolean) from public, anon;
+grant  execute on function public.child_task_done(text, boolean) to authenticated;
+
 notify pgrst, 'reload schema';
 
 -- ============================================================
 -- Fertig. Danach im Client: Erwachsener → Familienzentrale → Kinderprofil → „Kinder-Handy
--- einrichten" (Code). Kind → Login-Seite → „Kind? Mit Code beitreten" → Kindermodus (nur lesend).
--- v2 (optional): child_task_done() für „eigene Aufgabe abhaken" (jsonb-Update, an member_id gebunden).
+-- einrichten" (Code). Kind → Login-Seite → „Kind? Mit Code beitreten" → Kindermodus.
+-- Kind kann jetzt die EIGENEN Familienaufgaben abhaken (child_task_done); sonst nur Ansicht.
 -- ============================================================
