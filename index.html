@@ -6490,15 +6490,20 @@ function creditTableHtml() {
 }
 function famAiPanel() {
   const adults = store.family.members.filter(m => m.role !== 'child');
+  /* Echtes Server-Modell: jeder freigeschaltete Erwachsene hat SEIN EIGENES Monatskontingent
+     (AI_MONTHLY_LIMIT = 500). Das Familien-Gesamtkontingent wächst daher automatisch mit der
+     Zahl der Erwachsenen – kein fester 1000er-Pool mehr. */
+  const perAdult = AI_MONTHLY_LIMIT;
+  const nAdults = Math.max(1, adults.length);
+  const limit = nAdults * perAdult;
   const used = adults.reduce((s, m) => s + (m.aiUsed || 0), 0);
-  const limit = (store.family.ai && store.family.ai.limit) || FAMILY_AI_LIMIT;
   const pct = limit ? Math.min(100, Math.round(used / limit * 100)) : 0;
   const reset = store.family.ai && store.family.ai.resetDate ? fmtDate(store.family.ai.resetDate) : '–';
   let h = '<div class="note-box" style="margin-bottom:14px"><b>🤖 Familien-KI-Kontingent</b>' +
     '<div class="quota-bar"><div class="quota-fill ' + (pct >= 100 ? 'full' : pct >= 90 ? 'warn' : '') + '" style="width:' + pct + '%"></div></div>' +
-    '<span class="sub">' + used + ' / ' + limit + ' Credits · Reset ' + esc(reset) + '</span>';
-  adults.forEach(m => { h += '<div class="fam-ai-row"><span class="kid-dot" style="background:' + safeColor(m.color) + '"></span>' + esc(m.name) + (m.role === 'owner' ? ' 👑' : '') + '<b>' + (m.aiUsed || 0) + '</b></div>'; });
-  h += '<div class="sub" style="margin-top:6px">Nur Erwachsene verbrauchen KI – Kinder haben keinen KI-Zugriff.</div>' + creditTableHtml() + '</div>';
+    '<span class="sub">' + used + ' / ' + limit + ' Credits · ' + nAdults + ' × ' + perAdult + '/Monat · Reset ' + esc(reset) + '</span>';
+  adults.forEach(m => { const mu = m.aiUsed || 0; const mp = perAdult ? Math.min(100, Math.round(mu / perAdult * 100)) : 0; h += '<div class="fam-ai-row"><span class="kid-dot" style="background:' + safeColor(m.color) + '"></span>' + esc(m.name) + (m.role === 'owner' ? ' 👑' : '') + '<b>' + mu + ' / ' + perAdult + '</b></div><div class="quota-bar" style="margin:2px 0 8px"><div class="quota-fill ' + (mp >= 100 ? 'full' : mp >= 90 ? 'warn' : '') + '" style="width:' + mp + '%"></div></div>'; });
+  h += '<div class="sub" style="margin-top:6px">Jeder Erwachsene hat sein eigenes Kontingent von ' + perAdult + ' KI-Credits pro Monat – das Familien-Gesamtkontingent passt sich automatisch an. Kinder haben keinen KI-Zugriff.</div>' + creditTableHtml() + '</div>';
   return h;
 }
 function famPersonen() {
