@@ -325,6 +325,7 @@ label.fld{display:block;font-size:12.5px;font-weight:600;color:var(--muted);marg
 .fit-hero-txt{position:absolute;left:18px;right:18px;bottom:16px;color:#fff}
 .fit-hero-k{font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;opacity:.92}
 .fit-hero-q{font-size:19px;font-weight:800;line-height:1.2;text-shadow:0 2px 10px rgba(0,0,0,.5);margin-top:3px}
+.fit-hero-credit{position:absolute;top:8px;right:10px;font-size:10.5px;color:rgba(255,255,255,.85);background:rgba(0,0,0,.32);padding:3px 8px;border-radius:8px;text-decoration:none;backdrop-filter:blur(3px)}
 .fit-tabs{display:flex;gap:6px;overflow-x:auto;margin-bottom:14px}
 .fit-tabs button{flex:0 0 auto;padding:8px 13px;border-radius:999px;border:1px solid var(--border);background:var(--card2);color:var(--muted);font-weight:600;font-size:13px;cursor:pointer;white-space:nowrap}
 .fit-tabs button.active{background:var(--grad);color:#fff;border-color:transparent}
@@ -5541,8 +5542,35 @@ const LocalHeroImageSource = {
   },
   async preload(n) { FIT_HEROES.slice(0, n || FIT_HEROES.length).forEach(h => { const im = new Image(); im.src = h.url; }); }
 };
-/* TODO(Stufe 2): UnsplashHeroImageSource / PexelsHeroImageSource {getRandomHeroImage,preload} mit Attribution. */
-const fitImageSource = LocalHeroImageSource;
+/* PexelsHeroImageSource: echte Fotos via photo-proxy (Key serverseitig, zentraler Cache), wöchentlicher
+   Client-Cache, Fallback = lokales Starter-Set (FIT_HEROES). Gleiche ImageSource-Signatur. */
+function fitPoolFresh() { return !!(store.fit.photoPool && store.fit.photoPool.length && store.fit.photoPoolAt && (Date.now() - store.fit.photoPoolAt < 7 * 864e5)); }
+function fitPool() { return fitPoolFresh() ? store.fit.photoPool : FIT_HEROES; }
+function fitPickHero() {
+  const pool = fitPool(); if (!pool.length) return FIT_HEROES[0];
+  let i, last = store.fit.heroLastUrl;
+  if (pool.length <= 1) i = 0; else { let t = 0; do { i = Math.floor(Math.random() * pool.length); t++; } while (pool[i].url === last && t < 8); }
+  store.fit.heroLastUrl = pool[i].url; save(); return pool[i];
+}
+const PexelsHeroImageSource = { async getRandomHeroImage() { return fitPickHero(); }, async preload(n) { fitPool().slice(0, n || 6).forEach(h => { const im = new Image(); im.src = h.url; }); } };
+const fitImageSource = PexelsHeroImageSource;   // aktiv; LocalHeroImageSource bleibt als Offline-Fallback-Quelle
+let _fitPhotoBusy = false;
+/* Vorrat echter Fotos wöchentlich vom Proxy holen (der cached zentral) → skaliert bei vielen Nutzern. */
+async function fitEnsurePhotos() {
+  if (fitPoolFresh() || _fitPhotoBusy) return;
+  if (typeof CLOUD === 'undefined' || !CLOUD || typeof sb === 'undefined' || !sb) return;
+  _fitPhotoBusy = true;
+  try {
+    const { data } = await sb.auth.getSession(); const s = data && data.session; if (!s) { _fitPhotoBusy = false; return; }
+    const r = await fetch(FN_URL('photo-proxy'), { method: 'POST', headers: { 'content-type': 'application/json', 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + s.access_token }, body: JSON.stringify({}) });
+    const j = await r.json().catch(() => ({}));
+    if (j && j.ok && Array.isArray(j.photos) && j.photos.length) {
+      store.fit.photoPool = j.photos; store.fit.photoPoolAt = Date.now(); save();
+      if (currentView === 'fit' && fitTab === 'overview' && fitHeroPick && FIT_HEROES.some(x => x.url === fitHeroPick.hero.url)) { fitHeroPick = { hero: fitPickHero(), spruch: fitHeroPick.spruch }; RENDERERS.fit(); }
+    }
+  } catch (_e) { /* offline/kein Login → lokaler Fallback bleibt */ }
+  _fitPhotoBusy = false;
+}
 
 /* Zentrale Spruch-Rotation: pro Kategorie zufällig, nie derselbe zweimal hintereinander (onOpen + Meilensteine). */
 function fitSpruch(kat) {
@@ -5667,10 +5695,12 @@ RENDERERS.fit = function () {
   let h = '<div class="view-head"><h1>💪 EffyraFit</h1><p>Aktive Einheiten, Schritte &amp; Motivation – dein Ziel im Blick.</p></div>';
   // Hero-Bühne nur in der Übersicht; frisch bei jedem Öffnen (in showView zurückgesetzt)
   if (fitTab === 'overview') {
-    if (!fitHeroPick) { const li = (store.fit.heroLast == null ? -1 : store.fit.heroLast), ni = FIT_HEROES.length <= 1 ? 0 : (li + 1 + Math.floor(Math.random() * (FIT_HEROES.length - 1))) % FIT_HEROES.length; store.fit.heroLast = ni; save(); fitHeroPick = { hero: FIT_HEROES[ni], spruch: fitSpruch('onOpen') }; }
+    if (!fitHeroPick) fitHeroPick = { hero: fitPickHero(), spruch: fitSpruch('onOpen') };
+    fitEnsurePhotos();   // echte Fotos wöchentlich nachladen; lokale Grafiken als Fallback
     const hp = fitHeroPick;
     h += '<div class="fit-hero"><img src="' + esc(hp.hero.url) + '" alt="' + esc(hp.hero.alt) + '" loading="eager">' +
-      '<div class="fit-hero-scrim"></div><div class="fit-hero-txt"><div class="fit-hero-k">EffyraFit</div><div class="fit-hero-q">' + esc(hp.spruch) + '</div></div></div>';
+      '<div class="fit-hero-scrim"></div>' + (hp.hero.credit ? '<a class="fit-hero-credit" href="' + esc(hp.hero.creditUrl || 'https://www.pexels.com') + '" target="_blank" rel="noopener">📷 ' + esc(hp.hero.credit) + ' · Pexels</a>' : '') +
+      '<div class="fit-hero-txt"><div class="fit-hero-k">EffyraFit</div><div class="fit-hero-q">' + esc(hp.spruch) + '</div></div></div>';
   }
   const tabs = [['overview', '📊 Übersicht'], ['session', '▶️ Einheit'], ['activities', '📋 Aktivitäten'], ['goals', '🎯 Ziele'], ['settings', '⚙️ Einstellungen']];
   h += '<div class="fit-tabs" role="tablist">' + tabs.map(t => '<button data-fittab="' + t[0] + '" class="' + (fitTab === t[0] ? 'active' : '') + '">' + t[1] + '</button>').join('') + '</div>';
