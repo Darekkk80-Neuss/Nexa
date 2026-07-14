@@ -752,6 +752,26 @@ body.store-safe [data-buy]{display:none!important}
 .dg-check input{width:auto}
 .dg-actions{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
 input.invalid,textarea.invalid{border-color:var(--danger)!important;box-shadow:0 0 0 3px rgba(248,113,113,.18)}
+/* Kündigungsform-Prüfhilfe */
+.kf-card{border:1px solid var(--border2);margin-bottom:14px}
+.kf-notice{display:flex;gap:10px;align-items:flex-start;font-size:13.5px;line-height:1.5;color:var(--text);background:rgba(245,197,66,.12);border:1px solid rgba(245,197,66,.42);border-radius:12px;padding:12px 14px;margin-bottom:14px}
+.kf-notice-ic{font-size:18px;flex:none;line-height:1.3}
+.kf-label{display:block;font-weight:700;font-size:14px;margin-bottom:6px}
+.kf-select{width:100%;padding:11px 12px;border-radius:12px;border:1px solid var(--border2);background:var(--card);color:var(--text);font-size:15px;margin-bottom:12px}
+.kf-select:focus{outline:none;border-color:var(--accent)}
+.kf-result{border-radius:12px;padding:12px 14px;font-size:13.5px;line-height:1.55;border:1px solid var(--border2);background:var(--card2)}
+.kf-result .kf-form{font-size:14.5px;margin-bottom:6px}
+.kf-result .kf-tipp{color:var(--muted)}
+.kf-warn{background:rgba(248,113,113,.1);border-color:rgba(248,113,113,.45)}
+.kf-ok{background:rgba(16,185,129,.1);border-color:rgba(16,185,129,.42)}
+.kf-info{background:rgba(6,182,212,.08);border-color:rgba(6,182,212,.35)}
+.kf-disc{margin-top:8px;font-size:12px;font-style:italic;color:var(--faint)}
+.kf-confirm{display:flex;gap:10px;align-items:flex-start;font-size:13.5px;line-height:1.45;color:var(--text);margin-top:14px;cursor:pointer}
+.kf-confirm input{width:auto;margin-top:3px;flex:none}
+.kf-gatehint{font-size:12.5px;color:var(--faint);text-align:center;margin-top:8px}
+.kf-versand{border:1px solid var(--border2);font-size:13.5px;line-height:1.55}
+.kf-versand p{margin:6px 0 0;color:var(--muted)}
+.kf-versand .kf-disc{margin-top:8px}
 .letter{background:#fff;color:#1c1c1c;max-width:720px;margin:0 auto;border-radius:12px;padding:44px 50px;
   font-size:14px;line-height:1.7;box-shadow:0 20px 60px rgba(0,0,0,.5);text-shadow:none;overflow-wrap:break-word}
 .letter .l-sender{font-size:11.5px;color:#555;margin-bottom:34px;line-height:1.5}
@@ -4896,19 +4916,19 @@ const umBody = (art) => (v) => 'hiermit teile ich Ihnen mit, dass ich ' + zum(v.
 
 const DOC_TPL = [
   // 🏠 Wohnen
-  { id: 'miet-kuend', cat: 'wohnen', title: 'Mietvertrag kündigen', deadline: true, fields: ['empfName', 'empfAddr', 'objekt', 'datum?'], labels: { objekt: 'Anschrift der Wohnung', datum: 'Kündigung zum' }, betreff: () => 'Kündigung des Mietvertrags', body: (v) => 'hiermit kündige ich das Mietverhältnis für die Wohnung ' + (v.objekt || '') + ' fristgerecht ' + zum(v.datum) + ', hilfsweise zum nächstmöglichen Zeitpunkt.\n\nBitte bestätigen Sie mir den Eingang der Kündigung sowie das Mietende schriftlich. Zudem bitte ich um einen Termin zur gemeinsamen Wohnungsübergabe und um Mitteilung, wie die Rückzahlung der Mietkaution erfolgt.' },
+  { id: 'miet-kuend', cat: 'wohnen', title: 'Mietvertrag kündigen', deadline: true, kuend: 'miete', fields: ['empfName', 'empfAddr', 'objekt', 'datum?'], labels: { objekt: 'Anschrift der Wohnung', datum: 'Kündigung zum' }, betreff: () => 'Kündigung des Mietvertrags', body: (v) => 'hiermit kündige ich das Mietverhältnis für die Wohnung ' + (v.objekt || '') + ' fristgerecht ' + zum(v.datum) + ', hilfsweise zum nächstmöglichen Zeitpunkt.\n\nBitte bestätigen Sie mir den Eingang der Kündigung sowie das Mietende schriftlich. Zudem bitte ich um einen Termin zur gemeinsamen Wohnungsübergabe und um Mitteilung, wie die Rückzahlung der Mietkaution erfolgt.' },
   { id: 'umzug', cat: 'wohnen', title: 'Umzug mitteilen', fields: ['empfName', 'empfAddr', 'neueAdresse', 'datum?'], labels: { datum: 'Umzug zum' }, betreff: () => 'Mitteilung meiner neuen Anschrift', body: (v) => 'hiermit teile ich Ihnen mit, dass ich ' + zum(v.datum) + ' umziehe. Bitte ändern Sie meine Anschrift in Ihren Unterlagen entsprechend.\n\nMeine neue Anschrift lautet:\n' + (v.neueAdresse || '') + '\n\nBitte senden Sie zukünftige Post an die neue Adresse und bestätigen Sie mir die Änderung.' },
   { id: 'nachsende', cat: 'wohnen', title: 'Nachsendeauftrag (Information)', fields: ['empfName', 'empfAddr', 'neueAdresse', 'datum?'], labels: { datum: 'Gültig ab' }, betreff: () => 'Information zu meiner neuen Zustelladresse', body: (v) => 'hiermit informiere ich Sie, dass meine Post ' + (v.datum ? 'ab ' + fd(v.datum) : 'ab sofort') + ' an folgende Adresse zugestellt werden soll:\n\n' + (v.neueAdresse || '') + '\n\nBitte berücksichtigen Sie diese Änderung und bestätigen Sie mir den Eingang.' },
   { id: 'uebergabe', cat: 'wohnen', title: 'Wohnungsübergabe-Checkliste', type: 'checklist', fields: [], items: ['Zählerstände notieren (Strom, Gas, Wasser)', 'Alle Schlüssel übergeben und Anzahl festhalten', 'Wohnung besenrein übergeben', 'Wände, Decken und Böden auf Schäden prüfen', 'Bohrlöcher fachgerecht verschließen', 'Fenster und Türen auf Funktion prüfen', 'Gemeinsames Übergabeprotokoll unterschreiben', 'Bankverbindung für die Kautionsrückzahlung angeben', 'Fotos vom Zustand der Wohnung machen', 'Nachsendeauftrag bei der Post einrichten'] },
   { id: 'maengel', cat: 'wohnen', title: 'Mängelanzeige an Vermieter', fields: ['empfName', 'empfAddr', 'objekt', 'mangel', 'datum?'], labels: { objekt: 'Betroffene Wohnung', mangel: 'Beschreibung des Mangels', datum: 'Frist zur Behebung bis' }, betreff: () => 'Mängelanzeige', body: (v) => 'hiermit zeige ich Ihnen folgenden Mangel in meiner Wohnung ' + (v.objekt || '') + ' an:\n\n' + (v.mangel || '') + '\n\nIch bitte Sie, den Mangel bis ' + (v.datum ? fd(v.datum) : 'zum nächstmöglichen Zeitpunkt') + ' zu beheben. Sollte die Frist ergebnislos verstreichen, behalte ich mir eine Mietminderung sowie weitere Schritte vor. Bitte bestätigen Sie mir den Eingang dieser Anzeige.' },
   { id: 'kaution', cat: 'wohnen', title: 'Kautionsrückforderung', fields: ['empfName', 'empfAddr', 'objekt', 'iban', 'datum?'], labels: { objekt: 'Ehemalige Wohnung', iban: 'IBAN für die Rücküberweisung', datum: 'Mietende war' }, betreff: () => 'Rückzahlung der Mietkaution', body: (v, p) => 'das Mietverhältnis für die Wohnung ' + (v.objekt || '') + ' endete ' + (v.datum ? 'am ' + fd(v.datum) : 'vor Kurzem') + '. Die Wohnung wurde ordnungsgemäß übergeben.\n\nIch bitte Sie, die hinterlegte Mietkaution inklusive der aufgelaufenen Zinsen innerhalb von 14 Tagen auf folgendes Konto zu überweisen:\n\nKontoinhaber: ' + (p.name || '') + '\nIBAN: ' + (v.iban || '____') + '\n\nBitte bestätigen Sie mir den Eingang dieses Schreibens.' },
   // 📱 Verträge & Abos
-  { id: 'handy-kuend', cat: 'vertraege', title: 'Handyvertrag kündigen', deadline: true, fields: ['empfName', 'empfAddr', 'vertragsnr?', 'datum?'], labels: { datum: 'Kündigung zum' }, betreff: () => 'Kündigung meines Mobilfunkvertrags', body: kb('meinen Mobilfunkvertrag') },
-  { id: 'internet-kuend', cat: 'vertraege', title: 'Internetvertrag kündigen', deadline: true, fields: ['empfName', 'empfAddr', 'vertragsnr?', 'datum?'], labels: { datum: 'Kündigung zum' }, betreff: () => 'Kündigung meines Internetvertrags', body: kb('meinen Internet- bzw. DSL-Vertrag') },
-  { id: 'streaming-kuend', cat: 'vertraege', title: 'Streaming-Abo kündigen', deadline: true, fields: ['empfName', 'empfAddr', 'vertragsnr?', 'datum?'], labels: { datum: 'Kündigung zum' }, betreff: () => 'Kündigung meines Streaming-Abonnements', body: kb('mein Streaming-Abonnement') },
-  { id: 'fitness-kuend', cat: 'vertraege', title: 'Fitnessstudio kündigen', deadline: true, fields: ['empfName', 'empfAddr', 'vertragsnr?', 'datum?'], labels: { datum: 'Kündigung zum' }, betreff: () => 'Kündigung meiner Fitnessstudio-Mitgliedschaft', body: kb('meine Mitgliedschaft im Fitnessstudio') },
-  { id: 'versicherung-kuend', cat: 'vertraege', title: 'Versicherung kündigen', deadline: true, fields: ['empfName', 'empfAddr', 'vertragsnr?', 'datum?'], labels: { datum: 'Kündigung zum' }, betreff: () => 'Kündigung meiner Versicherung', body: kb('die im Betreff genannte Versicherung') },
-  { id: 'mitgliedschaft-kuend', cat: 'vertraege', title: 'Mitgliedschaft beenden', deadline: true, fields: ['empfName', 'empfAddr', 'vertragsnr?', 'datum?'], labels: { datum: 'Kündigung zum' }, betreff: () => 'Kündigung meiner Mitgliedschaft', body: kb('meine Mitgliedschaft') },
+  { id: 'handy-kuend', cat: 'vertraege', title: 'Handyvertrag kündigen', deadline: true, kuend: 'handy', fields: ['empfName', 'empfAddr', 'vertragsnr?', 'datum?'], labels: { datum: 'Kündigung zum' }, betreff: () => 'Kündigung meines Mobilfunkvertrags', body: kb('meinen Mobilfunkvertrag') },
+  { id: 'internet-kuend', cat: 'vertraege', title: 'Internetvertrag kündigen', deadline: true, kuend: 'handy', fields: ['empfName', 'empfAddr', 'vertragsnr?', 'datum?'], labels: { datum: 'Kündigung zum' }, betreff: () => 'Kündigung meines Internetvertrags', body: kb('meinen Internet- bzw. DSL-Vertrag') },
+  { id: 'streaming-kuend', cat: 'vertraege', title: 'Streaming-Abo kündigen', deadline: true, kuend: 'streaming', fields: ['empfName', 'empfAddr', 'vertragsnr?', 'datum?'], labels: { datum: 'Kündigung zum' }, betreff: () => 'Kündigung meines Streaming-Abonnements', body: kb('mein Streaming-Abonnement') },
+  { id: 'fitness-kuend', cat: 'vertraege', title: 'Fitnessstudio kündigen', deadline: true, kuend: 'fitness', fields: ['empfName', 'empfAddr', 'vertragsnr?', 'datum?'], labels: { datum: 'Kündigung zum' }, betreff: () => 'Kündigung meiner Fitnessstudio-Mitgliedschaft', body: kb('meine Mitgliedschaft im Fitnessstudio') },
+  { id: 'versicherung-kuend', cat: 'vertraege', title: 'Versicherung kündigen', deadline: true, kuend: 'versicherung', fields: ['empfName', 'empfAddr', 'vertragsnr?', 'datum?'], labels: { datum: 'Kündigung zum' }, betreff: () => 'Kündigung meiner Versicherung', body: kb('die im Betreff genannte Versicherung') },
+  { id: 'mitgliedschaft-kuend', cat: 'vertraege', title: 'Mitgliedschaft beenden', deadline: true, kuend: 'verein', fields: ['empfName', 'empfAddr', 'vertragsnr?', 'datum?'], labels: { datum: 'Kündigung zum' }, betreff: () => 'Kündigung meiner Mitgliedschaft', body: kb('meine Mitgliedschaft') },
   // 🏢 Behörden & Meldungen
   { id: 'adress-behoerde', cat: 'behoerden', title: 'Adressänderung', fields: ['empfName', 'empfAddr', 'neueAdresse', 'datum?'], labels: { datum: 'Gültig ab' }, betreff: () => 'Mitteilung meiner neuen Anschrift', body: (v) => 'hiermit teile ich Ihnen meine neue Anschrift mit. Bitte aktualisieren Sie meine Daten ' + (v.datum ? 'ab ' + fd(v.datum) : 'ab sofort') + ':\n\n' + (v.neueAdresse || '') + '\n\nBitte bestätigen Sie mir die Änderung schriftlich.' },
   { id: 'namensaenderung', cat: 'behoerden', title: 'Namensänderung', fields: ['empfName', 'empfAddr', 'altName', 'neuName', 'datum?'], labels: { datum: 'Gültig ab' }, betreff: () => 'Mitteilung meiner Namensänderung', body: (v) => 'hiermit teile ich Ihnen mit, dass sich mein Name geändert hat.\n\nBisheriger Name: ' + (v.altName || '') + '\nNeuer Name: ' + (v.neuName || '') + '\n\nDie Änderung gilt ' + (v.datum ? 'ab ' + fd(v.datum) : 'ab sofort') + '. Bitte aktualisieren Sie Ihre Unterlagen und bestätigen Sie mir die Änderung.' },
@@ -4916,7 +4936,7 @@ const DOC_TPL = [
   { id: 'kindergeld', cat: 'behoerden', title: 'Kindergeld-/Elterngeld-Mitteilung', fields: ['empfName', 'empfAddr', 'vertragsnr?', 'text'], labels: { vertragsnr: 'Kindergeld-Nummer', text: 'Ihre Mitteilung' }, betreff: (v) => 'Mitteilung zu meinem Kindergeld' + (v.vertragsnr ? ' (Nr. ' + v.vertragsnr + ')' : ''), body: (v) => 'hiermit teile ich Ihnen im Zusammenhang mit meinem Kindergeld- bzw. Elterngeldanspruch Folgendes mit:\n\n' + (v.text || '') + '\n\nBitte berücksichtigen Sie diese Angaben und bestätigen Sie mir den Eingang.' },
   { id: 'steuer-adress', cat: 'behoerden', title: 'Steuerliche Adressänderung', fields: ['empfName', 'empfAddr', 'neueAdresse', 'vertragsnr?', 'datum?'], labels: { vertragsnr: 'Steuernummer', datum: 'Gültig ab' }, betreff: (v) => 'Adressänderung' + (v.vertragsnr ? ' – Steuernummer ' + v.vertragsnr : ''), body: (v) => 'hiermit teile ich Ihnen meine neue Anschrift für steuerliche Zwecke mit. Bitte aktualisieren Sie meine Daten ' + (v.datum ? 'ab ' + fd(v.datum) : 'ab sofort') + ':\n\n' + (v.neueAdresse || '') + '\n\nBitte bestätigen Sie mir die Änderung.' },
   // 💼 Arbeit
-  { id: 'eigenkuendigung', cat: 'arbeit', title: 'Eigenkündigung', deadline: true, fields: ['empfName', 'empfAddr', 'datum?'], labels: { datum: 'Kündigung zum' }, betreff: () => 'Kündigung meines Arbeitsverhältnisses', body: (v) => 'hiermit kündige ich mein bestehendes Arbeitsverhältnis fristgerecht ' + zum(v.datum) + ', hilfsweise zum nächstmöglichen Zeitpunkt.\n\nBitte bestätigen Sie mir den Erhalt und das Datum der Kündigung schriftlich. Ich bitte zudem um ein qualifiziertes Arbeitszeugnis sowie um Mitteilung, wie viele Urlaubstage mir noch zustehen.' },
+  { id: 'eigenkuendigung', cat: 'arbeit', title: 'Eigenkündigung', deadline: true, kuend: 'arbeit', fields: ['empfName', 'empfAddr', 'datum?'], labels: { datum: 'Kündigung zum' }, betreff: () => 'Kündigung meines Arbeitsverhältnisses', body: (v) => 'hiermit kündige ich mein bestehendes Arbeitsverhältnis fristgerecht ' + zum(v.datum) + ', hilfsweise zum nächstmöglichen Zeitpunkt.\n\nBitte bestätigen Sie mir den Erhalt und das Datum der Kündigung schriftlich. Ich bitte zudem um ein qualifiziertes Arbeitszeugnis sowie um Mitteilung, wie viele Urlaubstage mir noch zustehen.' },
   { id: 'arbeit-bank', cat: 'arbeit', title: 'Bankverbindung ändern (Gehalt)', fields: ['empfName', 'empfAddr', 'iban', 'datum?'], labels: { datum: 'Gültig ab' }, betreff: () => 'Änderung meiner Bankverbindung', body: (v, p) => 'hiermit teile ich Ihnen mit, dass sich meine Bankverbindung für die Gehaltszahlung geändert hat. Bitte überweisen Sie mein Gehalt ' + (v.datum ? 'ab ' + fd(v.datum) : 'ab sofort') + ' auf folgendes Konto:\n\nKontoinhaber: ' + (p.name || '') + '\nIBAN: ' + (v.iban || '____') + '\n\nBitte bestätigen Sie mir die Änderung.' },
   { id: 'elternzeit', cat: 'arbeit', title: 'Elternzeit beantragen', fields: ['empfName', 'empfAddr', 'von?', 'bis?'], labels: { von: 'Elternzeit von', bis: 'Elternzeit bis' }, betreff: () => 'Antrag auf Elternzeit', body: (v) => 'hiermit beantrage ich Elternzeit für den Zeitraum von ' + (v.von ? fd(v.von) : '____') + ' bis ' + (v.bis ? fd(v.bis) : '____') + '.\n\nBitte bestätigen Sie mir die Elternzeit schriftlich. Für ein Gespräch über die Einzelheiten stehe ich gerne zur Verfügung.' },
   { id: 'urlaub', cat: 'arbeit', title: 'Urlaubsantrag', fields: ['empfName', 'von?', 'bis?'], labels: { von: 'Urlaub von', bis: 'Urlaub bis' }, betreff: () => 'Urlaubsantrag', body: (v) => 'hiermit beantrage ich Urlaub für den Zeitraum von ' + (v.von ? fd(v.von) : '____') + ' bis ' + (v.bis ? fd(v.bis) : '____') + '.\n\nBitte bestätigen Sie mir den Urlaub. Vielen Dank.' },
@@ -4933,7 +4953,7 @@ const DOC_TPL = [
   { id: 'muell', cat: 'energie', title: 'Müllgebühren ummelden', fields: ['empfName', 'empfAddr', 'vertragsnr?', 'neueAdresse', 'datum?'], labels: { vertragsnr: 'Aktenzeichen', datum: 'Umzug zum' }, betreff: () => 'Ummeldung der Müllgebühren', body: umBody('meine Müllgebühren') },
   { id: 'rundfunk', cat: 'energie', title: 'Rundfunkbeitrag bei Umzug', fields: ['empfName', 'empfAddr', 'vertragsnr?', 'neueAdresse', 'datum?'], labels: { vertragsnr: 'Beitragsnummer', datum: 'Umzug zum' }, betreff: (v) => 'Änderung meiner Anschrift' + (v.vertragsnr ? ' – Beitragsnummer ' + v.vertragsnr : ''), body: (v) => 'hiermit teile ich Ihnen mit, dass ich ' + zum(v.datum) + ' umziehe. Bitte aktualisieren Sie meine Anschrift für den Rundfunkbeitrag' + (v.vertragsnr ? ' (Beitragsnummer ' + v.vertragsnr + ')' : '') + ':\n\n' + (v.neueAdresse || '') + '\n\nBitte bestätigen Sie mir die Änderung.' },
   // 🚗 Fahrzeug
-  { id: 'kfz-vers-kuend', cat: 'fahrzeug', title: 'Kfz-Versicherung kündigen', deadline: true, fields: ['empfName', 'empfAddr', 'vertragsnr?', 'kennzeichen?', 'datum?'], labels: { vertragsnr: 'Versicherungsnummer', datum: 'Kündigung zum' }, betreff: (v) => 'Kündigung meiner Kfz-Versicherung' + (v.kennzeichen ? ' – ' + v.kennzeichen : ''), body: (v) => 'hiermit kündige ich die Kfz-Versicherung für das Fahrzeug' + (v.kennzeichen ? ' mit dem amtlichen Kennzeichen ' + v.kennzeichen : '') + (v.vertragsnr ? ' (Versicherungsnummer ' + v.vertragsnr + ')' : '') + ' fristgerecht ' + zum(v.datum) + ', hilfsweise zum nächstmöglichen Zeitpunkt.\n\nBitte bestätigen Sie mir die Kündigung sowie das Vertragsende schriftlich.' },
+  { id: 'kfz-vers-kuend', cat: 'fahrzeug', title: 'Kfz-Versicherung kündigen', deadline: true, kuend: 'versicherung', fields: ['empfName', 'empfAddr', 'vertragsnr?', 'kennzeichen?', 'datum?'], labels: { vertragsnr: 'Versicherungsnummer', datum: 'Kündigung zum' }, betreff: (v) => 'Kündigung meiner Kfz-Versicherung' + (v.kennzeichen ? ' – ' + v.kennzeichen : ''), body: (v) => 'hiermit kündige ich die Kfz-Versicherung für das Fahrzeug' + (v.kennzeichen ? ' mit dem amtlichen Kennzeichen ' + v.kennzeichen : '') + (v.vertragsnr ? ' (Versicherungsnummer ' + v.vertragsnr + ')' : '') + ' fristgerecht ' + zum(v.datum) + ', hilfsweise zum nächstmöglichen Zeitpunkt.\n\nBitte bestätigen Sie mir die Kündigung sowie das Vertragsende schriftlich.' },
   { id: 'fahrzeug-anab', cat: 'fahrzeug', title: 'Fahrzeug an-/abmelden', fields: ['empfName', 'empfAddr', 'kennzeichen?', 'text', 'datum?'], labels: { text: 'Anliegen (An- oder Abmeldung)', datum: 'Zum Datum' }, betreff: (v) => 'Fahrzeug an-/abmelden' + (v.kennzeichen ? ' – ' + v.kennzeichen : ''), body: (v) => 'hiermit wende ich mich bezüglich meines Fahrzeugs' + (v.kennzeichen ? ' mit dem Kennzeichen ' + v.kennzeichen : '') + ' an Sie.\n\n' + (v.text || 'Ich bitte um Bearbeitung der An- bzw. Abmeldung.') + (v.datum ? '\n\nGewünschtes Datum: ' + fd(v.datum) : '') + '\n\nBitte teilen Sie mir mit, welche Unterlagen Sie benötigen.' },
   { id: 'halterwechsel', cat: 'fahrzeug', title: 'Halterwechsel', fields: ['empfName', 'empfAddr', 'kennzeichen?', 'text', 'datum?'], labels: { text: 'Angaben zum neuen Halter', datum: 'Zum Datum' }, betreff: (v) => 'Halterwechsel' + (v.kennzeichen ? ' – ' + v.kennzeichen : ''), body: (v) => 'hiermit teile ich Ihnen einen Halterwechsel für mein Fahrzeug' + (v.kennzeichen ? ' mit dem Kennzeichen ' + v.kennzeichen : '') + ' mit.\n\n' + (v.text || '') + (v.datum ? '\n\nGewünschtes Datum: ' + fd(v.datum) : '') + '\n\nBitte teilen Sie mir mit, welche Unterlagen für den Halterwechsel erforderlich sind.' },
   // 📬 Mitteilungen
@@ -4945,10 +4965,75 @@ const DOC_TPL = [
   { id: 'frei', cat: null, title: 'Freies Anliegen (mit KI)', fields: ['betreffFrei?', 'empfName?', 'empfAddr?', 'text'], labels: { text: 'Beschreibe dein Anliegen – Effyra formuliert daraus einen Brief' }, betreff: (v) => v.betreffFrei || 'Mein Anliegen', body: (v) => v.text || '' }
 ];
 
-let dgState = 'browse', dgActiveId = null, dgValues = {}, dgQuery = '', dgSign = true, dgOverrideBody = null, dgProfileOpen = false;
+let dgState = 'browse', dgActiveId = null, dgValues = {}, dgQuery = '', dgSign = true, dgOverrideBody = null, dgProfileOpen = false, dgKuendArt = null, dgKuendConfirmed = false;
 const curTpl = () => DOC_TPL.find(x => x.id === dgActiveId);
 const profileComplete = () => !!(store.profile.name && store.profile.street && store.profile.city);
 function ensureProfileName() { if (!store.profile.name && store.name) store.profile.name = store.name; }
+
+/* ================= KÜNDIGUNGSFORM-PRÜFHILFE (zentrale, wartbare Config) =================
+   Orientierung, welche Form (Schrift-/Textform) für welche Vertragsart üblich ist – KEINE
+   Rechtsberatung. Neue Vertragsart = EIN Eintrag hier + Kürzel in KUENDIGUNG_ARTEN, keine
+   Logikänderung nötig. Templates verweisen per `kuend:'<key>'` auf den Standard-Eintrag.
+   level: 'schrift' (Papier+Unterschrift, E-Mail meist unwirksam) | 'text' (E-Mail meist ok)
+          | 'variiert' (hängt von Vertrag/AGB/Satzung ab). */
+const KUENDIGUNG_DISCLAIMER = 'Keine Rechtsberatung — im Zweifel Vertrag/AGB prüfen oder rechtlichen Rat einholen.';
+const KUENDIGUNG_FORMEN = {
+  arbeit:       { label: 'Arbeitsvertrag', level: 'schrift', form: 'Schriftform (§ 623 BGB) – Papier mit eigenhändiger Unterschrift', email: 'nein',
+    tipp: 'In der Regel Schriftform nötig: ausdrucken, handschriftlich unterschreiben und per Post – idealerweise per Einschreiben oder durch einen Boten – senden. Eine Kündigung per E-Mail, Fax oder Messenger ist hier meist unwirksam; die elektronische Form ist gesetzlich ausgeschlossen.' },
+  miete:        { label: 'Wohnung / Mietvertrag', level: 'schrift', form: 'Schriftform (§ 568 BGB) – Papier mit eigenhändiger Unterschrift', email: 'nein',
+    tipp: 'In der Regel Schriftform nötig: ausdrucken, handschriftlich unterschreiben und per Post – idealerweise per Einschreiben oder durch einen Boten – senden. Eine Kündigung nur per E-Mail ist regelmäßig unwirksam.' },
+  handy:        { label: 'Handy / Internet / Telefon', level: 'text', form: 'Textform genügt meist (§ 126b BGB) – z. B. E-Mail', email: 'ja',
+    tipp: 'Textform genügt meist: Eine Kündigung per E-Mail ist in der Regel möglich. Prüfe, ob der Anbieter einen Online-Kündigungsbutton anbietet – für online geschlossene Verträge ist das oft der einfachste und sicherste Weg.' },
+  strom:        { label: 'Strom / Gas', level: 'text', form: 'Textform genügt meist (§ 126b BGB) – z. B. E-Mail', email: 'ja',
+    tipp: 'Textform genügt meist: Eine Kündigung per E-Mail ist in der Regel möglich. Achte auf die richtige Kündigungsfrist und sichere dir einen Nachweis des Zugangs.' },
+  streaming:    { label: 'Streaming / Abo', level: 'text', form: 'Textform genügt meist (§ 126b BGB) – z. B. E-Mail', email: 'ja',
+    tipp: 'Textform genügt meist: Eine Kündigung per E-Mail ist in der Regel möglich. Prüfe, ob der Anbieter einen Online-Kündigungsbutton anbietet.' },
+  fitness:      { label: 'Fitnessstudio', level: 'text', form: 'Textform genügt meist (§ 126b BGB) – z. B. E-Mail', email: 'ja',
+    tipp: 'Textform genügt meist: Eine Kündigung per E-Mail ist in der Regel möglich. Beachte Mindestlaufzeit und Kündigungsfrist deines Vertrags.' },
+  versicherung: { label: 'Versicherung', level: 'variiert', form: 'Text- oder Schriftform – je nach Vertrag/AGB', email: 'unsicher',
+    tipp: 'Die zulässige Form kann variieren (Text- oder Schriftform). Bitte prüfe deinen Vertrag bzw. die AGB. Im Zweifel schriftlich per Einschreiben – das ist immer auf der sicheren Seite.' },
+  verein:       { label: 'Vereinsmitgliedschaft', level: 'variiert', form: 'Laut Vereinssatzung', email: 'unsicher',
+    tipp: 'Die Form richtet sich nach der Vereinssatzung. Bitte prüfe die Satzung deines Vereins. Im Zweifel schriftlich per Einschreiben senden.' },
+  sonstiges:    { label: 'Sonstiges', level: 'variiert', form: 'Abhängig vom Vertrag', email: 'unsicher',
+    tipp: 'Bitte prüfe Vertrag, AGB bzw. Satzung – die zulässige Form kann variieren. Im Zweifel schriftlich per Einschreiben senden.' }
+};
+const KUENDIGUNG_ARTEN = ['arbeit', 'miete', 'handy', 'strom', 'streaming', 'fitness', 'versicherung', 'verein', 'sonstiges'];
+function kuendCfg(art) { return KUENDIGUNG_FORMEN[art] || KUENDIGUNG_FORMEN.sonstiges; }
+/* Ergebnis-Box der Prüfhilfe (Formanforderung + Empfehlung + „keine Rechtsberatung"). */
+function kuendHintHTML(art) {
+  const c = kuendCfg(art);
+  const ic = c.level === 'schrift' ? '⚠️' : c.level === 'text' ? '✅' : 'ℹ️';
+  const cls = c.level === 'schrift' ? 'kf-warn' : c.level === 'text' ? 'kf-ok' : 'kf-info';
+  return '<div class="kf-result ' + cls + '" role="status" aria-live="polite">' +
+    '<div class="kf-form">' + ic + ' <b>' + esc(c.form) + '</b></div>' +
+    '<div class="kf-tipp">' + esc(c.tipp) + '</div>' +
+    '<div class="kf-disc">' + esc(KUENDIGUNG_DISCLAIMER) + '</div></div>';
+}
+/* Pflicht-Hinweis + Prüfhilfe + Pflicht-Bestätigung, oben im Kündigungs-Formular. */
+function kuendFormBlock(t) {
+  const art = dgKuendArt || t.kuend;
+  let h = '<div class="card kf-card">';
+  h += '<div class="kf-notice"><span class="kf-notice-ic" aria-hidden="true">📋</span>' +
+    '<div><b>Wichtig: Nicht jede Kündigung ist per E-Mail rechtswirksam.</b> Prüfe vorher, welche Form (Schrift- oder Textform) und welcher Versandweg für deinen Vertrag zulässig sind – z. B. im Vertrag, in den AGB oder beim Anbieter. Bei Arbeits- und Wohnungs-Mietverträgen ist meist eine unterschriebene Kündigung auf Papier nötig.</div></div>';
+  h += '<label class="kf-label" for="dgKuendArt">Um welche Vertragsart geht es?</label>';
+  h += '<select id="dgKuendArt" class="kf-select" aria-label="Vertragsart für die Formprüfung">' +
+    KUENDIGUNG_ARTEN.map(k => '<option value="' + k + '"' + (k === art ? ' selected' : '') + '>' + esc(KUENDIGUNG_FORMEN[k].label) + '</option>').join('') + '</select>';
+  h += '<div id="dgKuendResult">' + kuendHintHTML(art) + '</div>';
+  h += '<label class="kf-confirm"><input type="checkbox" id="dgKuendConfirm"' + (dgKuendConfirmed ? ' checked' : '') + '> <span>Ich habe geprüft, welche Kündigungsform und welcher Versandweg für diesen Vertrag zulässig sind.</span></label>';
+  h += '</div>';
+  return h;
+}
+/* Zustellung- & Nachweis-Hinweis im Ergebnis (abhängig von der Formstufe). */
+function kuendVersandHTML(t) {
+  const c = kuendCfg(dgKuendArt || t.kuend);
+  const post = 'Sende die Kündigung idealerweise per <b>Einschreiben</b> oder durch einen <b>Boten</b> und bewahre den Nachweis auf – im Streitfall zählt der Nachweis von Zugang und Fristwahrung.';
+  const mail = 'Falls E-Mail zulässig ist: <b>speichere die gesendete E-Mail</b> und fordere eine <b>Empfangsbestätigung</b> an.';
+  let inner;
+  if (c.level === 'schrift') inner = '⚠️ Für diese Vertragsart ist meist eine <b>unterschriebene Kündigung auf Papier</b> nötig – eine reine E-Mail ist hier oft unwirksam. ' + post;
+  else if (c.level === 'text') inner = '✅ Hier genügt meist <b>Textform</b> (z. B. E-Mail). ' + mail + ' Alternativ per Post: ' + post;
+  else inner = 'ℹ️ Prüfe die zulässige Form in Vertrag, AGB bzw. Satzung. Im Zweifel per Post (Einschreiben). ' + post + ' ' + mail;
+  return '<div class="card kf-versand"><b>📨 Zustellung &amp; Nachweis</b><p>' + inner + '</p><p class="kf-disc">' + esc(KUENDIGUNG_DISCLAIMER) + '</p></div>';
+}
 
 RENDERERS.docgen = function () {
   ensureProfileName();
@@ -4992,6 +5077,7 @@ function dgFormHTML() {
   const t = curTpl();
   let h = '<button class="btn btn-ghost btn-sm" data-dg="back">‹ Zurück zur Auswahl</button>';
   h += '<div class="view-head" style="margin-top:12px"><h1>' + esc(t.title) + '</h1><p>Deine Daten sind schon eingetragen – ergänze nur noch die Angaben unten.</p></div>';
+  if (t.kuend) h += kuendFormBlock(t);   // Kündigungsform-Prüfhinweis + Prüfhilfe + Pflicht-Bestätigung
   if (t.type !== 'checklist') {
     h += '<details class="card dg-mydata"' + (dgProfileOpen ? ' open' : '') + '><summary>👤 Meine Daten (Absender)</summary><div class="dg-grid2">' +
       pField('name', 'Vor- und Nachname') + pField('street', 'Straße & Hausnummer') + pField('zip', 'PLZ') + pField('city', 'Ort') +
@@ -5002,7 +5088,10 @@ function dgFormHTML() {
   if (!t.noRecipient && t.type !== 'checklist') h += fField(t, 'empfEmail?');
   h += '</div>';
   if (t.type !== 'checklist') h += '<label class="dg-check"><input type="checkbox" id="dgSignChk"' + (dgSign ? ' checked' : '') + '> Mit Unterschrift (Name in Schreibschrift)</label>';
-  h += '<button class="btn btn-primary" data-dg="gen" style="width:100%">' + (t.type === 'checklist' ? '✓ Checkliste erstellen' : '📝 Brief erstellen') + '</button></div>';
+  const kGate = !!t.kuend && !dgKuendConfirmed;   // erst nach Pflicht-Bestätigung erstellbar
+  h += '<button class="btn btn-primary" data-dg="gen" style="width:100%"' + (kGate ? ' disabled aria-disabled="true"' : '') + '>' + (t.type === 'checklist' ? '✓ Checkliste erstellen' : '📝 Brief erstellen') + '</button>';
+  if (kGate) h += '<div class="kf-gatehint">Bitte oben bestätigen, dass du die zulässige Kündigungsform geprüft hast.</div>';
+  h += '</div>';
   return h;
 }
 function dgResultHTML() {
@@ -5015,6 +5104,7 @@ function dgResultHTML() {
   if (t.deadline && dgValues.datum) h += '<span class="btn btn-sm" style="cursor:default;opacity:.8" title="Automatisch in Aufgaben & Kalender übernommen" data-noi18n>⏰ Frist gemerkt</span>';
   if (t.type !== 'checklist') h += '<button class="btn btn-sm" data-dg="ai">✨ Mit KI verbessern</button>';
   h += '</div><div id="dgLetter">' + letterHTML(t, dgValues, store.profile) + '</div>';
+  if (t.kuend) h += kuendVersandHTML(t);   // Zustellung & Nachweis (Einschreiben/E-Mail speichern)
   return h;
 }
 function letterHTML(t, v, p) {
@@ -5060,6 +5150,8 @@ function dgGenerate() {
   const t = curTpl();
   $$('#dgRoot [data-key]').forEach(inp => { dgValues[inp.dataset.key] = inp.value.trim(); });
   const sc = $('#dgSignChk'); if (sc) dgSign = sc.checked;
+  const kc = $('#dgKuendConfirm'); if (kc) dgKuendConfirmed = kc.checked;
+  if (t.kuend && !dgKuendConfirmed) { toast('Bitte bestätige zuerst, dass du die zulässige Kündigungsform geprüft hast.'); if (kc) kc.focus(); return; }
   if (t.type !== 'checklist' && !store.profile.name) { dgProfileOpen = true; toast('Bitte trage oben deinen Namen ein'); RENDERERS.docgen(); return; }
   let miss = null;
   $$('#dgRoot [data-key]').forEach(inp => {
@@ -5076,6 +5168,10 @@ function dgPrint() {
 }
 function dgMail() {
   const t = curTpl(), v = dgValues;
+  if (t.kuend) {   // Schriftform-Vertragsarten: E-Mail ist meist unwirksam -> bewusste Rückfrage
+    const c = kuendCfg(dgKuendArt || t.kuend);
+    if (c.level === 'schrift' && !confirm('Für diese Vertragsart ist eine Kündigung per E-Mail meist NICHT rechtswirksam (Schriftform nötig). Trotzdem eine E-Mail vorbereiten?')) return;
+  }
   const to = v.empfEmail ? encodeURIComponent(v.empfEmail) : '';
   window.location.href = 'mailto:' + to + '?subject=' + encodeURIComponent(t.betreff(v)) + '&body=' + encodeURIComponent(plainLetter(t, v, store.profile));
 }
@@ -5110,7 +5206,7 @@ $('#dgRoot').addEventListener('click', e => {
   const el = e.target.closest('[data-dg]'); if (!el) return;
   const act = el.dataset.dg;
   if (act === 'fav') { e.stopPropagation(); const id = el.dataset.id, i = store.docFavs.indexOf(id); i < 0 ? store.docFavs.push(id) : store.docFavs.splice(i, 1); save(); RENDERERS.docgen(); return; }
-  if (act === 'open' || act === 'free') { dgActiveId = act === 'free' ? 'frei' : el.dataset.id; dgValues = {}; dgOverrideBody = null; dgSign = true; dgProfileOpen = !profileComplete(); dgState = 'form'; RENDERERS.docgen(); return; }
+  if (act === 'open' || act === 'free') { dgActiveId = act === 'free' ? 'frei' : el.dataset.id; dgValues = {}; dgOverrideBody = null; dgSign = true; dgKuendArt = null; dgKuendConfirmed = false; dgProfileOpen = !profileComplete(); dgState = 'form'; RENDERERS.docgen(); return; }
   if (act === 'back') { dgState = 'browse'; RENDERERS.docgen(); return; }
   if (act === 'toform') { dgState = 'form'; RENDERERS.docgen(); return; }
   if (act === 'gen') { dgGenerate(); return; }
@@ -5130,6 +5226,13 @@ $('#dgRoot').addEventListener('input', e => {
 $('#dgRoot').addEventListener('change', e => {
   if (e.target.dataset.p) { store.profile[e.target.dataset.p] = e.target.value.trim(); save(); }
   if (e.target.id === 'dgSignChk') { dgSign = e.target.checked; if (dgState === 'result') RENDERERS.docgen(); }
+  if (e.target.id === 'dgKuendArt') { dgKuendArt = e.target.value; const box = $('#dgKuendResult'); if (box) box.innerHTML = kuendHintHTML(dgKuendArt); return; }
+  if (e.target.id === 'dgKuendConfirm') {   // Pflicht-Bestätigung schaltet „Erstellen" frei (ohne Voll-Rerender)
+    dgKuendConfirmed = e.target.checked;
+    const g = $('#dgRoot [data-dg="gen"]'); if (g) g.disabled = !dgKuendConfirmed;
+    const hint = $('#dgRoot .kf-gatehint'); if (hint) hint.style.display = dgKuendConfirmed ? 'none' : '';
+    return;
+  }
 });
 
 /* ============================== LEBENSLAGEN-ASSISTENT ============================== */
