@@ -318,6 +318,43 @@ label.fld{display:block;font-size:12.5px;font-weight:600;color:var(--muted);marg
 .meal-nutri span{font-size:12.5px;color:var(--muted);background:var(--card2);border-radius:10px;padding:6px 10px}
 .meal-nutri b{color:var(--text)}
 
+/* ---- EffyraFit ---- */
+.fit-hero{position:relative;border-radius:20px;overflow:hidden;aspect-ratio:16/11;margin-bottom:16px;background:var(--card2)}
+.fit-hero img{width:100%;height:100%;object-fit:cover;object-position:center 42%;display:block}
+.fit-hero-scrim{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.74),rgba(0,0,0,.05) 55%,transparent)}
+.fit-hero-txt{position:absolute;left:18px;right:18px;bottom:16px;color:#fff}
+.fit-hero-k{font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;opacity:.92}
+.fit-hero-q{font-size:19px;font-weight:800;line-height:1.2;text-shadow:0 2px 10px rgba(0,0,0,.5);margin-top:3px}
+.fit-tabs{display:flex;gap:6px;overflow-x:auto;margin-bottom:14px}
+.fit-tabs button{flex:0 0 auto;padding:8px 13px;border-radius:999px;border:1px solid var(--border);background:var(--card2);color:var(--muted);font-weight:600;font-size:13px;cursor:pointer;white-space:nowrap}
+.fit-tabs button.active{background:var(--grad);color:#fff;border-color:transparent}
+.fit-ringwrap{display:flex;align-items:center;gap:16px;background:var(--card);border:1px solid var(--border);border-radius:18px;padding:16px}
+.fit-ring{width:106px;height:106px;flex:none;border-radius:50%;background:conic-gradient(#8b5cf6 calc(var(--p,0)*1%), var(--card2) 0);display:flex;align-items:center;justify-content:center}
+.fit-ring .in{width:82px;height:82px;border-radius:50%;background:var(--card);display:flex;flex-direction:column;align-items:center;justify-content:center}
+.fit-ring .in b{font-size:21px;line-height:1}
+.fit-ring .in span{font-size:10.5px;color:var(--muted);margin-top:2px}
+.fit-goalinfo b{font-size:15px}
+.fit-goalinfo .sub{color:var(--muted);font-size:12.5px;margin-top:2px;line-height:1.5}
+.fit-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px}
+.fit-stat{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px;text-align:center}
+.fit-stat b{font-size:19px;display:block}
+.fit-stat span{font-size:11.5px;color:var(--muted)}
+.fit-note{font-size:12px;color:var(--faint);margin:12px 2px;line-height:1.5}
+.fit-live{text-align:center;padding:14px 0}
+.fit-live .big{font-size:44px;font-weight:800;letter-spacing:-1px;font-variant-numeric:tabular-nums}
+.fit-live-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:16px 0}
+.fit-startbtn{width:100%;padding:15px;border-radius:16px;border:none;background:var(--grad);color:#fff;font-size:16px;font-weight:800;cursor:pointer}
+.fit-stopbtn{width:100%;padding:15px;border-radius:16px;border:none;background:var(--danger);color:#fff;font-size:16px;font-weight:800;cursor:pointer}
+.fit-reward-ov{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;z-index:80;padding:20px}
+.fit-reward-ov.on{display:flex}
+.fit-reward{background:var(--card);border-radius:22px;padding:26px 22px;text-align:center;max-width:340px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.4)}
+.fit-trophy{font-size:64px;animation:fitPop .6s cubic-bezier(.2,1.4,.4,1)}
+@keyframes fitPop{0%{transform:scale(0) rotate(-15deg)}100%{transform:scale(1) rotate(0)}}
+.fit-reward h3{font-size:20px;margin:8px 0 4px}
+.fit-reward p{color:var(--muted);font-size:14px;line-height:1.5}
+.fit-conf{position:fixed;top:-12px;width:9px;height:14px;z-index:81;pointer-events:none;border-radius:2px;animation:fitFall linear forwards}
+@keyframes fitFall{to{transform:translateY(110vh) rotate(560deg);opacity:.8}}
+
 /* ============================== DASHBOARD ============================== */
 /* ---- Dashboard (Leuchtturm: 8er-Raster, klare Typo-Rollen, saubere States) ---- */
 .greet{margin-bottom:24px}
@@ -1222,6 +1259,7 @@ body.lang-switching main,body.lang-switching .sidebar,body.lang-switching .topba
       <button data-view="shopping"><svg viewBox="0 0 24 24"><use href="#icCheck2"/></svg><span data-i18n="nav.shopping">Einkaufsliste</span></button>
       <button data-view="waste"><svg viewBox="0 0 24 24"><use href="#icCal"/></svg><span data-i18n="nav.waste">Müllkalender</span></button>
       <button data-view="checkup"><svg viewBox="0 0 24 24"><use href="#icCheck2"/></svg><span data-i18n="nav.checkup">Vorsorge &amp; Erinnerungen</span></button>
+      <button data-view="fit"><svg viewBox="0 0 24 24"><use href="#icFit"/></svg><span data-i18n="nav.fit">EffyraFit</span></button>
       <button data-view="settings"><svg viewBox="0 0 24 24"><use href="#icGear"/></svg><span data-i18n="nav.settings">Einstellungen</span></button>
     </nav>
     <div class="foot">
@@ -1486,6 +1524,11 @@ body.lang-switching main,body.lang-switching .sidebar,body.lang-switching .topba
       <div id="checkupRoot"></div>
     </section>
 
+    <!-- ============================== EFFYRAFIT ============================== -->
+    <section class="view" id="view-fit">
+      <div id="fitRoot"></div>
+    </section>
+
     <!-- ============================== CHAT ============================== -->
     <section class="view" id="view-chat">
       <div class="chat-msgs" id="chatMsgs"></div>
@@ -1611,6 +1654,7 @@ body.lang-switching main,body.lang-switching .sidebar,body.lang-switching .topba
       <button data-view="shopping"><span class="mi">🛒</span><span data-i18n="nav.shopping">Einkaufsliste</span></button>
       <button data-view="waste"><span class="mi">🗑️</span><span data-i18n="nav.waste">Müllkalender</span></button>
       <button data-view="checkup"><span class="mi">🩺</span><span data-i18n="nav.checkup">Vorsorge</span></button>
+      <button data-view="fit"><span class="mi">💪</span><span data-i18n="nav.fit">EffyraFit</span></button>
       <button data-view="settings"><span class="mi">⚙️</span><span data-i18n="nav.settings">Einstellungen</span></button>
     </div>
   </div>
@@ -1634,6 +1678,7 @@ body.lang-switching main,body.lang-switching .sidebar,body.lang-switching .topba
       <circle cx="32" cy="32" r="2.8" fill="#22d3ee"/>
     </symbol>
     <symbol id="icHome" viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
+    <symbol id="icFit" viewBox="0 0 24 24"><path d="M3 12h4l2-6 4 12 2-6h6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
     <symbol id="icDoc" viewBox="0 0 24 24"><path d="M6 2h8l5 5v14a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M13 2v6h6M9 13h6M9 17h6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
     <symbol id="icCheck2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="m8 12 3 3 5-6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
     <symbol id="icCal" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="3" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M3 10h18M8 3v4M16 3v4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
@@ -1764,6 +1809,7 @@ const store = Object.assign({
   vault: [], // Dokumenten-Tresor (lokal): {id,title,cat,tags,note,thumb,img,createdAt}; volle Bilder in IndexedDB
   waste: [], // Müllkalender (lokal): {id,type,weekday,freq}
   checkups: [], // Vorsorge-Erinnerungen (lokal): {id,title,intervalMonths,lastDate,note,createdAt}
+  fit: { weight: null, height: null, gender: null, goalSteps: 8000, goalKcal: null, activities: [], consent: false, lastSpruch: {}, rewardShown: {}, heroLast: -1, streak: 0, lastGoalDate: '' }, // EffyraFit (Bewegung, aktives Session-Tracking, Gamification)
   work: { settings: { weeklyHours: 40, hoursPerDay: 8, vacationDays: 30, childSickMax: 10, state: 'NW', autoBreak: true }, entries: {}, shifts: [], absences: [] }, // Arbeitszeit
   settings: { model: 'gpt-5-mini', demoIdx: 0, theme: 'light', rtSilenceMs: 700, morningPush: false }
 }, (() => {
@@ -1859,7 +1905,7 @@ const I18N = {
     'fmt.oclock': '{t} Uhr', 'fmt.allday': 'Ganztägig', 'fmt.due': 'fällig {d}', 'fmt.overdue': 'überfällig', 'fmt.nodate': 'ohne Datum', 'fmt.once_today': 'einmalig heute', 'fmt.daily': 'täglich', 'fmt.turns': 'wird {n}', 'fmt.whole_family': '👪 ganze Familie', 'fmt.deadline': 'Frist {d}', 'ct.deadline_passed': 'Frist abgelaufen', 'ct.cancellable': 'kündbar {d}', 'ct.per_month': '/ Monat', 'ct.per_year': '/ Jahr', 'cu.every_months': 'alle {n} Monate', 'cu.last': 'zuletzt {d}', 'cu.next': 'nächste {d}', 'wt.weekly': 'wöchentlich', 'wt.evenweek': 'gerade KW', 'wt.oddweek': 'ungerade KW', 'vault.only_device': 'Nur auf diesem Gerät', 'sh.done': 'Erledigt', 'sh.assignTo': '🛒 Zuweisen an …', 'sh.assign': 'Zuweisen', 'sh.unassign': 'Aufheben', 'sh.forFamily': 'Einkauf für die Familie', 'sh.forYou': 'Für dich', 'sh.assignedTo': 'Zugewiesen an {name}', 'sh.by': 'von {name}', 'sh.due': 'fällig {d}', 'sh.progress': '{done}/{total} erledigt', 'sh.celebrate': 'Einkauf erledigt – super! ✓', 'sh.open': '{n} offen', 'sh.suggest': 'Vorschläge:', 'sh.needBy': 'brauche bis',
     'greet.event_1': '{n} Termin', 'greet.event_n': '{n} Termine', 'greet.task_1': '{n} offene Aufgabe', 'greet.task_n': '{n} offene Aufgaben', 'greet.and': 'und', 'greet.today': '{date} — heute {items}.', 'greet.calm': '{date} — alles im Griff, nichts Dringendes. 🌿', 'day.events_on': 'Termine am {date}',
     'fmt.years_short': 'J.', 'role.owner': 'Administrator', 'role.adult': 'Erwachsen', 'role.child': 'Kind', 'role.ai_on': 'KI aktiv', 'role.ai_off': '🔒 keine KI', 'doc.from': 'von {s}', 'doc.deadline': 'Frist: {date} ({rel})', 'doc.expired': 'abgelaufen', 'school.no_subjects': 'Noch keine Fächer am {day}.',
-    'nav.dashboard': 'Start', 'nav.work': 'Arbeitszeit', 'nav.docs': 'Effyra AI Dokumentenassistent', 'nav.docgen': 'Briefe Vorlagen', 'nav.life': 'Lebenslagen', 'nav.tasks': 'Aufgaben', 'nav.calendar': 'Kalender', 'nav.school': 'Kinder', 'nav.family': 'Familienzentrale', 'nav.emergency': 'Notfallbereich', 'nav.vehicles': 'Auto & Motorrad', 'nav.contracts': 'Verträge & Abos', 'nav.vault': 'Dokumenten-Tresor', 'nav.shopping': 'Einkaufsliste', 'nav.waste': 'Müllkalender', 'nav.checkup': 'Vorsorge & Erinnerungen', 'nav.chat': 'Effyra AI', 'nav.settings': 'Einstellungen', 'nav.more': 'Mehr',
+    'nav.dashboard': 'Start', 'nav.work': 'Arbeitszeit', 'nav.docs': 'Effyra AI Dokumentenassistent', 'nav.docgen': 'Briefe Vorlagen', 'nav.life': 'Lebenslagen', 'nav.tasks': 'Aufgaben', 'nav.calendar': 'Kalender', 'nav.school': 'Kinder', 'nav.family': 'Familienzentrale', 'nav.emergency': 'Notfallbereich', 'nav.vehicles': 'Auto & Motorrad', 'nav.contracts': 'Verträge & Abos', 'nav.vault': 'Dokumenten-Tresor', 'nav.shopping': 'Einkaufsliste', 'nav.waste': 'Müllkalender', 'nav.checkup': 'Vorsorge & Erinnerungen', 'nav.fit': 'EffyraFit', 'nav.chat': 'Effyra AI', 'nav.settings': 'Einstellungen', 'nav.more': 'Mehr',
     'tab.start': 'Start', 'tab.assistant': 'Assistent', 'tab.tasks': 'Aufgaben',
     'dash.morning': 'Guten Morgen', 'dash.day': 'Guten Tag', 'dash.evening': 'Guten Abend', 'dash.night': 'Gute Nacht',
     'dash.stat_open': 'Offene Aufgaben', 'dash.stat_today': 'Termine heute', 'dash.stat_docs': 'Dokumente',
@@ -1876,7 +1922,7 @@ const I18N = {
     'fmt.oclock': '{t}', 'fmt.allday': 'All day', 'fmt.due': 'due {d}', 'fmt.overdue': 'overdue', 'fmt.nodate': 'no date', 'fmt.once_today': 'once today', 'fmt.daily': 'daily', 'fmt.turns': 'turns {n}', 'fmt.whole_family': '👪 whole family', 'fmt.deadline': 'deadline {d}', 'ct.deadline_passed': 'Deadline passed', 'ct.cancellable': 'cancellable {d}', 'ct.per_month': '/ month', 'ct.per_year': '/ year', 'cu.every_months': 'every {n} months', 'cu.last': 'last {d}', 'cu.next': 'next {d}', 'wt.weekly': 'weekly', 'wt.evenweek': 'even week', 'wt.oddweek': 'odd week', 'vault.only_device': 'Only on this device', 'sh.done': 'Done', 'sh.assignTo': '🛒 Assign to …', 'sh.assign': 'Assign', 'sh.unassign': 'Unassign', 'sh.forFamily': 'Shopping for the family', 'sh.forYou': 'For you', 'sh.assignedTo': 'Assigned to {name}', 'sh.by': 'from {name}', 'sh.due': 'due {d}', 'sh.progress': '{done}/{total} done', 'sh.celebrate': 'Shopping done – great! ✓', 'sh.open': '{n} open', 'sh.suggest': 'Suggestions:', 'sh.needBy': 'need by',
     'greet.event_1': '{n} event', 'greet.event_n': '{n} events', 'greet.task_1': '{n} open task', 'greet.task_n': '{n} open tasks', 'greet.and': 'and', 'greet.today': '{date} — today {items}.', 'greet.calm': '{date} — all under control, nothing urgent. 🌿', 'day.events_on': 'Events on {date}',
     'fmt.years_short': 'yrs', 'role.owner': 'Administrator', 'role.adult': 'Adult', 'role.child': 'Child', 'role.ai_on': 'AI on', 'role.ai_off': '🔒 no AI', 'doc.from': 'from {s}', 'doc.deadline': 'Deadline: {date} ({rel})', 'doc.expired': 'expired', 'school.no_subjects': 'No subjects on {day} yet.',
-    'nav.dashboard': 'Home', 'nav.work': 'Working hours', 'nav.docs': 'Document scanner', 'nav.docgen': 'Document assistant', 'nav.life': 'Life situations', 'nav.tasks': 'Tasks', 'nav.calendar': 'Calendar', 'nav.school': 'Kids', 'nav.family': 'Family hub', 'nav.emergency': 'Emergency', 'nav.vehicles': 'Car & Motorcycle', 'nav.contracts': 'Contracts & subscriptions', 'nav.vault': 'Document vault', 'nav.shopping': 'Shopping list', 'nav.waste': 'Waste calendar', 'nav.checkup': 'Check-ups & reminders', 'nav.chat': 'Effyra Chat', 'nav.settings': 'Settings', 'nav.more': 'More',
+    'nav.dashboard': 'Home', 'nav.work': 'Working hours', 'nav.docs': 'Document scanner', 'nav.docgen': 'Document assistant', 'nav.life': 'Life situations', 'nav.tasks': 'Tasks', 'nav.calendar': 'Calendar', 'nav.school': 'Kids', 'nav.family': 'Family hub', 'nav.emergency': 'Emergency', 'nav.vehicles': 'Car & Motorcycle', 'nav.contracts': 'Contracts & subscriptions', 'nav.vault': 'Document vault', 'nav.shopping': 'Shopping list', 'nav.waste': 'Waste calendar', 'nav.checkup': 'Check-ups & reminders', 'nav.fit': 'EffyraFit', 'nav.chat': 'Effyra Chat', 'nav.settings': 'Settings', 'nav.more': 'More',
     'tab.start': 'Home', 'tab.assistant': 'Assistant', 'tab.tasks': 'Tasks',
     'dash.morning': 'Good morning', 'dash.day': 'Hello', 'dash.evening': 'Good evening', 'dash.night': 'Good night',
     'dash.stat_open': 'Open tasks', 'dash.stat_today': 'Today’s events', 'dash.stat_docs': 'Documents',
@@ -1893,7 +1939,7 @@ const I18N = {
     'fmt.oclock': '{t}', 'fmt.allday': 'Toute la journée', 'fmt.due': 'échéance {d}', 'fmt.overdue': 'en retard', 'fmt.nodate': 'sans date', 'fmt.once_today': "une fois aujourd'hui", 'fmt.daily': 'quotidien', 'fmt.turns': 'aura {n} ans', 'fmt.whole_family': '👪 toute la famille', 'fmt.deadline': 'échéance {d}', 'ct.deadline_passed': 'Délai dépassé', 'ct.cancellable': 'résiliable {d}', 'ct.per_month': '/ mois', 'ct.per_year': '/ an', 'cu.every_months': 'tous les {n} mois', 'cu.last': 'dernière fois {d}', 'cu.next': 'prochaine {d}', 'wt.weekly': 'hebdomadaire', 'wt.evenweek': 'semaine paire', 'wt.oddweek': 'semaine impaire', 'vault.only_device': 'Uniquement sur cet appareil', 'sh.done': 'Terminé', 'sh.assignTo': '🛒 Attribuer à …', 'sh.assign': 'Attribuer', 'sh.unassign': 'Annuler', 'sh.forFamily': 'Courses pour la famille', 'sh.forYou': 'Pour toi', 'sh.assignedTo': 'Attribué à {name}', 'sh.by': 'de {name}', 'sh.due': 'pour {d}', 'sh.progress': '{done}/{total} faits', 'sh.celebrate': 'Courses terminées – super ! ✓', 'sh.open': '{n} à faire', 'sh.suggest': 'Suggestions :', 'sh.needBy': 'besoin pour',
     'greet.event_1': '{n} événement', 'greet.event_n': '{n} événements', 'greet.task_1': '{n} tâche ouverte', 'greet.task_n': '{n} tâches ouvertes', 'greet.and': 'et', 'greet.today': "{date} — aujourd'hui {items}.", 'greet.calm': '{date} — tout est sous contrôle, rien d’urgent. 🌿', 'day.events_on': 'Événements le {date}',
     'fmt.years_short': 'ans', 'role.owner': 'Administrateur', 'role.adult': 'Adulte', 'role.child': 'Enfant', 'role.ai_on': 'IA active', 'role.ai_off': '🔒 pas d’IA', 'doc.from': 'de {s}', 'doc.deadline': 'Échéance : {date} ({rel})', 'doc.expired': 'expiré', 'school.no_subjects': 'Aucune matière le {day}.',
-    'nav.dashboard': 'Accueil', 'nav.work': 'Temps de travail', 'nav.docs': 'Scanner de documents', 'nav.docgen': 'Assistant de documents', 'nav.life': 'Situations de vie', 'nav.tasks': 'Tâches', 'nav.calendar': 'Calendrier', 'nav.school': 'Enfants', 'nav.family': 'Espace famille', 'nav.emergency': 'Urgences', 'nav.vehicles': 'Auto & Moto', 'nav.contracts': 'Contrats & abonnements', 'nav.vault': 'Coffre à documents', 'nav.shopping': 'Liste de courses', 'nav.waste': 'Calendrier des déchets', 'nav.checkup': 'Prévention & rappels', 'nav.chat': 'Effyra Chat', 'nav.settings': 'Paramètres', 'nav.more': 'Plus',
+    'nav.dashboard': 'Accueil', 'nav.work': 'Temps de travail', 'nav.docs': 'Scanner de documents', 'nav.docgen': 'Assistant de documents', 'nav.life': 'Situations de vie', 'nav.tasks': 'Tâches', 'nav.calendar': 'Calendrier', 'nav.school': 'Enfants', 'nav.family': 'Espace famille', 'nav.emergency': 'Urgences', 'nav.vehicles': 'Auto & Moto', 'nav.contracts': 'Contrats & abonnements', 'nav.vault': 'Coffre à documents', 'nav.shopping': 'Liste de courses', 'nav.waste': 'Calendrier des déchets', 'nav.checkup': 'Prévention & rappels', 'nav.fit': 'EffyraFit', 'nav.chat': 'Effyra Chat', 'nav.settings': 'Paramètres', 'nav.more': 'Plus',
     'tab.start': 'Accueil', 'tab.assistant': 'Assistant', 'tab.tasks': 'Tâches',
     'dash.morning': 'Bonjour', 'dash.day': 'Bonjour', 'dash.evening': 'Bonsoir', 'dash.night': 'Bonne nuit',
     'dash.stat_open': 'Tâches ouvertes', 'dash.stat_today': "Événements du jour", 'dash.stat_docs': 'Documents',
@@ -1910,7 +1956,7 @@ const I18N = {
     'fmt.oclock': '{t}', 'fmt.allday': 'Todo el día', 'fmt.due': 'vence {d}', 'fmt.overdue': 'vencido', 'fmt.nodate': 'sin fecha', 'fmt.once_today': 'una vez hoy', 'fmt.daily': 'a diario', 'fmt.turns': 'cumple {n}', 'fmt.whole_family': '👪 toda la familia', 'fmt.deadline': 'plazo {d}', 'ct.deadline_passed': 'Plazo vencido', 'ct.cancellable': 'cancelable {d}', 'ct.per_month': '/ mes', 'ct.per_year': '/ año', 'cu.every_months': 'cada {n} meses', 'cu.last': 'última vez {d}', 'cu.next': 'próxima {d}', 'wt.weekly': 'semanal', 'wt.evenweek': 'semana par', 'wt.oddweek': 'semana impar', 'vault.only_device': 'Solo en este dispositivo', 'sh.done': 'Hecho', 'sh.assignTo': '🛒 Asignar a …', 'sh.assign': 'Asignar', 'sh.unassign': 'Quitar', 'sh.forFamily': 'Compra para la familia', 'sh.forYou': 'Para ti', 'sh.assignedTo': 'Asignado a {name}', 'sh.by': 'de {name}', 'sh.due': 'para {d}', 'sh.progress': '{done}/{total} hechos', 'sh.celebrate': '¡Compra hecha – genial! ✓', 'sh.open': '{n} pendientes', 'sh.suggest': 'Sugerencias:', 'sh.needBy': 'necesito para',
     'greet.event_1': '{n} evento', 'greet.event_n': '{n} eventos', 'greet.task_1': '{n} tarea abierta', 'greet.task_n': '{n} tareas abiertas', 'greet.and': 'y', 'greet.today': '{date} — hoy {items}.', 'greet.calm': '{date} — todo bajo control, nada urgente. 🌿', 'day.events_on': 'Eventos el {date}',
     'fmt.years_short': 'años', 'role.owner': 'Administrador', 'role.adult': 'Adulto', 'role.child': 'Niño', 'role.ai_on': 'IA activa', 'role.ai_off': '🔒 sin IA', 'doc.from': 'de {s}', 'doc.deadline': 'Plazo: {date} ({rel})', 'doc.expired': 'vencido', 'school.no_subjects': 'Aún no hay asignaturas el {day}.',
-    'nav.dashboard': 'Inicio', 'nav.work': 'Horario laboral', 'nav.docs': 'Escáner de documentos', 'nav.docgen': 'Asistente de documentos', 'nav.life': 'Situaciones de vida', 'nav.tasks': 'Tareas', 'nav.calendar': 'Calendario', 'nav.school': 'Niños', 'nav.family': 'Centro familiar', 'nav.emergency': 'Emergencia', 'nav.vehicles': 'Coche y Moto', 'nav.contracts': 'Contratos y suscripciones', 'nav.vault': 'Caja fuerte de documentos', 'nav.shopping': 'Lista de la compra', 'nav.waste': 'Calendario de basura', 'nav.checkup': 'Revisiones y recordatorios', 'nav.chat': 'Effyra Chat', 'nav.settings': 'Ajustes', 'nav.more': 'Más',
+    'nav.dashboard': 'Inicio', 'nav.work': 'Horario laboral', 'nav.docs': 'Escáner de documentos', 'nav.docgen': 'Asistente de documentos', 'nav.life': 'Situaciones de vida', 'nav.tasks': 'Tareas', 'nav.calendar': 'Calendario', 'nav.school': 'Niños', 'nav.family': 'Centro familiar', 'nav.emergency': 'Emergencia', 'nav.vehicles': 'Coche y Moto', 'nav.contracts': 'Contratos y suscripciones', 'nav.vault': 'Caja fuerte de documentos', 'nav.shopping': 'Lista de la compra', 'nav.waste': 'Calendario de basura', 'nav.checkup': 'Revisiones y recordatorios', 'nav.fit': 'EffyraFit', 'nav.chat': 'Effyra Chat', 'nav.settings': 'Ajustes', 'nav.more': 'Más',
     'tab.start': 'Inicio', 'tab.assistant': 'Asistente', 'tab.tasks': 'Tareas',
     'dash.morning': 'Buenos días', 'dash.day': 'Hola', 'dash.evening': 'Buenas tardes', 'dash.night': 'Buenas noches',
     'dash.stat_open': 'Tareas abiertas', 'dash.stat_today': 'Eventos de hoy', 'dash.stat_docs': 'Documentos',
@@ -1927,7 +1973,7 @@ const I18N = {
     'fmt.oclock': '{t}', 'fmt.allday': 'Tutto il giorno', 'fmt.due': 'scade {d}', 'fmt.overdue': 'in ritardo', 'fmt.nodate': 'senza data', 'fmt.once_today': 'una volta oggi', 'fmt.daily': 'ogni giorno', 'fmt.turns': 'compie {n}', 'fmt.whole_family': '👪 tutta la famiglia', 'fmt.deadline': 'scadenza {d}', 'ct.deadline_passed': 'Termine scaduto', 'ct.cancellable': 'disdicibile {d}', 'ct.per_month': '/ mese', 'ct.per_year': '/ anno', 'cu.every_months': 'ogni {n} mesi', 'cu.last': 'ultima volta {d}', 'cu.next': 'prossima {d}', 'wt.weekly': 'settimanale', 'wt.evenweek': 'settimana pari', 'wt.oddweek': 'settimana dispari', 'vault.only_device': 'Solo su questo dispositivo', 'sh.done': 'Completato', 'sh.assignTo': '🛒 Assegna a …', 'sh.assign': 'Assegna', 'sh.unassign': 'Rimuovi', 'sh.forFamily': 'Spesa per la famiglia', 'sh.forYou': 'Per te', 'sh.assignedTo': 'Assegnato a {name}', 'sh.by': 'da {name}', 'sh.due': 'entro {d}', 'sh.progress': '{done}/{total} fatti', 'sh.celebrate': 'Spesa fatta – ottimo! ✓', 'sh.open': '{n} da fare', 'sh.suggest': 'Suggerimenti:', 'sh.needBy': 'serve entro',
     'greet.event_1': '{n} evento', 'greet.event_n': '{n} eventi', 'greet.task_1': '{n} attività aperta', 'greet.task_n': '{n} attività aperte', 'greet.and': 'e', 'greet.today': '{date} — oggi {items}.', 'greet.calm': '{date} — tutto sotto controllo, niente di urgente. 🌿', 'day.events_on': 'Eventi il {date}',
     'fmt.years_short': 'anni', 'role.owner': 'Amministratore', 'role.adult': 'Adulto', 'role.child': 'Bambino', 'role.ai_on': 'IA attiva', 'role.ai_off': '🔒 niente IA', 'doc.from': 'da {s}', 'doc.deadline': 'Scadenza: {date} ({rel})', 'doc.expired': 'scaduto', 'school.no_subjects': 'Nessuna materia il {day}.',
-    'nav.dashboard': 'Home', 'nav.work': 'Orario di lavoro', 'nav.docs': 'Scanner documenti', 'nav.docgen': 'Assistente documenti', 'nav.life': 'Situazioni di vita', 'nav.tasks': 'Attività', 'nav.calendar': 'Calendario', 'nav.school': 'Bambini', 'nav.family': 'Area famiglia', 'nav.emergency': 'Emergenza', 'nav.vehicles': 'Auto & Moto', 'nav.contracts': 'Contratti e abbonamenti', 'nav.vault': 'Cassaforte documenti', 'nav.shopping': 'Lista della spesa', 'nav.waste': 'Calendario rifiuti', 'nav.checkup': 'Prevenzione e promemoria', 'nav.chat': 'Effyra Chat', 'nav.settings': 'Impostazioni', 'nav.more': 'Altro',
+    'nav.dashboard': 'Home', 'nav.work': 'Orario di lavoro', 'nav.docs': 'Scanner documenti', 'nav.docgen': 'Assistente documenti', 'nav.life': 'Situazioni di vita', 'nav.tasks': 'Attività', 'nav.calendar': 'Calendario', 'nav.school': 'Bambini', 'nav.family': 'Area famiglia', 'nav.emergency': 'Emergenza', 'nav.vehicles': 'Auto & Moto', 'nav.contracts': 'Contratti e abbonamenti', 'nav.vault': 'Cassaforte documenti', 'nav.shopping': 'Lista della spesa', 'nav.waste': 'Calendario rifiuti', 'nav.checkup': 'Prevenzione e promemoria', 'nav.fit': 'EffyraFit', 'nav.chat': 'Effyra Chat', 'nav.settings': 'Impostazioni', 'nav.more': 'Altro',
     'tab.start': 'Home', 'tab.assistant': 'Assistente', 'tab.tasks': 'Attività',
     'dash.morning': 'Buongiorno', 'dash.day': 'Ciao', 'dash.evening': 'Buonasera', 'dash.night': 'Buonanotte',
     'dash.stat_open': 'Attività aperte', 'dash.stat_today': 'Eventi di oggi', 'dash.stat_docs': 'Documenti',
@@ -1944,7 +1990,7 @@ const I18N = {
     'fmt.oclock': '{t}', 'fmt.allday': 'Cały dzień', 'fmt.due': 'termin {d}', 'fmt.overdue': 'zaległe', 'fmt.nodate': 'bez daty', 'fmt.once_today': 'jednorazowo dziś', 'fmt.daily': 'codziennie', 'fmt.turns': 'kończy {n}', 'fmt.whole_family': '👪 cała rodzina', 'fmt.deadline': 'termin {d}', 'ct.deadline_passed': 'Termin minął', 'ct.cancellable': 'można wypowiedzieć {d}', 'ct.per_month': '/ mies.', 'ct.per_year': '/ rok', 'cu.every_months': 'co {n} mies.', 'cu.last': 'ostatnio {d}', 'cu.next': 'następna {d}', 'wt.weekly': 'co tydzień', 'wt.evenweek': 'tydzień parzysty', 'wt.oddweek': 'tydzień nieparzysty', 'vault.only_device': 'Tylko na tym urządzeniu', 'sh.done': 'Ukończone', 'sh.assignTo': '🛒 Przypisz do …', 'sh.assign': 'Przypisz', 'sh.unassign': 'Cofnij', 'sh.forFamily': 'Zakupy dla rodziny', 'sh.forYou': 'Dla Ciebie', 'sh.assignedTo': 'Przypisane: {name}', 'sh.by': 'od {name}', 'sh.due': 'na {d}', 'sh.progress': '{done}/{total} gotowe', 'sh.celebrate': 'Zakupy zrobione – super! ✓', 'sh.open': '{n} do zrobienia', 'sh.suggest': 'Propozycje:', 'sh.needBy': 'potrzebne na',
     'greet.event_1': '{n} wydarzenie', 'greet.event_n': '{n} wydarzenia', 'greet.task_1': '{n} otwarte zadanie', 'greet.task_n': '{n} otwartych zadań', 'greet.and': 'i', 'greet.today': '{date} — dziś {items}.', 'greet.calm': '{date} — wszystko pod kontrolą, nic pilnego. 🌿', 'day.events_on': 'Wydarzenia dnia {date}',
     'fmt.years_short': 'l.', 'role.owner': 'Administrator', 'role.adult': 'Dorosły', 'role.child': 'Dziecko', 'role.ai_on': 'AI aktywna', 'role.ai_off': '🔒 bez AI', 'doc.from': 'od {s}', 'doc.deadline': 'Termin: {date} ({rel})', 'doc.expired': 'minął', 'school.no_subjects': 'Brak przedmiotów w {day}.',
-    'nav.dashboard': 'Start', 'nav.work': 'Czas pracy', 'nav.docs': 'Skaner dokumentów', 'nav.docgen': 'Asystent dokumentów', 'nav.life': 'Sytuacje życiowe', 'nav.tasks': 'Zadania', 'nav.calendar': 'Kalendarz', 'nav.school': 'Dzieci', 'nav.family': 'Centrum rodziny', 'nav.emergency': 'Nagły wypadek', 'nav.vehicles': 'Auto i Motocykl', 'nav.contracts': 'Umowy i subskrypcje', 'nav.vault': 'Sejf na dokumenty', 'nav.shopping': 'Lista zakupów', 'nav.waste': 'Kalendarz wywozu śmieci', 'nav.checkup': 'Profilaktyka i przypomnienia', 'nav.chat': 'Effyra Chat', 'nav.settings': 'Ustawienia', 'nav.more': 'Więcej',
+    'nav.dashboard': 'Start', 'nav.work': 'Czas pracy', 'nav.docs': 'Skaner dokumentów', 'nav.docgen': 'Asystent dokumentów', 'nav.life': 'Sytuacje życiowe', 'nav.tasks': 'Zadania', 'nav.calendar': 'Kalendarz', 'nav.school': 'Dzieci', 'nav.family': 'Centrum rodziny', 'nav.emergency': 'Nagły wypadek', 'nav.vehicles': 'Auto i Motocykl', 'nav.contracts': 'Umowy i subskrypcje', 'nav.vault': 'Sejf na dokumenty', 'nav.shopping': 'Lista zakupów', 'nav.waste': 'Kalendarz wywozu śmieci', 'nav.checkup': 'Profilaktyka i przypomnienia', 'nav.fit': 'EffyraFit', 'nav.chat': 'Effyra Chat', 'nav.settings': 'Ustawienia', 'nav.more': 'Więcej',
     'tab.start': 'Start', 'tab.assistant': 'Asystent', 'tab.tasks': 'Zadania',
     'dash.morning': 'Dzień dobry', 'dash.day': 'Cześć', 'dash.evening': 'Dobry wieczór', 'dash.night': 'Dobranoc',
     'dash.stat_open': 'Otwarte zadania', 'dash.stat_today': 'Dzisiejsze wydarzenia', 'dash.stat_docs': 'Dokumenty',
@@ -2763,11 +2809,12 @@ async function flushAI() {
 let currentView = 'dashboard';
 const RENDERERS = {};
 
-const MORE_VIEWS = ['work', 'docs', 'school', 'calendar', 'life', 'family', 'emergency', 'vehicles', 'contracts', 'vault', 'shopping', 'waste', 'checkup', 'settings'];
+const MORE_VIEWS = ['work', 'docs', 'school', 'calendar', 'life', 'family', 'emergency', 'vehicles', 'contracts', 'vault', 'shopping', 'waste', 'checkup', 'fit', 'settings'];
 let viewHistory = [], _navBack = false;
 function showView(name) {
   /* Modul für die aktuelle Stufe gesperrt? → Upgrade-Ansicht statt Modul */
   if (account && account.loggedIn && !isTrialExpired() && !moduleAllowed(name)) { showUpgrade(name); return; }
+  if (currentView === 'fit' && name !== 'fit' && typeof fitSession !== 'undefined' && fitSession) { try { fitStop(true); } catch (e) {} }   // Einheit beim Verlassen sichern + Sensoren stoppen
   if (!_navBack && currentView && currentView !== name) viewHistory.push(currentView);   // Verlauf für „Zurück"
   currentView = name;
   if (name !== 'chat' && typeof vaStopMic === 'function') vaStopMic();
@@ -2778,6 +2825,7 @@ function showView(name) {
   $$('[data-view]').forEach(b => b.classList.toggle('active', b.dataset.view === name));
   $('#moreTab').classList.toggle('active', MORE_VIEWS.includes(name));
   const bb = $('#backBtn'); if (bb) bb.style.display = (name === 'dashboard') ? 'none' : 'inline-flex';
+  if (name === 'fit') { fitTab = 'overview'; fitHeroPick = null; }   // frisches Hero-Bild + Übersicht bei jedem Öffnen
   if (RENDERERS[name]) RENDERERS[name]();
   if (curLang !== 'de') sweepNow($('#view-' + name));   // neu aktivierte (auch statische) Ansicht sofort übersetzen
   window.scrollTo(0, 0);
@@ -5463,6 +5511,273 @@ if ($('#mealWidget')) $('#mealWidget').addEventListener('click', e => {
     toast(mid ? ('🛒 Liste zugewiesen ✓') : ('🛒 Zutaten auf der Liste ✓'));
     return;
   }
+});
+
+/* ============================== EFFYRAFIT ============================== */
+/* Bewegungs-Modul. WICHTIGE technische Grenze (ehrlich benannt): eine Static Site kann Schritte NICHT
+   passiv im Hintergrund zählen. Umgesetzt = AKTIVES Session-Tracking: der Nutzer startet eine Einheit
+   bewusst, Sensoren laufen NUR während der Session (Wake Lock + GPS + Beschleunigung), Consent (Art. 9
+   DSGVO) ist Pflicht. Ergänzt durch manuelle Nacherfassung. Alle Werte sind Schätzungen. */
+
+/* Motivationssprüche – aus effyrafit_motivation.json (mitgeliefert, hier eingebettet). */
+const FIT_MOTIVATION = {
+  onOpen: ['Jeder Schritt zählt – fang jetzt an.', 'Dein Körper kann mehr, als du denkst.', 'Heute ist ein guter Tag für Bewegung.', 'Die beste Zeit war gestern. Die zweitbeste ist jetzt.', 'Ein kleiner Anfang ist besser als ein großer Plan.', 'Bewegung ist das Geschenk, das du dir selbst machst.', 'Fortschritt entsteht, sobald du losgehst.', 'Du musst nicht perfekt sein – nur in Bewegung.', 'Raus aus dem Kopf, rein in die Bewegung.', 'Jede Einheit bringt dich näher an dein Ziel.', 'Steh auf, atme durch, leg los.', 'Deine Energie wächst mit jedem Schritt.', 'Kleine Schritte, große Wirkung.', 'Tu heute etwas, worauf du morgen stolz bist.', 'Bewegung klärt den Kopf und stärkt den Körper.'],
+  milestone25: ['Guter Start – ein Viertel ist geschafft!', '25 % – du bist auf Kurs.', 'Der Anfang ist gemacht, bleib dran.', 'Erstes Viertel erreicht. Weiter so!', 'Du hast Schwung – nutz ihn.', 'Ein Viertel geschafft, drei liegen vor dir.'],
+  milestone50: ['Halbzeit! Du bist stärker als deine Ausreden.', '50 % – die Hälfte gehört schon dir.', 'Halbe Strecke, volle Motivation.', 'Du hast die Hälfte – der Rest ist Rückenwind.', '50 % erreicht. Das ist echte Arbeit, Respekt!', 'Die Hälfte liegt hinter dir. Jetzt zählt Dranbleiben.'],
+  milestone75: ['75 % – der Gipfel ist in Sicht.', 'Dreiviertel geschafft, jetzt der Endspurt.', 'Nur noch ein Viertel – zieh es durch.', 'Du bist so nah dran. Bleib dran.', '75 %! Aufgeben war nie eine Option.', 'Der letzte Teil ist der stolzeste.'],
+  milestone100: ['Geschafft! Dein Ziel gehört dir.', '100 % – heute hast du geliefert.', 'Ziel erreicht. Das hast du dir verdient.', 'Voller Erfolg! Sei stolz auf dich.', 'Durchgezogen bis zum Schluss – stark!', 'Ziel erreicht. Morgen setzt du das nächste.']
+};
+/* Hero-Bilder – lokales Starter-Set (Übergangslösung). ImageSource-Kapselung: Zielzustand = lizenzierte
+   Foto-API (Unsplash/Pexels) mit gleicher Signatur + Attribution, ohne Umbau einhängbar. */
+const FIT_HEROES = [
+  { url: 'effyrafit_heroes/effyrafit_hero_01_lauf.png', alt: 'Motiv: Laufen' }, { url: 'effyrafit_heroes/effyrafit_hero_02_rad.png', alt: 'Motiv: Radfahren' },
+  { url: 'effyrafit_heroes/effyrafit_hero_03_yoga.png', alt: 'Motiv: Yoga' }, { url: 'effyrafit_heroes/effyrafit_hero_04_erfolg.png', alt: 'Motiv: Erfolg' },
+  { url: 'effyrafit_heroes/effyrafit_hero_05_wandern.png', alt: 'Motiv: Wandern' }, { url: 'effyrafit_heroes/effyrafit_hero_06_kraft.png', alt: 'Motiv: Krafttraining' }
+];
+const LocalHeroImageSource = {
+  async getRandomHeroImage() {
+    let i, last = (store.fit && store.fit.heroLast); if (FIT_HEROES.length <= 1) i = 0; else { do { i = Math.floor(Math.random() * FIT_HEROES.length); } while (i === last); }
+    store.fit.heroLast = i; save(); return FIT_HEROES[i];
+  },
+  async preload(n) { FIT_HEROES.slice(0, n || FIT_HEROES.length).forEach(h => { const im = new Image(); im.src = h.url; }); }
+};
+/* TODO(Stufe 2): UnsplashHeroImageSource / PexelsHeroImageSource {getRandomHeroImage,preload} mit Attribution. */
+const fitImageSource = LocalHeroImageSource;
+
+/* Zentrale Spruch-Rotation: pro Kategorie zufällig, nie derselbe zweimal hintereinander (onOpen + Meilensteine). */
+function fitSpruch(kat) {
+  const arr = FIT_MOTIVATION[kat] || []; if (!arr.length) return '';
+  store.fit.lastSpruch = store.fit.lastSpruch || {}; const last = store.fit.lastSpruch[kat];
+  let i; if (arr.length === 1) i = 0; else { do { i = Math.floor(Math.random() * arr.length); } while (i === last); }
+  store.fit.lastSpruch[kat] = i; save(); return arr[i];
+}
+
+/* MET-Tabellen (Compendium of Physical Activities) + fachlich korrekte Berechnung. */
+const FIT_ACT = [
+  { k: 'gehen', l: '🚶 Gehen', met: 3.5 }, { k: 'laufen', l: '🏃 Laufen', met: 7.0 }, { k: 'radfahren', l: '🚴 Radfahren', met: 6.0 },
+  { k: 'schwimmen', l: '🏊 Schwimmen', met: 6.0 }, { k: 'kraft', l: '🏋️ Krafttraining', met: 4.0 }, { k: 'yoga', l: '🧘 Yoga', met: 2.5 },
+  { k: 'wandern', l: '🥾 Wandern', met: 5.0 }, { k: 'frei', l: '✨ Freie Einheit', met: 4.0 }
+];
+const FIT_WORK = [{ k: 'sitzend', l: 'Sitzend (Büro)', met: 1.5 }, { k: 'stehend', l: 'Stehend / leicht', met: 2.3 }, { k: 'mittel', l: 'Mittelschwer', met: 3.5 }, { k: 'schwer', l: 'Schwer / körperlich', met: 6.0 }];
+function fitActMeta(k) { return FIT_ACT.find(x => x.k === k) || FIT_ACT[FIT_ACT.length - 1]; }
+function fitAge() { return (account && account.birthday) ? ageFrom(account.birthday) : null; }
+function fitGender() { return store.fit.gender === 'w' ? 'w' : 'm'; }
+/* Grundumsatz nach Mifflin-St-Jeor. */
+function fitBMR() { const w = store.fit.weight, h = store.fit.height, a = fitAge(); if (!w || !h || a == null) return null; const b = 10 * w + 6.25 * h - 5 * a; return Math.round(fitGender() === 'w' ? b - 161 : b + 5); }
+/* Aktivitätskalorien: MET × Gewicht_kg × Dauer_h. */
+function fitKcal(met, min) { const w = store.fit.weight; if (!w || !min) return null; return Math.round(met * w * (min / 60)); }
+/* Schrittlänge aus Körpergröße (m). */
+function fitStepLen() { const h = store.fit.height; if (!h) return 0.72; return h * (fitGender() === 'w' ? 0.413 : 0.415) / 100; }
+function fitHaversine(a, b) { const R = 6371000, toR = Math.PI / 180; const dLat = (b.latitude - a.latitude) * toR, dLon = (b.longitude - a.longitude) * toR; const s = Math.sin(dLat / 2) ** 2 + Math.cos(a.latitude * toR) * Math.cos(b.latitude * toR) * Math.sin(dLon / 2) ** 2; return 2 * R * Math.asin(Math.min(1, Math.sqrt(s))); }
+
+/* Tages-Aggregation: Schritte heute = Summe aus Einheiten + manuellen Einträgen (KEIN Ganztagszähler). */
+function fitToday() { const t = todayISO(); const acts = (store.fit.activities || []).filter(a => (a.date || '').slice(0, 10) === t); let steps = 0, kcal = 0, min = 0; acts.forEach(a => { steps += (+a.steps || 0); kcal += (+a.kcal || 0); min += (+a.min || 0); }); return { steps, kcal, min, acts }; }
+function fitGoalPct() { const t = fitToday(); return store.fit.goalSteps ? Math.round(t.steps / store.fit.goalSteps * 100) : 0; }
+
+/* Gamification: Meilensteine 25/50/75/100 % – höchsten NEU erreichten je Tag zeigen (Pokal + Spruch, 100 % Konfetti). */
+function fitCheckReward() {
+  if (!store.fit.goalSteps) return;
+  const pct = fitToday().steps / store.fit.goalSteps, day = todayISO();
+  store.fit.rewardShown = store.fit.rewardShown || {}; const shown = store.fit.rewardShown[day] || {};
+  const marks = [[0.25, 'milestone25'], [0.5, 'milestone50'], [0.75, 'milestone75'], [1, 'milestone100']];
+  let toShow = null;
+  marks.forEach(m => { const id = String(m[0]); if (pct >= m[0]) { if (!shown[id]) toShow = { kat: m[1], thr: m[0] }; shown[id] = true; } });
+  store.fit.rewardShown[day] = shown;
+  if (toShow && toShow.thr === 1 && store.fit.lastGoalDate !== day) { store.fit.lastGoalDate = day; store.fit.streak = (store.fit.streak || 0) + 1; }
+  save();
+  if (toShow) fitRewardOverlay(toShow.kat, toShow.thr);
+}
+function fitRewardOverlay(kat, thr) {
+  const trophy = thr >= 1 ? '🏆' : thr >= 0.75 ? '🥇' : thr >= 0.5 ? '🎖️' : '⭐';
+  const head = thr >= 1 ? 'Ziel erreicht!' : Math.round(thr * 100) + '% geschafft';
+  let ov = document.getElementById('fitRewardOv');
+  if (!ov) { ov = document.createElement('div'); ov.id = 'fitRewardOv'; ov.className = 'fit-reward-ov'; document.body.appendChild(ov); }
+  ov.innerHTML = '<div class="fit-reward" role="alertdialog" aria-live="assertive"><div class="fit-trophy">' + trophy + '</div><h3>' + head + '</h3>' +
+    '<p>' + esc(fitSpruch(kat)) + '</p>' + (thr >= 1 && store.fit.streak > 1 ? '<p style="color:var(--accent-2,#0e7490);font-weight:700;margin-top:8px">🔥 ' + store.fit.streak + ' Tage in Folge</p>' : '') +
+    '<button class="btn btn-primary btn-sm" id="fitRewardOk" style="margin-top:16px;width:100%">Weiter so 💪</button></div>';
+  ov.classList.add('on');
+  const close = () => ov.classList.remove('on');
+  document.getElementById('fitRewardOk').onclick = close; ov.onclick = e => { if (e.target === ov) close(); };
+  if (thr >= 1) fitConfetti();
+}
+function fitConfetti() {
+  const cols = ['#7c3aed', '#06b6d4', '#f59e0b', '#ec4899', '#22c55e'];
+  for (let i = 0; i < 60; i++) { const c = document.createElement('div'); c.className = 'fit-conf'; c.style.left = Math.random() * 100 + 'vw'; c.style.background = cols[i % cols.length]; c.style.animationDuration = (1.6 + Math.random() * 1.4) + 's'; c.style.animationDelay = (Math.random() * 0.5) + 's'; document.body.appendChild(c); setTimeout(() => c.remove(), 3600); }
+}
+
+/* ===== Aktives Session-Tracking (StepSource-Kapselung) =====
+   StepSource-Interface (dokumentiert): isAvailable, getCapabilities{passiveDaily,gps,accelerometer},
+   requestPermission, start, stop→SessionResult, onUpdate. Stufe 1 = WebSessionStepSource unten
+   (GPS watchPosition + DeviceMotion Peak-Detection, passiveDaily:false). Stufe 2 (Capacitor):
+   HealthKitStepSource / HealthConnectStepSource mit gleicher Signatur registrieren. */
+let fitSession = null;
+async function fitStart(type) {
+  if (!store.fit.consent) { toast('Bitte zuerst der Sensornutzung zustimmen.'); return; }
+  fitSession = { type: type || 'frei', start: Date.now(), steps: 0, distM: 0, lastPos: null, emaMag: 9.81, lastPeak: 0, wakeLock: null, watchId: null, motion: null, timer: null, gps: false, motionOk: false };
+  // iOS: Bewegungssensor-Freigabe nach User-Geste
+  try { if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function') { const p = await DeviceMotionEvent.requestPermission(); if (p !== 'granted') toast('Ohne Bewegungssensor werden Schritte aus GPS geschätzt.'); } } catch (e) {}
+  // Wake Lock
+  try { if (navigator.wakeLock) fitSession.wakeLock = await navigator.wakeLock.request('screen'); } catch (e) {}
+  // GPS
+  if (navigator.geolocation) {
+    try {
+      fitSession.watchId = navigator.geolocation.watchPosition(pos => {
+        const c = pos.coords; fitSession.gps = true;
+        if (fitSession.lastPos) fitSession.distM += fitHaversine(fitSession.lastPos, c);
+        fitSession.lastPos = { latitude: c.latitude, longitude: c.longitude };
+      }, () => {}, { enableHighAccuracy: true, maximumAge: 2000, timeout: 9000 });
+    } catch (e) {}
+  }
+  // Beschleunigung → Peak-Detection (Schritte)
+  fitSession.motion = e => {
+    const a = e.accelerationIncludingGravity || e.acceleration; if (!a) return; fitSession.motionOk = true;
+    const mag = Math.sqrt((a.x || 0) ** 2 + (a.y || 0) ** 2 + (a.z || 0) ** 2), now = Date.now();
+    fitSession.emaMag = fitSession.emaMag * 0.9 + mag * 0.1;
+    if (mag > fitSession.emaMag + 2.2 && now - fitSession.lastPeak > 280) { fitSession.steps++; fitSession.lastPeak = now; }
+  };
+  window.addEventListener('devicemotion', fitSession.motion);
+  fitSession.timer = setInterval(() => { if (currentView === 'fit' && fitTab === 'session') { const box = $('#fitRoot .fit-live'); if (box) box.outerHTML = fitLiveHTML(); } }, 1000);
+  fitTab = 'session'; RENDERERS.fit();
+}
+function fitSessionSteps() { return fitSession ? (fitSession.motionOk && fitSession.steps > 0 ? fitSession.steps : Math.round(fitSession.distM / fitStepLen())) : 0; }
+function fitStop(commit) {
+  if (!fitSession) return;
+  const s = fitSession;
+  try { if (s.timer) clearInterval(s.timer); } catch (e) {}
+  try { if (s.watchId != null && navigator.geolocation) navigator.geolocation.clearWatch(s.watchId); } catch (e) {}
+  try { if (s.motion) window.removeEventListener('devicemotion', s.motion); } catch (e) {}
+  try { if (s.wakeLock) s.wakeLock.release(); } catch (e) {}
+  const min = Math.max(0, Math.round((Date.now() - s.start) / 60000));
+  const steps = fitSessionSteps(), distKm = +(s.distM / 1000).toFixed(2), kcal = fitKcal(fitActMeta(s.type).met, min || (Date.now() - s.start) / 60000);
+  fitSession = null;
+  if (commit && (min > 0 || steps > 0 || distKm > 0)) {
+    store.fit.activities = store.fit.activities || [];
+    store.fit.activities.push({ id: uid(), date: todayISO(), type: s.type, min: min, dist: distKm, steps: steps, kcal: kcal || 0, source: 'session', createdAt: Date.now() });
+    save(); fitCheckReward();
+    toast('Einheit gespeichert: ' + (min || '<1') + ' Min · ' + steps + ' Schritte ✓');
+  }
+  fitTab = 'overview'; if (currentView === 'fit') RENDERERS.fit();
+}
+
+/* ===== Views ===== */
+let fitTab = 'overview', fitHeroPick = null;
+RENDERERS.fit = function () {
+  const box = $('#fitRoot'); if (!box) return;
+  store.fit = store.fit || {};
+  let h = '<div class="view-head"><h1>💪 EffyraFit</h1><p>Aktive Einheiten, Schritte &amp; Motivation – dein Ziel im Blick.</p></div>';
+  // Hero-Bühne nur in der Übersicht; frisch bei jedem Öffnen (in showView zurückgesetzt)
+  if (fitTab === 'overview') {
+    if (!fitHeroPick) { const li = (store.fit.heroLast == null ? -1 : store.fit.heroLast), ni = FIT_HEROES.length <= 1 ? 0 : (li + 1 + Math.floor(Math.random() * (FIT_HEROES.length - 1))) % FIT_HEROES.length; store.fit.heroLast = ni; save(); fitHeroPick = { hero: FIT_HEROES[ni], spruch: fitSpruch('onOpen') }; }
+    const hp = fitHeroPick;
+    h += '<div class="fit-hero"><img src="' + esc(hp.hero.url) + '" alt="' + esc(hp.hero.alt) + '" loading="eager">' +
+      '<div class="fit-hero-scrim"></div><div class="fit-hero-txt"><div class="fit-hero-k">EffyraFit</div><div class="fit-hero-q">' + esc(hp.spruch) + '</div></div></div>';
+  }
+  const tabs = [['overview', '📊 Übersicht'], ['session', '▶️ Einheit'], ['activities', '📋 Aktivitäten'], ['goals', '🎯 Ziele'], ['settings', '⚙️ Einstellungen']];
+  h += '<div class="fit-tabs" role="tablist">' + tabs.map(t => '<button data-fittab="' + t[0] + '" class="' + (fitTab === t[0] ? 'active' : '') + '">' + t[1] + '</button>').join('') + '</div>';
+  h += '<div id="fitBody">' + (fitTab === 'session' ? fitSessionViewHTML() : fitTab === 'activities' ? fitActivitiesHTML() : fitTab === 'goals' ? fitGoalsHTML() : fitTab === 'settings' ? fitSettingsHTML() : fitOverviewHTML()) + '</div>';
+  box.innerHTML = h;
+  fitImageSource.preload(FIT_HEROES.length);
+  if (curLang !== 'de' && typeof sweepNow === 'function') sweepNow(box);
+};
+function fitProfileMissing() { return !store.fit.weight || !store.fit.height || fitAge() == null; }
+function fitOverviewHTML() {
+  const t = fitToday(), pct = fitGoalPct(), bmr = fitBMR();
+  const nextMark = pct < 25 ? 25 : pct < 50 ? 50 : pct < 75 ? 75 : pct < 100 ? 100 : null;
+  let h = '';
+  if (fitProfileMissing()) h += '<div class="card" style="border-left:3px solid var(--warn);margin-bottom:12px"><b style="font-size:14px">Kurz einrichten</b><div class="sub" style="color:var(--muted);font-size:13px;margin-top:4px">Trage in ⚙️ Einstellungen Gewicht, Größe &amp; Geschlecht ein – für Kalorien &amp; Grundumsatz.</div><button class="btn btn-sm btn-primary" data-fit="toSettings" style="margin-top:10px">Jetzt einrichten</button></div>';
+  h += '<div class="fit-ringwrap"><div class="fit-ring" style="--p:' + Math.min(100, pct) + '"><div class="in"><b>' + pct + '%</b><span>Tagesziel</span></div></div>' +
+    '<div class="fit-goalinfo"><b>' + t.steps.toLocaleString('de-DE') + ' / ' + (store.fit.goalSteps || 0).toLocaleString('de-DE') + ' Schritte</b>' +
+    '<div class="sub">' + (nextMark ? 'Nächster Meilenstein: ' + nextMark + ' %' : '🏆 Ziel erreicht – stark!') + (store.fit.streak > 0 ? ' · 🔥 ' + store.fit.streak + ' Tage' : '') + '</div></div></div>';
+  h += '<div class="fit-stats"><div class="fit-stat"><b>' + t.steps.toLocaleString('de-DE') + '</b><span>Schritte heute</span></div>' +
+    '<div class="fit-stat"><b>' + (t.kcal || 0) + '</b><span>aktive kcal</span></div>' +
+    '<div class="fit-stat"><b>' + t.min + '</b><span>Minuten</span></div></div>';
+  const last = (store.fit.activities || []).slice(-1)[0];
+  h += '<div class="card" style="margin-top:14px;display:flex;justify-content:space-between;align-items:center;gap:10px"><div><b style="font-size:14px">' + (last ? fitActMeta(last.type).l : 'Noch keine Einheit') + '</b><div class="sub" style="color:var(--muted);font-size:12.5px">' + (last ? (last.min + ' Min · ' + last.steps + ' Schritte · ' + (last.kcal || 0) + ' kcal') : 'Starte deine erste Einheit') + '</div></div><button class="btn btn-primary btn-sm" data-fit="toSession">▶️ Einheit</button></div>';
+  if (bmr) h += '<div class="fit-note">Grundumsatz (Mifflin-St-Jeor): ~<b>' + bmr + ' kcal/Tag</b> · getrennt von den aktiven Kalorien oben. Alle Werte sind Schätzungen.</div>';
+  h += '<div class="fit-note">ℹ️ Kein Ganztags-Hintergrundzähler: „Schritte heute" ist die Summe deiner bewusst gestarteten Einheiten + manuellen Einträge.</div>';
+  return h;
+}
+function fitLiveHTML() {
+  const s = fitSession; if (!s) return '<div class="fit-live"></div>';
+  const sec = Math.floor((Date.now() - s.start) / 1000), mm = String(Math.floor(sec / 60)).padStart(2, '0'), ss = String(sec % 60).padStart(2, '0');
+  const steps = fitSessionSteps(), km = (s.distM / 1000).toFixed(2), kcal = fitKcal(fitActMeta(s.type).met, sec / 60);
+  return '<div class="fit-live"><div class="big">' + mm + ':' + ss + '</div><div class="sub" style="color:var(--muted)">' + fitActMeta(s.type).l + '</div>' +
+    '<div class="fit-live-grid"><div class="fit-stat"><b>' + steps + '</b><span>Schritte*</span></div><div class="fit-stat"><b>' + km + '</b><span>km (GPS)</span></div><div class="fit-stat"><b>' + (kcal != null ? kcal : '–') + '</b><span>kcal*</span></div></div>' +
+    '<div class="fit-note" style="text-align:center">' + (s.gps ? '📍 GPS aktiv' : '📍 GPS …') + ' · ' + (s.motionOk ? '📈 Bewegungssensor aktiv' : '📈 Sensor: aus GPS geschätzt') + (s.wakeLock ? ' · 🔆 Bildschirm bleibt an' : '') + '<br>*Schätzung.</div></div>';
+}
+function fitSessionViewHTML() {
+  if (fitSession) return fitLiveHTML() + '<button class="fit-stopbtn" data-fit="stop">⏹️ Einheit beenden &amp; speichern</button>';
+  let h = '';
+  if (!store.fit.consent) {
+    h += '<div class="card" style="border-left:3px solid var(--accent-2,#0e7490)"><b style="font-size:14px">Sensornutzung (Consent)</b>' +
+      '<div class="sub" style="color:var(--muted);font-size:13px;margin-top:6px;line-height:1.55">Für die Einheit nutzt EffyraFit während der Session <b>GPS</b> (Distanz) und den <b>Bewegungssensor</b> (Schritte). Diese Bewegungsdaten sind besondere Daten (Art. 9 DSGVO) und bleiben auf deinem Gerät bzw. deinem verschlüsselten Konto. Nur während der aktiven Einheit, jederzeit widerrufbar.</div>' +
+      '<label class="veh-check" style="margin-top:10px"><input type="checkbox" data-fit="consent"> Ich stimme der Sensornutzung während der Einheit zu.</label></div>';
+  }
+  h += '<div class="card"><b style="font-size:14px">Einheit starten</b><div class="sub" style="color:var(--muted);font-size:12.5px;margin:4px 0 10px">Bildschirm bleibt an, GPS + Bewegungssensor laufen nur jetzt.</div>' +
+    '<div style="display:flex;flex-wrap:wrap;gap:8px">' + FIT_ACT.filter(a => ['gehen', 'laufen', 'radfahren', 'frei'].indexOf(a.k) >= 0).map(a => '<button class="btn btn-sm' + (store.fit.consent ? ' btn-primary' : '') + '" data-fit="start" data-type="' + a.k + '"' + (store.fit.consent ? '' : ' disabled') + '>' + a.l + '</button>').join('') + '</div></div>';
+  h += '<div class="fit-note">ℹ️ Aktives Tracking während der Einheit – <b>kein Ganztags-Hintergrundzähler</b>. Werte sind Schätzungen. Für GPS/Sensoren ist HTTPS nötig; ohne Berechtigung bleibt alles über „Aktivitäten → manuell nachtragen" nutzbar.</div>';
+  return h;
+}
+function fitActivitiesHTML() {
+  let h = '<div class="card"><b style="font-size:14px">Manuell nachtragen</b><div class="kid-row" style="margin-top:8px;margin-bottom:8px"><select data-fin="type">' + FIT_ACT.map(a => '<option value="' + a.k + '">' + a.l + '</option>').join('') + '</select><input type="number" data-fin="min" placeholder="Min" inputmode="numeric" min="1" style="flex:none;width:80px"></div>' +
+    '<div class="kid-row" style="margin-bottom:10px"><input type="number" data-fin="dist" placeholder="km (optional)" inputmode="decimal" step="0.1" min="0"><input type="number" data-fin="steps" placeholder="Schritte (opt.)" inputmode="numeric" min="0"></div>' +
+    '<button class="btn btn-primary btn-sm" data-fit="addManual" style="width:100%">+ Eintragen</button></div>';
+  h += '<div class="card" style="margin-top:12px"><b style="font-size:14px">💼 Arbeit / berufliche Aktivität</b><div class="kid-row" style="margin-top:8px;margin-bottom:10px"><select data-fin="work">' + FIT_WORK.map(w => '<option value="' + w.k + '">' + w.l + ' (MET ' + w.met + ')</option>').join('') + '</select><input type="number" data-fin="workmin" placeholder="Min" inputmode="numeric" min="1" style="flex:none;width:80px"></div><button class="btn btn-sm" data-fit="addWork" style="width:100%">+ Arbeitszeit eintragen</button></div>';
+  const acts = (store.fit.activities || []).slice().reverse();
+  if (!acts.length) h += '<div class="empty" style="margin-top:14px"><span class="big">🏃</span>Noch keine Aktivitäten. Starte eine Einheit oder trage manuell nach.</div>';
+  else h += '<div style="margin-top:14px">' + acts.slice(0, 40).map(a => '<div class="task"><span style="font-size:20px;width:32px;text-align:center;flex:none">' + fitActMeta(a.type).l.split(' ')[0] + '</span><div class="t-main"><span class="t-title">' + esc(fitActMeta(a.type).l.replace(/^\S+\s/, '')) + (a.source === 'work' ? ' · Arbeit' : a.source === 'session' ? ' · Einheit' : '') + '</span><div class="t-meta">' + esc(fmtDateShort(a.date)) + ' · ' + a.min + ' Min' + (a.steps ? ' · ' + a.steps + ' Schritte' : '') + (a.dist ? ' · ' + a.dist + ' km' : '') + ' · ' + (a.kcal || 0) + ' kcal</div></div><button class="t-del" data-fit="del" data-id="' + a.id + '" aria-label="Löschen"><svg viewBox="0 0 24 24"><use href="#icTrash"/></svg></button></div>').join('') + '</div>';
+  return h;
+}
+function fitGoalsHTML() {
+  return '<div class="card"><b style="font-size:14px">🎯 Tagesziel</b><div class="sub" style="color:var(--muted);font-size:12.5px;margin:4px 0 10px">Schritte pro Tag (empfohlen 7.000–10.000). Der Fortschritt löst deine Meilenstein-Belohnungen aus.</div>' +
+    '<div class="kid-row" style="margin-bottom:8px"><label style="align-self:center;flex:none;color:var(--muted);font-size:13px">Schritte</label><input type="number" data-fin="goalSteps" value="' + (store.fit.goalSteps || '') + '" inputmode="numeric" min="1000" step="500"></div>' +
+    '<div class="kid-row" style="margin-bottom:10px"><label style="align-self:center;flex:none;color:var(--muted);font-size:13px">aktive kcal (optional)</label><input type="number" data-fin="goalKcal" value="' + (store.fit.goalKcal || '') + '" inputmode="numeric" min="0" step="50"></div>' +
+    '<button class="btn btn-primary btn-sm" data-fit="saveGoal" style="width:100%">Ziel speichern</button></div>' +
+    '<div class="fit-note">Aktuell: <b>' + fitGoalPct() + '%</b> von ' + (store.fit.goalSteps || 0).toLocaleString('de-DE') + ' Schritten heute.' + (store.fit.streak > 0 ? ' · 🔥 ' + store.fit.streak + ' Tage in Folge.' : '') + '</div>';
+}
+function fitSettingsHTML() {
+  const a = fitAge();
+  return '<div class="card"><b style="font-size:14px">Stammdaten</b><div class="sub" style="color:var(--muted);font-size:12.5px;margin:4px 0 10px">Alter kommt aus deinem Konto' + (a != null ? ' (' + a + ' J.)' : ' – trage im Konto dein Geburtsdatum ein') + '. Geschlecht &amp; Maße hier (für Kalorien/Grundumsatz nötig).</div>' +
+    '<div class="kid-row" style="margin-bottom:8px"><div style="flex:1"><label class="fld">Gewicht (kg)</label><input type="number" data-fin="weight" value="' + (store.fit.weight || '') + '" inputmode="decimal" min="20" max="300"></div><div style="flex:1"><label class="fld">Größe (cm)</label><input type="number" data-fin="height" value="' + (store.fit.height || '') + '" inputmode="numeric" min="100" max="230"></div></div>' +
+    '<div style="margin-bottom:10px"><label class="fld">Geschlecht (für Formel)</label><div class="seg" style="margin-top:4px">' +
+    ['m', 'w'].map(g => '<button class="' + (fitGender() === g ? 'active' : '') + '" data-fit="gender" data-g="' + g + '">' + (g === 'm' ? '♂ Männlich' : '♀ Weiblich') + '</button>').join('') + '</div></div>' +
+    '<button class="btn btn-primary btn-sm" data-fit="saveProfile" style="width:100%">Speichern</button></div>' +
+    '<div class="card" style="margin-top:12px"><label class="veh-check"><input type="checkbox" data-fit="consent"' + (store.fit.consent ? ' checked' : '') + '> Sensornutzung (GPS + Bewegung) während Einheiten erlaubt</label><div class="sub" style="color:var(--faint);font-size:12px;margin-top:8px;line-height:1.5">Bewegungsdaten = Art. 9 DSGVO, nur während aktiver Einheiten, widerrufbar. Siehe Datenschutz &amp; Impressum der App. Grundumsatz nach Mifflin-St-Jeor. Alle Ausgaben sind Schätzungen.</div></div>';
+}
+/* Manuellen/Arbeits-Eintrag lesen (aus dem gerade sichtbaren Formular). */
+function fitReadNum(sel) { const el = $('#fitRoot [data-fin="' + sel + '"]'); return el ? el.value : ''; }
+$('#fitRoot') && $('#fitRoot').addEventListener('click', e => {
+  const b = e.target.closest('[data-fit], [data-fittab]'); if (!b) return;
+  if (b.dataset.fittab) { fitTab = b.dataset.fittab; RENDERERS.fit(); return; }
+  const a = b.dataset.fit;
+  if (a === 'toSettings') { fitTab = 'settings'; RENDERERS.fit(); return; }
+  if (a === 'toSession') { fitTab = 'session'; RENDERERS.fit(); return; }
+  if (a === 'start') { fitStart(b.dataset.type); return; }
+  if (a === 'stop') { fitStop(true); return; }
+  if (a === 'gender') { store.fit.gender = b.dataset.g; save(); RENDERERS.fit(); return; }
+  if (a === 'saveProfile') { store.fit.weight = +fitReadNum('weight') || null; store.fit.height = +fitReadNum('height') || null; save(); toast('Gespeichert ✓'); fitTab = 'overview'; RENDERERS.fit(); return; }
+  if (a === 'saveGoal') { store.fit.goalSteps = Math.max(500, +fitReadNum('goalSteps') || 8000); store.fit.goalKcal = +fitReadNum('goalKcal') || null; save(); toast('Ziel gespeichert ✓'); fitTab = 'overview'; RENDERERS.fit(); return; }
+  if (a === 'addManual') {
+    const type = ($('#fitRoot [data-fin="type"]') || {}).value || 'frei', min = +fitReadNum('min') || 0;
+    if (!min) { toast('Bitte Dauer in Minuten angeben'); return; }
+    let steps = +fitReadNum('steps') || 0; const dist = +fitReadNum('dist') || 0;
+    if (!steps && dist) steps = Math.round(dist * 1000 / fitStepLen());
+    store.fit.activities = store.fit.activities || [];
+    store.fit.activities.push({ id: uid(), date: todayISO(), type: type, min: min, dist: dist || 0, steps: steps, kcal: fitKcal(fitActMeta(type).met, min) || 0, source: 'manual', createdAt: Date.now() });
+    save(); fitCheckReward(); toast('Eingetragen ✓'); RENDERERS.fit(); return;
+  }
+  if (a === 'addWork') {
+    const wk = ($('#fitRoot [data-fin="work"]') || {}).value || 'sitzend', min = +fitReadNum('workmin') || 0;
+    if (!min) { toast('Bitte Dauer in Minuten angeben'); return; }
+    const w = FIT_WORK.find(x => x.k === wk) || FIT_WORK[0];
+    store.fit.activities = store.fit.activities || [];
+    store.fit.activities.push({ id: uid(), date: todayISO(), type: 'frei', min: min, dist: 0, steps: 0, kcal: fitKcal(w.met, min) || 0, source: 'work', note: w.l, createdAt: Date.now() });
+    save(); toast('Arbeitszeit eingetragen ✓'); RENDERERS.fit(); return;
+  }
+  if (a === 'del') { store.fit.activities = (store.fit.activities || []).filter(x => x.id !== b.dataset.id); save(); RENDERERS.fit(); return; }
+});
+$('#fitRoot') && $('#fitRoot').addEventListener('change', e => {
+  const t = e.target; if (t.dataset.fit === 'consent') { store.fit.consent = t.checked; save(); RENDERERS.fit(); }
 });
 
 /* ============================== FAMILIENZENTRALE ============================== */
