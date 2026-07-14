@@ -534,6 +534,10 @@ body.store-safe [data-buy]{display:none!important}
 .beh-off-a{display:flex;gap:12px;flex-wrap:wrap;margin-top:8px}
 .beh-off-a a{font-size:12.5px;font-weight:700;color:var(--navy-ink,#7c3aed);text-decoration:none}
 .beh-off-a a:hover{text-decoration:underline}
+/* Kinder-Zugang-Overlays (nutzen .fam-alert / .fam-code / .sc-x) */
+.kid-card{position:relative;text-align:center;max-width:420px}
+.kid-card .fam-code{margin:6px auto 10px}
+.kid-card input{width:100%}
 .dash-sub{color:var(--muted);font-size:15px;line-height:1.45;margin-top:7px;max-width:46ch}
 .dash-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:26px}
 .dash-stats .stat{padding:13px 6px}
@@ -1338,6 +1342,7 @@ body.lang-switching main,body.lang-switching .sidebar,body.lang-switching .topba
       <button class="btn btn-primary gate-cta" id="authGo">Kostenlos starten</button>
       <button class="gate-reset" id="authToggle" style="display:none">Schon ein Konto? Hier anmelden</button>
       <button class="gate-reset" id="authReset" style="display:none">Passwort vergessen? Konto zurücksetzen</button>
+      <button class="gate-reset" id="kidJoinLink" style="margin-top:4px;font-weight:700">👦 Kind? Mit Familien-Code beitreten</button>
     </div>
     <p class="gate-note">🔒 Deine Daten liegen auf deinem Gerät und werden – wenn du angemeldet bist – sicher in deinem Konto gesichert (Backup &amp; Mehrgeräte, nur du hast Zugriff). Notfall- &amp; Budgetdaten bleiben nur lokal. Keine Werbung, kein Tracking.<br>Nach der Testphase schaltet ein Abo oder Freischalt-Code alle Funktionen frei.</p>
   </div>
@@ -3227,6 +3232,8 @@ if ($('#btnOpenHelp')) $('#btnOpenHelp').addEventListener('click', () => showVie
 const MORE_VIEWS = ['work', 'docs', 'school', 'calendar', 'life', 'behoerden', 'family', 'emergency', 'vehicles', 'contracts', 'vault', 'shopping', 'waste', 'checkup', 'fit', 'help', 'settings'];
 let viewHistory = [], _navBack = false;
 function showView(name) {
+  /* Kindermodus: nur freigegebene, lesende Ansichten */
+  if (isKidMode() && KID_ALLOWED.indexOf(name) < 0) { toast('Im Kindermodus nicht verfügbar.'); if (currentView !== 'dashboard') showView('dashboard'); return; }
   /* Modul für die aktuelle Stufe gesperrt? → Upgrade-Ansicht statt Modul */
   if (account && account.loggedIn && !isTrialExpired() && !moduleAllowed(name)) { showUpgrade(name); return; }
   if (currentView === 'fit' && name !== 'fit' && typeof fitSession !== 'undefined' && fitSession) { try { fitStop(true); } catch (e) {} }   // Einheit beim Verlassen sichern + Sensoren stoppen
@@ -3763,6 +3770,7 @@ async function submitAuth() {
 async function logout() {
   if (CLOUD) {
     try { await sb.auth.signOut(); } catch (e) {}
+    try { localStorage.removeItem(ACC_KEY); } catch (e) {}   // evtl. gespeicherten Kindermodus-Account entfernen
     account = null;
     gate();
     return;
@@ -3771,6 +3779,94 @@ async function logout() {
   account.loggedIn = false;
   saveAccount();
   gate();
+}
+
+/* ===================== KINDER-ZUGANG (Kindermodus, v1: nur lesend) =====================
+   Erwachsener erzeugt je Kinderprofil einen Code (create_child_code). Kind meldet sich ANONYM an
+   und tritt per Code der Familie als role='child' bei (join_as_child) → Kindermodus: eingeschränkte
+   Ansicht, KEINE KI, schreibt NICHT (save_family serverseitig für Kinder gesperrt). Jederzeit
+   widerrufbar. Voraussetzung: Supabase „Anonymous sign-ins" + supabase-kids.sql. */
+const KID_ALLOWED = ['dashboard', 'calendar', 'family', 'school', 'tasks', 'help'];
+const isKidMode = () => !!(account && account.kidMode);
+function kidNameFrom(d) { try { return ((d.data && d.data.members) || []).find(x => x.id === d.member_id) ? ((d.data.members).find(x => x.id === d.member_id).name) : ''; } catch (e) { return ''; } }
+/* Erwachsener: „Kinder-Handy einrichten" – Code erzeugen / Zugang widerrufen */
+async function kidProvision(memberId, memberName) {
+  if (!CLOUD) { toast('Kinder-Zugang braucht das Cloud-Backend.'); return; }
+  if (!store.family || !store.family.code) { toast('Erst eine Familie erstellen/verbinden (Tab „Sync").'); return; }
+  let ov = document.getElementById('kidOv');
+  if (!ov) { ov = document.createElement('div'); ov.id = 'kidOv'; ov.className = 'fam-alert-ov'; document.body.appendChild(ov); }
+  const render = (code, busy, err) => {
+    ov.innerHTML = '<div class="fam-alert kid-card" role="dialog" aria-modal="true" aria-label="Kinder-Handy einrichten">' +
+      '<button class="sc-x" id="kidClose" aria-label="Schließen">✕</button><div class="sc-ic" aria-hidden="true">📱</div>' +
+      '<h3>Kinder-Handy einrichten</h3>' +
+      '<p class="sub" style="margin-bottom:12px">Für <b>' + esc(memberName || 'dein Kind') + '</b>. Effyra auf dem Kinder-Handy öffnen → unten „Kind? Mit Familien-Code beitreten" → diesen Code eingeben:</p>' +
+      (busy ? '<div class="fam-code">…</div>' : err ? '<div class="beh-off-status">' + esc(err) + '</div>' : '<div class="fam-code">' + esc(code) + '</div><button class="btn btn-sm" id="kidCopy">📋 Code kopieren</button>') +
+      '<div class="note-box" style="margin-top:12px">🔒 Kindermodus: nur Ansicht der Familien-Infos, <b>keine KI</b>. Code jederzeit widerrufbar.</div>' +
+      '<div class="fam-alert-btns" style="margin-top:12px"><button class="btn btn-sm btn-danger" id="kidRev">Zugang widerrufen</button><button class="btn btn-sm btn-primary" id="kidDone">Fertig</button></div></div>';
+    ov.classList.add('on');
+    const close = () => ov.classList.remove('on');
+    ov.querySelector('#kidClose').onclick = close; ov.querySelector('#kidDone').onclick = close;
+    ov.onclick = e => { if (e.target === ov) close(); };
+    const cp = ov.querySelector('#kidCopy'); if (cp) cp.onclick = () => copyText(code).then(ok => toast(ok ? 'Code kopiert ✓' : 'Kopieren nicht möglich'));
+    ov.querySelector('#kidRev').onclick = async () => { try { await famAuth(); await sb.rpc('revoke_child_code', { p_member_id: memberId }); toast('Kinder-Zugang widerrufen ✓'); } catch (e) { toast('Widerruf fehlgeschlagen.'); } close(); };
+  };
+  render('', true);
+  try { await famAuth(); const r = await sb.rpc('create_child_code', { p_member_id: memberId }); if (r.error || !r.data) throw new Error(r.error && r.error.message); render(r.data, false); }
+  catch (e) { render('', false, 'Konnte keinen Code erzeugen. Ist supabase-kids.sql ausgeführt und „Anonymous sign-ins" aktiv?'); }
+}
+/* Kind: Beitritt per Code (anonymer Login + join_as_child) */
+function kidJoinOpen() {
+  let ov = document.getElementById('kidJoinOv');
+  if (!ov) { ov = document.createElement('div'); ov.id = 'kidJoinOv'; ov.className = 'fam-alert-ov'; document.body.appendChild(ov); }
+  ov.innerHTML = '<div class="fam-alert kid-card" role="dialog" aria-modal="true" aria-label="Mit Familien-Code beitreten">' +
+    '<button class="sc-x" id="kjClose" aria-label="Schließen">✕</button><div class="sc-ic" aria-hidden="true">👦</div>' +
+    '<h3>Mit Familien-Code beitreten</h3>' +
+    '<p class="sub" style="margin-bottom:12px">Ein Erwachsener erzeugt den 6-stelligen Code in der Familienzentrale (Kinderprofil → „Kinder-Handy einrichten").</p>' +
+    '<input type="text" id="kjCode" maxlength="6" placeholder="Code (z. B. A1B2C3)" autocomplete="off" style="text-align:center;text-transform:uppercase;letter-spacing:.18em;font-size:18px">' +
+    '<div class="auth-err" id="kjErr" style="margin-top:8px"></div>' +
+    '<div class="fam-alert-btns" style="margin-top:12px"><button class="btn btn-sm" id="kjCancel">Abbrechen</button><button class="btn btn-sm btn-primary" id="kjGo">Beitreten</button></div>' +
+    '<div class="note-box" style="margin-top:10px">Kindermodus: nur Ansicht, keine KI. Kein Konto/keine E-Mail nötig.</div></div>';
+  ov.classList.add('on');
+  const close = () => ov.classList.remove('on');
+  ov.querySelector('#kjClose').onclick = close; ov.querySelector('#kjCancel').onclick = close;
+  ov.onclick = e => { if (e.target === ov) close(); };
+  const inp = ov.querySelector('#kjCode');
+  inp.addEventListener('input', () => { inp.value = inp.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6); });
+  inp.addEventListener('keydown', e => { if (e.key === 'Enter') kidJoin(inp.value, ov.querySelector('#kjErr')); });
+  ov.querySelector('#kjGo').onclick = () => kidJoin(inp.value, ov.querySelector('#kjErr'));
+  setTimeout(() => inp.focus(), 60);
+}
+async function kidJoin(code, errEl) {
+  code = (code || '').trim().toUpperCase();
+  if (!/^[A-Z0-9]{6}$/.test(code)) { if (errEl) errEl.textContent = 'Bitte den 6-stelligen Code eingeben.'; return; }
+  if (!CLOUD) { if (errEl) errEl.textContent = 'Kinder-Zugang braucht das Cloud-Backend.'; return; }
+  if (errEl) errEl.textContent = 'Verbinde …';
+  try {
+    let sess = (await sb.auth.getSession()).data.session;
+    if (!sess) { const a = await sb.auth.signInAnonymously(); if (a.error) throw new Error('anon'); sess = a.data.session; }
+    const r = await sb.rpc('join_as_child', { p_code: code });
+    if (r.error) throw new Error(r.error.message);
+    if (!r.data) { if (errEl) errEl.textContent = 'Code ungültig oder widerrufen. Bitte einen neuen Code holen.'; return; }
+    const d = r.data;
+    account = { cloud: true, uid: sess.user.id, role: 'child', kidMode: true, name: kidNameFrom(d), familyCode: d.code, memberId: d.member_id, loggedIn: true };
+    saveAccount();
+    store.family = store.family || {}; store.family.code = d.code; store.onboarded = true; save();
+    const kj = document.getElementById('kidJoinOv'); if (kj) kj.classList.remove('on');
+    gate();
+    try { await famPull(); } catch (e) {}
+    showView('dashboard');
+    toast('👦 Kindermodus – willkommen' + (account.name ? ', ' + account.name : '') + ' 👋');
+  } catch (e) {
+    if (errEl) errEl.textContent = 'Beitritt fehlgeschlagen. Ist der Kinder-Zugang serverseitig eingerichtet (Anonymous sign-ins + supabase-kids.sql)?';
+  }
+}
+/* Boot: anonyme Session = Kind → gespeicherten Kindermodus wiederherstellen */
+async function kidResume(session) {
+  let saved = null; try { saved = JSON.parse(localStorage.getItem(ACC_KEY)); } catch (e) {}
+  if (saved && saved.kidMode && saved.uid === session.user.id) {
+    account = saved; store.family = store.family || {}; store.family.code = saved.familyCode;
+    gate(); try { await famPull(); } catch (e) {} showView('dashboard'); refresh();
+  } else { try { await sb.auth.signOut(); } catch (e) {} account = null; gate(); }
 }
 
 async function activatePremium(code, errEl) {
@@ -3811,6 +3907,7 @@ async function activatePremium(code, errEl) {
 }
 
 $('#authGo').addEventListener('click', submitAuth);
+if ($('#kidJoinLink')) $('#kidJoinLink').addEventListener('click', kidJoinOpen);
 $('#auPass').addEventListener('keydown', e => { if (e.key === 'Enter') submitAuth(); });
 $('#authReset').addEventListener('click', async () => {
   if (CLOUD) {
@@ -4788,7 +4885,8 @@ RENDERERS.dashboard = function () {
 
 
   const slot = $('#trialSlot');
-  if (account && isPremium()) slot.innerHTML = '<span class="trial-pill premium">💎 Premium – alles inklusive</span>';
+  if (isKidMode()) slot.innerHTML = '<span class="trial-pill">👦 Kindermodus – nur Ansicht</span>';
+  else if (account && isPremium()) slot.innerHTML = '<span class="trial-pill premium">💎 Premium – alles inklusive</span>';
   else if (account && ENFORCE_TIERS) { const d = trialDaysLeft(); slot.innerHTML = '<button class="trial-pill" id="trialGo">⏳ Testphase: noch ' + d + ' Tag' + (d === 1 ? '' : 'e') + ' · <b>Premium freischalten</b></button>'; $('#trialGo').addEventListener('click', () => showView('settings')); }
   else if (account) slot.innerHTML = '<span class="trial-pill">✨ Alle Funktionen freigeschaltet</span>';
   else slot.innerHTML = '';
@@ -6771,6 +6869,7 @@ function famDedupeMembers() {
 /* Aktuellen Nutzer als Familienmitglied sicherstellen (beide Konten automatisch gelistet), auch nach dem Beitreten.
    Identität ausschließlich über authId (Supabase-User-ID) – benennt NIE fremde Mitglieder um. */
 function famEnsureSelfMember() {
+  if (isKidMode()) return false;   // Kind nicht als Erwachsenen anlegen / nichts schreiben
   if (!store.family || !store.family.code || !CLOUD) return false;
   const myId = famSelfId(); if (!myId) return false;
   ensureFamily();
@@ -6986,7 +7085,7 @@ async function famAuth() {
     return !!s;
   } catch (e) { return false; }
 }
-async function famPush() { if (!store.family.code || !CLOUD) return; await famAuth(); try { await sb.rpc('save_family', { p_data: famPayload() }); } catch (e) {} }
+async function famPush() { if (isKidMode() || !store.family.code || !CLOUD) return; await famAuth(); try { await sb.rpc('save_family', { p_data: famPayload() }); } catch (e) {} }
 async function famPull() {
   if (!store.family.code || !CLOUD) return false;
   await famAuth();
@@ -7136,7 +7235,8 @@ function famPersonen() {
     h += '<div class="mem"><span class="kid-dot" style="background:' + safeColor(m.color) + '"></span><div class="mem-info"><b>' + esc(m.name) + '</b><span>' + sub + '</span></div>' +
       (m.role === 'owner'
         ? '<span class="badge b-premium" title="Administrator">👑 Admin</span>'
-        : '<button class="t-del" data-fam="delMem" data-id="' + m.id + '" aria-label="Entfernen"><svg viewBox="0 0 24 24"><use href="#icTrash"/></svg></button>') +
+        : ((m.role === 'child' && CLOUD) ? '<button class="btn btn-sm" data-fam="kidSetup" data-id="' + m.id + '" data-name="' + esc(m.name) + '" title="Kinder-Handy einrichten" style="min-height:34px">📱</button>' : '') +
+          '<button class="t-del" data-fam="delMem" data-id="' + m.id + '" aria-label="Entfernen"><svg viewBox="0 0 24 24"><use href="#icTrash"/></svg></button>') +
       '</div>';
   });
   return h;
@@ -7391,6 +7491,7 @@ $('#famRoot').addEventListener('click', e => {
     if (store.family.medTaken[k]) delete store.family.medTaken[k]; else store.family.medTaken[k] = Date.now();
     famChanged(); return;
   }
+  if (a === 'kidSetup') { kidProvision(b.dataset.id, b.dataset.name); return; }
   if (a === 'delMem') { store.family.members = store.family.members.filter(m => m.id !== b.dataset.id); famChanged(); return; }
   if (a === 'toggleShare') {
     const area = b.dataset.area; ensureFamily();
@@ -10864,6 +10965,7 @@ if (CLOUD) {
   gate();
   sb.auth.getSession().then(async (r) => {
     if (!r.data.session) return;
+    if (r.data.session.user && r.data.session.user.is_anonymous) { await kidResume(r.data.session); return; }   // Kind (anonym)
     await cloudSession(r.data.session);
     await syncEntitlements();
     gate();
