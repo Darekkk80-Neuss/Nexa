@@ -776,13 +776,27 @@ input.invalid,textarea.invalid{border-color:var(--danger)!important;box-shadow:0
 .more-sheet::before{content:'';position:absolute;inset:0;background:rgba(0,0,0,.5)}
 .more-panel{position:absolute;left:0;right:0;bottom:0;background:rgba(14,17,26,.98);
   backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border-top:1px solid var(--border2);
-  border-radius:22px 22px 0 0;padding:20px 18px calc(20px + env(safe-area-inset-bottom));animation:sheetUp .25s ease both}
+  border-radius:22px 22px 0 0;padding:16px 18px calc(16px + env(safe-area-inset-bottom));animation:sheetUp .25s ease both;
+  max-height:84vh;overflow-y:auto;-webkit-overflow-scrolling:touch}
 @keyframes sheetUp{from{transform:translateY(100%)}to{transform:none}}
-.more-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.more-grid button{display:flex;flex-direction:column;align-items:center;gap:8px;padding:18px 8px;border-radius:16px;
-  border:1px solid var(--border);background:var(--card);color:var(--text);font-size:13.5px;font-weight:600;transition:.18s}
-.more-grid button:hover{border-color:var(--border2)}
-.more-grid .mi{font-size:24px}
+.more-search-wrap{position:relative;margin-bottom:12px}
+.more-search-ic{position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:15px;opacity:.7;pointer-events:none}
+.more-search{width:100%;padding:11px 12px 11px 38px;border-radius:14px;border:1px solid var(--border2);
+  background:var(--card);color:var(--text);font-size:15px}
+.more-search:focus{outline:none;border-color:var(--accent)}
+.more-grid{display:block}
+.more-h{font-size:11.5px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;color:var(--faint);margin:16px 2px 8px}
+.more-h:first-child{margin-top:2px}
+.more-sec{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:2px}
+.more-item{position:relative;display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px 8px;border-radius:16px;
+  border:1px solid var(--border);background:var(--card);color:var(--text);font-size:13.5px;font-weight:600;text-align:center;transition:.18s}
+.more-item:hover{border-color:var(--border2)}
+.more-item .mi{font-size:24px}
+.more-item .more-lbl{line-height:1.2}
+.more-fav{position:absolute;top:5px;right:7px;font-size:15px;line-height:1;color:var(--faint);padding:3px;border-radius:8px;transition:.15s}
+.more-fav:hover{background:rgba(255,255,255,.06)}
+.more-fav.on{color:#f5c542}
+.more-none{padding:22px 12px;text-align:center;color:var(--muted);font-size:14px;line-height:1.5}
 @media(min-width:900px){.more-sheet{display:none !important}}
 #printRoot{display:none}
 
@@ -1672,6 +1686,15 @@ body.lang-switching main,body.lang-switching .sidebar,body.lang-switching .topba
       </div>
 
       <div class="card set-card">
+        <h3>Hilfe &amp; Einführung</h3>
+        <p class="sub">Tipps, Coach-Hinweise und die „Erste Schritte"-Liste wieder anzeigen – nützlich, wenn du die App neu kennenlernen oder jemandem zeigen möchtest.</p>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn" id="btnResetHelp"><svg viewBox="0 0 24 24"><use href="#icHelp"/></svg>Hilfe &amp; Tour zurücksetzen</button>
+          <button class="btn" id="btnOpenHelp">📖 Alle Funktionen ansehen</button>
+        </div>
+      </div>
+
+      <div class="card set-card">
         <h3>Über Effyra</h3>
         <p class="sub">Version 1.0 – Dein persönlicher KI-Alltagsmanager.<br>
         Dokumente verstehen · Fristen erkennen · Aufgaben &amp; Termine organisieren · KI-Chat.<br>
@@ -1693,24 +1716,8 @@ body.lang-switching main,body.lang-switching .sidebar,body.lang-switching .topba
 
 <div id="moreSheet" class="more-sheet">
   <div class="more-panel">
-    <div class="more-grid">
-      <button data-view="docs"><span class="mi">📄</span><span data-i18n="nav.docs">Effyra AI Dokumentenassistent</span></button>
-      <button data-view="fit"><span class="mi">💪</span><span data-i18n="nav.fit">EffyraFit</span></button>
-      <button data-view="family"><span class="mi">👪</span><span data-i18n="nav.family">Familie</span></button>
-      <button data-view="school"><span class="mi">🧒</span><span data-i18n="nav.school">Kinder</span></button>
-      <button data-view="emergency"><span class="mi">🆘</span><span data-i18n="nav.emergency">Notfall</span></button>
-      <button data-view="work"><span class="mi">🕒</span><span data-i18n="nav.work">Arbeitszeit</span></button>
-      <button data-view="life"><span class="mi">🧭</span><span data-i18n="nav.life">Lebenslagen</span></button>
-      <button data-view="calendar"><span class="mi">📅</span><span data-i18n="nav.calendar">Kalender</span></button>
-      <button data-view="vehicles"><span class="mi">🚗</span><span data-i18n="nav.vehicles">Fahrzeuge</span></button>
-      <button data-view="contracts"><span class="mi">🧾</span><span data-i18n="nav.contracts">Verträge &amp; Abos</span></button>
-      <button data-view="vault"><span class="mi">🔐</span><span data-i18n="nav.vault">Dokumenten-Tresor</span></button>
-      <button data-view="shopping"><span class="mi">🛒</span><span data-i18n="nav.shopping">Einkaufsliste</span></button>
-      <button data-view="waste"><span class="mi">🗑️</span><span data-i18n="nav.waste">Müllkalender</span></button>
-      <button data-view="checkup"><span class="mi">🩺</span><span data-i18n="nav.checkup">Vorsorge</span></button>
-      <button data-view="help"><span class="mi">❓</span><span data-i18n="nav.help">Hilfe &amp; Anleitung</span></button>
-      <button data-view="settings"><span class="mi">⚙️</span><span data-i18n="nav.settings">Einstellungen</span></button>
-    </div>
+    <div class="more-search-wrap"><span class="more-search-ic">🔍</span><input type="search" id="moreSearch" class="more-search" placeholder="Funktion suchen …" autocomplete="off"></div>
+    <div class="more-grid" id="moreGrid"></div>
   </div>
 </div>
 
@@ -2986,6 +2993,55 @@ RENDERERS.help = function () {
 };
 if ($('#helpRoot')) $('#helpRoot').addEventListener('click', e => { const b = e.target.closest('[data-go]'); if (b) showView(b.dataset.go); });
 
+/* ==================== WELLE 3: Auffindbarkeit ====================
+   „Mehr"-Menü registry-getrieben: Suche + Favoriten + „Zuletzt genutzt" + nach Kategorie
+   gruppiert. Favoriten/Verlauf sind rein lokal (Key effyra_nav, kein Cloud-Sync). */
+const TABBAR_VIEWS = ['dashboard', 'docgen', 'chat', 'tasks'];
+let navPrefs = (function () { try { return JSON.parse(localStorage.getItem('effyra_nav')) || {}; } catch (e) { return {}; } })();
+if (!Array.isArray(navPrefs.fav)) navPrefs.fav = [];
+if (!Array.isArray(navPrefs.recent)) navPrefs.recent = [];
+function navSave() { try { localStorage.setItem('effyra_nav', JSON.stringify(navPrefs)); } catch (e) {} }
+function navIsFav(id) { return navPrefs.fav.indexOf(id) >= 0; }
+function navToggleFav(id) { navPrefs.fav = navIsFav(id) ? navPrefs.fav.filter(x => x !== id) : navPrefs.fav.concat([id]); navSave(); }
+function navTrackRecent(id) { if (!moduleMeta(id)) return; navPrefs.recent = [id].concat(navPrefs.recent.filter(x => x !== id)).slice(0, 8); navSave(); }
+function moduleLabel(m) { return (typeof t === 'function' && t('nav.' + m.id)) || m.name; }
+let moreSearchQ = '';
+function renderMoreSheet() {
+  const grid = $('#moreGrid'); if (!grid) return;
+  const q = moreSearchQ.trim().toLowerCase();
+  const btn = m => '<button class="more-item" data-view="' + m.id + '"><span class="mi">' + m.icon + '</span><span class="more-lbl">' + esc(moduleLabel(m)) + '</span><span class="more-fav' + (navIsFav(m.id) ? ' on' : '') + '" data-fav="' + m.id + '" title="Favorit">' + (navIsFav(m.id) ? '★' : '☆') + '</span></button>';
+  const sec = (head, arr) => arr.length ? '<div class="more-h">' + esc(head) + '</div><div class="more-sec">' + arr.map(btn).join('') + '</div>' : '';
+  let h = '';
+  if (q) {
+    const hits = MODULES.filter(m => moduleLabel(m).toLowerCase().indexOf(q) >= 0 || (m.keys || []).some(k => k.indexOf(q) >= 0));
+    h = hits.length ? '<div class="more-sec">' + hits.map(btn).join('') + '</div>' : '<div class="more-none">Nichts gefunden – tippe z. B. „Brief", „Termin" oder „Sport".</div>';
+  } else {
+    const favs = navPrefs.fav.map(moduleMeta).filter(Boolean);
+    const rec = navPrefs.recent.map(moduleMeta).filter(Boolean).filter(m => navPrefs.fav.indexOf(m.id) < 0 && TABBAR_VIEWS.indexOf(m.id) < 0).slice(0, 4);
+    h += sec('⭐ Favoriten', favs);
+    h += sec('🕘 Zuletzt genutzt', rec);
+    MODULE_CATS.forEach(c => { h += sec(c.label, MODULES.filter(m => m.cat === c.id)); });
+    h += '<div class="more-h">System</div><div class="more-sec"><button class="more-item" data-view="help"><span class="mi">❓</span><span class="more-lbl">' + esc(t('nav.help') || 'Hilfe & Anleitung') + '</span></button><button class="more-item" data-view="settings"><span class="mi">⚙️</span><span class="more-lbl">' + esc(t('nav.settings') || 'Einstellungen') + '</span></button></div>';
+  }
+  grid.innerHTML = h;
+  if (curLang !== 'de' && typeof sweepNow === 'function') sweepNow(grid);
+}
+if ($('#moreGrid')) $('#moreGrid').addEventListener('click', e => {
+  const fav = e.target.closest('[data-fav]');
+  if (fav) { e.stopPropagation(); navToggleFav(fav.dataset.fav); renderMoreSheet(); return; }
+  const b = e.target.closest('[data-view]');
+  if (b) showView(b.dataset.view);
+});
+if ($('#moreSearch')) $('#moreSearch').addEventListener('input', e => { moreSearchQ = e.target.value; renderMoreSheet(); });
+/* „Hilfe & Tour zurücksetzen" (Einstellungen): Coach-Marks, „Erste Schritte" und Onboarding wieder zeigen. */
+if ($('#btnResetHelp')) $('#btnResetHelp').addEventListener('click', () => {
+  try { localStorage.removeItem('effyra_coach'); } catch (e) {}
+  store.firstStepsHidden = false; store.firstStepsDone = false; store.onboarded = false; save();
+  if (typeof toast === 'function') toast('Hilfe & Einführung zurückgesetzt – die Tipps erscheinen wieder ✨');
+  $('#onboarding').classList.add('on'); if (typeof obShow === 'function') obShow(0); if ($('#obName')) $('#obName').value = store.name || '';
+});
+if ($('#btnOpenHelp')) $('#btnOpenHelp').addEventListener('click', () => showView('help'));
+
 const MORE_VIEWS = ['work', 'docs', 'school', 'calendar', 'life', 'family', 'emergency', 'vehicles', 'contracts', 'vault', 'shopping', 'waste', 'checkup', 'fit', 'help', 'settings'];
 let viewHistory = [], _navBack = false;
 function showView(name) {
@@ -2994,6 +3050,7 @@ function showView(name) {
   if (currentView === 'fit' && name !== 'fit' && typeof fitSession !== 'undefined' && fitSession) { try { fitStop(true); } catch (e) {} }   // Einheit beim Verlassen sichern + Sensoren stoppen
   if (!_navBack && currentView && currentView !== name) viewHistory.push(currentView);   // Verlauf für „Zurück"
   currentView = name;
+  if (typeof navTrackRecent === 'function') navTrackRecent(name);   // „Zuletzt genutzt" fürs Mehr-Menü (lokal)
   if (name !== 'chat' && typeof vaStopMic === 'function') vaStopMic();
   if (name !== 'chat' && typeof RT !== 'undefined' && RT && RT.active) rtStop();
   gate();
@@ -3059,7 +3116,11 @@ async function startCheckout(product) {
 $$('[data-view]').forEach(b => b.addEventListener('click', () => showView(b.dataset.view)));
 $('#btnTopSettings').addEventListener('click', () => showView('settings'));
 $('#btnTopHelp').addEventListener('click', () => helpOpen(currentView));
-$('#moreTab').addEventListener('click', () => $('#moreSheet').classList.toggle('on'));
+$('#moreTab').addEventListener('click', () => {
+  const s = $('#moreSheet'), willOpen = !s.classList.contains('on');
+  if (willOpen) { moreSearchQ = ''; if ($('#moreSearch')) $('#moreSearch').value = ''; if (typeof renderMoreSheet === 'function') renderMoreSheet(); }
+  s.classList.toggle('on');
+});
 $('#moreSheet').addEventListener('click', e => { if (e.target === $('#moreSheet')) $('#moreSheet').classList.remove('on'); });
 
 function refreshAIStatus() {
