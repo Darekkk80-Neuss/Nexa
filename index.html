@@ -5287,7 +5287,7 @@ function mealTranslate(text) {
 function mealScaleQty(meas, factor) {
   meas = String(meas || '').trim(); if (!meas) return '';
   const m = meas.match(/^(\d+\s*\/\s*\d+|\d+[.,]?\d*)/);
-  if (!m) return mealTranslate(meas);
+  if (!m) return (curLang === 'de' ? mealTranslate(meas) : meas);
   const numStr = m[1], rest = meas.slice(m[0].length).trim();
   let val;
   if (numStr.indexOf('/') >= 0) { const p = numStr.split('/'); val = (+p[0]) / (+p[1] || 1); }
@@ -5295,7 +5295,7 @@ function mealScaleQty(meas, factor) {
   let s = val * (factor || 1);
   s = s >= 10 ? Math.round(s) : Math.round(s * 4) / 4;       // hübsch runden
   const out = Number.isInteger(s) ? String(s) : String(s).replace('.', ',');
-  return out + (rest ? ' ' + mealTranslate(rest) : '');
+  return out + (rest ? ' ' + (curLang === 'de' ? mealTranslate(rest) : rest) : '');
 }
 /* Wetter → passende Kategorien + Tagline (heiß=leicht, kalt=herzhaft). */
 function mealTemp() { return (store.weather && typeof store.weather.temp === 'number') ? store.weather.temp : 16; }
@@ -5334,22 +5334,58 @@ async function mealPickToday() {
   throw new Error('no meal');
 }
 function mealLoadingHTML() { return '<div class="meal-card"><div class="meal-hero meal-loading"></div><div class="meal-body"><div class="meal-kicker" style="color:var(--muted)">🍽️ Gericht des Tages wird ausgewählt …</div></div></div>'; }
+/* Rezept in die eingestellte App-Sprache (curLang) bringen: Cache pro Gericht+Sprache; Platzhalter
+   sofort (Deutsch=Wörterbuch, sonst Englisch), dann KI-Übersetzung (gecacht) beim ersten Anzeigen. */
+const _mealTr = {};   // "id|lang" → 'busy'|'done'|'fail' (nur Session, nicht persistiert)
+function mealLocalize(m) {
+  const lang = curLang;
+  if (lang === 'en') return { ready: true, title: m.name_en, names: m.ingredients.map(i => i.en), instr: m.instr_en };
+  if (m.tr && m.tr[lang]) { const c = m.tr[lang]; return { ready: true, title: c.title, names: c.names, instr: c.instr }; }
+  // Wird gerade übersetzt? Nur wenn KI verfügbar und noch nicht fehlgeschlagen → sonst ist der Platzhalter das Endergebnis.
+  const willTr = (typeof canRealAI === 'function' && canRealAI()) && _mealTr[m.id + '|' + lang] !== 'fail';
+  if (willTr) mealAutoTranslate(m, lang);
+  if (lang === 'de') return { ready: !willTr, title: m.name_de || m.name_en, names: m.ingredients.map(i => i.de || i.en), instr: m.instr_en };
+  return { ready: !willTr, title: m.name_en, names: m.ingredients.map(i => i.en), instr: m.instr_en };
+}
+async function mealAutoTranslate(m, lang) {
+  if (lang === 'en' || (m.tr && m.tr[lang])) return;
+  const key = m.id + '|' + lang;
+  if (_mealTr[key]) return;                                     // läuft/schon versucht
+  if (typeof canRealAI !== 'function' || !canRealAI()) return;  // ohne KI: Platzhalter bleibt
+  _mealTr[key] = 'busy';
+  const LNAME = { de: 'German', fr: 'French', es: 'Spanish', it: 'Italian', pl: 'Polish' }[lang] || lang;
+  const names = m.ingredients.map(i => i.en);
+  try {
+    const out = await aiCall({
+      op: 'text', model: (store.settings && store.settings.model) || 'gpt-5-mini', max_tokens: 900,
+      messages: [{ role: 'user', content: 'Translate this recipe into ' + LNAME + '. Reply with STRICT JSON only, no extra text: {"title":"...","ingredients":["...","..."],"instructions":"..."}. Keep EXACTLY the same number and order of ingredients; translate only the ingredient NAME (no quantities). Keep the instructions readable.\n\nTitle: ' + m.name_en + '\n\nIngredients:\n' + names.map((n, i) => (i + 1) + '. ' + n).join('\n') + '\n\nInstructions:\n' + m.instr_en }]
+    });
+    const j = extractJSON(out || '');
+    if (j && j.title) {
+      const on = Array.isArray(j.ingredients) ? j.ingredients : [];
+      m.tr = m.tr || {};
+      m.tr[lang] = { title: String(j.title), names: names.map((n, i) => on[i] ? String(on[i]) : (lang === 'de' ? mealTranslate(n) : n)), instr: String(j.instructions || m.instr_en) };
+      _mealTr[key] = 'done'; save();
+      if (currentView === 'dashboard') renderMeal();
+    } else { _mealTr[key] = 'fail'; }
+  } catch (e) { _mealTr[key] = 'fail'; }
+}
 function mealCardHTML(m) {
   const M = store.meal, open = !!M.open, ppl = M.servings || 2, factor = ppl / 2;
   const members = (store.family && store.family.members) || [];
-  const title = m.name_de || m.name_en;
+  const L = mealLocalize(m);
+  const title = L.title;
   let h = '<div class="meal-card"><div class="meal-hero"><img src="' + esc(m.thumb) + '" alt="' + esc(title) + '" loading="lazy">' +
     '<div class="meal-hero-scrim"></div><button class="meal-x" data-meal="hide" title="Heute ausblenden" aria-label="Heute ausblenden">×</button>' +
     '<div class="meal-hero-txt"><div class="meal-kicker">🍽️ Gericht des Tages · ' + esc(m.tag) + '</div><div class="meal-title">' + esc(title) + '</div></div></div>';
   h += '<div class="meal-body">';
-  h += '<div class="meal-chips"><span class="meal-chip">🍴 ' + esc(mealTranslate(m.category)) + '</span>' + (m.area ? '<span class="meal-chip">🌍 ' + esc(m.area) + '</span>' : '') + '<span class="meal-chip">🥗 gesund &amp; frisch</span></div>';
+  h += '<div class="meal-chips"><span class="meal-chip">🍴 ' + esc(curLang === 'de' ? mealTranslate(m.category) : m.category) + '</span>' + (m.area ? '<span class="meal-chip">🌍 ' + esc(m.area) + '</span>' : '') + '<span class="meal-chip">🥗 gesund &amp; frisch</span></div>';
   h += '<div class="meal-row"><div class="meal-ppl"><span>👥 Portionen</span><button class="meal-step" data-meal="pminus" aria-label="weniger">−</button><b>' + ppl + '</b><button class="meal-step" data-meal="pplus" aria-label="mehr">+</button></div>' +
     '<button class="meal-toggle" data-meal="toggle">' + (open ? 'Weniger ▲' : 'Rezept ansehen ▼') + '</button></div>';
   if (open) {
-    h += '<div class="meal-drop"><div class="meal-sec-t">🧺 Zutaten</div>' +
-      m.ingredients.map(i => '<div class="meal-ing"><span>' + esc(i.de || i.en) + '</span><span class="meal-ing-q">' + esc(mealScaleQty(i.measure, factor)) + '</span></div>').join('') +
-      '<div class="meal-sec-t" style="margin-top:14px">👩‍🍳 Zubereitung</div><p class="meal-instr">' + esc(m.instr_de || m.instr_en).replace(/\r?\n/g, '<br>') + '</p>' +
-      (m.instr_de ? '' : '<button class="btn btn-sm btn-ghost" data-meal="translate" style="margin-top:4px">🌐 Auf Deutsch übersetzen</button>') +
+    h += '<div class="meal-drop"><div class="meal-sec-t">🧺 Zutaten' + (L.ready ? '' : ' <span style="font-weight:500;color:var(--faint)">· wird übersetzt …</span>') + '</div>' +
+      m.ingredients.map((i, idx) => '<div class="meal-ing"><span>' + esc(L.names[idx] || i.en) + '</span><span class="meal-ing-q">' + esc(mealScaleQty(i.measure, factor)) + '</span></div>').join('') +
+      '<div class="meal-sec-t" style="margin-top:14px">👩‍🍳 Zubereitung</div><p class="meal-instr">' + esc(L.instr).replace(/\r?\n/g, '<br>') + '</p>' +
       '<div class="meal-note">ℹ️ Nährwerte sind bei dieser Rezeptquelle (noch) nicht enthalten.</div></div>';
   }
   h += '<div class="meal-actions"><button class="btn btn-primary btn-sm" data-meal="addlist">🛒 Zutaten auf die Liste</button>';
@@ -5381,16 +5417,6 @@ function mealAddToList() {
   });
   return added;
 }
-async function mealTranslateInstr() {
-  const m = store.meal && store.meal.today; if (!m || m.instr_de) return;
-  if (typeof canRealAI === 'function' && !canRealAI()) { toast('Die Übersetzung nutzt die KI-Funktion (Premium).'); return; }
-  toast('Übersetze die Zubereitung …');
-  try {
-    const out = await aiCall({ op: 'text', model: (store.settings && store.settings.model) || 'gpt-5-mini', max_tokens: 700,
-      messages: [{ role: 'user', content: 'Übersetze diese Koch-Zubereitung ins Deutsche. Gib NUR die übersetzte Anleitung zurück – gleiche Absätze/Schritte, keine Einleitung, keine Anführungszeichen.\n\n' + m.instr_en }] });
-    m.instr_de = (out || '').trim() || m.instr_en; save(); renderMeal();
-  } catch (e) { toast('Übersetzung fehlgeschlagen.'); }
-}
 if ($('#mealWidget')) $('#mealWidget').addEventListener('click', e => {
   const b = e.target.closest('[data-meal]'); if (!b) return;
   store.meal = store.meal || {}; const M = store.meal, a = b.dataset.meal;
@@ -5398,7 +5424,6 @@ if ($('#mealWidget')) $('#mealWidget').addEventListener('click', e => {
   if (a === 'pplus') { M.servings = Math.min(12, (M.servings || 2) + 1); save(); renderMeal(); return; }
   if (a === 'pminus') { M.servings = Math.max(1, (M.servings || 2) - 1); save(); renderMeal(); return; }
   if (a === 'hide') { M.hiddenDate = todayISO(); M.open = false; save(); renderMeal(); toast('Für heute ausgeblendet – morgen gibt es einen neuen Vorschlag 🍽️'); return; }
-  if (a === 'translate') { mealTranslateInstr(); return; }
   if (a === 'addlist') { const n = mealAddToList(); if (n) { shopChanged(); toast('🛒 ' + n + ' Zutaten auf der Einkaufsliste ✓'); } else toast('Zutaten sind schon auf der Liste'); return; }
   if (a === 'assign') {
     const sel = $('#mealAssignSel'), mid = sel ? sel.value : '';
