@@ -1510,7 +1510,7 @@ body.lang-switching main,body.lang-switching .sidebar,body.lang-switching .topba
         <div class="dash-hero-actions">
           <button class="icon-btn" id="dashCustomize" title="Dashboard anpassen" aria-label="Dashboard anpassen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/><circle cx="9" cy="7" r="2.4" fill="var(--card)"/><circle cx="15" cy="12" r="2.4" fill="var(--card)"/><circle cx="8" cy="17" r="2.4" fill="var(--card)"/></svg></button>
           <div class="theme-toggle" id="themeQuick" role="group" aria-label="Erscheinungsbild">
-            <button type="button" data-theme-set="auto" title="Automatisch (System)" aria-label="Automatisch">A</button>
+            <button type="button" data-theme-set="auto" title="Automatisch nach Uhrzeit" aria-label="Automatisch nach Uhrzeit">A</button>
             <button type="button" data-theme-set="light" title="Heller Modus" aria-label="Hell">☀️</button>
             <button type="button" data-theme-set="dark" title="Dunkler Modus" aria-label="Dunkel">🌙</button>
           </div>
@@ -1802,7 +1802,7 @@ body.lang-switching main,body.lang-switching .sidebar,body.lang-switching .topba
 
       <div class="card set-card">
         <h3>🎨 Erscheinungsbild</h3>
-        <p class="sub">Hell, dunkel – oder automatisch nach deiner Geräteeinstellung.</p>
+        <p class="sub">Hell, dunkel – oder automatisch nach der Uhrzeit (tagsüber hell, abends dunkel).</p>
         <div class="seg" id="themeSeg" style="margin-bottom:0">
           <button data-theme-set="auto">Auto</button>
           <button data-theme-set="light">☀️ Hell</button>
@@ -2115,20 +2115,25 @@ const hasKey = () => getKey().length > 8;
 
 /* ---- Erscheinungsbild (Hell/Dunkel/Auto) ---- */
 const themePref = () => (store.settings && store.settings.theme) || 'auto';
+/* Auto-Modus nach Uhrzeit: hell von DAY_START bis DAY_END Uhr, sonst dunkel.
+   Zum Anpassen einfach die beiden Stunden ändern. */
+const DAY_START = 7;   // ab 07:00 Uhr = heller Modus
+const DAY_END   = 19;  // ab 19:00 Uhr = dunkler Modus
+function isDaytime() {
+  const h = new Date().getHours();
+  return h >= DAY_START && h < DAY_END;
+}
 function applyTheme() {
   const t = themePref();
-  const prefersLight = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches;
-  const light = t === 'light' || (t === 'auto' && prefersLight);
+  const light = t === 'light' || (t === 'auto' && isDaytime());
   document.documentElement.dataset.theme = light ? 'light' : 'dark';
   syncThemeSegs();
 }
 /* Aktiv-Zustand aller Theme-Umschalter (#themeQuick im Dashboard + #themeSeg in den Einstellungen) angleichen. */
 function syncThemeSegs() { try { $$('[data-theme-set]').forEach(b => b.classList.toggle('active', b.dataset.themeSet === themePref())); } catch (e) {} }
-try {
-  const mq = window.matchMedia('(prefers-color-scheme: light)');
-  mq.addEventListener ? mq.addEventListener('change', () => { if (themePref() === 'auto') applyTheme(); })
-    : mq.addListener(() => { if (themePref() === 'auto') applyTheme(); });
-} catch (e) {}
+/* Auto-Modus regelmäßig prüfen, damit bei geöffneter App zur passenden Uhrzeit
+   automatisch umgeschaltet wird (z. B. abends um 19:00 Uhr auf dunkel). */
+try { setInterval(() => { if (themePref() === 'auto') applyTheme(); }, 60 * 1000); } catch (e) {}
 applyTheme();
 
 /* ============================== I18N / SPRACHE & REGION ============================== */
@@ -2602,7 +2607,7 @@ const TDICT_SRC = {
   /* ===== Einstellungen ===== */
   '🎨 Erscheinungsbild': { en: '🎨 Appearance', fr: '🎨 Apparence', es: '🎨 Apariencia', it: '🎨 Aspetto', pl: '🎨 Wygląd' },
   'Erscheinungsbild': { en: 'Appearance', fr: 'Apparence', es: 'Apariencia', it: 'Aspetto', pl: 'Wygląd' },
-  'Hell, dunkel – oder automatisch nach deiner Geräteeinstellung.': { en: 'Light, dark – or automatic based on your device setting.', fr: "Clair, sombre – ou automatique selon le réglage de votre appareil.", es: 'Claro, oscuro – o automático según la configuración de tu dispositivo.', it: 'Chiaro, scuro – o automatico in base al tuo dispositivo.', pl: 'Jasny, ciemny – lub automatycznie zależnie od ustawień urządzenia.' },
+  'Hell, dunkel – oder automatisch nach der Uhrzeit (tagsüber hell, abends dunkel).': { en: 'Light, dark – or automatic based on your device setting.', fr: "Clair, sombre – ou automatique selon le réglage de votre appareil.", es: 'Claro, oscuro – o automático según la configuración de tu dispositivo.', it: 'Chiaro, scuro – o automatico in base al tuo dispositivo.', pl: 'Jasny, ciemny – lub automatycznie zależnie od ustawień urządzenia.' },
   'Auto': { en: 'Auto', fr: 'Auto', es: 'Auto', it: 'Auto', pl: 'Auto' },
   'Hell': { en: 'Light', fr: 'Clair', es: 'Claro', it: 'Chiaro', pl: 'Jasny' },
   'Dunkel': { en: 'Dark', fr: 'Sombre', es: 'Oscuro', it: 'Scuro', pl: 'Ciemny' },
