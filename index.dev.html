@@ -1645,7 +1645,7 @@ body.lang-switching main,body.lang-switching .sidebar,body.lang-switching .topba
         <h3>Dokument fotografieren oder hochladen</h3>
         <p>Brief, Rechnung, Vertrag – Effyra übersetzt Amtsdeutsch in einfache Worte.</p>
       </div>
-      <input type="file" id="docInput" accept="image/*,application/pdf">
+      <input type="file" id="docInput" accept="image/*,application/pdf,.doc,.docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/msword">
       <label style="display:flex;align-items:center;gap:8px;margin:10px 2px 0;font-size:13px;color:var(--faint);cursor:pointer"><input type="checkbox" id="autoVaultChk" style="width:auto;flex:none;margin:0"> Scans automatisch im Tresor sichern</label>
       <div class="analyzing" id="analyzing">
         <div class="scanbox"><img id="scanImg" alt=""><div class="scanline"></div></div>
@@ -8364,10 +8364,22 @@ function renderHolidays() {
 const WARN_ICON = { minor: 'ℹ️', moderate: '⚠️', severe: '⛈️', extreme: '🚨' };
 let _warnTimer = null;
 const warnKey = (a) => (a.id || a.alert_id || a.event_de || a.event_en || 'w') + '|' + (a.expires || a.effective || '');
+/* Schließbares In-App-Warn-Popup – der Nutzer bestätigt mit „Gelesen". */
+function showWarnPopup(title, body) {
+  let ov = document.getElementById('warnOv');
+  if (!ov) { ov = document.createElement('div'); ov.id = 'warnOv'; ov.className = 'fam-alert-ov'; document.body.appendChild(ov); }
+  ov.innerHTML = '<div class="fam-alert" role="alertdialog" aria-modal="true"><h3 style="margin-bottom:6px;line-height:1.3">' + esc(title) + '</h3>' +
+    '<p style="color:var(--muted);font-size:13.5px;margin-bottom:14px;line-height:1.45">' + esc(body) + '</p>' +
+    '<div class="fam-alert-btns"><button class="btn btn-sm btn-primary" id="warnRead">✓ Gelesen</button></div></div>';
+  ov.classList.add('on');
+  ov.querySelector('#warnRead').onclick = () => ov.classList.remove('on');
+}
 async function showWarnNotification(a, loc) {
   const icon = WARN_ICON[String(a.severity || '').toLowerCase()] || '⚠️';
   const title = icon + ' ' + (a.event_de || a.event_en || 'Unwetterwarnung') + (loc && loc.name ? ' · ' + loc.name : '');
-  const body = String(a.headline_de || a.description_de || 'Amtliche Warnung des Deutschen Wetterdienstes.').slice(0, 180);
+  const body = String(a.headline_de || a.description_de || 'Amtliche Warnung des Deutschen Wetterdienstes.').slice(0, 200);
+  /* App im Vordergrund → schließbares In-App-Popup („Gelesen"); sonst OS-Benachrichtigung (vom Nutzer per Wisch/Klick schließbar). */
+  if (typeof document !== 'undefined' && document.visibilityState === 'visible') { showWarnPopup(title, body); return; }
   try {
     if (typeof Notification !== 'undefined' && Notification.permission === 'granted' && 'serviceWorker' in navigator) {
       const reg = await navigator.serviceWorker.ready;
@@ -8376,7 +8388,7 @@ async function showWarnNotification(a, loc) {
     }
     if (typeof Notification !== 'undefined' && Notification.permission === 'granted') { new Notification(title, { body: body, tag: 'dwd-warn' }); return; }
   } catch (e) {}
-  if (!document.hidden) toast(title);   // Fallback, wenn App im Vordergrund & keine Notification-Erlaubnis
+  showWarnPopup(title, body);   // Fallback
 }
 /* Prüft im Hintergrund die amtlichen DWD-Warnungen für den gespeicherten Ort und meldet NUR neue Warnungen. */
 async function checkWeatherWarnings() {
@@ -9742,12 +9754,57 @@ async function pdfFirstPageBlob(file) {
   await page.render({ canvasContext: cv.getContext('2d'), viewport: vp }).promise;
   return await new Promise(r => cv.toBlob(r, 'image/jpeg', 0.9));
 }
+/* Word-Upload (.docx): Text via Mammoth (bei Bedarf vom CDN nachgeladen) extrahieren und als Bild rendern → wie ein Foto/PDF analysieren. */
+let _mammoth = null;
+function loadMammoth() {
+  if (_mammoth) return Promise.resolve(_mammoth);
+  if (window.mammoth) { _mammoth = window.mammoth; return Promise.resolve(_mammoth); }
+  return new Promise((res, rej) => {
+    const s = document.createElement('script');
+    s.src = 'https://cdn.jsdelivr.net/npm/mammoth@1.6.0/mammoth.browser.min.js';
+    s.onload = () => { _mammoth = window.mammoth; _mammoth ? res(_mammoth) : rej(new Error('mammoth')); };
+    s.onerror = () => rej(new Error('mammoth'));
+    document.head.appendChild(s);
+  });
+}
+function textToImageBlob(text) {
+  const w = 1240, pad = 60, fs = 22, lh = 32, maxW = w - pad * 2;
+  const probe = document.createElement('canvas').getContext('2d'); probe.font = fs + 'px Arial, sans-serif';
+  const lines = [];
+  String(text).replace(/\r/g, '').split('\n').forEach(para => {
+    if (!para.trim()) { lines.push(''); return; }
+    let line = '';
+    para.split(/\s+/).forEach(word => { const t = line ? line + ' ' + word : word; if (probe.measureText(t).width > maxW && line) { lines.push(line); line = word; } else line = t; });
+    if (line) lines.push(line);
+  });
+  if (lines.length > 140) lines.length = 140;
+  const h = Math.min(4400, pad * 2 + lines.length * lh);
+  const cv = document.createElement('canvas'); cv.width = w; cv.height = h;
+  const ctx = cv.getContext('2d'); ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, w, h); ctx.fillStyle = '#111'; ctx.font = fs + 'px Arial, sans-serif'; ctx.textBaseline = 'top';
+  lines.forEach((ln, i) => ctx.fillText(ln, pad, pad + i * lh));
+  return new Promise(r => cv.toBlob(r, 'image/jpeg', 0.9));
+}
+async function wordToImageBlob(file) {
+  const m = await loadMammoth();
+  const buf = await file.arrayBuffer();
+  const r = await m.extractRawText({ arrayBuffer: buf });
+  const text = (r && r.value ? r.value : '').trim();
+  if (!text) return null;
+  return textToImageBlob(text);
+}
+const isWordFile = (f) => /wordprocessingml|msword/.test(f.type || '') || /\.docx?$/i.test(f.name || '');
 function openDocCrop(file) {
   if (!file) return;
   if (file.type === 'application/pdf' || /\.pdf$/i.test(file.name || '')) {
     toast('PDF wird geladen …');
     pdfFirstPageBlob(file).then(blob => { blob ? handleDocFile(blob) : toast('⚠️ PDF konnte nicht gelesen werden.'); })
       .catch(() => toast('⚠️ PDF konnte nicht geladen werden – versuch ein Foto oder Bild.'));
+    return;
+  }
+  if (isWordFile(file)) {
+    toast('Word-Dokument wird gelesen …');
+    wordToImageBlob(file).then(blob => { blob ? handleDocFile(blob) : toast('⚠️ Word-Datei ist leer oder nicht lesbar (nur .docx wird unterstützt).'); })
+      .catch(() => toast('⚠️ Word-Datei konnte nicht gelesen werden (nur .docx wird unterstützt).'));
     return;
   }
   const img = new Image(), url = URL.createObjectURL(file);
