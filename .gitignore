@@ -6,3 +6,6 @@ legal/
 
 # Build-Tooling (nicht deployen)
 node_modules/
+
+# Lokale Test-Datei (index.html ohne Anon-Key, nur zum lokalen Testen)
+__test.html

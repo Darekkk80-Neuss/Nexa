@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Impressum · Effyra</title>
+<style>
+  :root{color-scheme:light dark}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;line-height:1.6;color:#1f2430;background:#fff;padding:24px 18px 60px}
+  @media(prefers-color-scheme:dark){body{background:#0e1118;color:#e7ebf3}}
+  .wrap{max-width:760px;margin:0 auto}
+  h1{font-size:26px;margin:.2em 0 .1em}
+  h2{font-size:18px;margin:1.4em 0 .3em}
+  a{color:#7c3aed}
+  .langbar{display:flex;gap:8px;margin-bottom:18px}
+  .langbar button{border:1px solid #ccc;background:transparent;color:inherit;border-radius:8px;padding:5px 12px;cursor:pointer;font-size:13px}
+  .langbar button.on{background:#7c3aed;border-color:#7c3aed;color:#fff}
+  .muted{color:#6b7280;font-size:13px}
+  .box{border:1px solid rgba(127,127,127,.25);border-radius:12px;padding:14px 16px;margin:12px 0}
+  [hidden]{display:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="langbar"><button data-l="de" class="on">Deutsch</button><button data-l="en">English</button></div>
+
+  <section id="de">
+    <h1>Impressum</h1>
+    <p class="muted">Angaben gemäß § 5 DDG (Digitale-Dienste-Gesetz)</p>
+    <div class="box">
+      Gonsoft labs<br>
+      Darius Gonschior<br>
+      Herzogstr. 27<br>
+      41468 Neuss<br>
+      Deutschland
+    </div>
+    <h2>Kontakt</h2>
+    <p>Telefon: 0151 56109742<br>E-Mail: <a href="mailto:info@gonsoft-labs.de">info@gonsoft-labs.de</a></p>
+    <h2>Umsatzsteuer</h2>
+    <p>Kleinunternehmer gemäß § 19 UStG – es wird keine Umsatzsteuer ausgewiesen. Keine Umsatzsteuer-Identifikationsnummer.</p>
+    <h2>Verantwortlich für den Inhalt nach § 18 Abs. 2 MStV</h2>
+    <p>Darius Gonschior (Anschrift wie oben)</p>
+    <h2>Verbraucherstreitbeilegung</h2>
+    <p>Wir sind nicht bereit und nicht verpflichtet, an Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle teilzunehmen.</p>
+    <h2>Haftung für Inhalte und Links</h2>
+    <p>Als Diensteanbieter sind wir für eigene Inhalte nach den allgemeinen Gesetzen verantwortlich. Für Inhalte externer Links sind ausschließlich deren Betreiber verantwortlich; zum Zeitpunkt der Verlinkung waren keine Rechtsverstöße erkennbar.</p>
+    <p class="muted">Stand: 17.07.2026 · Entwurf – vor Veröffentlichung anwaltlich prüfen lassen.</p>
+  </section>
+
+  <section id="en" hidden>
+    <h1>Legal Notice (Impressum)</h1>
+    <p class="muted">Information pursuant to § 5 DDG (German Digital Services Act)</p>
+    <div class="box">
+      Gonsoft labs<br>
+      Darius Gonschior<br>
+      Herzogstr. 27<br>
+      41468 Neuss<br>
+      Germany
+    </div>
+    <h2>Contact</h2>
+    <p>Phone: +49 151 56109742<br>E-mail: <a href="mailto:info@gonsoft-labs.de">info@gonsoft-labs.de</a></p>
+    <h2>VAT</h2>
+    <p>Small business under § 19 of the German VAT Act (UStG) – no VAT is shown. No VAT identification number.</p>
+    <h2>Responsible for content pursuant to § 18 (2) MStV</h2>
+    <p>Darius Gonschior (address as above)</p>
+    <h2>Consumer dispute resolution</h2>
+    <p>We are neither willing nor obliged to participate in dispute resolution proceedings before a consumer arbitration board.</p>
+    <h2>Liability for content and links</h2>
+    <p>As a service provider we are responsible for our own content under general law. Operators of linked external sites are solely responsible for their content; no legal violations were apparent at the time of linking.</p>
+    <p class="muted">Version: 2026-07-17 · Draft – to be reviewed by a lawyer before publication.</p>
+  </section>
+</div>
+<script>
+  (function(){
+    var p=new URLSearchParams(location.search).get('lang');
+    var lang=(p||navigator.language||'de').slice(0,2).toLowerCase()==='de'?'de':'en';
+    function set(l){document.getElementById('de').hidden=l!=='de';document.getElementById('en').hidden=l!=='en';document.documentElement.lang=l;[].forEach.call(document.querySelectorAll('.langbar button'),function(b){b.classList.toggle('on',b.dataset.l===l);});}
+    set(lang);
+    [].forEach.call(document.querySelectorAll('.langbar button'),function(b){b.onclick=function(){set(b.dataset.l);};});
+  })();
+</script>
+</body>
+</html>

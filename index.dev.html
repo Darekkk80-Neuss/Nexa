@@ -344,6 +344,11 @@ label.fld{display:block;font-size:12.5px;font-weight:600;color:var(--muted);marg
 .crop-h{position:absolute;width:26px;height:26px;margin:-13px 0 0 -13px;border-radius:50%;background:#fff;border:3px solid #7c3aed;box-shadow:0 2px 8px rgba(0,0,0,.55);cursor:grab;touch-action:none;z-index:2}
 .crop-bar{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
 .crop-hint{color:#c6cddb;font-size:13px;text-align:center;max-width:360px;line-height:1.4}
+/* In-App-Rechtsdokument-Viewer */
+.legaldoc-ov{position:fixed;inset:0;z-index:10002;background:#0e1118;display:none;flex-direction:column}
+.legaldoc-ov.on{display:flex}
+.legaldoc-bar{padding:10px 14px;display:flex;justify-content:flex-end;border-bottom:1px solid var(--border);background:var(--card)}
+.legaldoc-frame{flex:1;width:100%;border:none;background:#fff}
 .meal-card{background:var(--card);border:1px solid var(--border);border-radius:20px;overflow:hidden;margin-bottom:22px;box-shadow:0 10px 34px rgba(0,0,0,.16)}
 .meal-hero{position:relative;width:100%;aspect-ratio:16/10;background:var(--card2)}
 .meal-hero img{width:100%;height:100%;object-fit:cover;display:block}
@@ -3454,6 +3459,7 @@ function obFinish(target) {
   $('#onboarding').classList.remove('on');
   showView((typeof target === 'string' && target) ? target : 'dashboard');
   toast('Willkommen bei Effyra' + (store.name ? ', ' + store.name : '') + ' ✨');
+  try { setTimeout(maybeShowTermsGate, 500); } catch (e) {}
   try { setTimeout(askCalendarImport, 1200); } catch (e) {}
 }
 $('#obNext').addEventListener('click', () => { obIdx < OB_LAST ? obShow(obIdx + 1) : obFinish(); });
@@ -3598,7 +3604,7 @@ function noteAIUsage() {
 /* Zentrale Prüfung vor echten KI-Aktionen. Gibt true zurück, wenn ausführbar. */
 /* ============================== RECHTLICHES & EINWILLIGUNGEN (DSGVO) ============================== */
 /* Versionsstände der einwilligungspflichtigen Zwecke – bei Änderung hochzählen → Re-Consent. */
-const LEGAL_VERSIONS = { ai: '2026-07-16', push: '2026-07-16', terms: '2026-07-16', fit: '2026-07-16', emergency: '2026-07-16' };
+const LEGAL_VERSIONS = { ai: '2026-07-17', push: '2026-07-17', terms: '2026-07-17', privacy: '2026-07-17', fit: '2026-07-17', emergency: '2026-07-17' };
 function getConsent(id) { return (store.consents && store.consents[id]) || null; }
 function consentValid(id) { const c = getConsent(id); return !!(c && c.status === 'granted' && c.version === LEGAL_VERSIONS[id]); }
 function setConsent(id, status) {
@@ -3636,6 +3642,34 @@ function showAiConsent() {
   ov.classList.add('on');
   ov.querySelector('#aiConsentDeny').onclick = () => { setConsent('ai', 'denied'); ov.classList.remove('on'); toast('KI bleibt deaktiviert – die App ist ohne KI voll nutzbar.'); };
   ov.querySelector('#aiConsentGrant').onclick = () => { setConsent('ai', 'granted'); ov.classList.remove('on'); toast('✓ Danke. Du kannst die KI-Funktionen jetzt nutzen.'); };
+}
+/* In-App-Dokument-Viewer (Overlay, ohne Navigationsverlust). Sprache: DE in Deutschland, sonst EN. */
+function legalLang() { return (typeof curLang !== 'undefined' && curLang === 'de') ? 'de' : 'en'; }
+function showLegalDoc(name) {
+  let ov = document.getElementById('legalDocOv');
+  if (!ov) { ov = document.createElement('div'); ov.id = 'legalDocOv'; ov.className = 'legaldoc-ov'; document.body.appendChild(ov); }
+  ov.innerHTML = '<div class="legaldoc-bar"><button class="btn btn-sm" id="legalDocClose">✕ ' + (legalLang() === 'de' ? 'Schließen' : 'Close') + '</button></div><iframe class="legaldoc-frame" src="' + name + '.html?lang=' + legalLang() + '" title="Rechtstext"></iframe>';
+  ov.classList.add('on');
+  ov.querySelector('#legalDocClose').onclick = () => ov.classList.remove('on');
+}
+/* Onboarding-Consent: Nutzungsbedingungen zustimmen (Typ B, blockierend) + Datenschutz-Kenntnisnahme (Typ A, Link, kein Haken). */
+function maybeShowTermsGate() { try { if (store.onboarded && !consentValid('terms') && !isChildUser()) showTermsGate(); } catch (e) {} }
+function showTermsGate() {
+  const de = legalLang() === 'de';
+  let ov = document.getElementById('termsGateOv');
+  if (!ov) { ov = document.createElement('div'); ov.id = 'termsGateOv'; ov.className = 'fam-alert-ov'; ov.style.zIndex = '10001'; document.body.appendChild(ov); }
+  ov.innerHTML = '<div class="fam-alert" role="dialog" aria-modal="true" style="max-width:440px;text-align:left">' +
+    '<h3 style="margin-bottom:10px">' + (de ? 'Bevor es losgeht' : 'Before you start') + '</h3>' +
+    '<label style="display:flex;gap:10px;align-items:flex-start;font-size:13.5px;line-height:1.45;margin-bottom:12px;cursor:pointer"><input type="checkbox" id="termsChk" style="width:auto;flex:none;margin-top:2px">' +
+    '<span>' + (de ? 'Ich stimme den ' : 'I agree to the ') + '<a href="#" id="termsLink" style="color:#7c3aed">' + (de ? 'Nutzungsbedingungen' : 'Terms of Use') + '</a>' + (de ? ' zu.' : '.') + '</span></label>' +
+    '<p style="color:var(--muted);font-size:12px;line-height:1.45;margin-bottom:16px">' + (de ? 'Mit „Weiter" bestätige ich, die ' : 'By selecting „Continue" I confirm I have read the ') + '<a href="#" id="privLink" style="color:#7c3aed">' + (de ? 'Datenschutzerklärung' : 'Privacy Policy') + '</a>' + (de ? ' zur Kenntnis genommen zu haben.' : '.') + '</p>' +
+    '<div class="fam-alert-btns"><button class="btn btn-sm btn-primary" id="termsGo" disabled style="opacity:.5">' + (de ? 'Weiter' : 'Continue') + '</button></div></div>';
+  ov.classList.add('on');
+  const chk = ov.querySelector('#termsChk'), go = ov.querySelector('#termsGo');
+  chk.onchange = () => { go.disabled = !chk.checked; go.style.opacity = chk.checked ? '1' : '.5'; };
+  ov.querySelector('#termsLink').onclick = (e) => { e.preventDefault(); showLegalDoc('nutzungsbedingungen'); };
+  ov.querySelector('#privLink').onclick = (e) => { e.preventDefault(); showLegalDoc('datenschutz'); };
+  go.onclick = () => { if (!chk.checked) return; setConsent('terms', 'granted'); setConsent('privacy', 'acknowledged'); ov.classList.remove('on'); };
 }
 function requireAI() {
   if (isChildUser()) { toast('🔒 KI ist für Kinderkonten nicht verfügbar.'); return false; }
@@ -11613,10 +11647,11 @@ function renderLegalCard() {
     row('push', '🔔 Push-Benachrichtigungen') +
     '</div>' +
     '<div style="margin:10px 0"><button class="btn btn-sm" id="consentExport">📤 Einwilligungen exportieren</button></div>' +
-    '<details class="up-code"><summary>📄 Impressum</summary><div class="sub" style="margin-top:8px;line-height:1.6;white-space:pre-line">' +
-      esc('Angaben gemäß § 5 DDG\nGonsoft labs – Darius Gonschior\nHerzogstr. 27, 41468 Neuss\nTel.: 0151 56109742\nE-Mail: info@gonsoft-labs.de\nKleinunternehmer gemäß § 19 UStG – keine USt-IdNr.\nVerantwortlich i.S.d. § 18 Abs. 2 MStV: Darius Gonschior (Anschrift wie oben)') +
-    '</div></details>' +
-    '<div class="sub" style="margin-top:10px;font-size:11.5px;color:var(--faint)">Vollständige Datenschutzerklärung &amp; Nutzungsbedingungen werden gerade finalisiert (Entwurf in anwaltlicher Prüfung).</div>';
+    '<div style="display:flex;flex-direction:column;gap:8px;margin-top:6px"><b style="font-size:13.5px">Dokumente</b>' +
+    '<button class="btn btn-sm" data-legal="datenschutz" style="text-align:left;justify-content:flex-start">📄 Datenschutzerklärung</button>' +
+    '<button class="btn btn-sm" data-legal="nutzungsbedingungen" style="text-align:left;justify-content:flex-start">📄 Nutzungsbedingungen</button>' +
+    '<button class="btn btn-sm" data-legal="impressum" style="text-align:left;justify-content:flex-start">📄 Impressum</button></div>';
+  card.querySelectorAll('[data-legal]').forEach(b => b.onclick = () => showLegalDoc(b.dataset.legal));
   card.querySelectorAll('[data-consent-revoke]').forEach(b => b.onclick = () => setConsent(b.dataset.consentRevoke, 'denied'));
   card.querySelectorAll('[data-consent-grant]').forEach(b => b.onclick = () => { const id = b.dataset.consentGrant; if (id === 'ai') showAiConsent(); else setConsent(id, 'granted'); });
   const ex = $('#consentExport'); if (ex) ex.onclick = () => {
@@ -11770,6 +11805,7 @@ if (store.profile && store.profile.lang && SUPPORTED_LANGS.indexOf(store.profile
 applyLang((store.profile && store.profile.lang) || 'de', { silent: true, persist: !!(store.profile && store.profile.lang) });
 refreshAIStatus();
 try { startWeatherWatch(); } catch (e) {}
+try { setTimeout(maybeShowTermsGate, 900); } catch (e) {}
 if (CLOUD && store.family && store.family.code) famPull().then(c => { if (c && currentView === 'dashboard') RENDERERS.dashboard(); });
 if (CLOUD) {
   account = null;   /* lokales Konto ignorieren – Cloud entscheidet */
