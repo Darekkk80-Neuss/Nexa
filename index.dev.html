@@ -11579,13 +11579,40 @@ function renderAccountCard() {
   html += '<label class="fld" for="setCode">Freischalt-Code</label>' +
     '<div class="set-row"><input type="text" id="setCode" placeholder="Code" maxlength="20" autocomplete="off">' +
     '<button class="btn" id="setCodeGo">Einlösen</button></div><div class="auth-err" id="setCodeErr"></div>' +
-    '<div style="margin-top:10px"><button class="btn btn-sm" id="btnLogout">Abmelden</button></div>';
+    '<div style="margin-top:10px"><button class="btn btn-sm" id="btnLogout">Abmelden</button></div>' +
+    '<div style="margin-top:14px;border-top:1px solid var(--border);padding-top:12px"><button class="btn btn-sm" id="btnDeleteAcc" style="color:#dc2626;border-color:rgba(220,38,38,.4)">Konto endgültig löschen</button><div class="sub" style="margin-top:5px;font-size:11.5px;color:var(--faint)">Löscht dein Konto und alle zugehörigen Daten unwiderruflich (Recht auf Löschung, Art. 17 DSGVO).</div></div>';
 
   card.innerHTML = html;
   const up = $('#btnUpgrade'); if (up) up.addEventListener('click', () => showUpgrade());
   const go = $('#setCodeGo'); if (go) go.addEventListener('click', async () => { if (await activatePremium($('#setCode').value, $('#setCodeErr'))) renderAccountCard(); });
   const tu = card.querySelector('[data-buy="topup"]'); if (tu) tu.addEventListener('click', () => startCheckout('topup'));
   $('#btnLogout').addEventListener('click', logout);
+  const del = $('#btnDeleteAcc'); if (del) del.addEventListener('click', deleteAccount);
+}
+/* Konto-Löschung (Art. 17 DSGVO): Bestätigung → Server-Löschung (delete-account) → alle lokalen Daten entfernen. */
+function deleteAccount() {
+  let ov = document.getElementById('delOv');
+  if (!ov) { ov = document.createElement('div'); ov.id = 'delOv'; ov.className = 'fam-alert-ov'; document.body.appendChild(ov); }
+  ov.innerHTML = '<div class="fam-alert" role="alertdialog" aria-modal="true"><h3 style="margin-bottom:6px">Konto endgültig löschen?</h3>' +
+    '<p style="color:var(--muted);font-size:13.5px;margin-bottom:14px;line-height:1.45">Dein Konto und alle zugehörigen Cloud-Daten (Profil, Familie, Push-Abo, Abo-Status) werden <b>dauerhaft gelöscht</b>. Auch die lokalen Daten auf diesem Gerät werden entfernt. Das lässt sich <b>nicht rückgängig</b> machen.</p>' +
+    '<div class="fam-alert-btns"><button class="btn btn-sm" id="delCancel">Abbrechen</button><button class="btn btn-sm" id="delGo" style="background:#dc2626;border-color:#dc2626;color:#fff">Endgültig löschen</button></div></div>';
+  ov.classList.add('on');
+  ov.querySelector('#delCancel').onclick = () => ov.classList.remove('on');
+  ov.querySelector('#delGo').onclick = async () => { ov.classList.remove('on'); await performAccountDeletion(); };
+}
+async function performAccountDeletion() {
+  toast('Konto wird gelöscht …');
+  try {
+    if (CLOUD && typeof sb !== 'undefined' && sb) {
+      const s = (await sb.auth.getSession()).data.session;
+      if (s) { try { await fetch(FN_URL('delete-account'), { method: 'POST', headers: { 'content-type': 'application/json', apikey: SUPABASE_ANON_KEY, Authorization: 'Bearer ' + s.access_token } }); } catch (e) {} }
+      try { await sb.auth.signOut(); } catch (e) {}
+    }
+  } catch (e) {}
+  try { Object.keys(localStorage).forEach(k => { if (/^effyra|^nexa|^sb-.*-auth/.test(k)) localStorage.removeItem(k); }); } catch (e) {}
+  try { if (typeof indexedDB !== 'undefined') indexedDB.deleteDatabase('effyra-vault'); } catch (e) {}
+  toast('Konto und Daten gelöscht.');
+  setTimeout(() => location.reload(), 1100);
 }
 
 $('#setNameSave').addEventListener('click', () => {
