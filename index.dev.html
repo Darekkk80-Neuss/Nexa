@@ -2176,8 +2176,8 @@ const hasKey = () => getKey().length > 8;
 const themePref = () => (store.settings && store.settings.theme) || 'auto';
 /* Auto-Modus nach Uhrzeit: hell von DAY_START bis DAY_END Uhr, sonst dunkel.
    Zum Anpassen einfach die beiden Stunden ändern. */
-const DAY_START = 7;   // ab 07:00 Uhr = heller Modus
-const DAY_END   = 19;  // ab 19:00 Uhr = dunkler Modus
+const DAY_START = 6;   // ab 06:00 Uhr = heller Modus
+const DAY_END   = 18;  // ab 18:00 Uhr = dunkler Modus
 function isDaytime() {
   const h = new Date().getHours();
   return h >= DAY_START && h < DAY_END;
