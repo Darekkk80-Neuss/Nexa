@@ -329,6 +329,12 @@ label.fld{display:block;font-size:12.5px;font-weight:600;color:var(--muted);marg
 .warn-row span{font-size:12px;color:var(--muted);line-height:1.35}
 :root[data-theme="light"] .di-tip{color:#5b21b6}
 :root[data-theme="light"] .di-ok{color:#047857}
+.tr-row{display:flex;align-items:center;gap:9px;padding:6px 0;border-bottom:1px solid var(--border)}
+.tr-row:last-of-type{border-bottom:none}
+.tr-line{flex:none;min-width:44px;font-weight:800;font-size:12.5px;color:#7c3aed;background:rgba(124,58,237,.12);border-radius:7px;padding:2px 7px;text-align:center}
+.tr-dir{flex:1;min-width:0;font-size:13px;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tr-time{flex:none;font-size:13px;font-weight:700;color:var(--muted);font-variant-numeric:tabular-nums}
+:root[data-theme="light"] .tr-line{color:#6d28d9;background:#ede9fe}
 .meal-card{background:var(--card);border:1px solid var(--border);border-radius:20px;overflow:hidden;margin-bottom:22px;box-shadow:0 10px 34px rgba(0,0,0,.16)}
 .meal-hero{position:relative;width:100%;aspect-ratio:16/10;background:var(--card2)}
 .meal-hero img{width:100%;height:100%;object-fit:cover;display:block}
@@ -1591,6 +1597,9 @@ body.lang-switching main,body.lang-switching .sidebar,body.lang-switching .topba
         <div class="dash-block" data-block="weather" id="weatherWidget"></div>
         <div class="dash-block" data-block="warnings" id="warningsWidget"></div>
         <div class="dash-block" data-block="holidays" id="holidaysWidget"></div>
+        <div class="dash-block" data-block="transit" id="transitWidget"></div>
+        <div class="dash-block" data-block="fuel" id="fuelWidget"></div>
+        <div class="dash-block" data-block="pharmacy" id="pharmacyWidget"></div>
         <div class="dash-block" data-block="meal" id="mealWidget"></div>
         <div class="dash-block" data-block="quickactions">
           <div class="qa-row">
@@ -4883,6 +4892,9 @@ const DASH_BLOCKS = [
   { id: 'weather', name: 'Wetter', icon: '🌤️' },
   { id: 'warnings', name: 'Unwetterwarnungen (DWD)', icon: '⚠️' },
   { id: 'holidays', name: 'Feiertage & Brückentage', icon: '🎉' },
+  { id: 'transit', name: 'ÖPNV-Abfahrten', icon: '🚆' },
+  { id: 'fuel', name: 'Spritpreise', icon: '⛽' },
+  { id: 'pharmacy', name: 'Notdienst-Apotheke', icon: '🏥' },
   { id: 'meal', name: 'Gericht des Tages', icon: '🍽️' },
   { id: 'quickactions', name: 'Schnellzugriff', icon: '⚡' },
   { id: 'capture', name: 'Schnell erfassen', icon: '✍️' },
@@ -5216,6 +5228,9 @@ RENDERERS.dashboard = function () {
   if (dashOn('weather')) renderWeather(); else $('#weatherWidget').innerHTML = '';
   if (dashOn('warnings')) renderWarnings(); else $('#warningsWidget').innerHTML = '';
   if (dashOn('holidays')) renderHolidays(); else $('#holidaysWidget').innerHTML = '';
+  if (dashOn('transit')) renderTransit(); else $('#transitWidget').innerHTML = '';
+  if (dashOn('fuel')) renderFuel(); else $('#fuelWidget').innerHTML = '';
+  if (dashOn('pharmacy')) renderPharmacy(); else $('#pharmacyWidget').innerHTML = '';
   if (dashOn('meal')) renderMeal(); else $('#mealWidget').innerHTML = '';
 };
 
@@ -8308,6 +8323,66 @@ async function renderWarnings() {
     _warnCache = { at: Date.now(), data: r.alerts || [], key: key };
     if (currentView === 'dashboard') box.innerHTML = warnHTML(_warnCache.data, loc);
   } catch (e) { if (!_warnCache.data && currentView === 'dashboard') box.innerHTML = ''; }
+}
+/* ============================== DASHBOARD-WIDGET: ÖPNV-ABFAHRTEN (transport.rest, keyless) ============================== */
+let _transitCache = { at: 0, html: '', key: '' };
+function transitTimeStr(iso) { try { const d = new Date(iso); return String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0'); } catch (e) { return ''; } }
+function transitCard(inner) { return '<section class="card dash-info-card"><div class="di-head"><span class="di-ic">🚆</span><b>ÖPNV-Abfahrten</b></div>' + inner + '</section>'; }
+async function renderTransit() {
+  const box = $('#transitWidget'); if (!box) return;
+  const loc = store.weatherLoc;
+  if (!loc || loc.lat == null) { box.innerHTML = transitCard('<div class="di-note">Lege oben im Wetter-Widget einen Ort fest – dann zeige ich die nächsten Abfahrten der nächstgelegenen Haltestelle.</div>'); return; }
+  const key = (+loc.lat).toFixed(3) + ',' + (+loc.lon).toFixed(3);
+  if (_transitCache.key === key && Date.now() - _transitCache.at < 12e4 && _transitCache.html) { box.innerHTML = _transitCache.html; return; }
+  if (!_transitCache.html) box.innerHTML = transitCard('<div class="di-note">Abfahrten werden geladen …</div>');
+  try {
+    const base = 'https://v6.db.transport.rest';
+    const stops = await fetch(base + '/locations/nearby?latitude=' + loc.lat + '&longitude=' + loc.lon + '&results=1&stops=true&poi=false').then(r => r.json());
+    const stop = Array.isArray(stops) ? stops[0] : null;
+    if (!stop || !stop.id) throw new Error('nostop');
+    const dep = await fetch(base + '/stops/' + stop.id + '/departures?duration=60&results=5').then(r => r.json());
+    const list = (dep && dep.departures) || (Array.isArray(dep) ? dep : []);
+    let inner = '';
+    if (!list.length) inner = '<div class="di-loc" style="margin:-4px 0 8px">' + esc(stop.name || '') + '</div><div class="di-note">Aktuell keine Abfahrten gefunden.</div>';
+    else inner = '<div class="di-loc" style="margin:-4px 0 8px">' + esc(stop.name || '') + '</div>' + list.slice(0, 5).map(d => {
+      const line = (d.line && d.line.name) || '?', dir = d.direction || (d.destination && d.destination.name) || '';
+      const t = transitTimeStr(d.when || d.plannedWhen), delay = (typeof d.delay === 'number' && d.delay) ? ' +' + Math.round(d.delay / 60) : '';
+      return '<div class="tr-row"><span class="tr-line">' + esc(line) + '</span><span class="tr-dir">' + esc(dir) + '</span><span class="tr-time">' + t + delay + '</span></div>';
+    }).join('') + '<div class="di-note">Quelle: Deutsche Bahn (transport.rest)</div>';
+    _transitCache = { at: Date.now(), html: transitCard(inner), key: key };
+    if (currentView === 'dashboard') box.innerHTML = _transitCache.html;
+  } catch (e) { if (currentView === 'dashboard' && !_transitCache.html) box.innerHTML = transitCard('<div class="di-note">Abfahrten gerade nicht verfügbar – bitte später erneut.</div>'); }
+}
+/* ============================== DASHBOARD-WIDGET: SPRITPREISE (Tankerkönig via Proxy) ============================== */
+let _fuelCache = { at: 0, html: '', key: '' };
+function fuelCard(inner, loc) { return '<section class="card dash-info-card"><div class="di-head"><span class="di-ic">⛽</span><b>Spritpreise</b>' + (loc ? '<span class="di-loc">' + esc(loc.name || '') + '</span>' : '') + '</div>' + inner + '</section>'; }
+function fuelSetupHTML() { return fuelCard('<div class="di-note">Noch einzurichten: kostenlosen <b>Tankerkönig-API-Key</b> holen und die Function <code>fuel-proxy</code> deployen (Secret <code>TANKERKOENIG_KEY</code>). Danach erscheinen hier die günstigsten Tankstellen in der Nähe.</div>'); }
+function fuelRow(label, st) { return st && st.price != null ? '<div class="tr-row"><span class="tr-line">' + label + '</span><span class="tr-dir">' + esc(st.name || st.brand || '') + '</span><span class="tr-time">' + Number(st.price).toFixed(2).replace('.', ',') + ' €</span></div>' : ''; }
+async function renderFuel() {
+  const box = $('#fuelWidget'); if (!box) return;
+  const loc = store.weatherLoc;
+  if (!loc || loc.lat == null) { box.innerHTML = fuelCard('<div class="di-note">Lege oben im Wetter-Widget einen Ort fest – dann zeige ich die günstigsten Tankstellen in der Nähe.</div>'); return; }
+  if (typeof CLOUD === 'undefined' || !CLOUD || typeof sb === 'undefined' || !sb) { box.innerHTML = fuelSetupHTML(); return; }
+  const key = (+loc.lat).toFixed(3) + ',' + (+loc.lon).toFixed(3);
+  if (_fuelCache.key === key && Date.now() - _fuelCache.at < 6e5 && _fuelCache.html) { box.innerHTML = _fuelCache.html; return; }
+  if (!_fuelCache.html) box.innerHTML = fuelCard('<div class="di-note">Preise werden geladen …</div>', loc);
+  try {
+    const s = (await sb.auth.getSession()).data.session;
+    const r = await fetch(FN_URL('fuel-proxy'), { method: 'POST', headers: { 'content-type': 'application/json', apikey: SUPABASE_ANON_KEY, Authorization: 'Bearer ' + (s ? s.access_token : '') }, body: JSON.stringify({ lat: loc.lat, lng: loc.lon, rad: 5 }) });
+    const j = await r.json().catch(() => ({}));
+    if (!j || !j.ok) { box.innerHTML = fuelSetupHTML(); return; }
+    const inner = fuelRow('E5', j.e5) + fuelRow('E10', j.e10) + fuelRow('Diesel', j.diesel) + '<div class="di-note">Quelle: Tankerkönig (CC BY 4.0)</div>';
+    _fuelCache = { at: Date.now(), html: fuelCard(inner, loc), key: key };
+    if (currentView === 'dashboard') box.innerHTML = _fuelCache.html;
+  } catch (e) { if (!_fuelCache.html) box.innerHTML = fuelSetupHTML(); }
+}
+/* ============================== DASHBOARD-WIDGET: NOTDIENST-APOTHEKE (offizieller Link, keine Fake-Daten) ============================== */
+function renderPharmacy() {
+  const box = $('#pharmacyWidget'); if (!box) return;
+  box.innerHTML = '<section class="card dash-info-card"><div class="di-head"><span class="di-ic">🏥</span><b>Notdienst-Apotheke</b></div>' +
+    '<div class="di-sub" style="margin-bottom:10px;white-space:normal">Welche Apotheke in deiner Nähe gerade Notdienst hat, zeigt dir die offizielle Suche – tagesaktuell und verlässlich.</div>' +
+    '<a class="btn btn-primary btn-sm" href="https://www.aponet.de/apotheke/notdienstsuche" target="_blank" rel="noopener">🔎 Notdienst-Apotheke finden</a>' +
+    '<div class="di-note">Offizielle Quelle: aponet.de (Bundesvereinigung Deutscher Apothekerverbände)</div></section>';
 }
 /* ============================== VERTRÄGE & ABOS ============================== */
 const CONTRACT_CATS = {
