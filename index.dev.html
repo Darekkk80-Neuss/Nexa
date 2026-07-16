@@ -25,8 +25,8 @@
   --border:rgba(255,255,255,.10);
   --border2:rgba(255,255,255,.17);
   --text:#f5f7fb;
-  --muted:#c6cddb;
-  --faint:#9aa6ba;             /* ≥4.5:1 auf Surface & bg (WCAG 1.4.3) */
+  --muted:#d5dceb;
+  --faint:#b3bccd;             /* aufgehellt für bessere Lesbarkeit im Dark-Mode (≥4.5:1, WCAG 1.4.3) */
   --acc1:#7c3aed;
   --acc2:#06b6d4;
   --focus:#22d3ee;
@@ -1327,6 +1327,19 @@ body.lang-switching main,body.lang-switching .sidebar,body.lang-switching .topba
 .trial-pill:hover{background:rgba(251,191,36,.15)}
 .trial-pill b{color:#fde68a}
 .trial-pill.premium{border-color:rgba(167,139,250,.4);background:rgba(124,58,237,.12);color:#ddd6fe;cursor:default}
+.lic-widget{margin-top:12px;padding:12px;border-radius:16px;border:1px solid rgba(167,139,250,.28);background:linear-gradient(135deg,rgba(124,58,237,.15),rgba(6,182,212,.09))}
+.lic-status{font-size:13px;color:var(--muted);margin-bottom:10px;text-align:center}
+.lic-status b{color:var(--text);font-weight:700}
+.lic-tiers{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.lic-tier{display:flex;flex-direction:column;align-items:center;gap:2px;padding:10px 6px;border-radius:12px;border:1px solid var(--border2);background:var(--card);color:var(--text);cursor:pointer;transition:.15s;text-align:center}
+.lic-tier:hover{border-color:rgba(167,139,250,.6);transform:translateY(-1px)}
+.lic-tier .lic-ic{font-size:19px;line-height:1.1}
+.lic-tier b{font-size:12.5px;font-weight:700}
+.lic-tier small{font-size:10.5px;color:var(--faint);line-height:1.2}
+.lic-tier.active{border-color:#7c3aed;background:linear-gradient(135deg,rgba(124,58,237,.24),rgba(6,182,212,.14));box-shadow:0 4px 14px rgba(124,58,237,.28)}
+.lic-tier.active small{color:var(--muted)}
+@media(max-width:360px){.lic-tier small{display:none}}
+:root[data-theme="light"] .lic-widget{border-color:rgba(124,58,237,.2);background:linear-gradient(135deg,rgba(124,58,237,.08),rgba(6,182,212,.06))}
 
 /* ============================== TOAST ============================== */
 #toasts{position:fixed;bottom:calc(var(--tabbar-h) + 18px);left:50%;transform:translateX(-50%);
@@ -1378,13 +1391,13 @@ body.lang-switching main,body.lang-switching .sidebar,body.lang-switching .topba
     <p class="gate-sub" id="pwSub">Deine Daten bleiben immer erhalten. Jederzeit wechselbar.</p>
     <div class="tier-cards">
       <div class="tier-card" data-tier="lifetime">
-        <div class="tier-top"><span class="tier-name">Lifetime Basic</span><span class="tier-price">4,99 €<small>einmalig</small></span></div>
+        <div class="tier-top"><span class="tier-name">Lifetime ohne KI</span><span class="tier-price">12,99 €<small>einmalig</small></span></div>
         <ul class="tier-feats">
           <li>✅ Komplette App – dauerhaft, keine Abo-Gebühr</li>
           <li>✅ Alle Module (Arbeitszeit, Kinder, Familie, Auto, Notfall …)</li>
           <li>➖ Ohne integrierte KI (eigener API-Schlüssel optional)</li>
         </ul>
-        <button class="btn btn-primary tier-cta" data-buy="lifetime">Lifetime Basic – 4,99 € einmalig</button>
+        <button class="btn btn-primary tier-cta" data-buy="lifetime">Lifetime ohne KI – 12,99 € einmalig</button>
       </div>
       <div class="tier-card best" data-tier="premium">
         <div class="tier-badge">Beste Wahl</div>
@@ -3461,6 +3474,8 @@ async function sha256Hex(s) {
 const TIER_RANK = { free: 0, medium: 1, premium: 2 };
 const TIER_LABEL = { free: 'Free', medium: 'Medium', premium: 'Premium' };
 const AI_MONTHLY_LIMIT = 500;
+const TRIAL_CREDITS = 50;            // kostenlose KI-Credits während der 14-Tage-Testphase
+const ENFORCE_AI_CREDITS = true;     // Trial-Credits verbindlich abziehen & KI sperren, wenn leer (Module bleiben offen)
 /* Module, die mindestens Medium brauchen (im 3-Tage-Free-Test gesperrt).
    Frei in jeder Stufe: dashboard, tasks, calendar, voice, docgen, chat, settings. */
 const MODULE_MIN_TIER = { work: 'medium', school: 'medium', family: 'medium', vehicles: 'medium', emergency: 'medium', life: 'medium', docs: 'medium' };
@@ -3494,7 +3509,12 @@ function ensureAIQuota() {
   if (!account.ai) account.ai = { month: aiMonthKey(), used: 0, extra: 0 };
   if (account.ai.month !== aiMonthKey()) { account.ai.month = aiMonthKey(); account.ai.used = 0; account.ai.extra = 0; saveAccount(); }   // Monatswechsel → Reset
 }
-function aiLimit() { ensureAIQuota(); return AI_MONTHLY_LIMIT + (account.ai.extra || 0); }
+/* Basis-Kontingent je Stufe: Free/Trial = 50 Credits, zahlend = 500/Monat. Extra = nachgebuchte Credits. */
+function aiBase() { return isPaid() ? AI_MONTHLY_LIMIT : TRIAL_CREDITS; }
+function aiLimit() { ensureAIQuota(); return aiBase() + (account.ai.extra || 0); }
+/* Testphase (Free) nach 14 Tagen vorbei → keine KI mehr, App bleibt ohne KI nutzbar. */
+const aiTrialOver = () => ENFORCE_AI_CREDITS && !isPaid() && !!account &&
+  Date.now() > (account.trialStart || Date.now()) + TRIAL_DAYS * 864e5;
 function aiUsed() { ensureAIQuota(); return account.ai.used || 0; }
 const aiRemaining = () => Math.max(0, aiLimit() - aiUsed());
 function aiPct() { const l = aiLimit(); return l ? Math.min(100, Math.round(aiUsed() / l * 100)) : 0; }
@@ -3504,17 +3524,19 @@ const usingOwnKey = () => hasKey();                 // eigener Schlüssel = unbe
 const isChildUser = () => !!(account && account.role === 'child');
 function canRealAI() {
   if (isChildUser()) return false;                  // Kinder: niemals KI
-  if (usingOwnKey()) return true;
-  if (BACKEND_V2 && !ENFORCE_TIERS && account && account.loggedIn) return true;   // Vorstart: „alles freigeschaltet" → KI ohne Premium nutzbar
-  return BACKEND_V2 && isPremium() && aiRemaining() > 0;   // später (Billing live): Backend + Premium + Credits (serverseitig via consume_ai geprüft)
+  if (usingOwnKey()) return true;                   // eigener Schlüssel: unbegrenzt
+  if (!(BACKEND_V2 && account && account.loggedIn)) return false;
+  if (isPaid()) return aiRemaining() > 0;           // zahlende Stufe: 500/Monat (+Extra)
+  if (!ENFORCE_AI_CREDITS) return true;             // Trial-Enforcement aus → frei
+  return !aiTrialOver() && aiRemaining() > 0;       // Testphase: 50 Credits & 14 Tage
 }
 let _aiWarned90 = false;
 function noteAIUsage() {
   if (usingOwnKey()) return;                          // eigener Schlüssel: kein Verbrauch aufs Kontingent
   ensureAIQuota(); account.ai.used = (account.ai.used || 0) + 1; saveAccount();
   const pct = aiPct();
-  if (aiRemaining() === 0) toast('⚠️ KI-Kontingent für ' + aiMonthKey() + ' aufgebraucht. In den Einstellungen nachbestellen oder eigenen Schlüssel hinterlegen.');
-  else if (pct >= 90 && !_aiWarned90) { _aiWarned90 = true; toast('ℹ️ 90 % deines KI-Kontingents verbraucht (' + aiUsed() + '/' + aiLimit() + '). Denk ans Nachbestellen.'); }
+  if (aiRemaining() === 0) toast(isPaid() ? '⚠️ KI-Kontingent aufgebraucht – jetzt nachbuchen.' : '✨ Deine ' + TRIAL_CREDITS + ' kostenlosen KI-Credits sind aufgebraucht. Schließe ein Einzel- oder Familienabo ab, um weiter mit der KI zu arbeiten.');
+  else if (pct >= 90 && !_aiWarned90) { _aiWarned90 = true; toast('ℹ️ 90 % deiner KI-Credits verbraucht (' + aiUsed() + '/' + aiLimit() + ').'); }
   if (pct < 90) _aiWarned90 = false;
 }
 /* Zentrale Prüfung vor echten KI-Aktionen. Gibt true zurück, wenn ausführbar. */
@@ -3522,13 +3544,15 @@ function requireAI() {
   if (isChildUser()) { toast('🔒 KI ist für Kinderkonten nicht verfügbar.'); return false; }
   if (usingOwnKey()) return true;                    // eigener Schlüssel: direkt an OpenAI
   if (!BACKEND_V2) { toast('✨ Für echte KI einen eigenen API-Schlüssel in den Einstellungen hinterlegen.'); showView('settings'); return false; }
-  if (!ENFORCE_TIERS) {                              // Vorstart: KI ist für alle angemeldeten Nutzer freigeschaltet
-    if (!(account && account.loggedIn)) { toast('Bitte melde dich an, um die KI zu nutzen.'); return false; }
+  if (!(account && account.loggedIn)) { toast('Bitte melde dich an, um die KI zu nutzen.'); return false; }
+  if (isPaid()) {
+    if (aiRemaining() <= 0) { toast('Deine KI-Credits sind aufgebraucht – jetzt nachbuchen.'); showUpgrade(); return false; }
     return true;
   }
-  if (!isPremium()) { toast('✨ Echte KI ist eine Premium-Funktion.'); showUpgrade(); return false; }
-  if (aiRemaining() <= 0) { toast('Deine KI-Credits sind aufgebraucht – nachbestellen oder eigenen Schlüssel eingeben.'); showView('settings'); return false; }
-  return true;   // Premium + Credits + Backend live → läuft über den Proxy
+  if (!ENFORCE_AI_CREDITS) return true;              // Trial-Enforcement aus → frei
+  if (aiTrialOver()) { toast('⏳ Deine 14-tägige Testphase ist abgelaufen. Schließe ein Abo ab, um die KI weiter zu nutzen – die App bleibt sonst ohne KI voll nutzbar.'); showUpgrade(); return false; }
+  if (aiRemaining() <= 0) { toast('✨ Deine ' + TRIAL_CREDITS + ' kostenlosen KI-Credits sind aufgebraucht. Schließe ein Einzel- oder Familienabo ab, um weiter mit der KI zu arbeiten.'); showUpgrade(); return false; }
+  return true;
 }
 /* Kontingentstand vom Server übernehmen (Proxy-Antwort) + warnen */
 function applyServerUsage(used, limit) {
@@ -4935,9 +4959,19 @@ RENDERERS.dashboard = function () {
 
   const slot = $('#trialSlot');
   if (isKidMode()) slot.innerHTML = '<span class="trial-pill">👦 Kindermodus – nur Ansicht</span>';
-  else if (account && isPremium()) slot.innerHTML = '<span class="trial-pill premium">💎 Premium – alles inklusive</span>';
-  else if (account && ENFORCE_TIERS) { const d = trialDaysLeft(); slot.innerHTML = '<button class="trial-pill" id="trialGo">⏳ Testphase: noch ' + d + ' Tag' + (d === 1 ? '' : 'e') + ' · <b>Premium freischalten</b></button>'; $('#trialGo').addEventListener('click', () => showView('settings')); }
-  else if (account) slot.innerHTML = '<span class="trial-pill">✨ Alle Funktionen freigeschaltet</span>';
+  else if (account) {
+    const paid = isPaid(), over = aiTrialOver(), rem = aiRemaining(), lim = aiLimit();
+    const status = paid ? '💎 <b>Pro aktiv</b> · ' + rem + ' / ' + lim + ' KI-Credits'
+      : over ? '⏳ Testphase beendet – App bleibt ohne KI nutzbar · <b>Jetzt Abo wählen</b>'
+      : '🎁 Testphase: noch ' + trialDaysLeft() + ' Tag' + (trialDaysLeft() === 1 ? '' : 'e') + ' · <b>' + rem + ' / ' + lim + ' KI-Credits</b>';
+    const tier = (k, ic, name, price, curr) => '<button class="lic-tier' + (curr ? ' active' : '') + '" data-lic="' + k + '"><span class="lic-ic">' + ic + '</span><b>' + name + '</b><small>' + price + '</small></button>';
+    slot.innerHTML = '<div class="lic-widget"><div class="lic-status">' + status + '</div><div class="lic-tiers">' +
+      tier('lifetime', '🎁', 'Kostenlos', '14 Tage testen', !paid) +
+      tier('premium', '⭐', 'Pro', 'mit KI · 4,99 €', paid) +
+      tier('family', '👪', 'Familie', '14,99 €/Mon.', false) +
+      '</div></div>';
+    slot.querySelectorAll('[data-lic]').forEach(b => b.addEventListener('click', () => showUpgrade()));
+  }
   else slot.innerHTML = '';
 
   const dsec = (title, go, goLabel, body, attrs) => '<section class="dash-section"><div class="dsec-head"><span class="dsec-title">' + title + '</span>' + (go ? '<button data-go="' + go + '"' + (attrs || '') + '>' + (goLabel || 'Alle anzeigen') + '</button>' : '') + '</div><div class="dsec-body">' + body + '</div></section>';
@@ -7258,7 +7292,11 @@ function famAiPanel() {
     '<span class="sub">' + used + ' / ' + limit + ' Credits · gemeinsam für alle Erwachsenen · Reset ' + esc(reset) + '</span>' +
     '<div class="fam-ai-row" style="margin-top:8px"><span>👥 Teilen sich das Kontingent</span><b>' + adults.length + '</b></div>' +
     '<div class="sub" style="margin-top:2px">' + names + '</div>';
-  h += '<div class="sub" style="margin-top:6px">Alle Erwachsenen teilen sich EIN gemeinsames Kontingent (' + seats + ' × ' + perAdult + ' = ' + (seats * perAdult) + ' Credits/Monat, wächst mit jedem gebuchten Zusatz-Erwachsenen). Kinder haben keinen KI-Zugriff.</div>' + creditTableHtml() + '</div>';
+  h += '<div class="sub" style="margin-top:6px">Alle Erwachsenen teilen sich EIN gemeinsames Kontingent (' + seats + ' × ' + perAdult + ' = ' + (seats * perAdult) + ' Credits/Monat, wächst mit jedem gebuchten Zusatz-Erwachsenen). Kinder haben keinen KI-Zugriff.</div>' +
+    '<div class="fam-topup" style="margin-top:10px;display:flex;gap:8px;align-items:center;flex-wrap:wrap">' +
+    '<button class="btn btn-sm ' + (pct >= 90 ? 'btn-primary' : '') + '" data-fam="topupAi">➕ Credits zubuchen</button>' +
+    '<span class="sub" style="margin:0">' + (pct >= 100 ? 'Kontingent aufgebraucht – jetzt auffüllen.' : pct >= 90 ? 'Kontingent fast leer.' : 'Bei Bedarf jederzeit auffüllen (KI-Boost: +1000 · 4,99 €).') + '</span>' +
+    '</div>' + creditTableHtml() + '</div>';
   return h;
 }
 function famPersonen() {
@@ -7503,6 +7541,7 @@ $('#famRoot').addEventListener('click', e => {
     store.family.members.push(m);
     famChanged(); toast(type === 'child' ? 'Kinderkonto hinzugefügt ✓' : 'Person hinzugefügt ✓'); return;
   }
+  if (a === 'topupAi') { startCheckout('topup'); return; }
   if (a === 'bookAdult') { bookAddon('adult'); return; }
   if (a === 'bookChild') { bookAddon('child'); return; }
   if (a === 'pushOn') {
