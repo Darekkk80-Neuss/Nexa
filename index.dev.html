@@ -309,6 +309,26 @@ label.fld{display:block;font-size:12.5px;font-weight:600;color:var(--muted);marg
 .wx-loading{opacity:.75}
 
 /* ---- Gericht des Tages (Apple-Look: Foto-Hero + aufklappbares Rezept) ---- */
+/* ---- Dashboard-Info-Widgets (Feiertage, Unwetterwarnungen) ---- */
+.dash-info-card{margin-bottom:22px;padding:15px 16px}
+.di-head{display:flex;align-items:center;gap:9px;margin-bottom:10px}
+.di-ic{font-size:19px;flex:none}
+.di-head b{font-size:15px;font-weight:700;flex:1;min-width:0}
+.di-go{border:none;background:none;color:#7c3aed;font-size:12.5px;font-weight:600;cursor:pointer;flex:none;padding:0}
+.di-loc{font-size:12px;color:var(--faint);flex:none}
+.di-main{display:flex;flex-direction:column;gap:2px;margin-bottom:2px}
+.di-big{font-size:18px;font-weight:800;color:var(--text);line-height:1.2}
+.di-sub{font-size:13px;color:var(--muted)}
+.di-sub b{color:var(--text)}
+.di-tip{margin-top:8px;padding:9px 11px;border-radius:11px;font-size:12.5px;line-height:1.4;color:#a5b4fc;background:rgba(124,58,237,.12);border:1px solid rgba(124,58,237,.28)}
+.di-list{margin-top:10px;display:flex;flex-direction:column;gap:4px;font-size:12.5px;color:var(--muted)}
+.di-note{margin-top:8px;font-size:11.5px;color:var(--faint);line-height:1.4}
+.di-ok{font-size:13.5px;color:#6ee7b7;font-weight:600}
+.warn-row{border-left:3px solid #f59e0b;padding:5px 0 5px 10px;margin-bottom:7px;display:flex;flex-direction:column;gap:1px}
+.warn-row b{font-size:13.5px;line-height:1.25}
+.warn-row span{font-size:12px;color:var(--muted);line-height:1.35}
+:root[data-theme="light"] .di-tip{color:#5b21b6}
+:root[data-theme="light"] .di-ok{color:#047857}
 .meal-card{background:var(--card);border:1px solid var(--border);border-radius:20px;overflow:hidden;margin-bottom:22px;box-shadow:0 10px 34px rgba(0,0,0,.16)}
 .meal-hero{position:relative;width:100%;aspect-ratio:16/10;background:var(--card2)}
 .meal-hero img{width:100%;height:100%;object-fit:cover;display:block}
@@ -1569,6 +1589,8 @@ body.lang-switching main,body.lang-switching .sidebar,body.lang-switching .topba
         <div class="dash-block" data-block="firststeps" id="fsWidget"></div>
         <div class="dash-block" data-block="brief" id="briefWidget"></div>
         <div class="dash-block" data-block="weather" id="weatherWidget"></div>
+        <div class="dash-block" data-block="warnings" id="warningsWidget"></div>
+        <div class="dash-block" data-block="holidays" id="holidaysWidget"></div>
         <div class="dash-block" data-block="meal" id="mealWidget"></div>
         <div class="dash-block" data-block="quickactions">
           <div class="qa-row">
@@ -4859,6 +4881,8 @@ let dashShopOpen = false;   // Einkaufs-Sektion auf dem Dashboard eingeklappt (D
 const DASH_BLOCKS = [
   { id: 'brief', name: 'Dein Tag heute', icon: '☀️' },
   { id: 'weather', name: 'Wetter', icon: '🌤️' },
+  { id: 'warnings', name: 'Unwetterwarnungen (DWD)', icon: '⚠️' },
+  { id: 'holidays', name: 'Feiertage & Brückentage', icon: '🎉' },
   { id: 'meal', name: 'Gericht des Tages', icon: '🍽️' },
   { id: 'quickactions', name: 'Schnellzugriff', icon: '⚡' },
   { id: 'capture', name: 'Schnell erfassen', icon: '✍️' },
@@ -5190,6 +5214,8 @@ RENDERERS.dashboard = function () {
   }));
   $$('#statRow [data-go]').forEach(b => b.addEventListener('click', () => showView(b.dataset.go)));
   if (dashOn('weather')) renderWeather(); else $('#weatherWidget').innerHTML = '';
+  if (dashOn('warnings')) renderWarnings(); else $('#warningsWidget').innerHTML = '';
+  if (dashOn('holidays')) renderHolidays(); else $('#holidaysWidget').innerHTML = '';
   if (dashOn('meal')) renderMeal(); else $('#mealWidget').innerHTML = '';
 };
 
@@ -8228,6 +8254,61 @@ function holidaysDE(y, st) {
 function holMap(iso) { const y = iso.slice(0, 4), st = store.work.settings.state || '', key = y + '_' + st; if (!holCache[key]) holCache[key] = holidaysDE(+y, st); return holCache[key]; }
 const isHoliday = (iso) => !!holMap(iso)[iso];
 const holidayName = (iso) => holMap(iso)[iso] || '';
+/* ============================== DASHBOARD-WIDGET: FEIERTAGE & BRÜCKENTAGE ============================== */
+/* Nutzt die bereits vorhandene Offline-Feiertagsberechnung (holidaysDE) – kein API nötig, Bundesland aus store.work.settings.state. */
+function nextHolidays(n) {
+  const state = (store.work && store.work.settings && store.work.settings.state) || '';
+  const today = todayISO(), y = +today.slice(0, 4);
+  const map = Object.assign({}, holidaysDE(y, state), holidaysDE(y + 1, state));
+  return Object.keys(map).filter(iso => iso >= today).sort().slice(0, n).map(iso => ({ iso, name: map[iso] }));
+}
+function brueckentagTip(iso) {
+  const dow = parseISO(iso).getDay();   // 0 So .. 6 Sa
+  if (dow === 2) return '💡 Brückentag-Tipp: 1 Tag Urlaub am Montag → 4 Tage am Stück frei.';
+  if (dow === 4) return '💡 Brückentag-Tipp: 1 Tag Urlaub am Freitag → 4 Tage am Stück frei.';
+  if (dow === 3) return '💡 Brückentag-Tipp: Mo+Di oder Do+Fr Urlaub → bis zu 6 Tage am Stück frei.';
+  if (dow === 1 || dow === 5) return '💡 Fällt auf ' + (dow === 1 ? 'Montag' : 'Freitag') + ' → automatisch langes Wochenende.';
+  return '';
+}
+function renderHolidays() {
+  const box = $('#holidaysWidget'); if (!box) return;
+  const list = nextHolidays(4);
+  if (!list.length) { box.innerHTML = ''; return; }
+  const n0 = list[0], dl = dayDiff(n0.iso);
+  const rel = dl <= 0 ? 'heute' : dl === 1 ? 'morgen' : 'in ' + dl + ' Tagen';
+  const tip = brueckentagTip(n0.iso);
+  const state = (store.work && store.work.settings && store.work.settings.state) || '';
+  let h = '<section class="card dash-info-card"><div class="di-head"><span class="di-ic">🎉</span><b>Feiertage &amp; Brückentage</b><button class="di-go" data-go="work">Arbeitszeit ›</button></div>' +
+    '<div class="di-main"><span class="di-big">' + esc(n0.name) + '</span><span class="di-sub">' + fmtDate(n0.iso) + ' · <b>' + rel + '</b></span></div>';
+  if (tip) h += '<div class="di-tip">' + tip + '</div>';
+  if (list.length > 1) h += '<div class="di-list">' + list.slice(1).map(x => '<span>📅 ' + esc(x.name) + ' · ' + fmtDate(x.iso) + '</span>').join('') + '</div>';
+  if (!state) h += '<div class="di-note">Tipp: Bundesland in der Arbeitszeit-Einstellung wählen → exakte regionale Feiertage.</div>';
+  h += '</section>';
+  box.innerHTML = h;
+}
+/* ============================== DASHBOARD-WIDGET: DWD-UNWETTERWARNUNGEN (Bright Sky, keyless) ============================== */
+let _warnCache = { at: 0, data: null, key: '' };
+const WARN_SEV = { minor: { c: '#eab308', l: 'Hinweis' }, moderate: { c: '#f59e0b', l: 'Warnung' }, severe: { c: '#ef4444', l: 'Unwetter' }, extreme: { c: '#b91c1c', l: 'Extremwetter' } };
+function warnHTML(alerts, loc) {
+  let h = '<section class="card dash-info-card"><div class="di-head"><span class="di-ic">⚠️</span><b>Unwetterwarnungen</b><span class="di-loc">' + esc(loc.name || '') + '</span></div>';
+  if (!alerts || !alerts.length) { h += '<div class="di-ok">✓ Keine amtlichen Warnungen</div><div class="di-note">Quelle: Deutscher Wetterdienst (über Bright Sky)</div></section>'; return h; }
+  h += alerts.slice(0, 3).map(a => { const s = WARN_SEV[String(a.severity || '').toLowerCase()] || WARN_SEV.moderate; return '<div class="warn-row" style="border-left-color:' + s.c + '"><b style="color:' + s.c + '">' + esc(a.event_de || a.event_en || 'Warnung') + '</b>' + (a.headline_de ? '<span>' + esc(a.headline_de) + '</span>' : '') + '</div>'; }).join('');
+  h += '<div class="di-note">Quelle: Deutscher Wetterdienst (über Bright Sky)</div></section>';
+  return h;
+}
+async function renderWarnings() {
+  const box = $('#warningsWidget'); if (!box) return;
+  const loc = store.weatherLoc;
+  if (!loc || loc.lat == null) { box.innerHTML = '<section class="card dash-info-card"><div class="di-head"><span class="di-ic">⚠️</span><b>Unwetterwarnungen</b></div><div class="di-note">Lege oben im Wetter-Widget einen Ort fest – dann erscheinen hier amtliche DWD-Warnungen.</div></section>'; return; }
+  const key = (+loc.lat).toFixed(2) + ',' + (+loc.lon).toFixed(2);
+  if (_warnCache.key === key && Date.now() - _warnCache.at < 9e5 && _warnCache.data) { box.innerHTML = warnHTML(_warnCache.data, loc); return; }
+  if (!_warnCache.data) box.innerHTML = '<section class="card dash-info-card"><div class="di-head"><span class="di-ic">⚠️</span><b>Unwetterwarnungen</b></div><div class="di-note">Warnungen werden geladen …</div></section>';
+  try {
+    const r = await fetch('https://api.brightsky.dev/alerts?lat=' + loc.lat + '&lon=' + loc.lon).then(x => x.json());
+    _warnCache = { at: Date.now(), data: r.alerts || [], key: key };
+    if (currentView === 'dashboard') box.innerHTML = warnHTML(_warnCache.data, loc);
+  } catch (e) { if (!_warnCache.data && currentView === 'dashboard') box.innerHTML = ''; }
+}
 /* ============================== VERTRÄGE & ABOS ============================== */
 const CONTRACT_CATS = {
   versicherung: { l: 'Versicherung', i: '🛡️' }, mobilfunk: { l: 'Mobilfunk', i: '📱' },
