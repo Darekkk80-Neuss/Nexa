@@ -637,6 +637,23 @@ body.store-safe [data-buy]{display:none!important}
 }
 
 /* ============================== DOKUMENTE ============================== */
+.doc-hero{position:relative;margin:0 0 14px;padding:15px 15px 13px;border-radius:18px;border:1px solid rgba(167,139,250,.28);background:linear-gradient(135deg,rgba(124,58,237,.16),rgba(6,182,212,.10) 92%);overflow:hidden}
+.doc-hero::before{content:"";position:absolute;inset:0;background:radial-gradient(120% 90% at 92% -25%,rgba(124,58,237,.24),transparent 60%);pointer-events:none}
+.doc-hero-x{position:absolute;top:8px;right:9px;width:26px;height:26px;border:none;border-radius:50%;background:rgba(255,255,255,.09);color:var(--muted);font-size:17px;line-height:1;cursor:pointer;z-index:2}
+.doc-hero-x:hover{background:rgba(255,255,255,.18);color:var(--text)}
+.doc-hero-top{display:flex;gap:10px;align-items:center;position:relative;margin-bottom:12px;padding-right:24px}
+.doc-hero-spark{font-size:22px;flex:none;filter:drop-shadow(0 2px 7px rgba(124,58,237,.55))}
+.doc-hero-top b{display:block;font-size:15px;font-weight:800;letter-spacing:-.2px}
+.doc-hero-top>div>span{font-size:12.5px;color:var(--muted)}
+.doc-hero-grid{position:relative;display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.dh-item{display:flex;gap:8px;align-items:flex-start;padding:9px 10px;border-radius:12px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.09)}
+.dh-ic{font-size:17px;line-height:1.25;flex:none}
+.dh-item b{display:block;font-size:12.5px;font-weight:700;margin-bottom:1px}
+.dh-item small{font-size:11px;color:var(--muted);line-height:1.35;display:block}
+@media(max-width:380px){.doc-hero-grid{grid-template-columns:1fr}}
+:root[data-theme="light"] .doc-hero{border-color:rgba(124,58,237,.22);background:linear-gradient(135deg,rgba(124,58,237,.10),rgba(6,182,212,.07))}
+:root[data-theme="light"] .dh-item{background:rgba(124,58,237,.05);border-color:rgba(124,58,237,.13)}
+:root[data-theme="light"] .doc-hero-x{background:rgba(0,0,0,.05)}
 .dropzone{position:relative;border:1.5px dashed rgba(167,139,250,.5);border-radius:20px;
   background:linear-gradient(160deg,rgba(124,58,237,.08),rgba(6,182,212,.06));
   padding:32px 20px;text-align:center;cursor:pointer;transition:transform .18s,border-color .2s,background .2s}
@@ -1549,6 +1566,16 @@ body.lang-switching main,body.lang-switching .sidebar,body.lang-switching .topba
       <div class="view-head">
         <h1>Effyra AI Dokumentenassistent</h1>
         <p>Brief fotografieren – Effyra AI liest den Text, erklärt ihn, erkennt Fristen und verteilt alles automatisch.</p>
+      </div>
+      <div class="doc-hero" id="docHero">
+        <button class="doc-hero-x" id="docHeroX" aria-label="Ausblenden" title="Ausblenden">×</button>
+        <div class="doc-hero-top"><span class="doc-hero-spark">✨</span><div><b>Dein Dokument – in Sekunden verstanden</b><span>Fotografieren genügt – Effyra AI übernimmt den Rest.</span></div></div>
+        <div class="doc-hero-grid">
+          <div class="dh-item"><span class="dh-ic">🌍</span><div><b>In deiner Sprache</b><small>Jedes Dokument – egal welche Sprache – wird zu deiner.</small></div></div>
+          <div class="dh-item"><span class="dh-ic">💡</span><div><b>Einfach erklärt</b><small>Amtsdeutsch wird verständlich – ohne den Inhalt zu ändern.</small></div></div>
+          <div class="dh-item"><span class="dh-ic">✅</span><div><b>Automatisch sortiert</b><small>Fristen, Aufgaben &amp; Termine landen direkt am richtigen Ort.</small></div></div>
+          <div class="dh-item"><span class="dh-ic">🔐</span><div><b>Sicher als PDF</b><small>Auf Wunsch privat im Dokumenten-Tresor archiviert.</small></div></div>
+        </div>
       </div>
       <div class="dropzone" id="dropzone">
         <div class="dz-ic"><svg viewBox="0 0 24 24"><use href="#icCam"/></svg></div>
@@ -9530,6 +9557,7 @@ function chatWithDoc(d) {
 }
 
 RENDERERS.docs = function () {
+  const _hero = $('#docHero'); if (_hero) _hero.style.display = store.settings.docHeroHidden ? 'none' : '';
   $('#demoHintDocs').innerHTML = canRealAI() ? '' :
     '<div class="demo-hint">🧪 <b>Demo-Modus:</b> Der Upload zeigt eine Beispiel-Analyse. Mit einem eigenen API-Schlüssel analysiert die KI deine echten Briefe – <a data-go-settings>jetzt in den Einstellungen aktivieren</a>.</div>';
   const link = $('#demoHintDocs [data-go-settings]');
@@ -9595,6 +9623,7 @@ if ($('#autoVaultChk')) {
   $('#autoVaultChk').checked = !!store.settings.autoVault;
   $('#autoVaultChk').addEventListener('change', e => { store.settings.autoVault = e.target.checked; save(); toast(e.target.checked ? 'Auto-Speichern im Tresor an ✓' : 'Auto-Speichern aus'); });
 }
+if ($('#docHeroX')) $('#docHeroX').addEventListener('click', () => { store.settings.docHeroHidden = true; save(); const h = $('#docHero'); if (h) h.style.display = 'none'; });
 
 $('#docList').addEventListener('click', e => {
   const act = e.target.closest('[data-act]');
