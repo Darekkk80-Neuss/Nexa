@@ -1556,7 +1556,7 @@ body.lang-switching main,body.lang-switching .sidebar,body.lang-switching .topba
         <p>Brief, Rechnung, Vertrag – Effyra übersetzt Amtsdeutsch in einfache Worte.</p>
       </div>
       <input type="file" id="docInput" accept="image/*" capture="environment">
-      <label style="display:flex;align-items:center;gap:8px;margin:10px 2px 0;font-size:13px;color:var(--faint);cursor:pointer"><input type="checkbox" id="autoVaultChk" style="width:auto;flex:none;margin:0"> Gescannte Dokumente automatisch im Tresor sichern</label>
+      <label style="display:flex;align-items:center;gap:8px;margin:10px 2px 0;font-size:13px;color:var(--faint);cursor:pointer"><input type="checkbox" id="autoVaultChk" style="width:auto;flex:none;margin:0"> Scans automatisch im Tresor sichern</label>
       <div class="analyzing" id="analyzing">
         <div class="scanbox"><img id="scanImg" alt=""><div class="scanline"></div></div>
         <div class="a-status" id="aStatus">Lese Dokument …</div>
@@ -8276,7 +8276,7 @@ async function exportDocPdf(d) {
     const blob = await vaultGetImage(d.id);
     if (!blob) { toast('Kein Bild zum Exportieren.'); return; }
     toast('PDF wird erstellt …');
-    const pdf = await jpegToPdfBlob(blob);
+    const pdf = await jpegToPdfBlob(blob, { title: (d.title || 'Dokument').slice(0, 64), date: new Date(d.createdAt || Date.now()).toLocaleDateString(curLocale || 'de-DE') });
     const url = URL.createObjectURL(pdf), a = document.createElement('a');
     a.href = url; a.download = (d.title || 'Dokument').replace(/[^\w\- ]+/g, '').trim().replace(/\s+/g, '_').slice(0, 40) + '.pdf';
     document.body.appendChild(a); a.click(); a.remove();
@@ -8284,23 +8284,35 @@ async function exportDocPdf(d) {
     toast('📄 PDF erstellt ✓');
   } catch (e) { toast('⚠️ PDF-Export fehlgeschlagen.'); }
 }
-/* Minimaler, bibliotheksfreier JPEG→PDF-Encoder: bettet das JPEG als DCTDecode-XObject zentriert auf A4 ein. */
-async function jpegToPdfBlob(jpegBlob) {
+/* Bibliotheksfreier JPEG→PDF-Encoder: JPEG als DCTDecode-XObject auf A4, mit
+   Kopfzeile (Titel + Datum) und dezenter Fußzeile (Helvetica, PDF-Standardschrift). */
+async function jpegToPdfBlob(jpegBlob, meta) {
+  meta = meta || {};
   const bytes = new Uint8Array(await jpegBlob.arrayBuffer());
   const dim = await new Promise((res, rej) => { const im = new Image(), u = URL.createObjectURL(jpegBlob); im.onload = () => { res({ w: im.naturalWidth, h: im.naturalHeight }); URL.revokeObjectURL(u); }; im.onerror = () => { URL.revokeObjectURL(u); rej(new Error('img')); }; im.src = u; });
-  const PW = 595.28, PH = 841.89, margin = 24;
-  const s = Math.min((PW - 2 * margin) / dim.w, (PH - 2 * margin) / dim.h);
-  const iw = dim.w * s, ih = dim.h * s, ix = (PW - iw) / 2, iy = (PH - ih) / 2;
+  const PW = 595.28, PH = 841.89, margin = 36, headH = 46, footH = 24;
+  const availW = PW - 2 * margin, availH = PH - 2 * margin - headH - footH;
+  const s = Math.min(availW / dim.w, availH / dim.h);
+  const iw = dim.w * s, ih = dim.h * s, ix = (PW - iw) / 2, iy = margin + footH + (availH - ih) / 2;
   const enc = new TextEncoder(), parts = [], offsets = []; let len = 0;
   const push = u8 => { parts.push(u8); len += u8.length; };
   const pushStr = str => push(enc.encode(str));
   const obj = () => { offsets.push(len); };
+  /* Text → WinAnsi-Bytes (Umlaute korrekt) + PDF-Sonderzeichen escapen */
+  const win = str => { const o = []; for (const ch of String(str)) { let c = ch.codePointAt(0); if (c > 0xFF) c = 63; if (ch === '(' || ch === ')' || ch === '\\') o.push(0x5C); o.push(c); } return new Uint8Array(o); };
+  const cparts = []; let clen = 0;
+  const cAscii = str => { const u = enc.encode(str); cparts.push(u); clen += u.length; };
+  const cText = str => { const u = win(str); cparts.push(u); clen += u.length; };
+  cAscii('q\n' + iw.toFixed(2) + ' 0 0 ' + ih.toFixed(2) + ' ' + ix.toFixed(2) + ' ' + iy.toFixed(2) + ' cm\n/Im0 Do\nQ\n');
+  cAscii('0 0 0 rg\nBT /F2 15 Tf ' + margin + ' ' + (PH - margin - 4).toFixed(2) + ' Td ('); cText((meta.title || 'Dokument').slice(0, 60)); cAscii(') Tj ET\n');
+  if (meta.date) { cAscii('0.42 0.42 0.42 rg\nBT /F1 10 Tf ' + margin + ' ' + (PH - margin - 20).toFixed(2) + ' Td ('); cText(meta.date); cAscii(') Tj ET\n'); }
+  cAscii('0.55 0.55 0.55 rg\nBT /F1 8 Tf ' + margin + ' ' + (margin - 4).toFixed(2) + ' Td ('); cText('Erstellt mit Effyra'); cAscii(') Tj ET\n');
+  const content = new Uint8Array(clen); { let o = 0; for (const p of cparts) { content.set(p, o); o += p.length; } }
   pushStr('%PDF-1.4\n\n');
   obj(); pushStr('1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n');
   obj(); pushStr('2 0 obj\n<< /Type /Pages /Kids [3 0 R] /Count 1 >>\nendobj\n');
-  obj(); pushStr('3 0 obj\n<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ' + PW.toFixed(2) + ' ' + PH.toFixed(2) + '] /Resources << /XObject << /Im0 4 0 R >> >> /Contents 5 0 R >>\nendobj\n');
+  obj(); pushStr('3 0 obj\n<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ' + PW.toFixed(2) + ' ' + PH.toFixed(2) + '] /Resources << /XObject << /Im0 4 0 R >> /Font << /F1 << /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >> /F2 << /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >> >> >> /Contents 5 0 R >>\nendobj\n');
   obj(); pushStr('4 0 obj\n<< /Type /XObject /Subtype /Image /Width ' + dim.w + ' /Height ' + dim.h + ' /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ' + bytes.length + ' >>\nstream\n'); push(bytes); pushStr('\nendstream\nendobj\n');
-  const content = enc.encode('q\n' + iw.toFixed(2) + ' 0 0 ' + ih.toFixed(2) + ' ' + ix.toFixed(2) + ' ' + iy.toFixed(2) + ' cm\n/Im0 Do\nQ\n');
   obj(); pushStr('5 0 obj\n<< /Length ' + content.length + ' >>\nstream\n'); push(content); pushStr('\nendstream\nendobj\n');
   const xrefStart = len;
   let xref = 'xref\n0 6\n0000000000 65535 f \n';
@@ -9556,13 +9568,13 @@ RENDERERS.docs = function () {
             (d.risks && d.risks.length ? '<b>Risiken</b><ul>' + d.risks.map(x => '<li>⚠️ ' + esc(x) + '</li>').join('') + '</ul>' : '') +
             (d.recommendations && d.recommendations.length ? '<b>Handlungsempfehlungen</b><ul>' + d.recommendations.map(x => '<li>👉 ' + esc(x) + '</li>').join('') + '</ul>' : '') +
             '</div></details>' : '') +
-        (d.rawStructured ? '<details class="doc-ai"><summary>📋 Vollständige Extraktion</summary><pre class="doc-raw">' + esc(d.rawStructured) + '</pre></details>' : '') +
+        (d.rawStructured ? '<details class="doc-ai"><summary>📋 Vollständige Extraktion (Originalsprache)</summary><pre class="doc-raw">' + esc(d.rawStructured) + '</pre></details>' : '') +
         (d.keywords && d.keywords.length ? '<div class="doc-tags">' + d.keywords.slice(0, 8).map(k => '<span class="doc-tag">#' + esc(k) + '</span>').join('') + '</div>' : '') +
         (d.replyDraft ? '<details class="doc-reply"><summary>✉️ Antwortentwurf ansehen</summary><div class="reply-text">' + esc(d.replyDraft) + '</div>' + (d.replyDraftTranslation ? '<div class="reply-text" style="margin-top:8px;padding-top:8px;border-top:1px dashed var(--border2);opacity:.9"><b style="font-size:11.5px;color:var(--faint);text-transform:uppercase;letter-spacing:.3px">🌐 Übersetzung für dich</b><br>' + esc(d.replyDraftTranslation) + '</div>' : '') + '</details>' : '') +
         '<div class="doc-actions">' +
         '<button class="btn btn-sm" data-act="chatDoc"><svg viewBox="0 0 24 24"><use href="#icSpark"/></svg>Im Chat fragen</button>' +
         (d.replyDraft ? '<button class="btn btn-sm" data-act="copyReply"><svg viewBox="0 0 24 24"><use href="#icCopy"/></svg>Antwort kopieren</button>' : '') +
-        (d.hasImage ? '<button class="btn btn-sm" data-act="docToVault">🔐 Im Tresor sichern</button><button class="btn btn-sm" data-act="docToPdf">📄 Als PDF</button>' : '') +
+        (d.hasImage ? '<button class="btn btn-sm" data-act="docToVault">🔐 Im Tresor sichern</button><button class="btn btn-sm" data-act="docToPdf">📄 Als PDF speichern</button>' : '') +
         '</div></div></div></div>';
     }).join('');
 };
