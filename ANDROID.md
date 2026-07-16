@@ -93,7 +93,12 @@ Digitale Abos/Käufe **müssen** in Play‑Apps über **Play Billing** laufen
    - Abo `effyra_premium` – 4,99 €/Monat
    - Abo `effyra_family` – 14,99 €/Monat
    - Abo `effyra_adult_addon` – 3,99 €/Monat · `effyra_child_addon` – 0,99 €/Monat
-   - Einmalkauf `effyra_lifetime` – 4,99 € · Verbrauchskauf `effyra_ai_boost` – 4,99 €
+   - Einmalkauf `effyra_lifetime` – **12,99 €** (ohne KI) · Verbrauchskauf `effyra_ai_boost` – 4,99 €
+
+   > 📋 Vollständige Schritt-für-Schritt-Anleitung für den Anmeldetag inkl. exakter
+   > Produkt-IDs, Server-Verifikation (Play Developer API), RTDN und Trial-Durchsetzung:
+   > **`GOOGLE_PLAY_SETUP.md`**. Der Code ist bereits vorbereitet: `PLAY_PRODUCTS` +
+   > `startPlayPurchase()` im Client, `supabase/functions/play-verify`, `supabase-trial-and-play.sql`.
 2. Im TWA‑Build `"features": { "playBilling": { "enabled": true } }` aktivieren
    (Bubblewrap fragt danach bzw. in der twa-manifest.json ergänzen).
 3. Im Web‑Client `startCheckout()` durch Play‑Billing‑Aufrufe ersetzen

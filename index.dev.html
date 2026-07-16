@@ -3332,6 +3332,7 @@ function showUpgrade(lockedView) {
 }
 /* Stripe-Checkout. Mit Backend: echte Kartenzahlung; sonst Code-Fallback. */
 async function startCheckout(product) {
+  if (hasPlayBilling()) return startPlayPurchase(product);   // TWA: Google Play Billing (Pflicht in Play-Apps)
   if (!BACKEND_V2 || !CLOUD) {
     toast('💳 Käufe laufen später über Google Play (in Vorbereitung). Nutze vorerst einen Freischalt-Code.');
     const d = $('#paywall .up-code'); if (d) d.open = true;
@@ -6872,6 +6873,42 @@ async function bookAddon(kind) {
     await resp.complete('success');
     grantAddon(kind);
     toast('✓ ' + p.label + ' hinzugebucht (' + p.price + '/Mon)');
+  } catch (e) { toast('Kauf abgebrochen oder nicht möglich.'); }
+}
+/* ---- Google Play Billing: Haupt-Produkte ----
+   Die IDs müssen EXAKT den in der Play Console angelegten Produkten entsprechen
+   (siehe GOOGLE_PLAY_SETUP.md). type: subs=Abo, inapp=Einmalkauf, consumable=verbrauchbar.
+   kind = serverseitiger Entitlement-Typ (grant_play_purchase in supabase-trial-and-play.sql). */
+const PLAY_PRODUCTS = {
+  premium:  { id: 'effyra_premium',  type: 'subs',       kind: 'premium',  label: 'Effyra AI Pro',    price: '4,99 €/Mon.' },
+  family:   { id: 'effyra_family',   type: 'subs',       kind: 'family',   label: 'Familienabo',      price: '14,99 €/Mon.' },
+  lifetime: { id: 'effyra_lifetime', type: 'inapp',      kind: 'lifetime', label: 'Lifetime ohne KI', price: '12,99 €' },
+  topup:    { id: 'effyra_ai_boost', type: 'consumable', kind: 'topup',    label: 'KI-Credits +500',  price: '4,99 €' }
+};
+/* Kauf über Google Play Billing (nur in der TWA verfügbar). Der purchaseToken wird
+   serverseitig via Play Developer API verifiziert (supabase/functions/play-verify),
+   das Entitlement setzt grant_play_purchase; Renewals/Storno kommen per RTDN. */
+async function startPlayPurchase(product) {
+  const p = PLAY_PRODUCTS[product];
+  if (!p) { toast('Unbekanntes Produkt.'); return; }
+  if (!hasPlayBilling()) { toast('ℹ️ Käufe laufen über die Effyra-App (Google Play).'); return; }
+  try {
+    const req = new PaymentRequest(
+      [{ supportedMethods: 'https://play.google.com/billing', data: { sku: p.id } }],
+      { total: { label: p.label + ' (Effyra)', amount: { currency: 'EUR', value: '0' } } }
+    );
+    const resp = await req.show();
+    const token = resp.details && resp.details.token;
+    try {
+      if (CLOUD && sb) {
+        const s = (await sb.auth.getSession()).data.session;
+        if (s) await fetch(FN_URL('play-verify'), { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + s.access_token }, body: JSON.stringify({ sku: p.id, token: token, type: p.type }) });
+      }
+    } catch (e) { /* Verifikation zieht sonst per RTDN nach */ }
+    await resp.complete('success');
+    try { await syncEntitlements(); } catch (e) {}
+    const pw = $('#paywall'); if (pw) pw.classList.remove('on');
+    toast('✓ ' + p.label + ' aktiviert. Danke!');
   } catch (e) { toast('Kauf abgebrochen oder nicht möglich.'); }
 }
 function ageFrom(iso) { if (!iso) return null; const b = parseISO(iso), n = new Date(); let a = n.getFullYear() - b.getFullYear(); const mo = n.getMonth() - b.getMonth(); if (mo < 0 || (mo === 0 && n.getDate() < b.getDate())) a--; return a; }
