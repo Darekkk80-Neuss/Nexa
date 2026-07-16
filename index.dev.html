@@ -1599,7 +1599,6 @@ body.lang-switching main,body.lang-switching .sidebar,body.lang-switching .topba
         <div class="dash-block" data-block="holidays" id="holidaysWidget"></div>
         <div class="dash-block" data-block="transit" id="transitWidget"></div>
         <div class="dash-block" data-block="fuel" id="fuelWidget"></div>
-        <div class="dash-block" data-block="pharmacy" id="pharmacyWidget"></div>
         <div class="dash-block" data-block="meal" id="mealWidget"></div>
         <div class="dash-block" data-block="quickactions">
           <div class="qa-row">
@@ -4894,12 +4893,10 @@ const DASH_BLOCKS = [
   { id: 'holidays', name: 'Feiertage & Brückentage', icon: '🎉' },
   { id: 'transit', name: 'ÖPNV-Abfahrten', icon: '🚆' },
   { id: 'fuel', name: 'Spritpreise', icon: '⛽' },
-  { id: 'pharmacy', name: 'Notdienst-Apotheke', icon: '🏥' },
   { id: 'meal', name: 'Gericht des Tages', icon: '🍽️' },
   { id: 'quickactions', name: 'Schnellzugriff', icon: '⚡' },
   { id: 'capture', name: 'Schnell erfassen', icon: '✍️' },
   { id: 'firststeps', name: 'Erste Schritte', icon: '🚀' },
-  { id: 'today', name: 'Heute (Fokus)', icon: '📌' },
   { id: 'meds', name: 'Medikamente', icon: '💊' },
   { id: 'events', name: 'Nächste Termine', icon: '📅' },
   { id: 'tasks', name: 'Wichtige Aufgaben', icon: '✅' },
@@ -4915,7 +4912,7 @@ const DASH_BLOCKS = [
 function dashOn(id) { return !(store.dashHidden && store.dashHidden[id]); }
 function dashSetVisible(id, on) { store.dashHidden = store.dashHidden || {}; if (on) delete store.dashHidden[id]; else store.dashHidden[id] = 1; save(); }
 /* Dynamische Inhalts-Sektionen (bekommen einen sortierbaren Wrapper in #dashBlocks). */
-const DASH_SECTION_IDS = ['today', 'meds', 'events', 'tasks', 'famtasks', 'shopping', 'finance', 'family', 'docs', 'contracts', 'waste', 'checkup'];
+const DASH_SECTION_IDS = ['meds', 'events', 'tasks', 'famtasks', 'shopping', 'finance', 'family', 'docs', 'contracts', 'waste', 'checkup'];
 /* Vom Nutzer gewählte Reihenfolge (store.dashOrder); unbekannte/neue Blöcke hinten anhängen. */
 function dashOrderList() {
   const all = DASH_BLOCKS.map(b => b.id);
@@ -5077,7 +5074,7 @@ RENDERERS.dashboard = function () {
   (store.vehicles || []).filter(v => v.tuev && dayDiff(v.tuev) <= 14).forEach(v => { const late = dayDiff(v.tuev) < 0; focus.push({ emoji: v.type === 'motorrad' ? '🏍️' : '🚗', title: 'HU/TÜV: ' + v.name, sub: fmtDate(v.tuev), chip: { cls: late ? 'chip-danger' : 'chip-warn', text: late ? 'überfällig' : relDay(v.tuev) }, go: 'vehicles', k: '3' }); });
   focus.sort((a, b) => a.k < b.k ? -1 : 1);
   const focusTop = focus.slice(0, 3);
-  if (dashOn('today')) secHTML.today = dsec('☀️ Heute', focusTop.length ? 'calendar' : null, 'Kalender', focusTop.length ? focusTop.map(drow).join('') : '<div class="dsec-empty">Für heute steht nichts Dringendes an. Genieß den Tag. 🌿</div>');
+  /* „Heute (Fokus)"-Sektion entfernt – Doppelung zur oberen „Dein Tag heute"-Karte. */
 
   /* NÄCHSTE TERMINE – ab morgen, die nächsten 3, höchstens 2 Monate voraus */
   const horizon2M = addMonths(today, 2);
@@ -5230,7 +5227,6 @@ RENDERERS.dashboard = function () {
   if (dashOn('holidays')) renderHolidays(); else $('#holidaysWidget').innerHTML = '';
   if (dashOn('transit')) renderTransit(); else $('#transitWidget').innerHTML = '';
   if (dashOn('fuel')) renderFuel(); else $('#fuelWidget').innerHTML = '';
-  if (dashOn('pharmacy')) renderPharmacy(); else $('#pharmacyWidget').innerHTML = '';
   if (dashOn('meal')) renderMeal(); else $('#mealWidget').innerHTML = '';
 };
 
@@ -8376,14 +8372,6 @@ async function renderFuel() {
     if (currentView === 'dashboard') box.innerHTML = _fuelCache.html;
   } catch (e) { if (!_fuelCache.html) box.innerHTML = fuelSetupHTML(); }
 }
-/* ============================== DASHBOARD-WIDGET: NOTDIENST-APOTHEKE (offizieller Link, keine Fake-Daten) ============================== */
-function renderPharmacy() {
-  const box = $('#pharmacyWidget'); if (!box) return;
-  box.innerHTML = '<section class="card dash-info-card"><div class="di-head"><span class="di-ic">🏥</span><b>Notdienst-Apotheke</b></div>' +
-    '<div class="di-sub" style="margin-bottom:10px;white-space:normal">Welche Apotheke in deiner Nähe gerade Notdienst hat, zeigt dir die offizielle Suche – tagesaktuell und verlässlich.</div>' +
-    '<a class="btn btn-primary btn-sm" href="https://www.aponet.de/apotheke/notdienstsuche" target="_blank" rel="noopener">🔎 Notdienst-Apotheke finden</a>' +
-    '<div class="di-note">Offizielle Quelle: aponet.de (Bundesvereinigung Deutscher Apothekerverbände)</div></section>';
-}
 /* ============================== VERTRÄGE & ABOS ============================== */
 const CONTRACT_CATS = {
   versicherung: { l: 'Versicherung', i: '🛡️' }, mobilfunk: { l: 'Mobilfunk', i: '📱' },
@@ -9631,6 +9619,48 @@ function demoAnalyses() {
 /* ============================== DOKUMENTE (View) ============================== */
 const DOC_BADGE = { 'Mahnung': 'b-mahnung', 'Rechnung': 'b-rechnung', 'Vertrag': 'b-vertrag', 'Behörde': 'b-behoerde', 'Sonstiges': 'b-sonstiges' };
 
+/* Foto → „echter Scan": Beleuchtung lokal normalisieren (Mittelwert via Integralbild),
+   Hintergrund wird weiß, Text bleibt dunkel & scharf – robust gegen Schatten/schräges Licht.
+   Ergebnis: sauberes Scan-Bild (JPEG) + Mini-Thumbnail. Fällt bei Fehler auf null zurück. */
+function documentScanImage(file) {
+  return new Promise((res) => {
+    const img = new Image(), url = URL.createObjectURL(file);
+    img.onload = () => {
+      const maxW = 1654, sc = Math.min(1, maxW / img.width);
+      const w = Math.max(1, Math.round(img.width * sc)), h = Math.max(1, Math.round(img.height * sc));
+      const cv = document.createElement('canvas'); cv.width = w; cv.height = h;
+      const ctx = cv.getContext('2d'); ctx.drawImage(img, 0, 0, w, h); URL.revokeObjectURL(url);
+      try {
+        const id = ctx.getImageData(0, 0, w, h), d = id.data, N = w * h, gray = new Float32Array(N);
+        for (let i = 0, p = 0; i < d.length; i += 4, p++) gray[p] = 0.299 * d[i] + 0.587 * d[i + 1] + 0.114 * d[i + 2];
+        const W1 = w + 1, integ = new Float64Array(W1 * (h + 1));
+        for (let y = 0; y < h; y++) { let rs = 0; for (let x = 0; x < w; x++) { rs += gray[y * w + x]; integ[(y + 1) * W1 + (x + 1)] = integ[y * W1 + (x + 1)] + rs; } }
+        const rad = Math.max(10, Math.round(Math.min(w, h) / 32));
+        for (let y = 0; y < h; y++) {
+          const y0 = Math.max(0, y - rad), y1 = Math.min(h - 1, y + rad);
+          for (let x = 0; x < w; x++) {
+            const x0 = Math.max(0, x - rad), x1 = Math.min(w - 1, x + rad);
+            const cnt = (x1 - x0 + 1) * (y1 - y0 + 1);
+            const mean = (integ[(y1 + 1) * W1 + (x1 + 1)] - integ[y0 * W1 + (x1 + 1)] - integ[(y1 + 1) * W1 + x0] + integ[y0 * W1 + x0]) / cnt;
+            let ratio = gray[y * w + x] / (mean + 1);
+            let v = ratio >= 0.92 ? 255 : (ratio / 0.92) * 255;
+            if (v < 200) v = (v - 30) * 1.25;
+            v = v < 0 ? 0 : v > 255 ? 255 : v;
+            const idx = (y * w + x) * 4; d[idx] = d[idx + 1] = d[idx + 2] = v; d[idx + 3] = 255;
+          }
+        }
+        ctx.putImageData(id, 0, 0);
+      } catch (e) { /* Fallback: unbearbeitetes Bild */ }
+      const tc = document.createElement('canvas'), ts = Math.min(1, 200 / w);
+      tc.width = Math.max(1, Math.round(w * ts)); tc.height = Math.max(1, Math.round(h * ts));
+      tc.getContext('2d').drawImage(cv, 0, 0, tc.width, tc.height);
+      const thumb = tc.toDataURL('image/jpeg', 0.6);
+      cv.toBlob(b => res(b ? { blob: b, thumb: thumb } : null), 'image/jpeg', 0.9);
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); res(null); };
+    img.src = url;
+  });
+}
 function readAndResize(file, maxDim, quality) {
   return new Promise((resolve, reject) => {
     const r = new FileReader();
@@ -9710,7 +9740,7 @@ async function handleDocFile(file) {
       tasksApplied: false, eventApplied: false,
       createdAt: Date.now()
     };
-    try { const _vp = await vaultProcessImage(file); if (_vp && _vp.blob) { await vaultPutImage(doc.id, _vp.blob); doc.hasImage = true; } } catch (e) { /* ohne Bild weiter */ }
+    try { const _vp = (await documentScanImage(file)) || (await vaultProcessImage(file)); if (_vp && _vp.blob) { await vaultPutImage(doc.id, _vp.blob); doc.hasImage = true; if (_vp.thumb) doc.thumb = _vp.thumb; } } catch (e) { /* ohne Bild weiter */ }
     store.docs.push(doc);
     if (store.settings.autoVault && doc.hasImage) { try { await saveDocToVault(doc, true); } catch (e) {} }
     save();
