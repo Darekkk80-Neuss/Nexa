@@ -3069,6 +3069,7 @@ const TDICT_SRC = {
   '📄 Datenschutzerklärung': { en: '📄 Privacy policy', fr: '📄 Politique de confidentialité', es: '📄 Política de privacidad', it: '📄 Informativa sulla privacy', pl: '📄 Polityka prywatności' },
   '📄 Nutzungsbedingungen': { en: '📄 Terms of use', fr: '📄 Conditions d’utilisation', es: '📄 Condiciones de uso', it: '📄 Condizioni d’uso', pl: '📄 Warunki korzystania' },
   '📄 Impressum': { en: '📄 Legal notice', fr: '📄 Mentions légales', es: '📄 Aviso legal', it: '📄 Note legali', pl: '📄 Nota prawna' },
+  '🗑️ Konto & Daten löschen': { en: '🗑️ Delete account & data', fr: '🗑️ Supprimer le compte & les données', es: '🗑️ Eliminar cuenta y datos', it: '🗑️ Elimina account e dati', pl: '🗑️ Usuń konto i dane' },
   '📤 Einwilligungen exportieren': { en: '📤 Export consents', fr: '📤 Exporter les consentements', es: '📤 Exportar consentimientos', it: '📤 Esporta consensi', pl: '📤 Eksportuj zgody' },
   'An': { en: 'On', fr: 'Activé', es: 'Activado', it: 'Attivo', pl: 'Wł.' },
   'Aus': { en: 'Off', fr: 'Désactivé', es: 'Desactivado', it: 'Disattivo', pl: 'Wył.' },
@@ -12413,7 +12414,8 @@ function renderLegalCard() {
     '<div style="display:flex;flex-direction:column;gap:8px;margin-top:6px"><b style="font-size:13.5px">Dokumente</b>' +
     '<button class="btn btn-sm" data-legal="datenschutz" style="text-align:left;justify-content:flex-start">📄 Datenschutzerklärung</button>' +
     '<button class="btn btn-sm" data-legal="nutzungsbedingungen" style="text-align:left;justify-content:flex-start">📄 Nutzungsbedingungen</button>' +
-    '<button class="btn btn-sm" data-legal="impressum" style="text-align:left;justify-content:flex-start">📄 Impressum</button></div>';
+    '<button class="btn btn-sm" data-legal="impressum" style="text-align:left;justify-content:flex-start">📄 Impressum</button>' +
+    '<button class="btn btn-sm" data-legal="konto-loeschen" style="text-align:left;justify-content:flex-start">🗑️ Konto & Daten löschen</button></div>';
   card.querySelectorAll('[data-legal]').forEach(b => b.onclick = () => showLegalDoc(b.dataset.legal));
   card.querySelectorAll('[data-consent-revoke]').forEach(b => b.onclick = () => { const id = b.dataset.consentRevoke; if (id === 'fit') { store.fit = store.fit || {}; store.fit.consent = false; save(); } setConsent(id, 'denied'); });
   card.querySelectorAll('[data-consent-grant]').forEach(b => b.onclick = () => { const id = b.dataset.consentGrant; if (id === 'ai') showAiConsent(); else if (id === 'kids') showKidsConsent(); else if (id === 'fit') { store.fit = store.fit || {}; store.fit.consent = true; save(); setConsent('fit', 'granted'); } else setConsent(id, 'granted'); });
