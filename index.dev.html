@@ -1110,6 +1110,10 @@ input.invalid,textarea.invalid{border-color:var(--danger)!important;box-shadow:0
   box-shadow:0 6px 18px rgba(0,0,0,.3);text-shadow:0 1px 2px rgba(0,0,0,.3)}
 .notruf .nr-num{font-size:20px;font-family:var(--font-head);font-weight:700;line-height:1.1}
 .notruf .nr-lbl{font-size:12px;opacity:.92;font-weight:600}
+.em-disclaimer{margin:-6px 0 16px;padding:10px 12px;border-radius:12px;font-size:12.5px;line-height:1.45;color:#b45309;background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.35)}
+@media(prefers-color-scheme:dark){.em-disclaimer{color:#fcd34d}}
+:root[data-theme="dark"] .em-disclaimer{color:#fcd34d}
+:root[data-theme="light"] .em-disclaimer{color:#b45309}
 .nr-112{background:linear-gradient(135deg,#dc2626,#f87171)}
 .nr-110{background:linear-gradient(135deg,#1d4ed8,#3b82f6)}
 .nr-117{background:linear-gradient(135deg,#059669,#34d399)}
@@ -8632,6 +8636,14 @@ RENDERERS.emergency = function () {
   let h = '<div class="view-head"><h1>Notfallbereich</h1><p>Alle wichtigen Infos griffbereit – wenn jede Sekunde zählt.</p></div>';
   h += '<div class="notruf">' + emCall('112', 'Feuerwehr / Notarzt', 'nr-112') + emCall('110', 'Polizei', 'nr-110') +
     emCall('116117', 'Ärztl. Bereitschaft', 'nr-117') + emCall('030 19240', 'Giftnotruf Berlin', 'nr-gift') + '</div>';
+  h += '<div class="em-disclaimer" data-noi18n>' + pickLang({
+    de: '⚠️ Im echten Notfall immer <b>112</b> wählen (europaweit). Effyra ersetzt keinen Notruf und garantiert keine Erreichbarkeit – dieser Bereich dient nur der Vorsorge.',
+    en: '⚠️ In a real emergency always call <b>112</b> (Europe-wide). Effyra is not a substitute for emergency services and guarantees no availability – this area is for preparedness only.',
+    fr: '⚠️ En cas d’urgence réelle, appelez toujours le <b>112</b> (dans toute l’Europe). Effyra ne remplace pas les secours et ne garantit aucune disponibilité – cet espace sert uniquement à la prévoyance.',
+    es: '⚠️ En una emergencia real llama siempre al <b>112</b> (en toda Europa). Effyra no sustituye a los servicios de emergencia ni garantiza disponibilidad; esta sección es solo de prevención.',
+    it: '⚠️ In una vera emergenza chiama sempre il <b>112</b> (in tutta Europa). Effyra non sostituisce i servizi di emergenza e non garantisce la reperibilità – quest’area è solo di prevenzione.',
+    pl: '⚠️ W prawdziwej sytuacji nagłej zawsze dzwoń pod <b>112</b> (w całej Europie). Effyra nie zastępuje służb ratunkowych i nie gwarantuje dostępności – ta sekcja służy wyłącznie do przygotowania.'
+  }) + '</div>';
   h += '<div class="seg em-tabs">' + [['kontakte', '📇 Kontakte'], ['medizin', '🩺 Medizin'], ['versich', '🛡️ Versich.'], ['check', '✅ Checkliste']].map(x =>
     '<button data-etab="' + x[0] + '" class="' + (emTab === x[0] ? 'active' : '') + '">' + x[1] + '</button>').join('') + '</div>';
   h += emTab === 'medizin' ? emMedizin() : emTab === 'versich' ? emVersich() : emTab === 'check' ? emCheck() : emKontakte();
