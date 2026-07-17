@@ -15,6 +15,9 @@ Nach dem Erst-Audit direkt umgesetzt (Commit-Stand danach):
 | D-02 | ✅ BEHOBEN | TWA nutzt **ausschließlich** Google Play Billing, Stripe ist unerreichbar: `startCheckout` routet bei `hasPlayBilling()` zu `startPlayPurchase`; neuer `IS_TWA`-Guard verhindert jeden Stripe-Fallback in der Play-App. Verifiziert (Kauf-Klick → Play Billing, kein `stripe-checkout`-Aufruf). | `index.dev.html:3973` (IS_TWA), `:3878ff` (Guard) |
 | C-02 | ✅ BEHOBEN | Push in der TWA aktiviert. | `twa-manifest.json` `enableNotifications:true` |
 | C-01 | 🟡 VORBEREITET | `assetlinks.json` (package `app.effyra.twa`) + Deploy-Anleitung angelegt. **Offen (deinerseits):** SHA-256-Fingerprint des Play-App-Signing-Zertifikats einsetzen und an die **Domain-Wurzel** deployen. | `.well-known/assetlinks.json`, `.well-known/README.md` |
+| F-03 | ✅ BEHOBEN | In-App-Meldefunktion für KI-Antworten (generative-KI-Policy): „⚑ Antwort melden" je Chat-Antwort → Gründe-Dialog → Meldung an info@gonsoft-labs.de + lokale Markierung. Verifiziert. | `index.dev.html showAiReport()` |
+| Billing-Modell | ✅ FESTGELEGT | Option B: nur KI kostenpflichtig, Module gratis. Server `ENFORCE_TIERS=true` (Trial 100/14 Tage, Premium 500/Monat). Lifetime-Produkt entfernt (nur Premium 4,99 €/Mon. + Familie 14,99 €/Mon.). | `claude-proxy` + `PLAY_PRODUCTS` |
+| P0-02 | ✅ ENTSCHIEDEN | TWA-Domain bleibt `darekkk80-neuss.github.io/Effyra/` (bereits lauffähig, URL in der TWA unsichtbar). Keine Code-Änderung. assetlinks → Root-Repo `darekkk80-neuss.github.io/.well-known/`. | `twa-manifest.json`, `index.dev.html:3962` |
 
 **Verbleibende echte Blocker (nur auf deinem Rechner / in der Console lösbar):**
 `P0-01` (AAB bauen via Bubblewrap) und der **Deploy-Teil von C-01** (Fingerprint + Domain-Wurzel).
