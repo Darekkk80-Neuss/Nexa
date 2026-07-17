@@ -834,6 +834,9 @@ body.store-safe [data-buy]{display:none!important}
 .msg.bot .bubble-tx{background:var(--card2);border:1px solid var(--border);border-top-left-radius:6px}
 .msg.user .bubble-tx{background:linear-gradient(135deg,#7c3aed,#6d28d9);border-top-right-radius:6px;color:#fff}
 .action-chips{display:flex;flex-direction:column;gap:7px;margin-top:10px}
+.msg-report{margin-top:6px;border:none;background:none;color:var(--faint);font-size:11px;cursor:pointer;padding:2px 0;opacity:.75}
+.msg-report:hover{opacity:1;color:var(--muted)}
+.msg-report:disabled{cursor:default;opacity:.6}
 .chip{display:flex;align-items:center;gap:8px;padding:9px 14px;border-radius:12px;text-align:left;
   border:1px solid rgba(167,139,250,.45);background:rgba(124,58,237,.14);color:#ddd6fe;
   font-size:13.5px;font-weight:600;transition:.2s}
@@ -10991,10 +10994,11 @@ RENDERERS.chat = function () {
         '<button class="chip' + (a.done ? ' done' : '') + '" data-m="' + mi + '" data-a="' + ai + '"' + (a.done ? ' disabled' : '') + '>' +
         '<svg viewBox="0 0 24 24"><use href="#' + (a.done ? 'icCheck' : (a.kind === 'event' ? 'icCal' : 'icPlus')) + '"/></svg>' +
         esc(a.done ? '✓ ' + a.label.replace(/^[✓]\s*/, '') : a.label) + '</button>').join('');
+      const report = (m.role === 'bot' && !m.suggestion) ? '<button class="msg-report" data-report="' + mi + '"' + (m.reported ? ' disabled' : '') + '>' + (m.reported ? pickLang({ de: '⚑ gemeldet', en: '⚑ reported', fr: '⚑ signalé', es: '⚑ reportado', it: '⚑ segnalato', pl: '⚑ zgłoszono' }) : pickLang({ de: '⚑ Antwort melden', en: '⚑ Report reply', fr: '⚑ Signaler', es: '⚑ Reportar', it: '⚑ Segnala', pl: '⚑ Zgłoś' })) + '</button>' : '';
       return '<div class="msg ' + (m.role === 'user' ? 'user' : 'bot') + '">' +
         (m.role === 'bot' ? '<div class="avatar"><svg viewBox="0 0 24 24"><use href="#icSpark"/></svg></div>' : '') +
         '<div><div class="bubble-tx">' + esc(m.text) + '</div>' +
-        (chips ? '<div class="action-chips">' + chips + '</div>' : '') + '</div></div>';
+        (chips ? '<div class="action-chips">' + chips + '</div>' : '') + report + '</div></div>';
     }).join('');
   }
   if (botTyping) {
@@ -11008,6 +11012,53 @@ RENDERERS.chat = function () {
 function pushBot(text, actions) {
   store.chat.push({ role: 'bot', text, actions: actions || [] });
   save();
+}
+/* KI-Antwort melden (Google-Play-Pflicht bei generativer KI: In-App-Meldeweg für unangemessene Ausgaben).
+   Meldung geht an den Anbieter (info@gonsoft-labs.de); die Antwort wird lokal als gemeldet markiert. */
+function showAiReport(mi) {
+  const m = store.chat[mi]; if (!m || m.role !== 'bot') return;
+  const de = 'de';
+  const REASONS = [
+    { k: 'offensive', t: pickLang({ de: 'Beleidigend / Hassrede', en: 'Offensive / hate speech', fr: 'Injurieux / haineux', es: 'Ofensivo / discurso de odio', it: 'Offensivo / incitamento all’odio', pl: 'Obraźliwe / mowa nienawiści' }) },
+    { k: 'wrong', t: pickLang({ de: 'Falsch / irreführend', en: 'False / misleading', fr: 'Faux / trompeur', es: 'Falso / engañoso', it: 'Falso / fuorviante', pl: 'Fałszywe / wprowadzające w błąd' }) },
+    { k: 'dangerous', t: pickLang({ de: 'Gefährlich / schädlich', en: 'Dangerous / harmful', fr: 'Dangereux / nuisible', es: 'Peligroso / dañino', it: 'Pericoloso / dannoso', pl: 'Niebezpieczne / szkodliwe' }) },
+    { k: 'other', t: pickLang({ de: 'Sonstiges', en: 'Other', fr: 'Autre', es: 'Otro', it: 'Altro', pl: 'Inne' }) },
+  ];
+  let ov = document.getElementById('aiReportOv');
+  if (!ov) { ov = document.createElement('div'); ov.id = 'aiReportOv'; ov.className = 'fam-alert-ov'; ov.style.zIndex = '10001'; document.body.appendChild(ov); }
+  let chosen = '';
+  const T = {
+    head: pickLang({ de: '⚑ KI-Antwort melden', en: '⚑ Report AI reply', fr: '⚑ Signaler la réponse IA', es: '⚑ Reportar respuesta de IA', it: '⚑ Segnala risposta IA', pl: '⚑ Zgłoś odpowiedź AI' }),
+    intro: pickLang({ de: 'Warum möchtest du diese Antwort melden? Die Meldung wird zur Prüfung an uns übermittelt.', en: 'Why do you want to report this reply? The report is sent to us for review.', fr: 'Pourquoi signaler cette réponse ? Le signalement nous est envoyé pour examen.', es: '¿Por qué quieres reportar esta respuesta? El reporte se nos envía para revisión.', it: 'Perché vuoi segnalare questa risposta? La segnalazione ci viene inviata per la verifica.', pl: 'Dlaczego chcesz zgłosić tę odpowiedź? Zgłoszenie zostanie przesłane do nas w celu weryfikacji.' }),
+    cancel: pickLang({ de: 'Abbrechen', en: 'Cancel', fr: 'Annuler', es: 'Cancelar', it: 'Annulla', pl: 'Anuluj' }),
+    send: pickLang({ de: 'Melden', en: 'Report', fr: 'Signaler', es: 'Reportar', it: 'Segnala', pl: 'Zgłoś' }),
+    thanks: pickLang({ de: 'Danke – deine Meldung ist eingegangen.', en: 'Thanks – your report has been received.', fr: 'Merci – votre signalement a été reçu.', es: 'Gracias: hemos recibido tu reporte.', it: 'Grazie – la tua segnalazione è stata ricevuta.', pl: 'Dziękujemy – Twoje zgłoszenie zostało przyjęte.' }),
+  };
+  ov.innerHTML = '<div class="fam-alert" role="dialog" aria-modal="true" data-noi18n style="max-width:440px;text-align:left">' +
+    '<h3 style="margin-bottom:8px">' + T.head + '</h3>' +
+    '<p style="color:var(--muted);font-size:13px;line-height:1.5;margin-bottom:12px">' + T.intro + '</p>' +
+    '<div class="report-reasons" style="display:flex;flex-direction:column;gap:6px;margin-bottom:14px">' +
+    REASONS.map(r => '<label style="display:flex;gap:9px;align-items:center;font-size:13.5px;cursor:pointer"><input type="radio" name="aiRep" value="' + r.k + '" style="width:auto;flex:none">' + r.t + '</label>').join('') + '</div>' +
+    '<div class="fam-alert-btns"><button class="btn btn-sm" id="aiRepNo">' + T.cancel + '</button><button class="btn btn-sm btn-primary" id="aiRepGo" disabled style="opacity:.5">' + T.send + '</button></div></div>';
+  ov.classList.add('on');
+  const go = ov.querySelector('#aiRepGo');
+  ov.querySelectorAll('input[name="aiRep"]').forEach(r => r.onchange = () => { chosen = r.value; go.disabled = false; go.style.opacity = '1'; });
+  ov.querySelector('#aiRepNo').onclick = () => ov.classList.remove('on');
+  go.onclick = () => {
+    if (!chosen) return;
+    m.reported = true; m.reportReason = chosen; save();
+    // Meldung an den Anbieter (E-Mail-Kanal, funktioniert ohne Backend)
+    try {
+      const subj = 'Effyra AI – Meldung (' + chosen + ')';
+      const body = 'Gemeldete KI-Antwort:\n\n' + (m.text || '').slice(0, 1500) + '\n\n---\nGrund: ' + chosen + '\nZeit: ' + new Date().toISOString();
+      const a = document.createElement('a');
+      a.href = 'mailto:info@gonsoft-labs.de?subject=' + encodeURIComponent(subj) + '&body=' + encodeURIComponent(body);
+      a.target = '_blank'; document.body.appendChild(a); a.click(); a.remove();
+    } catch (e) {}
+    ov.classList.remove('on');
+    toast(T.thanks);
+    if (currentView === 'chat') RENDERERS.chat();
+  };
 }
 
 /* --- Aktions-Chips bauen --- */
@@ -12273,6 +12324,8 @@ $('#vaMic').addEventListener('click', vaToggleMic);
 $('#chatMsgs').addEventListener('click', e => {
   const sg = e.target.closest('[data-sg]');
   if (sg) { sendChat(sg.dataset.sg); return; }
+  const rep = e.target.closest('[data-report]');
+  if (rep && !rep.disabled) { showAiReport(+rep.dataset.report); return; }
   const chip = e.target.closest('.chip[data-m]');
   if (!chip || chip.disabled) return;
   const msg = store.chat[+chip.dataset.m];
