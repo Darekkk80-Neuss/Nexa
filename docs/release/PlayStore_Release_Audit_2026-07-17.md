@@ -15,9 +15,14 @@ Nach dem Erst-Audit direkt umgesetzt (Commit-Stand danach):
 | D-02 | ✅ BEHOBEN | TWA nutzt **ausschließlich** Google Play Billing, Stripe ist unerreichbar: `startCheckout` routet bei `hasPlayBilling()` zu `startPlayPurchase`; neuer `IS_TWA`-Guard verhindert jeden Stripe-Fallback in der Play-App. Verifiziert (Kauf-Klick → Play Billing, kein `stripe-checkout`-Aufruf). | `index.dev.html:3973` (IS_TWA), `:3878ff` (Guard) |
 | C-02 | ✅ BEHOBEN | Push in der TWA aktiviert. | `twa-manifest.json` `enableNotifications:true` |
 | C-01 | 🟡 VORBEREITET | `assetlinks.json` (package `app.effyra.twa`) + Deploy-Anleitung angelegt. **Offen (deinerseits):** SHA-256-Fingerprint des Play-App-Signing-Zertifikats einsetzen und an die **Domain-Wurzel** deployen. | `.well-known/assetlinks.json`, `.well-known/README.md` |
-| F-03 | ✅ BEHOBEN | In-App-Meldefunktion für KI-Antworten (generative-KI-Policy): „⚑ Antwort melden" je Chat-Antwort → Gründe-Dialog → Meldung an info@gonsoft-labs.de + lokale Markierung. Verifiziert. | `index.dev.html showAiReport()` |
-| Billing-Modell | ✅ FESTGELEGT | Option B: nur KI kostenpflichtig, Module gratis. Server `ENFORCE_TIERS=true` (Trial 100/14 Tage, Premium 500/Monat). Lifetime-Produkt entfernt (nur Premium 4,99 €/Mon. + Familie 14,99 €/Mon.). | `claude-proxy` + `PLAY_PRODUCTS` |
+| F-03 | ✅ BEHOBEN | In-App-Meldefunktion für KI-Antworten (generative-KI-Policy): „⚑ Antwort melden" je Chat-Antwort → Gründe-Dialog → Meldung an info@gonsoft-labs.de + lokale Markierung. Verifiziert. | `index.dev.html:11031 showAiReport()` |
+| F-04 | ✅ BEHOBEN | Prominenter Notruf-Disclaimer im Notfallbereich („Im echten Notfall immer 112 wählen. Effyra ersetzt keinen Notruf.") mehrsprachig. | `index.dev.html:1113` (.em-disclaimer) |
+| E-02 (Code) | ✅ BEHOBEN | Öffentliche Konto-Lösch-Seite `konto-loeschen.html` (DE/EN); im Rechtscenter verlinkt. **URL für Console:** `https://darekkk80-neuss.github.io/Effyra/konto-loeschen.html` | `konto-loeschen.html`, `index.dev.html:12418` |
+| Billing-Modell | ✅ FESTGELEGT | Option B: nur KI kostenpflichtig, Module gratis. Server `ENFORCE_TIERS=true` (Trial 100/14 Tage, Premium 500/Monat). Lifetime-Produkt entfernt (nur Premium 4,99 €/Mon. + Familie 14,99 €/Mon.). | `claude-proxy:37` + `PLAY_PRODUCTS:7709` |
 | P0-02 | ✅ ENTSCHIEDEN | TWA-Domain bleibt `darekkk80-neuss.github.io/Effyra/` (bereits lauffähig, URL in der TWA unsichtbar). Keine Code-Änderung. assetlinks → Root-Repo `darekkk80-neuss.github.io/.well-known/`. | `twa-manifest.json`, `index.dev.html:3962` |
+
+### Re-Audit-Verdikt 2026-07-17 (nach allen Fixes)
+**Code-Teil des Audits vollständig.** Verbleibende Blocker sind ausschließlich **außerhalb des Codes**: `P0-01` (AAB bauen – läuft via PWABuilder) und der **Deploy-Teil von C-01** (SHA-256-Fingerprint + Domain-Wurzel). Alle Hoch-Risiken mit Code-Bezug (C-02, D-01, D-02, F-01…F-04) sind behoben oder als Console-Deklaration abgegrenzt. Sicherheit: keine Server-Secrets im Client (Scan leer), durchgängig HTTPS, CLOUD host-gesperrt.
 
 **Verbleibende echte Blocker (nur auf deinem Rechner / in der Console lösbar):**
 `P0-01` (AAB bauen via Bubblewrap) und der **Deploy-Teil von C-01** (Fingerprint + Domain-Wurzel).
