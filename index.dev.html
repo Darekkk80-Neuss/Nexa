@@ -7330,11 +7330,40 @@ async function ensurePushSub(extra) {
   await sb.from('push_subscriptions').upsert(Object.assign({ user_id: uid, endpoint: j.endpoint, sub: j, updated_at: new Date().toISOString() }, extra || {}), { onConflict: 'user_id,endpoint' });
   return j;
 }
+/* Typ-C Vorschaltdialog: erklärt Push VOR dem OS-Prompt (§25 TDDDG/Transparenz). Löst mit 'granted'|'denied'|'default'|'unsupported'. */
+function ensurePushPermission(reason) {
+  return new Promise((resolve) => {
+    if (typeof Notification === 'undefined') { resolve('unsupported'); return; }
+    if (Notification.permission === 'granted') { try { setConsent('push', 'granted'); } catch (e) {} resolve('granted'); return; }
+    if (Notification.permission === 'denied') { resolve('denied'); return; }
+    const de = legalLang() === 'de';
+    let ov = document.getElementById('pushPreOv');
+    if (!ov) { ov = document.createElement('div'); ov.id = 'pushPreOv'; ov.className = 'fam-alert-ov'; ov.style.zIndex = '10001'; document.body.appendChild(ov); }
+    ov.innerHTML = '<div class="fam-alert" role="dialog" aria-modal="true" style="max-width:440px;text-align:left">' +
+      '<h3 style="margin-bottom:8px">' + (de ? '🔔 Benachrichtigungen erlauben?' : '🔔 Allow notifications?') + '</h3>' +
+      '<p style="color:var(--muted);font-size:13px;line-height:1.5;margin-bottom:8px">' + esc(reason || (de ? 'Effyra kann dich an zugewiesene Aufgaben, Termine und Warnungen erinnern – auch bei geschlossener App.' : 'Effyra can remind you of assigned tasks, appointments and alerts – even when the app is closed.')) + '</p>' +
+      '<ul style="color:var(--muted);font-size:12.5px;line-height:1.5;margin:0 0 10px 18px">' +
+      '<li>' + (de ? 'Rein optional – die App funktioniert auch ohne.' : 'Entirely optional – the app works without it.') + '</li>' +
+      '<li>' + (de ? 'Jederzeit widerrufbar (App-Einstellungen bzw. Browser/Gerät).' : 'Revocable any time (app settings or browser/device).') + '</li>' +
+      '</ul>' +
+      '<p style="color:var(--muted);font-size:12px;margin-bottom:14px">' + (de ? 'Im nächsten Schritt fragt dich dein Gerät nach der Berechtigung.' : 'Next, your device will ask you for the permission.') + '</p>' +
+      '<div class="fam-alert-btns"><button class="btn btn-sm" id="pushPreNo">' + (de ? 'Jetzt nicht' : 'Not now') + '</button><button class="btn btn-sm btn-primary" id="pushPreYes">' + (de ? 'Weiter' : 'Continue') + '</button></div></div>';
+    ov.classList.add('on');
+    ov.querySelector('#pushPreNo').onclick = () => { ov.classList.remove('on'); try { setConsent('push', 'denied'); } catch (e) {} resolve('default'); };
+    ov.querySelector('#pushPreYes').onclick = async () => {
+      ov.classList.remove('on');
+      let p = 'default';
+      try { p = await Notification.requestPermission(); } catch (e) {}
+      try { setConsent('push', p === 'granted' ? 'granted' : 'denied'); } catch (e) {}
+      resolve(p);
+    };
+  });
+}
 /* Morgen-Briefing-Push pro Gerät an-/abschalten (Opt-in-Flag im Push-Abo; Versand per Server-Cron). */
 async function setMorningPush(on) {
-  if (on && typeof Notification !== 'undefined' && Notification.permission !== 'granted') {
-    const p = await Notification.requestPermission();
-    if (p !== 'granted') { toast('Bitte Benachrichtigungen erlauben.'); RENDERERS.family(); return; }
+  if (on) {
+    const p = await ensurePushPermission(legalLang() === 'de' ? 'Für das morgendliche Tagesbriefing als Push brauchen wir die Benachrichtigungserlaubnis.' : 'To send the morning briefing as a push, we need notification permission.');
+    if (p !== 'granted') { toast(legalLang() === 'de' ? 'Ohne Benachrichtigungen kein Morgen-Briefing.' : 'No morning briefing without notifications.'); RENDERERS.family(); return; }
   }
   const j = await ensurePushSub();   // Push-Abo (Zeile) sicherstellen
   let okFlag = false;                 // morning-Flag zuverlässig serverseitig setzen (umgeht Spaltenrechte)
@@ -7361,8 +7390,8 @@ async function pushNotifyMember(toUserId, title, bodyText) {
 function askFamNotify() {
   try {
     if (typeof Notification === 'undefined') return;
-    if (Notification.permission === 'default') Notification.requestPermission().then(p => { if (p === 'granted') subscribeFamilyPush(); });
-    else if (Notification.permission === 'granted') subscribeFamilyPush();
+    if (Notification.permission === 'granted') { subscribeFamilyPush(); return; }
+    if (Notification.permission === 'default') ensurePushPermission().then(p => { if (p === 'granted') subscribeFamilyPush(); });
   } catch (e) {}
 }
 /* Selbst-Test: sendet einen echten Push an das eigene Gerät → prüft die ganze Kette. */
@@ -7830,10 +7859,11 @@ $('#famRoot').addEventListener('click', e => {
   if (a === 'bookAdult') { bookAddon('adult'); return; }
   if (a === 'bookChild') { bookAddon('child'); return; }
   if (a === 'pushOn') {
-    if (typeof Notification === 'undefined') { toast('Benachrichtigungen werden hier nicht unterstützt.'); return; }
-    Notification.requestPermission().then(p => {
+    ensurePushPermission().then(p => {
       if (p === 'granted') { subscribeFamilyPush().then(() => { RENDERERS.family(); toast('🔔 Aktiviert – tippe „Test an mich".'); }); }
-      else { RENDERERS.family(); toast('Bitte in den Einstellungen für diese Seite erlauben.'); }
+      else if (p === 'unsupported') { toast('Benachrichtigungen werden hier nicht unterstützt.'); }
+      else if (p === 'denied') { RENDERERS.family(); toast('Bitte in den Einstellungen für diese Seite erlauben.'); }
+      else { RENDERERS.family(); }
     });
     return;
   }
@@ -7841,8 +7871,7 @@ $('#famRoot').addEventListener('click', e => {
   if (a === 'pushTest') { toast('Test wird gesendet …'); pushTestSelf(); return; }
   if (a === 'morningToggle') { setMorningPush(!(store.settings && store.settings.morningPush)); return; }
   if (a === 'medRemindOn') {
-    if (typeof Notification === 'undefined') { toast('Benachrichtigungen werden hier nicht unterstützt.'); return; }
-    Notification.requestPermission().then(p => { RENDERERS.family(); if (p === 'granted') { toast('🔔 Erinnerungen aktiviert'); checkMedReminders(); } });
+    ensurePushPermission(legalLang() === 'de' ? 'Für Medikamenten-Erinnerungen zeigt dir Effyra Benachrichtigungen zu deinen eingestellten Zeiten.' : 'For medication reminders, Effyra shows notifications at your set times.').then(p => { RENDERERS.family(); if (p === 'granted') { toast('🔔 Erinnerungen aktiviert'); checkMedReminders(); } else if (p === 'unsupported') { toast('Benachrichtigungen werden hier nicht unterstützt.'); } });
     return;
   }
   if (a === 'addTime') {
