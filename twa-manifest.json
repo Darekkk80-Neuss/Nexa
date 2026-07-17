@@ -10,7 +10,7 @@
   "themeColorDark": "#07090f",
   "navigationColor": "#07090f",
   "backgroundColor": "#07090f",
-  "enableNotifications": false,
+  "enableNotifications": true,
   "startUrl": "/Effyra/",
   "webManifestUrl": "https://darekkk80-neuss.github.io/Effyra/manifest.webmanifest",
   "webManifestId": "https://darekkk80-neuss.github.io/Effyra/",

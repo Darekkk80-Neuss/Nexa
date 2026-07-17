@@ -3876,7 +3876,12 @@ function showUpgrade(lockedView) {
 }
 /* Stripe-Checkout. Mit Backend: echte Kartenzahlung; sonst Code-Fallback. */
 async function startCheckout(product) {
-  if (hasPlayBilling()) return startPlayPurchase(product);   // TWA: Google Play Billing (Pflicht in Play-Apps)
+  if (hasPlayBilling()) return startPlayPurchase(product);   // TWA mit Digital Goods → Google Play Billing (Pflicht in Play-Apps)
+  if (IS_TWA) {   // Play-App ohne verfügbare Digital Goods API: NIEMALS auf Stripe/Web-Checkout ausweichen (Play-Policy)
+    toast('ℹ️ Käufe laufen über Google Play. Bitte Google Play / die App aktualisieren.');
+    const d = $('#paywall .up-code'); if (d) d.open = true;
+    return;
+  }
   if (!BACKEND_V2 || !CLOUD) {
     toast('💳 Käufe laufen später über Google Play (in Vorbereitung). Nutze vorerst einen Freischalt-Code.');
     const d = $('#paywall .up-code'); if (d) d.open = true;
@@ -3963,9 +3968,13 @@ const ALLOWED_HOSTS = ['darekkk80-neuss.github.io', 'localhost', '127.0.0.1'];
 const HOST_OK = ALLOWED_HOSTS.indexOf(location.hostname) !== -1;
 const CLOUD = !!(SUPABASE_URL && SUPABASE_ANON_KEY && window.supabase && HOST_OK);
 const sb = CLOUD ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
-/* Play-Store-sicher: keine sichtbaren In-App-Käufe, solange Google Play Billing nicht verdrahtet ist.
-   (Sichtbare Preis-/Kauf-Buttons ohne Play Billing führen sonst zur Ablehnung.) Freischalt-Code bleibt. */
-const STORE_SAFE = true;
+/* Läuft die App als installierte Android-App (Trusted Web Activity)? TWAs setzen den Referrer
+   auf android-app://<package>. Dann sind Käufe ausschließlich über Google Play Billing erlaubt. */
+const IS_TWA = (typeof document !== 'undefined' && typeof document.referrer === 'string' && document.referrer.indexOf('android-app://') === 0);
+/* Kauf-Buttons sichtbar (App ist kostenpflichtig). In der TWA laufen Käufe über Google Play Billing
+   (Digital Goods API); im echten Browser über den Web-Checkout. STORE_SAFE nur setzen, wenn Käufe
+   komplett versteckt werden sollen (z. B. reiner Vorschau-Build). */
+const STORE_SAFE = false;
 
 /* Phase-2-Backend: auf true setzen, sobald die Edge Functions + das SQL
    (supabase-tiers.sql) deployt sind. Dann läuft gehostete KI über den Proxy
