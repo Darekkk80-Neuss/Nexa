@@ -1450,15 +1450,6 @@ body.lang-switching main,body.lang-switching .sidebar,body.lang-switching .topba
     <h2 id="pwHead">Wähle deinen Plan</h2>
     <p class="gate-sub" id="pwSub">Deine Daten bleiben immer erhalten. Jederzeit wechselbar.</p>
     <div class="tier-cards">
-      <div class="tier-card" data-tier="lifetime">
-        <div class="tier-top"><span class="tier-name">Lifetime ohne KI</span><span class="tier-price">12,99 €<small>einmalig</small></span></div>
-        <ul class="tier-feats">
-          <li>✅ Komplette App – dauerhaft, keine Abo-Gebühr</li>
-          <li>✅ Alle Module (Arbeitszeit, Kinder, Familie, Auto, Notfall …)</li>
-          <li>➖ Ohne integrierte KI (eigener API-Schlüssel optional)</li>
-        </ul>
-        <button class="btn btn-primary tier-cta" data-buy="lifetime">Lifetime ohne KI – 12,99 € einmalig</button>
-      </div>
       <div class="tier-card best" data-tier="premium">
         <div class="tier-badge">Beste Wahl</div>
         <div class="tier-top"><span class="tier-name">Effyra AI Premium</span><span class="tier-price">4,99 €<small>/ Monat</small></span></div>
@@ -5668,7 +5659,7 @@ RENDERERS.dashboard = function () {
         : '🎁 Testphase: noch ' + trialDaysLeft() + ' Tag' + (trialDaysLeft() === 1 ? '' : 'e') + ' · <b>' + rem + ' / ' + lim + ' KI-Credits</b>';
       const tier = (k, ic, name, price, curr, tag) => '<button class="lic-tier' + (curr ? ' active' : '') + '" data-lic="' + k + '">' + (tag ? '<span class="lic-tag">' + tag + '</span>' : '') + '<span class="lic-ic">' + ic + '</span><b>' + name + '</b><small>' + price + '</small></button>';
       slot.innerHTML = '<div class="lic-widget"><div class="lic-status">' + status + '</div><div class="lic-tiers">' +
-        tier('lifetime', '🎁', 'Kostenlos', 'dein Plan', true) +
+        tier('free', '🎁', 'Kostenlos', 'dein Plan', true) +
         tier('premium', '⭐', 'Pro', '4,99 €/Mon.', false, 'Top') +
         tier('family', '👪', 'Familie', '14,99 €/Mon.', false) +
         '</div></div>';
@@ -7710,7 +7701,6 @@ async function bookAddon(kind) {
 const PLAY_PRODUCTS = {
   premium:  { id: 'effyra_premium',  type: 'subs',       kind: 'premium',  label: 'Effyra AI Pro',    price: '4,99 €/Mon.' },
   family:   { id: 'effyra_family',   type: 'subs',       kind: 'family',   label: 'Familienabo',      price: '14,99 €/Mon.' },
-  lifetime: { id: 'effyra_lifetime', type: 'inapp',      kind: 'lifetime', label: 'Lifetime ohne KI', price: '12,99 €' },
   topup:    { id: 'effyra_ai_boost', type: 'consumable', kind: 'topup',    label: 'KI-Credits +500',  price: '4,99 €' }
 };
 /* Kauf über Google Play Billing (nur in der TWA verfügbar). Der purchaseToken wird
