@@ -2643,6 +2643,7 @@ const TDICT_SRC = {
   'Guten Abend': { en: 'Good evening', fr: 'Bonsoir', es: 'Buenas tardes', it: 'Buonasera', pl: 'Dobry wieczór' },
   'Gute Nacht': { en: 'Good night', fr: 'Bonne nuit', es: 'Buenas noches', it: 'Buonanotte', pl: 'Dobranoc' },
   'Deine Plattform ist bereit': { en: 'Your platform is ready', fr: 'Votre plateforme est prête', es: 'Tu plataforma está lista', it: 'La tua piattaforma è pronta', pl: 'Twoja platforma jest gotowa' },
+  'Schön, dass du da bist.': { en: 'Good to have you here.', fr: 'Quel plaisir de te voir.', es: 'Qué bueno tenerte aquí.', it: 'Che bello averti qui.', pl: 'Dobrze, że jesteś.' },
   '✨ Start-Erlebnis': { en: '✨ Startup experience', fr: '✨ Expérience de démarrage', es: '✨ Experiencia de inicio', it: '✨ Esperienza d’avvio', pl: '✨ Ekran startowy' },
   'Beim Öffnen begrüßt dich Effyra mit deinem Namen – je nach Tageszeit, mit kurzem Startklang.': { en: 'When you open the app, Effyra greets you by name – depending on the time of day, with a short startup sound.', fr: 'À l’ouverture, Effyra t’accueille par ton prénom – selon l’heure, avec un court son de démarrage.', es: 'Al abrir, Effyra te saluda por tu nombre, según la hora del día, con un breve sonido de inicio.', it: 'All’apertura, Effyra ti saluta per nome – a seconda dell’ora, con un breve suono d’avvio.', pl: 'Po otwarciu Effyra wita Cię imieniem – zależnie od pory dnia, z krótkim dźwiękiem startowym.' },
   '🔔 An mit Ton': { en: '🔔 On with sound', fr: '🔔 Activé avec son', es: '🔔 Con sonido', it: '🔔 Con suono', pl: '🔔 Wł. z dźwiękiem' },
@@ -8022,19 +8023,22 @@ function pickVoiceFor(lang) {
     return vs.find(v => /google/i.test(v.name)) || vs.find(v => /(natural|neural|online|premium|enhanced)/i.test(v.name)) || vs[0] || null;
   } catch (e) { return null; }
 }
-/* Gesprochene Begrüßung „Guten Abend, Darius" – lokalisiert, warm, gratis (Gerätestimme, keine KI-Credits). */
+/* Gesprochene Begrüßung – warm & persönlich („Guten Abend, Darius. Schön, dass du da bist."),
+   lokalisiert, ruhig gesprochen, gratis (Gerätestimme, keine KI-Credits). */
 function speakBootGreeting() {
   try {
     if (!('speechSynthesis' in window)) return;
     const name = (store.name || (account && account.name) || '').trim();
-    const raw = greetWord() + (name ? ', ' + name : '');
+    const warm = (curLang === 'de') ? 'Schön, dass du da bist.' : (lookupTr('Schön, dass du da bist.') || 'Good to have you here.');
+    // Komma nach der Begrüßung + Punkt vor der zweiten Zeile → natürliche Sprechpausen (menschlicher).
+    const raw = greetWord() + (name ? ', ' + name : '') + '. ' + warm;
     const text = (typeof cleanForTTS === 'function') ? cleanForTTS(raw) : raw;
     if (!text) return;
     const u = new SpeechSynthesisUtterance(text);
     const v = pickVoiceFor(curLang);
     if (v) u.voice = v;
     u.lang = (typeof curLocale === 'string' && curLocale) ? curLocale : 'de-DE';
-    u.rate = 0.95; u.pitch = 1.02; u.volume = 1;
+    u.rate = 0.88; u.pitch = 0.96; u.volume = 0.9;   // langsamer, wärmer, sanfter = ruhiger & freundlicher
     speechSynthesis.cancel(); speechSynthesis.speak(u);
   } catch (e) {}
 }
