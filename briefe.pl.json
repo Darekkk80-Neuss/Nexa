@@ -1,259 +1,218 @@
 {
-  "land": "PL",
-  "sprache": "pl",
-  "formen": {
-    "arbeit": {
-      "label": "Umowa o pracę",
-      "form": "Forma pisemna – wydruk z własnoręcznym podpisem (Kodeks pracy: oświadczenie o wypowiedzeniu umowy o pracę powinno nastąpić na piśmie)",
-      "email": "nein",
-      "tipp": "Wypowiedzenie umowy o pracę należy złożyć na piśmie: proszę wydrukować pismo, podpisać je własnoręcznie i złożyć w dziale kadr za potwierdzeniem odbioru albo wysłać listem poleconym za zwrotnym potwierdzeniem odbioru. Zwykły e-mail nie spełnia wymogu formy pisemnej – równoważny jest wyłącznie dokument opatrzony kwalifikowanym podpisem elektronicznym. Okres wypowiedzenia zależy od stażu pracy u danego pracodawcy, a jeżeli liczony jest w miesiącach, kończy się w ostatnim dniu miesiąca kalendarzowego."
-    },
-    "miete": {
-      "label": "Mieszkanie / umowa najmu",
-      "form": "Forma dokumentowa, jeżeli umowa była zawarta na piśmie (Kodeks cywilny); w praktyce zalecana forma pisemna z własnoręcznym podpisem",
-      "email": "unsicher",
-      "tipp": "Jeżeli umowa najmu została zawarta na piśmie, do jej wypowiedzenia wystarcza co do zasady forma dokumentowa (np. e-mail albo skan podpisanego pisma), chyba że sama umowa zastrzega formę pisemną. Ze względów dowodowych bezpieczniej jest wysłać podpisane pismo listem poleconym za potwierdzeniem odbioru. Przy najmie lokalu mieszkalnego na czas nieoznaczony z czynszem płatnym miesięcznie ustawowy termin wypowiedzenia wynosi trzy miesiące naprzód na koniec miesiąca kalendarzowego, o ile umowa nie przewiduje terminu korzystniejszego dla najemcy."
-    },
-    "handy": {
-      "label": "Telefon / internet / telewizja",
-      "form": "Forma dokumentowa – e-mail, formularz w panelu klienta lub skan podpisanego pisma",
-      "email": "ja",
-      "tipp": "Umowę o świadczenie usług telekomunikacyjnych można zwykle wypowiedzieć w formie dokumentowej, w tym pocztą elektroniczną lub przez formularz udostępniony przez operatora. Proszę zachować potwierdzenie wysłania i poprosić operatora o pisemne potwierdzenie daty rozwiązania umowy. Warto sprawdzić, czy nie trwa jeszcze okres zobowiązania po uldze promocyjnej – wcześniejsze rozwiązanie umowy może wiązać się z obowiązkiem zwrotu proporcjonalnej części ulgi."
-    },
-    "strom": {
-      "label": "Energia elektryczna / gaz",
-      "form": "Zależnie od umowy i ogólnych warunków – forma pisemna albo dokumentowa",
-      "email": "unsicher",
-      "tipp": "Sprzedawcy energii elektrycznej i gazu różnie regulują dopuszczalną formę wypowiedzenia – proszę sprawdzić umowę oraz ogólne warunki. Jeżeli umowa nie stanowi wyraźnie inaczej, bezpieczniej jest wysłać podpisane pismo listem poleconym za potwierdzeniem odbioru. Przy zmianie sprzedawcy nowy sprzedawca zwykle przeprowadza całą procedurę wypowiedzenia w imieniu klienta na podstawie udzielonego pełnomocnictwa."
-    },
-    "streaming": {
-      "label": "Streaming / abonament online",
-      "form": "Forma dowolna – najczęściej rezygnacja w panelu użytkownika albo e-mailem",
-      "email": "ja",
-      "tipp": "Abonamenty zawierane przez internet rozwiązuje się zwykle w ustawieniach konta lub e-mailem; forma dokumentowa w zupełności wystarcza. Proszę zachować wiadomość potwierdzającą rezygnację lub zrzut ekranu. Przy umowach zawartych na odległość przysługuje dodatkowo prawo odstąpienia w terminie 14 dni, z wyjątkami przewidzianymi w ustawie o prawach konsumenta – dotyczy to jednak odstąpienia od świeżo zawartej umowy, a nie jej późniejszego wypowiedzenia."
-    },
-    "fitness": {
-      "label": "Klub fitness / siłownia",
-      "form": "Forma dokumentowa, jeżeli umowa była zawarta na piśmie; szczegóły określa umowa i regulamin klubu",
-      "email": "ja",
-      "tipp": "Jeżeli umowa z klubem została zawarta na piśmie, do jej wypowiedzenia wystarcza co do zasady forma dokumentowa, np. e-mail – chyba że umowa zastrzega formę pisemną. Proszę sprawdzić okres wypowiedzenia oraz minimalny okres obowiązywania karnetu. Postanowienia nadmiernie utrudniające konsumentowi rezygnację mogą stanowić niedozwolone postanowienia umowne i nie wiążą konsumenta."
-    },
-    "versicherung": {
-      "label": "Ubezpieczenie",
-      "form": "Zależnie od rodzaju ubezpieczenia i ogólnych warunków; przy obowiązkowym OC posiadaczy pojazdów wymagana jest forma pisemna",
-      "email": "unsicher",
-      "tipp": "Dopuszczalna forma zależy od rodzaju ubezpieczenia – proszę sprawdzić ogólne warunki ubezpieczenia. Wypowiedzenie obowiązkowego ubezpieczenia OC posiadaczy pojazdów mechanicznych na koniec okresu ubezpieczenia składa się na piśmie, najpóźniej na jeden dzień przed upływem tego okresu; w przeciwnym razie umowa przedłuża się automatycznie na kolejne 12 miesięcy. W razie wątpliwości proszę wysłać podpisane pismo listem poleconym i zachować dowód nadania."
-    },
-    "verein": {
-      "label": "Członkostwo w stowarzyszeniu lub organizacji",
-      "form": "Zgodnie ze statutem lub regulaminem organizacji",
-      "email": "unsicher",
-      "tipp": "Sposób i forma wystąpienia z organizacji wynikają z jej statutu lub regulaminu – proszę sprawdzić te dokumenty przed wysłaniem pisma. Jeżeli statut nie reguluje tej kwestii, bezpiecznie jest złożyć pisemne oświadczenie za potwierdzeniem odbioru. Proszę poprosić o potwierdzenie daty ustania członkostwa oraz o rozliczenie opłaconych składek."
-    },
-    "sonstiges": {
-      "label": "Inne umowy",
-      "form": "Zależnie od treści umowy; jeżeli umowa była zawarta na piśmie, do jej wypowiedzenia wystarcza zwykle forma dokumentowa",
-      "email": "unsicher",
-      "tipp": "Proszę sprawdzić umowę, ogólne warunki lub regulamin – to one określają wymaganą formę i okres wypowiedzenia. Zgodnie z Kodeksem cywilnym, jeżeli umowa została zawarta w formie pisemnej, dokumentowej albo elektronicznej, jej wypowiedzenie wymaga co najmniej formy dokumentowej, chyba że ustawa lub umowa zastrzega formę surowszą. W razie wątpliwości proszę wysłać podpisane pismo listem poleconym za potwierdzeniem odbioru."
-    }
+ "land": "PL",
+ "sprache": "pl",
+ "formen": {
+  "arbeit": {
+   "label": "Umowa o pracę",
+   "form": "Forma pisemna – wydruk z własnoręcznym podpisem (Kodeks pracy: oświadczenie o wypowiedzeniu umowy o pracę powinno nastąpić na piśmie)",
+   "email": "nein",
+   "tipp": "Wypowiedzenie umowy o pracę należy złożyć na piśmie: proszę wydrukować pismo, podpisać je własnoręcznie i złożyć w dziale kadr za potwierdzeniem odbioru albo wysłać listem poleconym za zwrotnym potwierdzeniem odbioru. Zwykły e-mail nie spełnia wymogu formy pisemnej – równoważny jest wyłącznie dokument opatrzony kwalifikowanym podpisem elektronicznym. Okres wypowiedzenia zależy od stażu pracy u danego pracodawcy, a jeżeli liczony jest w miesiącach, kończy się w ostatnim dniu miesiąca kalendarzowego."
   },
-  "vorlagen": {
-    "miet-kuend": {
-      "titel": "Wypowiedzenie umowy najmu",
-      "body": "niniejszym wypowiadam umowę najmu lokalu mieszkalnego położonego pod adresem {objekt}, z zachowaniem obowiązującego okresu wypowiedzenia.\n\nTermin rozwiązania umowy: {datum}\n\nJeżeli wskazany termin nie odpowiada okresowi wypowiedzenia wynikającemu z umowy lub z przepisów prawa, proszę o potraktowanie niniejszego pisma jako wypowiedzenia ze skutkiem na najbliższy dopuszczalny dzień oraz o poinformowanie mnie o tej dacie.\n\nProszę o pisemne potwierdzenie otrzymania wypowiedzenia oraz daty zakończenia najmu. Proszę również o wskazanie terminu protokolarnego przekazania lokalu wraz ze spisaniem stanu liczników oraz o informację, w jakim terminie i na jaki rachunek zostanie zwrócona wpłacona kaucja."
-    },
-    "umzug": {
-      "titel": "Zawiadomienie o zmianie adresu",
-      "body": "niniejszym informuję o zmianie mojego adresu.\n\nNowy adres:\n{neueAdresse}\n\nData zmiany adresu: {datum}\n\nProszę o zaktualizowanie moich danych w Państwa dokumentacji, kierowanie dalszej korespondencji na nowy adres oraz o potwierdzenie dokonania zmiany."
-    },
-    "nachsende": {
-      "titel": "Informacja o nowym adresie doręczeń",
-      "body": "niniejszym informuję, że od wskazanego niżej terminu moja korespondencja powinna być kierowana na nowy adres.\n\nNowy adres doręczeń:\n{neueAdresse}\n\nTermin obowiązywania zmiany: {datum}\n\nProszę o uwzględnienie tej zmiany w Państwa dokumentacji oraz o potwierdzenie jej przyjęcia.\n\nInformacja dodatkowa: usługę przekierowania (dosyłania) korespondencji na nowy adres świadczy Poczta Polska na podstawie odrębnego zlecenia, które składa się w placówce pocztowej albo przez internet. Niniejsze pismo takiego zlecenia nie zastępuje."
-    },
-    "uebergabe": {
-      "titel": "Lista kontrolna – przekazanie mieszkania",
-      "body": "Lista kontrolna do protokolarnego przekazania lokalu:\n\n1. Spisać stan wszystkich liczników (energia elektryczna, gaz, woda ciepła i zimna, ciepło) wraz z ich numerami.\n2. Przekazać wszystkie klucze i odnotować w protokole ich liczbę oraz rodzaj (drzwi wejściowe, piwnica, skrzynka pocztowa, brama, piloty).\n3. Oddać lokal w stanie czystym i uporządkowanym, opróżniony z rzeczy własnych.\n4. Sprawdzić stan ścian, sufitów i podłóg; zdjęciami udokumentować ewentualne uszkodzenia.\n5. Zaszpachlować i pomalować otwory po wiertłach, jeżeli wynika to z umowy.\n6. Sprawdzić działanie okien, drzwi, armatury, instalacji elektrycznej i grzewczej.\n7. Podpisać protokół zdawczo-odbiorczy i zachować jeden egzemplarz dla siebie.\n8. Podać wynajmującemu numer rachunku bankowego do zwrotu kaucji.\n9. Wykonać dokumentację fotograficzną stanu lokalu w dniu przekazania.\n10. Zgłosić zmianę adresu dostawcom mediów, a w razie potrzeby zlecić przekierowanie korespondencji w Poczcie Polskiej.\n11. Dopełnić obowiązku meldunkowego w urzędzie gminy właściwym dla nowego miejsca zamieszkania."
-    },
-    "maengel": {
-      "titel": "Zgłoszenie wady lokalu do wynajmującego",
-      "body": "niniejszym zgłaszam wadę (usterkę) w wynajmowanym przeze mnie lokalu położonym pod adresem {objekt}.\n\nOpis wady:\n{mangel}\n\nTermin usunięcia wady: {datum}\n\nZgodnie z przepisami Kodeksu cywilnego o najmie wynajmujący jest obowiązany utrzymywać przedmiot najmu w stanie przydatnym do umówionego użytku przez cały czas trwania najmu. Uprzejmie proszę o usunięcie wskazanej wady w podanym terminie oraz o potwierdzenie otrzymania niniejszego zgłoszenia.\n\nW razie bezskutecznego upływu terminu zastrzegam sobie prawo skorzystania z uprawnień przysługujących najemcy, w tym żądania obniżenia czynszu za czas trwania wady ograniczającej przydatność lokalu do umówionego użytku."
-    },
-    "kaution": {
-      "titel": "Wezwanie do zwrotu kaucji",
-      "body": "umowa najmu lokalu położonego pod adresem {objekt} została zakończona, a lokal został przeze mnie przekazany.\n\nData zakończenia najmu: {datum}\n\nW związku z powyższym proszę o zwrot wpłaconej kaucji zabezpieczającej. Zgodnie z przepisami o ochronie praw lokatorów kaucja podlega zwrotowi po potrąceniu ewentualnych należności wynajmującego z tytułu najmu, w terminie miesiąca od dnia opróżnienia lokalu.\n\nProszę o dokonanie przelewu na następujący rachunek bankowy:\n\nWłaściciel rachunku: {name}\nNumer rachunku: {iban}\n\nProszę o potwierdzenie otrzymania niniejszego pisma. W przypadku dokonania jakichkolwiek potrąceń proszę o przedstawienie ich szczegółowego, pisemnego rozliczenia."
-    },
-    "handy-kuend": {
-      "titel": "Wypowiedzenie umowy o świadczenie usług telefonii komórkowej",
-      "body": "niniejszym wypowiadam zawartą z Państwem umowę o świadczenie usług telekomunikacyjnych (telefonia komórkowa), z zachowaniem obowiązującego okresu wypowiedzenia.\n\nNumer umowy / numer klienta: {vertragsnr}\nTermin rozwiązania umowy: {datum}\n\nJeżeli rozwiązanie umowy we wskazanym terminie nie jest możliwe, proszę o rozwiązanie jej w najbliższym dopuszczalnym terminie oraz o poinformowanie mnie o tej dacie.\n\nProszę o pisemne potwierdzenie przyjęcia wypowiedzenia i dokładnej daty zakończenia umowy, a także o informację o ewentualnych zobowiązaniach pozostających do rozliczenia oraz o końcowe rozliczenie należności. Jeżeli zamierzam przenieść numer do innego operatora, proszę o wskazanie wymaganej w tym celu procedury."
-    },
-    "internet-kuend": {
-      "titel": "Wypowiedzenie umowy o dostęp do internetu",
-      "body": "niniejszym wypowiadam zawartą z Państwem umowę o świadczenie usług dostępu do internetu, z zachowaniem obowiązującego okresu wypowiedzenia.\n\nNumer umowy / numer klienta: {vertragsnr}\nTermin rozwiązania umowy: {datum}\n\nJeżeli rozwiązanie umowy we wskazanym terminie nie jest możliwe, proszę o rozwiązanie jej w najbliższym dopuszczalnym terminie oraz o poinformowanie mnie o tej dacie.\n\nProszę o pisemne potwierdzenie przyjęcia wypowiedzenia i dokładnej daty zakończenia umowy. Proszę również o informację, w jaki sposób i w jakim terminie mam zwrócić udostępniony sprzęt (router, dekoder, modem), oraz o końcowe rozliczenie należności."
-    },
-    "streaming-kuend": {
-      "titel": "Rezygnacja z abonamentu serwisu streamingowego",
-      "body": "niniejszym wypowiadam zawartą z Państwem umowę abonamentową na korzystanie z serwisu, z zachowaniem obowiązującego okresu wypowiedzenia.\n\nNumer umowy / identyfikator konta: {vertragsnr}\nTermin rozwiązania umowy: {datum}\n\nJeżeli rozwiązanie umowy we wskazanym terminie nie jest możliwe, proszę o rozwiązanie jej w najbliższym dopuszczalnym terminie oraz o poinformowanie mnie o tej dacie.\n\nProszę o potwierdzenie przyjęcia rezygnacji, wskazanie dnia, do którego mam dostęp do usługi, oraz o zaprzestanie pobierania dalszych opłat z mojej karty lub rachunku bankowego po tym dniu."
-    },
-    "fitness-kuend": {
-      "titel": "Wypowiedzenie umowy z klubem fitness",
-      "body": "niniejszym wypowiadam zawartą z Państwem umowę o korzystanie z usług klubu (karnet / członkostwo), z zachowaniem obowiązującego okresu wypowiedzenia.\n\nNumer umowy / numer klienta: {vertragsnr}\nTermin rozwiązania umowy: {datum}\n\nJeżeli rozwiązanie umowy we wskazanym terminie nie jest możliwe, proszę o rozwiązanie jej w najbliższym dopuszczalnym terminie oraz o poinformowanie mnie o tej dacie.\n\nProszę o pisemne potwierdzenie przyjęcia wypowiedzenia oraz dokładnej daty zakończenia umowy. Proszę również o zaprzestanie pobierania składek po tym dniu i o przedstawienie końcowego rozliczenia."
-    },
-    "versicherung-kuend": {
-      "titel": "Wypowiedzenie umowy ubezpieczenia",
-      "body": "niniejszym wypowiadam zawartą z Państwem umowę ubezpieczenia, z zachowaniem okresu wypowiedzenia przewidzianego w umowie i ogólnych warunkach ubezpieczenia.\n\nNumer polisy / umowy: {vertragsnr}\nTermin rozwiązania umowy: {datum}\n\nJeżeli rozwiązanie umowy we wskazanym terminie nie jest możliwe, proszę o rozwiązanie jej w najbliższym dopuszczalnym terminie oraz o poinformowanie mnie o tej dacie.\n\nProszę o pisemne potwierdzenie przyjęcia wypowiedzenia oraz wskazanie dnia, w którym ustaje ochrona ubezpieczeniowa. Proszę także o rozliczenie i zwrot składki za niewykorzystany okres ochrony, jeżeli taki zwrot przysługuje, wraz ze wskazaniem podstawy jego wyliczenia."
-    },
-    "mitgliedschaft-kuend": {
-      "titel": "Rezygnacja z członkostwa",
-      "body": "niniejszym składam oświadczenie o wystąpieniu z Państwa organizacji, z zachowaniem okresu wypowiedzenia wynikającego ze statutu lub regulaminu.\n\nNumer członkowski: {vertragsnr}\nTermin ustania członkostwa: {datum}\n\nJeżeli ustanie członkostwa we wskazanym terminie nie jest możliwe, proszę o przyjęcie niniejszego oświadczenia ze skutkiem na najbliższy dopuszczalny dzień oraz o poinformowanie mnie o tej dacie.\n\nProszę o pisemne potwierdzenie przyjęcia rezygnacji, wskazanie daty ustania członkostwa oraz o rozliczenie opłaconych składek i zaprzestanie ich pobierania po tym dniu."
-    },
-    "adress-behoerde": {
-      "titel": "Zgłoszenie nowego adresu do urzędu",
-      "body": "niniejszym zgłaszam zmianę mojego adresu i proszę o zaktualizowanie danych w prowadzonych przez Państwa rejestrach oraz aktach sprawy.\n\nNowy adres:\n{neueAdresse}\n\nData obowiązywania zmiany: {datum}\n\nProszę o kierowanie dalszej korespondencji na wskazany adres oraz o pisemne potwierdzenie dokonania zmiany. Jeżeli do załatwienia sprawy niezbędny jest określony formularz lub dodatkowe dokumenty, uprzejmie proszę o taką informację."
-    },
-    "namensaenderung": {
-      "titel": "Zgłoszenie zmiany nazwiska",
-      "body": "niniejszym informuję, że uległo zmianie moje nazwisko.\n\nDotychczasowe imię i nazwisko: {altName}\nNowe imię i nazwisko: {neuName}\nData obowiązywania zmiany: {datum}\n\nProszę o zaktualizowanie moich danych w Państwa dokumentacji oraz o pisemne potwierdzenie dokonania zmiany. Jeżeli potrzebują Państwo dokumentu potwierdzającego zmianę (odpisu aktu stanu cywilnego lub decyzji kierownika urzędu stanu cywilnego) albo kopii dowodu osobistego, proszę o taką informację – prześlę wymagane dokumenty niezwłocznie."
-    },
-    "aenderungsmitteilung": {
-      "titel": "Zawiadomienie o zmianie okoliczności",
-      "body": "niniejszym zawiadamiam o następującej zmianie moich danych lub sytuacji osobistej:\n\n{text}\n\nProszę o uwzględnienie powyższej zmiany w prowadzonej sprawie oraz w Państwa rejestrach, a także o pisemne potwierdzenie otrzymania niniejszego pisma.\n\nJeżeli do rozpatrzenia sprawy niezbędne są dodatkowe dokumenty lub złożenie zgłoszenia na urzędowym formularzu, uprzejmie proszę o wskazanie właściwego formularza oraz terminu jego złożenia."
-    },
-    "kindergeld": {
-      "titel": "Zawiadomienie w sprawie świadczeń na dziecko",
-      "body": "niniejszym przekazuję informację dotyczącą pobieranych przeze mnie świadczeń na dziecko (świadczenie wychowawcze 800+, zasiłek rodzinny lub inne świadczenia rodzinne).\n\nNumer sprawy / identyfikator wniosku: {vertragsnr}\n\nZgłaszana informacja:\n{text}\n\nProszę o uwzględnienie powyższych okoliczności przy ustalaniu mojego prawa do świadczenia oraz o pisemne potwierdzenie otrzymania niniejszego zawiadomienia.\n\nJestem świadomy(-a), że o każdej zmianie mającej wpływ na prawo do świadczenia należy informować organ wypłacający niezwłocznie. Jeżeli konieczne jest złożenie dodatkowych dokumentów lub oświadczeń, proszę o ich wskazanie."
-    },
-    "steuer-adress": {
-      "titel": "Zgłoszenie zmiany adresu dla celów podatkowych",
-      "body": "niniejszym zgłaszam zmianę mojego adresu dla celów podatkowych.\n\nIdentyfikator podatkowy (NIP lub PESEL): {vertragsnr}\nNowy adres:\n{neueAdresse}\nData obowiązywania zmiany: {datum}\n\nProszę o zaktualizowanie moich danych w Państwa rejestrach, kierowanie dalszej korespondencji na wskazany adres oraz o potwierdzenie dokonania zmiany.\n\nInformacja dodatkowa: osoby fizyczne nieprowadzące działalności gospodarczej, których identyfikatorem podatkowym jest numer PESEL, aktualizują adres zamieszkania co do zasady wraz z danymi w rejestrze PESEL, natomiast adres do korespondencji oraz numer rachunku bankowego zgłaszają na formularzu ZAP-3. Osoby prowadzące działalność gospodarczą dokonują aktualizacji danych za pośrednictwem CEIDG. Proszę o informację, czy w mojej sprawie wymagane jest złożenie takiego formularza."
-    },
-    "eigenkuendigung": {
-      "titel": "Wypowiedzenie umowy o pracę przez pracownika",
-      "body": "niniejszym wypowiadam zawartą z Państwem umowę o pracę, z zachowaniem obowiązującego mnie okresu wypowiedzenia.\n\nTermin rozwiązania umowy o pracę: {datum}\n\nOkres wypowiedzenia wynika z Kodeksu pracy i zależy od okresu zatrudnienia u danego pracodawcy. Jeżeli wskazany wyżej termin nie odpowiada obowiązującemu okresowi wypowiedzenia, proszę o przyjęcie niniejszego pisma jako wypowiedzenia ze skutkiem na najbliższy dopuszczalny dzień oraz o poinformowanie mnie o dacie rozwiązania stosunku pracy.\n\nProszę o potwierdzenie otrzymania niniejszego wypowiedzenia. Proszę również o wydanie świadectwa pracy w dniu rozwiązania stosunku pracy, o informację o liczbie przysługujących mi jeszcze dni urlopu wypoczynkowego oraz o wypłatę ekwiwalentu pieniężnego za urlop niewykorzystany do dnia rozwiązania umowy.\n\nJednocześnie deklaruję gotowość do rzetelnego przekazania obowiązków i dokumentacji w okresie wypowiedzenia."
-    },
-    "arbeit-bank": {
-      "titel": "Zmiana numeru rachunku do wypłaty wynagrodzenia",
-      "body": "niniejszym informuję o zmianie numeru rachunku bankowego, na który ma być przekazywane moje wynagrodzenie za pracę.\n\nWłaściciel rachunku: {name}\nNowy numer rachunku bankowego: {iban}\nData obowiązywania zmiany: {datum}\n\nProszę o zaktualizowanie danych w dokumentacji płacowej oraz o pisemne potwierdzenie przyjęcia zmiany. Jeżeli konieczne jest złożenie odrębnego oświadczenia na formularzu obowiązującym u Państwa, uprzejmie proszę o jego przesłanie."
-    },
-    "elternzeit": {
-      "titel": "Wniosek o urlop związany z rodzicielstwem",
-      "body": "niniejszym zwracam się z wnioskiem o udzielenie urlopu związanego z rodzicielstwem (urlopu rodzicielskiego albo urlopu wychowawczego).\n\nWnioskowany początek urlopu: {von}\nWnioskowany koniec urlopu: {bis}\n\nProszę o pisemne potwierdzenie udzielenia urlopu we wskazanym terminie. Do wniosku dołączę wymagane oświadczenia i dokumenty, w szczególności odpis aktu urodzenia dziecka oraz oświadczenie dotyczące korzystania z urlopu przez drugiego rodzica.\n\nUprzejmie proszę o informację, czy potrzebują Państwo dodatkowych dokumentów. Pozostaję do dyspozycji w celu omówienia szczegółów."
-    },
-    "urlaub": {
-      "titel": "Wniosek urlopowy",
-      "body": "niniejszym zwracam się z wnioskiem o udzielenie urlopu wypoczynkowego w następującym terminie:\n\nPoczątek urlopu: {von}\nKoniec urlopu: {bis}\n\nW okresie mojej nieobecności obowiązki przejmie, po uzgodnieniu, wskazana przez Państwa osoba; jestem gotów(-owa) przygotować niezbędne przekazanie spraw.\n\nProszę o zatwierdzenie wniosku i potwierdzenie udzielenia urlopu. Z góry dziękuję."
-    },
-    "arbeitszeugnis": {
-      "titel": "Wniosek o wydanie świadectwa pracy",
-      "body": "mój stosunek pracy u Państwa uległ rozwiązaniu.\n\nData rozwiązania stosunku pracy: {datum}\n\nZgodnie z Kodeksem pracy pracodawca jest obowiązany wydać pracownikowi świadectwo pracy w dniu, w którym następuje rozwiązanie lub wygaśnięcie stosunku pracy. Jeżeli świadectwo pracy nie zostało mi dotychczas doręczone, uprzejmie proszę o jego niezwłoczne wystawienie i przesłanie na adres wskazany w nagłówku niniejszego pisma.\n\nDodatkowo – o ile uznają to Państwo za możliwe – będę wdzięczny(-a) za wystawienie listu referencyjnego zawierającego ocenę mojej pracy. Wystawienie referencji jest dobrowolne i nie stanowi elementu świadectwa pracy, które ma charakter wyłącznie informacyjny i nie zawiera oceny pracownika.\n\nProszę o potwierdzenie otrzymania niniejszego pisma."
-    },
-    "fin-bank": {
-      "titel": "Zmiana numeru rachunku bankowego",
-      "body": "niniejszym informuję o zmianie mojego numeru rachunku bankowego.\n\nNumer umowy / numer klienta: {vertragsnr}\nWłaściciel rachunku: {name}\nNowy numer rachunku bankowego: {iban}\nData obowiązywania zmiany: {datum}\n\nProszę o pobieranie wymagalnych należności z powyższego rachunku oraz o dokonywanie na niego ewentualnych zwrotów i wypłat.\n\nJeżeli do skutecznej zmiany wymagane jest udzielenie nowej zgody na obciążanie rachunku w drodze polecenia zapłaty albo złożenie odrębnego formularza, uprzejmie proszę o jego przesłanie. Proszę o pisemne potwierdzenie przyjęcia zmiany."
-    },
-    "lastschrift": {
-      "titel": "Odwołanie zgody na polecenie zapłaty",
-      "body": "niniejszym odwołuję zgodę na obciążanie mojego rachunku bankowego w drodze polecenia zapłaty.\n\nNumer umowy / numer klienta: {vertragsnr}\nKwota obciążenia: {betrag}\nData obciążenia: {datum}\n\nProszę o zaprzestanie pobierania jakichkolwiek dalszych kwot z mojego rachunku w tym trybie oraz o pisemne potwierdzenie przyjęcia odwołania zgody.\n\nJednocześnie wyjaśniam, że odwołanie zgody nie stanowi rezygnacji z zapłaty należności wynikających z łączącej nas umowy – dalsze płatności będę realizować zwykłym przelewem. O odwołaniu zgody informuję również prowadzący mój rachunek bank."
-    },
-    "reklamation": {
-      "titel": "Reklamacja obciążenia rachunku",
-      "body": "na moim rachunku bankowym dokonano obciążenia, z którym się nie zgadzam.\n\nReklamowana kwota: {betrag}\nData obciążenia: {datum}\n\nPowód reklamacji:\n{text}\n\nProszę o rozpatrzenie niniejszej reklamacji, zwrot nienależnie pobranej kwoty na mój rachunek oraz o pisemne potwierdzenie przyjęcia reklamacji.\n\nZgodnie z przepisami o rozpatrywaniu reklamacji przez podmioty rynku finansowego odpowiedzi na reklamację udziela się bez zbędnej zwłoki, nie później niż w terminie 30 dni od dnia jej otrzymania; w sprawach szczególnie skomplikowanych termin ten może zostać wydłużony, o czym należy poinformować składającego reklamację.\n\nJeżeli obciążenie nastąpiło w drodze polecenia zapłaty, równolegle zwracam się do prowadzącego mój rachunek banku o zwrot kwoty transakcji w trybie przewidzianym dla polecenia zapłaty."
-    },
-    "ratenzahlung": {
-      "titel": "Wniosek o rozłożenie należności na raty",
-      "body": "zwracam się z uprzejmą prośbą o rozłożenie na raty mojego zobowiązania wobec Państwa.\n\nNumer faktury / umowy / klienta: {vertragsnr}\nKwota zadłużenia: {betrag}\n\nUzasadnienie wniosku i proponowany harmonogram spłaty:\n{text}\n\nMoja obecna sytuacja finansowa nie pozwala na jednorazową spłatę całej należności. Jednocześnie deklaruję wolę pełnego uregulowania zobowiązania i terminowego regulowania kolejnych rat.\n\nProszę o pozytywne rozpatrzenie wniosku, przygotowanie porozumienia (ugody) określającego wysokość i terminy poszczególnych rat oraz o pisemne poinformowanie mnie o Państwa stanowisku. Proszę również o wstrzymanie dalszych czynności windykacyjnych do czasu rozpatrzenia niniejszego wniosku."
-    },
-    "strom": {
-      "titel": "Zmiana adresu – umowa na energię elektryczną",
-      "body": "niniejszym informuję o zmianie miejsca zamieszkania i proszę o przeniesienie mojej umowy na sprzedaż i dystrybucję energii elektrycznej na nowy adres.\n\nNumer klienta / numer punktu poboru lub licznika: {vertragsnr}\nNowy adres:\n{neueAdresse}\nData przeprowadzki: {datum}\n\nProszę o informację, jakie dokumenty i dane są niezbędne do przeprowadzenia zmiany – w szczególności stan licznika na dzień przekazania lokalu, protokół zdawczo-odbiorczy oraz dane osoby przejmującej punkt poboru – a także czy w moim przypadku konieczne jest rozwiązanie dotychczasowej umowy i zawarcie nowej.\n\nProszę o rozliczenie końcowe dotychczasowego punktu poboru oraz o pisemne potwierdzenie dokonania zmiany."
-    },
-    "gas": {
-      "titel": "Zmiana adresu – umowa na gaz",
-      "body": "niniejszym informuję o zmianie miejsca zamieszkania i proszę o przeniesienie mojej umowy na sprzedaż i dystrybucję paliwa gazowego na nowy adres.\n\nNumer klienta / numer punktu poboru lub licznika: {vertragsnr}\nNowy adres:\n{neueAdresse}\nData przeprowadzki: {datum}\n\nProszę o informację, jakie dokumenty i dane są niezbędne do przeprowadzenia zmiany – w szczególności stan gazomierza na dzień przekazania lokalu, protokół zdawczo-odbiorczy oraz dane osoby przejmującej punkt poboru – a także czy w moim przypadku konieczne jest rozwiązanie dotychczasowej umowy i zawarcie nowej.\n\nProszę o rozliczenie końcowe dotychczasowego punktu poboru oraz o pisemne potwierdzenie dokonania zmiany."
-    },
-    "wasser": {
-      "titel": "Zmiana adresu – umowa na wodę i ścieki",
-      "body": "niniejszym informuję o zmianie miejsca zamieszkania i proszę o aktualizację umowy o zaopatrzenie w wodę i odprowadzanie ścieków.\n\nNumer klienta / numer wodomierza: {vertragsnr}\nNowy adres:\n{neueAdresse}\nData przeprowadzki: {datum}\n\nProszę o informację, jakie dokumenty i dane są niezbędne do przeprowadzenia zmiany, w szczególności stan wodomierza na dzień przekazania lokalu oraz dane osoby przejmującej lokal.\n\nProszę o rozliczenie końcowe dotychczasowego adresu oraz o pisemne potwierdzenie dokonania zmiany. Jeżeli rozliczenie wody dla mojego lokalu prowadzone jest przez zarządcę budynku (spółdzielnię lub wspólnotę mieszkaniową), uprzejmie proszę o taką informację."
-    },
-    "muell": {
-      "titel": "Zgłoszenie zmiany – opłata za odpady komunalne",
-      "body": "niniejszym zgłaszam zmianę miejsca zamieszkania, mającą wpływ na wysokość opłaty za gospodarowanie odpadami komunalnymi.\n\nZnak sprawy / numer konta: {vertragsnr}\nNowy adres:\n{neueAdresse}\nData zmiany: {datum}\n\nProszę o wyrejestrowanie mnie z opłaty pod dotychczasowym adresem oraz o dokonanie rozliczenia końcowego i wskazanie ewentualnej nadpłaty lub niedopłaty.\n\nJestem świadomy(-a), że zmiana danych stanowiących podstawę ustalenia wysokości opłaty wymaga złożenia nowej deklaracji o wysokości opłaty za gospodarowanie odpadami komunalnymi na formularzu obowiązującym w danej gminie, w terminie wynikającym z przepisów o utrzymaniu czystości i porządku w gminach. Uprzejmie proszę o wskazanie właściwego formularza oraz terminu jego złożenia; niniejsze pismo proszę potraktować jako zawiadomienie o zmianie."
-    },
-    "rundfunk": {
-      "titel": "Zmiana adresu – abonament RTV",
-      "body": "niniejszym zgłaszam zmianę mojego adresu w związku z zarejestrowanymi przeze mnie odbiornikami radiofonicznymi i telewizyjnymi (abonament RTV).\n\nNumer identyfikacyjny abonenta: {vertragsnr}\nNowy adres:\n{neueAdresse}\nData zmiany: {datum}\n\nProszę o zaktualizowanie moich danych oraz o pisemne potwierdzenie dokonania zmiany.\n\nInformacja dodatkowa: rejestrację odbiorników, zgłaszanie zmiany danych oraz wyrejestrowanie odbiorników prowadzi Poczta Polska. Opłata abonamentowa w Polsce związana jest z zarejestrowanymi odbiornikami, a nie z samym faktem zajmowania lokalu mieszkalnego. Jeżeli w nowym miejscu zamieszkania nie będę posiadać odbiorników, proszę o informację o trybie ich wyrejestrowania."
-    },
-    "kfz-vers-kuend": {
-      "titel": "Wypowiedzenie umowy ubezpieczenia pojazdu",
-      "body": "niniejszym wypowiadam zawartą z Państwem umowę ubezpieczenia pojazdu.\n\nNumer polisy: {vertragsnr}\nNumer rejestracyjny pojazdu: {kennzeichen}\nTermin rozwiązania umowy: {datum}\n\nW przypadku obowiązkowego ubezpieczenia odpowiedzialności cywilnej posiadaczy pojazdów mechanicznych wypowiedzenie na koniec okresu ubezpieczenia składa się najpóźniej na jeden dzień przed upływem tego okresu; w przeciwnym razie umowa ulega automatycznemu przedłużeniu na kolejne 12 miesięcy. Jeżeli wskazany wyżej termin nie jest dopuszczalny, proszę o przyjęcie niniejszego pisma ze skutkiem na najbliższy możliwy dzień oraz o poinformowanie mnie o tej dacie.\n\nProszę o pisemne potwierdzenie przyjęcia wypowiedzenia oraz wskazanie dnia ustania ochrony ubezpieczeniowej, a także o rozliczenie i zwrot składki za niewykorzystany okres ochrony, jeżeli taki zwrot przysługuje.\n\nJednocześnie oświadczam, że jestem świadomy(-a) obowiązku zawarcia nowej umowy ubezpieczenia OC w sposób zapewniający ciągłość ochrony ubezpieczeniowej."
-    },
-    "fahrzeug-anab": {
-      "titel": "Pismo w sprawie rejestracji pojazdu",
-      "body": "niniejszym zwracam się w sprawie dotyczącej mojego pojazdu.\n\nNumer rejestracyjny pojazdu: {kennzeichen}\nData, której dotyczy sprawa: {datum}\n\nOpis sprawy:\n{text}\n\nProszę o poinformowanie mnie, jakie dokumenty, wnioski i opłaty są wymagane do załatwienia sprawy, a także czy możliwe jest jej załatwienie drogą elektroniczną oraz jaki jest przewidywany termin rozpatrzenia.\n\nInformacja dodatkowa: wniosek o rejestrację pojazdu oraz zawiadomienie o nabyciu lub zbyciu pojazdu zarejestrowanego w kraju składa się we właściwym wydziale komunikacji starostwa powiatowego albo urzędu miasta na prawach powiatu, w terminie wynikającym z przepisów Prawa o ruchu drogowym. Wyrejestrowanie pojazdu jest w Polsce możliwe wyłącznie w przypadkach wskazanych w przepisach, takich jak demontaż pojazdu w uprawnionej stacji, kradzież czy wywóz pojazdu za granicę; przepisy nie przewidują czasowego wyrejestrowania pojazdu wyłącznie w celu zaprzestania jego użytkowania."
-    },
-    "halterwechsel": {
-      "titel": "Zawiadomienie o zbyciu pojazdu",
-      "body": "niniejszym zawiadamiam o zmianie właściciela (posiadacza) mojego pojazdu.\n\nNumer rejestracyjny pojazdu: {kennzeichen}\nData zbycia / przeniesienia własności: {datum}\n\nDane nabywcy oraz dodatkowe informacje:\n{text}\n\nDo niniejszego zawiadomienia dołączam dokument potwierdzający przeniesienie własności pojazdu (umowę sprzedaży, umowę darowizny albo fakturę).\n\nProszę o potwierdzenie przyjęcia zawiadomienia oraz o informację, czy wymagane są dodatkowe dokumenty lub opłaty. Uprzejmie proszę również o potwierdzenie, że od wskazanej daty nie ciążą na mnie obowiązki związane z rejestracją pojazdu, oraz o wskazanie terminu, w jakim zawiadomienie należało złożyć zgodnie z przepisami Prawa o ruchu drogowym."
-    },
-    "adress-freunde": {
-      "titel": "Nowy adres – wiadomość dla rodziny i przyjaciół",
-      "body": "chcieliśmy Wam przekazać, że się przeprowadzamy i od podanej niżej daty będzie nas można zastać pod nowym adresem.\n\nNasz nowy adres:\n{neueAdresse}\n\nOd kiedy: {datum}\n\nNumery telefonów i adresy e-mail pozostają bez zmian. Bardzo się cieszymy na Wasze odwiedziny w nowym miejscu!"
-    },
-    "namens-mitteilen": {
-      "titel": "Zmiana nazwiska – wiadomość dla rodziny i przyjaciół",
-      "body": "chciałem(-am) Wam przekazać, że zmieniło się moje nazwisko.\n\nDotychczas: {altName}\nOd teraz: {neuName}\n\nOd kiedy: {datum}\n\nBędę wdzięczny(-a) za zaktualizowanie moich danych w Waszych kontaktach i za używanie nowego nazwiska w korespondencji. Dziękuję!"
-    },
-    "todesfall": {
-      "titel": "Zawiadomienie o śmierci bliskiej osoby",
-      "body": "z głębokim żalem zawiadamiamy, że odeszła od nas bliska nam osoba.\n\nImię i nazwisko: {verstorben}\nData śmierci: {sterbedatum}\n\n{text}\n\nO terminie i miejscu uroczystości pogrzebowych poinformujemy w osobnej wiadomości.\n\nProsimy o chwilę cichej zadumy i pamięć o Zmarłym(-ej)."
-    },
-    "vollmacht": {
-      "titel": "Pełnomocnictwo",
-      "body": "PEŁNOMOCNICTWO\n\nJa, niżej podpisany(-a) {name}, zamieszkały(-a):\n{absAdresse}\n\nniniejszym udzielam pełnomocnictwa następującej osobie:\n\n{bevoll}\n\ndo działania w moim imieniu w następującym zakresie:\n\n{zweck}\n\nPełnomocnictwo obowiązuje od dnia: {datum}\nPełnomocnictwo obowiązuje do odwołania.\n\nPełnomocnik jest uprawniony do składania w moim imieniu oświadczeń woli, odbioru korespondencji oraz dokonywania czynności niezbędnych do realizacji wskazanego wyżej zakresu umocowania.\n\n………………………………………\n(miejscowość, data i własnoręczny podpis mocodawcy)\n\nInformacja: pełnomocnictwo ogólne, obejmujące umocowanie do czynności zwykłego zarządu, wymaga pod rygorem nieważności formy pisemnej. Jeżeli czynność, której pełnomocnictwo dotyczy, wymaga formy szczególnej (na przykład aktu notarialnego), pełnomocnictwo musi zostać udzielone w tej samej formie. W postępowaniu administracyjnym i podatkowym złożenie dokumentu pełnomocnictwa może podlegać opłacie skarbowej."
-    },
-    "frei": {
-      "titel": "Pismo w dowolnej sprawie",
-      "body": "{text}"
-    }
+  "miete": {
+   "label": "Mieszkanie / umowa najmu",
+   "form": "Forma dokumentowa, jeżeli umowa była zawarta na piśmie (Kodeks cywilny); w praktyce zalecana forma pisemna z własnoręcznym podpisem",
+   "email": "unsicher",
+   "tipp": "Jeżeli umowa najmu została zawarta na piśmie, do jej wypowiedzenia wystarcza co do zasady forma dokumentowa (np. e-mail albo skan podpisanego pisma), chyba że sama umowa zastrzega formę pisemną. Ze względów dowodowych bezpieczniej jest wysłać podpisane pismo listem poleconym za potwierdzeniem odbioru. Przy najmie lokalu mieszkalnego na czas nieoznaczony z czynszem płatnym miesięcznie ustawowy termin wypowiedzenia wynosi trzy miesiące naprzód na koniec miesiąca kalendarzowego, o ile umowa nie przewiduje terminu korzystniejszego dla najemcy."
   },
-  "nicht_anwendbar": [
-    "nachsende",
-    "kindergeld",
-    "steuer-adress",
-    "arbeitszeugnis",
-    "elternzeit",
-    "muell",
-    "rundfunk",
-    "fahrzeug-anab",
-    "halterwechsel"
-  ],
-  "hinweise": [
-    "Formen: Die deutsche Schriftform nach § 623 BGB und § 568 BGB wurde nicht übernommen. Für den Arbeitsvertrag gilt in Polen die Schriftform nach Kodeks pracy (Art. 30 § 3 – Oświadczenie ... powinno nastąpić na piśmie); gleichwertig ist nur ein qualifizierter elektronischer Signatur. Für Miete gilt keine gesetzliche Schriftform für den Mieter – maßgeblich ist die Regel des Kodeks cywilny, wonach die Kündigung eines schriftlich geschlossenen Vertrags mindestens der forma dokumentowa bedarf. Die Schriftform unter Nichtigkeitsandrohung trifft in Polen den VERMIETER (ustawa o ochronie praw lokatorów, Kündigung muss schriftlich sein und den Grund nennen) – das ist die Umkehrung der deutschen Lage.",
-    "nachsende: Kein Äquivalent zum deutschen Nachsendeauftrag als Brief. In Polen ist das die kostenpflichtige Dienstleistung 'dosyłanie/przekierowanie korespondencji' der Poczta Polska, die per Auftrag in der Filiale oder online erteilt wird. Die Vorlage wurde zu einer reinen Adressmitteilung umgeschrieben, mit einem Hinweis auf die Poczta-Polska-Dienstleistung.",
-    "kindergeld: Kindergeld/Elterngeld existiert in dieser Form nicht. Ersetzt durch das polnische świadczenie wychowawcze 800+ (ausgezahlt von der ZUS, Antrag nur elektronisch) sowie zasiłek rodzinny und weitere świadczenia rodzinne (Gemeinde/MOPS). Die Vorlage ist als allgemeines Änderungs-/Mitteilungsschreiben an die auszahlende Stelle formuliert.",
-    "steuer-adress: In Polen gibt es kein freies Adressänderungsschreiben an das Finanzamt als Regelweg. Für natürliche Personen mit PESEL folgt die Wohnadresse dem Melderegister; Korrespondenzadresse und Bankkonto werden über das Formular ZAP-3 gemeldet, Unternehmer über CEIDG. Der Hinweis darauf steht im Brieftext.",
-    "arbeitszeugnis: Ein 'qualifiziertes Arbeitszeugnis' mit Bewertung von Leistung und Verhalten existiert in Polen nicht. Das świadectwo pracy ist rein faktisch (Beschäftigungszeiten, Art der Beendigung, Urlaub) und muss am Tag der Beendigung ausgestellt werden. Eine Bewertung erfolgt allenfalls freiwillig über ein 'list referencyjny'. Die Vorlage fordert daher das świadectwo pracy an und bittet zusätzlich – ausdrücklich freiwillig – um Referenzen. Hinweis für die App: Der Arbeitnehmer kann binnen 14 Tagen eine Berichtigung (sprostowanie) des świadectwo pracy verlangen.",
-    "elternzeit: Die deutsche Elternzeit hat kein 1:1-Äquivalent. In Polen unterscheidet man urlop rodzicielski (bezahlt, über zasiłek macierzyński) und urlop wychowawczy (unbezahlt, bis zu 36 Monate). Die Vorlage ist als offener Antrag formuliert, in dem die Art des Urlaubs eingetragen wird.",
-    "muell: Die deutsche Müllgebühren-Ummeldung entspricht in Polen der 'deklaracja o wysokości opłaty za gospodarowanie odpadami komunalnymi', die auf einem gemeindeeigenen Formular eingereicht wird. Das Schreiben wirkt daher als Zusatz-/Abmeldungsanzeige und weist auf die Deklarationspflicht hin.",
-    "rundfunk: Kein Rundfunkbeitrag wie in Deutschland. Das polnische Pendant ist der abonament RTV, verwaltet von der Poczta Polska; die Abgabe knüpft an REGISTRIERTE Empfangsgeräte an, nicht an die Wohnung. Das ist ein grundlegender Unterschied und steht im Brieftext.",
-    "fahrzeug-anab / halterwechsel: Die deutsche An-/Abmeldung bei der Zulassungsstelle entspricht nicht dem polnischen System. Zuständig ist der wydział komunikacji des starostwo powiatowe bzw. urząd miasta na prawach powiatu. Ein vorübergehendes Abmelden (wie die deutsche Außerbetriebsetzung/Saisonkennzeichen) gibt es nicht; wyrejestrowanie ist nur bei Verschrottung, Diebstahl oder Ausfuhr möglich. Der Halterwechsel läuft über das 'zawiadomienie o zbyciu/nabyciu pojazdu' mit gesetzlicher Frist.",
-    "Platzhalter: In jeder Vorlage werden ausschließlich Platzhalter verwendet, die im jeweiligen 'fields'-Eintrag der Quelldatei vorkommen. Zusätzlich genutzt werden die global verfügbaren '{name}' (kaution, arbeit-bank, fin-bank, vollmacht) und '{absAdresse}' (vollmacht).",
-    "Platzhalter: Optionale Felder ('vertragsnr?', 'betrag?', 'kennzeichen?', 'datum?', 'von?', 'bis?', 'text?') stehen durchgehend auf eigenen beschrifteten Zeilen ('Numer polisy: {vertragsnr}'), damit der Brief auch bei leerem Feld grammatisch und optisch intakt bleibt und kein Satz mitten im Fließtext abbricht.",
-    "Platzhalter: 'vollmacht' nutzt {bevoll} für den Bevollmächtigten und {zweck} für den Umfang der Vollmacht. Empfehlung für die PL-Feldlabels: bei 'bevoll' zusätzlich zur Person auch PESEL und Anschrift abfragen, da diese Angaben in Polen für die Identifizierung des Bevollmächtigten üblich sind.",
-    "Platzhalter '{datum}': Alle Datumsangaben stehen in eigenen Beschriftungszeilen ('Termin rozwiązania umowy: {datum}'), damit der Satz sowohl mit ausgeschriebenem Datum als auch mit dem Fallback 'w najbliższym możliwym terminie' grammatisch korrekt bleibt.",
-    "Ton: Bei 'adress-freunde', 'namens-mitteilen' und 'todesfall' wurde bewusst die informelle Anrede (Wam/Wasze) gewählt, da diese Vorlagen an Familie und Freunde gerichtet sind. Alle übrigen Vorlagen sind durchgehend förmlich (Państwo).",
-    "Zusätzlicher Praxishinweis für die App (nicht im Brieftext): Beim Umzug innerhalb Polens besteht eine Meldepflicht (obowiązek meldunkowy) – Anmeldung beim urząd gminy innerhalb von 30 Tagen ab dem Bezug der neuen Wohnung.",
-    "Abgedeckt sind alle 39 ids aus DOC_TPL inklusive der Checkliste 'uebergabe' (als nummerierte Liste im body) und der Freitext-Vorlage 'frei'."
-  ],
-  "unsicher": [
-    "Telekommunikation: Das Prawo telekomunikacyjne wurde durch die ustawa – Prawo komunikacji elektronicznej abgelöst. Die genaue aktuelle Formvorschrift für die Kündigung (forma dokumentowa und die Pflicht des Anbieters, ein elektronisches Kündigungsformular bereitzustellen) sollte von einem lokalen Anwalt gegen den aktuellen Gesetzesstand geprüft werden.",
-    "Energie/Gas: Die zulässige Kündigungsform nach dem Prawo energetyczne (pisemne oświadczenie vs. forma dokumentowa) wurde nach mehreren Novellen geändert. Deshalb wurde in 'formen.strom' bewusst 'unsicher' gesetzt und auf Vertrag/OWU verwiesen – bitte prüfen lassen.",
-    "Kaution: Die Frist von einem Monat ab Räumung der Wohnung für die Rückzahlung der kaucja stammt aus der ustawa o ochronie praw lokatorów. Die Formulierung im Brief ist bewusst ohne Artikelangabe gehalten; die genaue Fundstelle und die Regeln zur Valorisierung sollten geprüft werden.",
-    "Mietkündigungsfrist: Die Angabe 'drei Monate zum Monatsende bei monatlicher Mietzahlung' folgt der gesetzlichen Regel des Kodeks cywilny für Wohnraum. Ob und wieweit abweichende Vertragsfristen zulässig sind (Günstigkeitsprinzip zugunsten des Mieters), sollte lokal geprüft werden.",
-    "OC-Kündigung: Frist 'spätestens einen Tag vor Ablauf der 12-Monats-Periode' und die automatische Verlängerung folgen der ustawa o ubezpieczeniach obowiązkowych, UFG i PBUK. Ob eine Kündigung per E-Mail vom jeweiligen Versicherer akzeptiert wird, ist einzelfallabhängig – daher 'unsicher'.",
-    "Abfallgebühr: Die übliche Frist zur Abgabe einer geänderten deklaracja (bis zum 10. Tag des Folgemonats nach der Änderung) ist gemeindeabhängig geregelt und wurde deshalb nicht als feste Frist in den Brieftext aufgenommen.",
-    "Fahrzeug: Die genaue Frist für das zawiadomienie o zbyciu/nabyciu pojazdu (aktuell 30 Tage, in der Vergangenheit mehrfach geändert) wurde im Brieftext bewusst nicht beziffert. Bitte vor dem Launch gegen die aktuelle Fassung des Prawo o ruchu drogowym prüfen.",
-    "Reklamationsfrist: Die 30-Tage-Frist (verlängerbar) stammt aus der ustawa o rozpatrywaniu reklamacji przez podmioty rynku finansowego i o Rzeczniku Finansowym und gilt nur für Finanzmarktteilnehmer, nicht für beliebige Unternehmen. Falls die Vorlage auch außerhalb des Finanzsektors eingesetzt wird, sollte der Satz konditional formuliert werden.",
-    "Polecenie zapłaty: Der Erstattungsanspruch gegenüber der eigenen Bank (SEPA-Rückgabefrist) wurde bewusst ohne Fristangabe formuliert; die genaue Frist nach der ustawa o usługach płatniczych sollte geprüft werden.",
-    "Arbeitsrecht: Die Kündigungsfristen nach Kodeks pracy (2 Wochen / 1 Monat / 3 Monate je nach Betriebszugehörigkeit) wurden im Brieftext bewusst nicht beziffert, sondern nur beschrieben, um Fehlanwendungen bei Probezeit- und befristeten Verträgen zu vermeiden."
-  ]
+  "handy": {
+   "label": "Telefon / internet / telewizja",
+   "form": "Forma dokumentowa – e-mail, formularz w panelu klienta lub skan podpisanego pisma",
+   "email": "ja",
+   "tipp": "Umowę o świadczenie usług telekomunikacyjnych można zwykle wypowiedzieć w formie dokumentowej, w tym pocztą elektroniczną lub przez formularz udostępniony przez operatora. Proszę zachować potwierdzenie wysłania i poprosić operatora o pisemne potwierdzenie daty rozwiązania umowy. Warto sprawdzić, czy nie trwa jeszcze okres zobowiązania po uldze promocyjnej – wcześniejsze rozwiązanie umowy może wiązać się z obowiązkiem zwrotu proporcjonalnej części ulgi."
+  },
+  "strom": {
+   "label": "Energia elektryczna / gaz",
+   "form": "Zależnie od umowy i ogólnych warunków – forma pisemna albo dokumentowa",
+   "email": "unsicher",
+   "tipp": "Sprzedawcy energii elektrycznej i gazu różnie regulują dopuszczalną formę wypowiedzenia – proszę sprawdzić umowę oraz ogólne warunki. Jeżeli umowa nie stanowi wyraźnie inaczej, bezpieczniej jest wysłać podpisane pismo listem poleconym za potwierdzeniem odbioru. Przy zmianie sprzedawcy nowy sprzedawca zwykle przeprowadza całą procedurę wypowiedzenia w imieniu klienta na podstawie udzielonego pełnomocnictwa."
+  },
+  "streaming": {
+   "label": "Streaming / abonament online",
+   "form": "Forma dowolna – najczęściej rezygnacja w panelu użytkownika albo e-mailem",
+   "email": "ja",
+   "tipp": "Abonamenty zawierane przez internet rozwiązuje się zwykle w ustawieniach konta lub e-mailem; forma dokumentowa w zupełności wystarcza. Proszę zachować wiadomość potwierdzającą rezygnację lub zrzut ekranu. Przy umowach zawartych na odległość przysługuje dodatkowo prawo odstąpienia w terminie 14 dni, z wyjątkami przewidzianymi w ustawie o prawach konsumenta – dotyczy to jednak odstąpienia od świeżo zawartej umowy, a nie jej późniejszego wypowiedzenia."
+  },
+  "fitness": {
+   "label": "Klub fitness / siłownia",
+   "form": "Forma dokumentowa, jeżeli umowa była zawarta na piśmie; szczegóły określa umowa i regulamin klubu",
+   "email": "ja",
+   "tipp": "Jeżeli umowa z klubem została zawarta na piśmie, do jej wypowiedzenia wystarcza co do zasady forma dokumentowa, np. e-mail – chyba że umowa zastrzega formę pisemną. Proszę sprawdzić okres wypowiedzenia oraz minimalny okres obowiązywania karnetu. Postanowienia nadmiernie utrudniające konsumentowi rezygnację mogą stanowić niedozwolone postanowienia umowne i nie wiążą konsumenta."
+  },
+  "versicherung": {
+   "label": "Ubezpieczenie",
+   "form": "Zależnie od rodzaju ubezpieczenia i ogólnych warunków; przy obowiązkowym OC posiadaczy pojazdów wymagana jest forma pisemna",
+   "email": "unsicher",
+   "tipp": "Dopuszczalna forma zależy od rodzaju ubezpieczenia – proszę sprawdzić ogólne warunki ubezpieczenia. Wypowiedzenie obowiązkowego ubezpieczenia OC posiadaczy pojazdów mechanicznych na koniec okresu ubezpieczenia składa się na piśmie, najpóźniej na jeden dzień przed upływem tego okresu; w przeciwnym razie umowa przedłuża się automatycznie na kolejne 12 miesięcy. W razie wątpliwości proszę wysłać podpisane pismo listem poleconym i zachować dowód nadania."
+  },
+  "verein": {
+   "label": "Członkostwo w stowarzyszeniu lub organizacji",
+   "form": "Zgodnie ze statutem lub regulaminem organizacji",
+   "email": "unsicher",
+   "tipp": "Sposób i forma wystąpienia z organizacji wynikają z jej statutu lub regulaminu – proszę sprawdzić te dokumenty przed wysłaniem pisma. Jeżeli statut nie reguluje tej kwestii, bezpiecznie jest złożyć pisemne oświadczenie za potwierdzeniem odbioru. Proszę poprosić o potwierdzenie daty ustania członkostwa oraz o rozliczenie opłaconych składek."
+  },
+  "sonstiges": {
+   "label": "Inne umowy",
+   "form": "Zależnie od treści umowy; jeżeli umowa była zawarta na piśmie, do jej wypowiedzenia wystarcza zwykle forma dokumentowa",
+   "email": "unsicher",
+   "tipp": "Proszę sprawdzić umowę, ogólne warunki lub regulamin – to one określają wymaganą formę i okres wypowiedzenia. Zgodnie z Kodeksem cywilnym, jeżeli umowa została zawarta w formie pisemnej, dokumentowej albo elektronicznej, jej wypowiedzenie wymaga co najmniej formy dokumentowej, chyba że ustawa lub umowa zastrzega formę surowszą. W razie wątpliwości proszę wysłać podpisane pismo listem poleconym za potwierdzeniem odbioru."
+  }
+ },
+ "vorlagen": {
+  "miet-kuend": {
+   "titel": "Wypowiedzenie umowy najmu",
+   "body": "niniejszym wypowiadam umowę najmu lokalu mieszkalnego położonego pod adresem {objekt}, z zachowaniem obowiązującego okresu wypowiedzenia.\n\nTermin rozwiązania umowy: {datum}\n\nJeżeli wskazany termin nie odpowiada okresowi wypowiedzenia wynikającemu z umowy lub z przepisów prawa, proszę o potraktowanie niniejszego pisma jako wypowiedzenia ze skutkiem na najbliższy dopuszczalny dzień oraz o poinformowanie mnie o tej dacie.\n\nProszę o pisemne potwierdzenie otrzymania wypowiedzenia oraz daty zakończenia najmu. Proszę również o wskazanie terminu protokolarnego przekazania lokalu wraz ze spisaniem stanu liczników oraz o informację, w jakim terminie i na jaki rachunek zostanie zwrócona wpłacona kaucja."
+  },
+  "umzug": {
+   "titel": "Zawiadomienie o zmianie adresu",
+   "body": "niniejszym informuję o zmianie mojego adresu.\n\nNowy adres:\n{neueAdresse}\n\nData zmiany adresu: {datum}\n\nProszę o zaktualizowanie moich danych w Państwa dokumentacji, kierowanie dalszej korespondencji na nowy adres oraz o potwierdzenie dokonania zmiany."
+  },
+  "nachsende": {
+   "titel": "Informacja o nowym adresie doręczeń",
+   "body": "niniejszym informuję, że od wskazanego niżej terminu moja korespondencja powinna być kierowana na nowy adres.\n\nNowy adres doręczeń:\n{neueAdresse}\n\nTermin obowiązywania zmiany: {datum}\n\nProszę o uwzględnienie tej zmiany w Państwa dokumentacji oraz o potwierdzenie jej przyjęcia.\n\nInformacja dodatkowa: usługę przekierowania (dosyłania) korespondencji na nowy adres świadczy Poczta Polska na podstawie odrębnego zlecenia, które składa się w placówce pocztowej albo przez internet. Niniejsze pismo takiego zlecenia nie zastępuje."
+  },
+  "uebergabe": {
+   "titel": "Lista kontrolna – przekazanie mieszkania",
+   "body": "Lista kontrolna do protokolarnego przekazania lokalu:\n\n1. Spisać stan wszystkich liczników (energia elektryczna, gaz, woda ciepła i zimna, ciepło) wraz z ich numerami.\n2. Przekazać wszystkie klucze i odnotować w protokole ich liczbę oraz rodzaj (drzwi wejściowe, piwnica, skrzynka pocztowa, brama, piloty).\n3. Oddać lokal w stanie czystym i uporządkowanym, opróżniony z rzeczy własnych.\n4. Sprawdzić stan ścian, sufitów i podłóg; zdjęciami udokumentować ewentualne uszkodzenia.\n5. Zaszpachlować i pomalować otwory po wiertłach, jeżeli wynika to z umowy.\n6. Sprawdzić działanie okien, drzwi, armatury, instalacji elektrycznej i grzewczej.\n7. Podpisać protokół zdawczo-odbiorczy i zachować jeden egzemplarz dla siebie.\n8. Podać wynajmującemu numer rachunku bankowego do zwrotu kaucji.\n9. Wykonać dokumentację fotograficzną stanu lokalu w dniu przekazania.\n10. Zgłosić zmianę adresu dostawcom mediów, a w razie potrzeby zlecić przekierowanie korespondencji w Poczcie Polskiej.\n11. Dopełnić obowiązku meldunkowego w urzędzie gminy właściwym dla nowego miejsca zamieszkania."
+  },
+  "maengel": {
+   "titel": "Zgłoszenie wady lokalu do wynajmującego",
+   "body": "niniejszym zgłaszam wadę (usterkę) w wynajmowanym przeze mnie lokalu położonym pod adresem {objekt}.\n\nOpis wady:\n{mangel}\n\nTermin usunięcia wady: {datum}\n\nZgodnie z przepisami Kodeksu cywilnego o najmie wynajmujący jest obowiązany utrzymywać przedmiot najmu w stanie przydatnym do umówionego użytku przez cały czas trwania najmu. Uprzejmie proszę o usunięcie wskazanej wady w podanym terminie oraz o potwierdzenie otrzymania niniejszego zgłoszenia.\n\nW razie bezskutecznego upływu terminu zastrzegam sobie prawo skorzystania z uprawnień przysługujących najemcy, w tym żądania obniżenia czynszu za czas trwania wady ograniczającej przydatność lokalu do umówionego użytku."
+  },
+  "kaution": {
+   "titel": "Wezwanie do zwrotu kaucji",
+   "body": "umowa najmu lokalu położonego pod adresem {objekt} została zakończona, a lokal został przeze mnie przekazany.\n\nData zakończenia najmu: {datum}\n\nW związku z powyższym proszę o zwrot wpłaconej kaucji zabezpieczającej. Zgodnie z przepisami o ochronie praw lokatorów kaucja podlega zwrotowi po potrąceniu ewentualnych należności wynajmującego z tytułu najmu, w terminie miesiąca od dnia opróżnienia lokalu.\n\nProszę o dokonanie przelewu na następujący rachunek bankowy:\n\nWłaściciel rachunku: {name}\nNumer rachunku: {iban}\n\nProszę o potwierdzenie otrzymania niniejszego pisma. W przypadku dokonania jakichkolwiek potrąceń proszę o przedstawienie ich szczegółowego, pisemnego rozliczenia."
+  },
+  "handy-kuend": {
+   "titel": "Wypowiedzenie umowy o świadczenie usług telefonii komórkowej",
+   "body": "niniejszym wypowiadam zawartą z Państwem umowę o świadczenie usług telekomunikacyjnych (telefonia komórkowa), z zachowaniem obowiązującego okresu wypowiedzenia.\n\nNumer umowy / numer klienta: {vertragsnr}\nTermin rozwiązania umowy: {datum}\n\nJeżeli rozwiązanie umowy we wskazanym terminie nie jest możliwe, proszę o rozwiązanie jej w najbliższym dopuszczalnym terminie oraz o poinformowanie mnie o tej dacie.\n\nProszę o pisemne potwierdzenie przyjęcia wypowiedzenia i dokładnej daty zakończenia umowy, a także o informację o ewentualnych zobowiązaniach pozostających do rozliczenia oraz o końcowe rozliczenie należności. Jeżeli zamierzam przenieść numer do innego operatora, proszę o wskazanie wymaganej w tym celu procedury."
+  },
+  "internet-kuend": {
+   "titel": "Wypowiedzenie umowy o dostęp do internetu",
+   "body": "niniejszym wypowiadam zawartą z Państwem umowę o świadczenie usług dostępu do internetu, z zachowaniem obowiązującego okresu wypowiedzenia.\n\nNumer umowy / numer klienta: {vertragsnr}\nTermin rozwiązania umowy: {datum}\n\nJeżeli rozwiązanie umowy we wskazanym terminie nie jest możliwe, proszę o rozwiązanie jej w najbliższym dopuszczalnym terminie oraz o poinformowanie mnie o tej dacie.\n\nProszę o pisemne potwierdzenie przyjęcia wypowiedzenia i dokładnej daty zakończenia umowy. Proszę również o informację, w jaki sposób i w jakim terminie mam zwrócić udostępniony sprzęt (router, dekoder, modem), oraz o końcowe rozliczenie należności."
+  },
+  "streaming-kuend": {
+   "titel": "Rezygnacja z abonamentu serwisu streamingowego",
+   "body": "niniejszym wypowiadam zawartą z Państwem umowę abonamentową na korzystanie z serwisu, z zachowaniem obowiązującego okresu wypowiedzenia.\n\nNumer umowy / identyfikator konta: {vertragsnr}\nTermin rozwiązania umowy: {datum}\n\nJeżeli rozwiązanie umowy we wskazanym terminie nie jest możliwe, proszę o rozwiązanie jej w najbliższym dopuszczalnym terminie oraz o poinformowanie mnie o tej dacie.\n\nProszę o potwierdzenie przyjęcia rezygnacji, wskazanie dnia, do którego mam dostęp do usługi, oraz o zaprzestanie pobierania dalszych opłat z mojej karty lub rachunku bankowego po tym dniu."
+  },
+  "fitness-kuend": {
+   "titel": "Wypowiedzenie umowy z klubem fitness",
+   "body": "niniejszym wypowiadam zawartą z Państwem umowę o korzystanie z usług klubu (karnet / członkostwo), z zachowaniem obowiązującego okresu wypowiedzenia.\n\nNumer umowy / numer klienta: {vertragsnr}\nTermin rozwiązania umowy: {datum}\n\nJeżeli rozwiązanie umowy we wskazanym terminie nie jest możliwe, proszę o rozwiązanie jej w najbliższym dopuszczalnym terminie oraz o poinformowanie mnie o tej dacie.\n\nProszę o pisemne potwierdzenie przyjęcia wypowiedzenia oraz dokładnej daty zakończenia umowy. Proszę również o zaprzestanie pobierania składek po tym dniu i o przedstawienie końcowego rozliczenia."
+  },
+  "versicherung-kuend": {
+   "titel": "Wypowiedzenie umowy ubezpieczenia",
+   "body": "niniejszym wypowiadam zawartą z Państwem umowę ubezpieczenia, z zachowaniem okresu wypowiedzenia przewidzianego w umowie i ogólnych warunkach ubezpieczenia.\n\nNumer polisy / umowy: {vertragsnr}\nTermin rozwiązania umowy: {datum}\n\nJeżeli rozwiązanie umowy we wskazanym terminie nie jest możliwe, proszę o rozwiązanie jej w najbliższym dopuszczalnym terminie oraz o poinformowanie mnie o tej dacie.\n\nProszę o pisemne potwierdzenie przyjęcia wypowiedzenia oraz wskazanie dnia, w którym ustaje ochrona ubezpieczeniowa. Proszę także o rozliczenie i zwrot składki za niewykorzystany okres ochrony, jeżeli taki zwrot przysługuje, wraz ze wskazaniem podstawy jego wyliczenia."
+  },
+  "mitgliedschaft-kuend": {
+   "titel": "Rezygnacja z członkostwa",
+   "body": "niniejszym składam oświadczenie o wystąpieniu z Państwa organizacji, z zachowaniem okresu wypowiedzenia wynikającego ze statutu lub regulaminu.\n\nNumer członkowski: {vertragsnr}\nTermin ustania członkostwa: {datum}\n\nJeżeli ustanie członkostwa we wskazanym terminie nie jest możliwe, proszę o przyjęcie niniejszego oświadczenia ze skutkiem na najbliższy dopuszczalny dzień oraz o poinformowanie mnie o tej dacie.\n\nProszę o pisemne potwierdzenie przyjęcia rezygnacji, wskazanie daty ustania członkostwa oraz o rozliczenie opłaconych składek i zaprzestanie ich pobierania po tym dniu."
+  },
+  "adress-behoerde": {
+   "titel": "Zgłoszenie nowego adresu do urzędu",
+   "body": "niniejszym zgłaszam zmianę mojego adresu i proszę o zaktualizowanie danych w prowadzonych przez Państwa rejestrach oraz aktach sprawy.\n\nNowy adres:\n{neueAdresse}\n\nData obowiązywania zmiany: {datum}\n\nProszę o kierowanie dalszej korespondencji na wskazany adres oraz o pisemne potwierdzenie dokonania zmiany. Jeżeli do załatwienia sprawy niezbędny jest określony formularz lub dodatkowe dokumenty, uprzejmie proszę o taką informację."
+  },
+  "namensaenderung": {
+   "titel": "Zgłoszenie zmiany nazwiska",
+   "body": "niniejszym informuję, że uległo zmianie moje nazwisko.\n\nDotychczasowe imię i nazwisko: {altName}\nNowe imię i nazwisko: {neuName}\nData obowiązywania zmiany: {datum}\n\nProszę o zaktualizowanie moich danych w Państwa dokumentacji oraz o pisemne potwierdzenie dokonania zmiany. Jeżeli potrzebują Państwo dokumentu potwierdzającego zmianę (odpisu aktu stanu cywilnego lub decyzji kierownika urzędu stanu cywilnego) albo kopii dowodu osobistego, proszę o taką informację – prześlę wymagane dokumenty niezwłocznie."
+  },
+  "aenderungsmitteilung": {
+   "titel": "Zawiadomienie o zmianie okoliczności",
+   "body": "niniejszym zawiadamiam o następującej zmianie moich danych lub sytuacji osobistej:\n\n{text}\n\nProszę o uwzględnienie powyższej zmiany w prowadzonej sprawie oraz w Państwa rejestrach, a także o pisemne potwierdzenie otrzymania niniejszego pisma.\n\nJeżeli do rozpatrzenia sprawy niezbędne są dodatkowe dokumenty lub złożenie zgłoszenia na urzędowym formularzu, uprzejmie proszę o wskazanie właściwego formularza oraz terminu jego złożenia."
+  },
+  "kindergeld": {
+   "titel": "Zawiadomienie w sprawie świadczeń na dziecko",
+   "body": "niniejszym przekazuję informację dotyczącą pobieranych przeze mnie świadczeń na dziecko (świadczenie wychowawcze 800+, zasiłek rodzinny lub inne świadczenia rodzinne).\n\nNumer sprawy / identyfikator wniosku: {vertragsnr}\n\nZgłaszana informacja:\n{text}\n\nProszę o uwzględnienie powyższych okoliczności przy ustalaniu mojego prawa do świadczenia oraz o pisemne potwierdzenie otrzymania niniejszego zawiadomienia.\n\nJestem świadomy(-a), że o każdej zmianie mającej wpływ na prawo do świadczenia należy informować organ wypłacający niezwłocznie. Jeżeli konieczne jest złożenie dodatkowych dokumentów lub oświadczeń, proszę o ich wskazanie."
+  },
+  "steuer-adress": {
+   "titel": "Zgłoszenie zmiany adresu dla celów podatkowych",
+   "body": "niniejszym zgłaszam zmianę mojego adresu dla celów podatkowych.\n\nIdentyfikator podatkowy (NIP lub PESEL): {vertragsnr}\nNowy adres:\n{neueAdresse}\nData obowiązywania zmiany: {datum}\n\nProszę o zaktualizowanie moich danych w Państwa rejestrach, kierowanie dalszej korespondencji na wskazany adres oraz o potwierdzenie dokonania zmiany.\n\nInformacja dodatkowa: osoby fizyczne nieprowadzące działalności gospodarczej, których identyfikatorem podatkowym jest numer PESEL, aktualizują adres zamieszkania co do zasady wraz z danymi w rejestrze PESEL, natomiast adres do korespondencji oraz numer rachunku bankowego zgłaszają na formularzu ZAP-3. Osoby prowadzące działalność gospodarczą dokonują aktualizacji danych za pośrednictwem CEIDG. Proszę o informację, czy w mojej sprawie wymagane jest złożenie takiego formularza."
+  },
+  "eigenkuendigung": {
+   "titel": "Wypowiedzenie umowy o pracę przez pracownika",
+   "body": "niniejszym wypowiadam zawartą z Państwem umowę o pracę, z zachowaniem obowiązującego mnie okresu wypowiedzenia.\n\nTermin rozwiązania umowy o pracę: {datum}\n\nOkres wypowiedzenia wynika z Kodeksu pracy i zależy od okresu zatrudnienia u danego pracodawcy. Jeżeli wskazany wyżej termin nie odpowiada obowiązującemu okresowi wypowiedzenia, proszę o przyjęcie niniejszego pisma jako wypowiedzenia ze skutkiem na najbliższy dopuszczalny dzień oraz o poinformowanie mnie o dacie rozwiązania stosunku pracy.\n\nProszę o potwierdzenie otrzymania niniejszego wypowiedzenia. Proszę również o wydanie świadectwa pracy w dniu rozwiązania stosunku pracy, o informację o liczbie przysługujących mi jeszcze dni urlopu wypoczynkowego oraz o wypłatę ekwiwalentu pieniężnego za urlop niewykorzystany do dnia rozwiązania umowy.\n\nJednocześnie deklaruję gotowość do rzetelnego przekazania obowiązków i dokumentacji w okresie wypowiedzenia."
+  },
+  "arbeit-bank": {
+   "titel": "Zmiana numeru rachunku do wypłaty wynagrodzenia",
+   "body": "niniejszym informuję o zmianie numeru rachunku bankowego, na który ma być przekazywane moje wynagrodzenie za pracę.\n\nWłaściciel rachunku: {name}\nNowy numer rachunku bankowego: {iban}\nData obowiązywania zmiany: {datum}\n\nProszę o zaktualizowanie danych w dokumentacji płacowej oraz o pisemne potwierdzenie przyjęcia zmiany. Jeżeli konieczne jest złożenie odrębnego oświadczenia na formularzu obowiązującym u Państwa, uprzejmie proszę o jego przesłanie."
+  },
+  "elternzeit": {
+   "titel": "Wniosek o urlop związany z rodzicielstwem",
+   "body": "niniejszym zwracam się z wnioskiem o udzielenie urlopu związanego z rodzicielstwem (urlopu rodzicielskiego albo urlopu wychowawczego).\n\nWnioskowany początek urlopu: {von}\nWnioskowany koniec urlopu: {bis}\n\nProszę o pisemne potwierdzenie udzielenia urlopu we wskazanym terminie. Do wniosku dołączę wymagane oświadczenia i dokumenty, w szczególności odpis aktu urodzenia dziecka oraz oświadczenie dotyczące korzystania z urlopu przez drugiego rodzica.\n\nUprzejmie proszę o informację, czy potrzebują Państwo dodatkowych dokumentów. Pozostaję do dyspozycji w celu omówienia szczegółów."
+  },
+  "urlaub": {
+   "titel": "Wniosek urlopowy",
+   "body": "niniejszym zwracam się z wnioskiem o udzielenie urlopu wypoczynkowego w następującym terminie:\n\nPoczątek urlopu: {von}\nKoniec urlopu: {bis}\n\nW okresie mojej nieobecności obowiązki przejmie, po uzgodnieniu, wskazana przez Państwa osoba; jestem gotów(-owa) przygotować niezbędne przekazanie spraw.\n\nProszę o zatwierdzenie wniosku i potwierdzenie udzielenia urlopu. Z góry dziękuję."
+  },
+  "arbeitszeugnis": {
+   "titel": "Wniosek o wydanie świadectwa pracy",
+   "body": "mój stosunek pracy u Państwa uległ rozwiązaniu.\n\nData rozwiązania stosunku pracy: {datum}\n\nZgodnie z Kodeksem pracy pracodawca jest obowiązany wydać pracownikowi świadectwo pracy w dniu, w którym następuje rozwiązanie lub wygaśnięcie stosunku pracy. Jeżeli świadectwo pracy nie zostało mi dotychczas doręczone, uprzejmie proszę o jego niezwłoczne wystawienie i przesłanie na adres wskazany w nagłówku niniejszego pisma.\n\nDodatkowo – o ile uznają to Państwo za możliwe – będę wdzięczny(-a) za wystawienie listu referencyjnego zawierającego ocenę mojej pracy. Wystawienie referencji jest dobrowolne i nie stanowi elementu świadectwa pracy, które ma charakter wyłącznie informacyjny i nie zawiera oceny pracownika.\n\nProszę o potwierdzenie otrzymania niniejszego pisma."
+  },
+  "fin-bank": {
+   "titel": "Zmiana numeru rachunku bankowego",
+   "body": "niniejszym informuję o zmianie mojego numeru rachunku bankowego.\n\nNumer umowy / numer klienta: {vertragsnr}\nWłaściciel rachunku: {name}\nNowy numer rachunku bankowego: {iban}\nData obowiązywania zmiany: {datum}\n\nProszę o pobieranie wymagalnych należności z powyższego rachunku oraz o dokonywanie na niego ewentualnych zwrotów i wypłat.\n\nJeżeli do skutecznej zmiany wymagane jest udzielenie nowej zgody na obciążanie rachunku w drodze polecenia zapłaty albo złożenie odrębnego formularza, uprzejmie proszę o jego przesłanie. Proszę o pisemne potwierdzenie przyjęcia zmiany."
+  },
+  "lastschrift": {
+   "titel": "Odwołanie zgody na polecenie zapłaty",
+   "body": "niniejszym odwołuję zgodę na obciążanie mojego rachunku bankowego w drodze polecenia zapłaty.\n\nNumer umowy / numer klienta: {vertragsnr}\nKwota obciążenia: {betrag}\nData obciążenia: {datum}\n\nProszę o zaprzestanie pobierania jakichkolwiek dalszych kwot z mojego rachunku w tym trybie oraz o pisemne potwierdzenie przyjęcia odwołania zgody.\n\nJednocześnie wyjaśniam, że odwołanie zgody nie stanowi rezygnacji z zapłaty należności wynikających z łączącej nas umowy – dalsze płatności będę realizować zwykłym przelewem. O odwołaniu zgody informuję również prowadzący mój rachunek bank."
+  },
+  "reklamation": {
+   "titel": "Reklamacja obciążenia rachunku",
+   "body": "na moim rachunku bankowym dokonano obciążenia, z którym się nie zgadzam.\n\nReklamowana kwota: {betrag}\nData obciążenia: {datum}\n\nPowód reklamacji:\n{text}\n\nProszę o rozpatrzenie niniejszej reklamacji, zwrot nienależnie pobranej kwoty na mój rachunek oraz o pisemne potwierdzenie przyjęcia reklamacji.\n\nZgodnie z przepisami o rozpatrywaniu reklamacji przez podmioty rynku finansowego odpowiedzi na reklamację udziela się bez zbędnej zwłoki, nie później niż w terminie 30 dni od dnia jej otrzymania; w sprawach szczególnie skomplikowanych termin ten może zostać wydłużony, o czym należy poinformować składającego reklamację.\n\nJeżeli obciążenie nastąpiło w drodze polecenia zapłaty, równolegle zwracam się do prowadzącego mój rachunek banku o zwrot kwoty transakcji w trybie przewidzianym dla polecenia zapłaty."
+  },
+  "ratenzahlung": {
+   "titel": "Wniosek o rozłożenie należności na raty",
+   "body": "zwracam się z uprzejmą prośbą o rozłożenie na raty mojego zobowiązania wobec Państwa.\n\nNumer faktury / umowy / klienta: {vertragsnr}\nKwota zadłużenia: {betrag}\n\nUzasadnienie wniosku i proponowany harmonogram spłaty:\n{text}\n\nMoja obecna sytuacja finansowa nie pozwala na jednorazową spłatę całej należności. Jednocześnie deklaruję wolę pełnego uregulowania zobowiązania i terminowego regulowania kolejnych rat.\n\nProszę o pozytywne rozpatrzenie wniosku, przygotowanie porozumienia (ugody) określającego wysokość i terminy poszczególnych rat oraz o pisemne poinformowanie mnie o Państwa stanowisku. Proszę również o wstrzymanie dalszych czynności windykacyjnych do czasu rozpatrzenia niniejszego wniosku."
+  },
+  "strom": {
+   "titel": "Zmiana adresu – umowa na energię elektryczną",
+   "body": "niniejszym informuję o zmianie miejsca zamieszkania i proszę o przeniesienie mojej umowy na sprzedaż i dystrybucję energii elektrycznej na nowy adres.\n\nNumer klienta / numer punktu poboru lub licznika: {vertragsnr}\nNowy adres:\n{neueAdresse}\nData przeprowadzki: {datum}\n\nProszę o informację, jakie dokumenty i dane są niezbędne do przeprowadzenia zmiany – w szczególności stan licznika na dzień przekazania lokalu, protokół zdawczo-odbiorczy oraz dane osoby przejmującej punkt poboru – a także czy w moim przypadku konieczne jest rozwiązanie dotychczasowej umowy i zawarcie nowej.\n\nProszę o rozliczenie końcowe dotychczasowego punktu poboru oraz o pisemne potwierdzenie dokonania zmiany."
+  },
+  "gas": {
+   "titel": "Zmiana adresu – umowa na gaz",
+   "body": "niniejszym informuję o zmianie miejsca zamieszkania i proszę o przeniesienie mojej umowy na sprzedaż i dystrybucję paliwa gazowego na nowy adres.\n\nNumer klienta / numer punktu poboru lub licznika: {vertragsnr}\nNowy adres:\n{neueAdresse}\nData przeprowadzki: {datum}\n\nProszę o informację, jakie dokumenty i dane są niezbędne do przeprowadzenia zmiany – w szczególności stan gazomierza na dzień przekazania lokalu, protokół zdawczo-odbiorczy oraz dane osoby przejmującej punkt poboru – a także czy w moim przypadku konieczne jest rozwiązanie dotychczasowej umowy i zawarcie nowej.\n\nProszę o rozliczenie końcowe dotychczasowego punktu poboru oraz o pisemne potwierdzenie dokonania zmiany."
+  },
+  "wasser": {
+   "titel": "Zmiana adresu – umowa na wodę i ścieki",
+   "body": "niniejszym informuję o zmianie miejsca zamieszkania i proszę o aktualizację umowy o zaopatrzenie w wodę i odprowadzanie ścieków.\n\nNumer klienta / numer wodomierza: {vertragsnr}\nNowy adres:\n{neueAdresse}\nData przeprowadzki: {datum}\n\nProszę o informację, jakie dokumenty i dane są niezbędne do przeprowadzenia zmiany, w szczególności stan wodomierza na dzień przekazania lokalu oraz dane osoby przejmującej lokal.\n\nProszę o rozliczenie końcowe dotychczasowego adresu oraz o pisemne potwierdzenie dokonania zmiany. Jeżeli rozliczenie wody dla mojego lokalu prowadzone jest przez zarządcę budynku (spółdzielnię lub wspólnotę mieszkaniową), uprzejmie proszę o taką informację."
+  },
+  "muell": {
+   "titel": "Zgłoszenie zmiany – opłata za odpady komunalne",
+   "body": "niniejszym zgłaszam zmianę miejsca zamieszkania, mającą wpływ na wysokość opłaty za gospodarowanie odpadami komunalnymi.\n\nZnak sprawy / numer konta: {vertragsnr}\nNowy adres:\n{neueAdresse}\nData zmiany: {datum}\n\nProszę o wyrejestrowanie mnie z opłaty pod dotychczasowym adresem oraz o dokonanie rozliczenia końcowego i wskazanie ewentualnej nadpłaty lub niedopłaty.\n\nJestem świadomy(-a), że zmiana danych stanowiących podstawę ustalenia wysokości opłaty wymaga złożenia nowej deklaracji o wysokości opłaty za gospodarowanie odpadami komunalnymi na formularzu obowiązującym w danej gminie, w terminie wynikającym z przepisów o utrzymaniu czystości i porządku w gminach. Uprzejmie proszę o wskazanie właściwego formularza oraz terminu jego złożenia; niniejsze pismo proszę potraktować jako zawiadomienie o zmianie."
+  },
+  "rundfunk": {
+   "titel": "Zmiana adresu – abonament RTV",
+   "body": "niniejszym zgłaszam zmianę mojego adresu w związku z zarejestrowanymi przeze mnie odbiornikami radiofonicznymi i telewizyjnymi (abonament RTV).\n\nNumer identyfikacyjny abonenta: {vertragsnr}\nNowy adres:\n{neueAdresse}\nData zmiany: {datum}\n\nProszę o zaktualizowanie moich danych oraz o pisemne potwierdzenie dokonania zmiany.\n\nInformacja dodatkowa: rejestrację odbiorników, zgłaszanie zmiany danych oraz wyrejestrowanie odbiorników prowadzi Poczta Polska. Opłata abonamentowa w Polsce związana jest z zarejestrowanymi odbiornikami, a nie z samym faktem zajmowania lokalu mieszkalnego. Jeżeli w nowym miejscu zamieszkania nie będę posiadać odbiorników, proszę o informację o trybie ich wyrejestrowania."
+  },
+  "kfz-vers-kuend": {
+   "titel": "Wypowiedzenie umowy ubezpieczenia pojazdu",
+   "body": "niniejszym wypowiadam zawartą z Państwem umowę ubezpieczenia pojazdu.\n\nNumer polisy: {vertragsnr}\nNumer rejestracyjny pojazdu: {kennzeichen}\nTermin rozwiązania umowy: {datum}\n\nW przypadku obowiązkowego ubezpieczenia odpowiedzialności cywilnej posiadaczy pojazdów mechanicznych wypowiedzenie na koniec okresu ubezpieczenia składa się najpóźniej na jeden dzień przed upływem tego okresu; w przeciwnym razie umowa ulega automatycznemu przedłużeniu na kolejne 12 miesięcy. Jeżeli wskazany wyżej termin nie jest dopuszczalny, proszę o przyjęcie niniejszego pisma ze skutkiem na najbliższy możliwy dzień oraz o poinformowanie mnie o tej dacie.\n\nProszę o pisemne potwierdzenie przyjęcia wypowiedzenia oraz wskazanie dnia ustania ochrony ubezpieczeniowej, a także o rozliczenie i zwrot składki za niewykorzystany okres ochrony, jeżeli taki zwrot przysługuje.\n\nJednocześnie oświadczam, że jestem świadomy(-a) obowiązku zawarcia nowej umowy ubezpieczenia OC w sposób zapewniający ciągłość ochrony ubezpieczeniowej."
+  },
+  "fahrzeug-anab": {
+   "titel": "Pismo w sprawie rejestracji pojazdu",
+   "body": "niniejszym zwracam się w sprawie dotyczącej mojego pojazdu.\n\nNumer rejestracyjny pojazdu: {kennzeichen}\nData, której dotyczy sprawa: {datum}\n\nOpis sprawy:\n{text}\n\nProszę o poinformowanie mnie, jakie dokumenty, wnioski i opłaty są wymagane do załatwienia sprawy, a także czy możliwe jest jej załatwienie drogą elektroniczną oraz jaki jest przewidywany termin rozpatrzenia.\n\nInformacja dodatkowa: wniosek o rejestrację pojazdu oraz zawiadomienie o nabyciu lub zbyciu pojazdu zarejestrowanego w kraju składa się we właściwym wydziale komunikacji starostwa powiatowego albo urzędu miasta na prawach powiatu, w terminie wynikającym z przepisów Prawa o ruchu drogowym. Wyrejestrowanie pojazdu jest w Polsce możliwe wyłącznie w przypadkach wskazanych w przepisach, takich jak demontaż pojazdu w uprawnionej stacji, kradzież czy wywóz pojazdu za granicę; przepisy nie przewidują czasowego wyrejestrowania pojazdu wyłącznie w celu zaprzestania jego użytkowania."
+  },
+  "halterwechsel": {
+   "titel": "Zawiadomienie o zbyciu pojazdu",
+   "body": "niniejszym zawiadamiam o zmianie właściciela (posiadacza) mojego pojazdu.\n\nNumer rejestracyjny pojazdu: {kennzeichen}\nData zbycia / przeniesienia własności: {datum}\n\nDane nabywcy oraz dodatkowe informacje:\n{text}\n\nDo niniejszego zawiadomienia dołączam dokument potwierdzający przeniesienie własności pojazdu (umowę sprzedaży, umowę darowizny albo fakturę).\n\nProszę o potwierdzenie przyjęcia zawiadomienia oraz o informację, czy wymagane są dodatkowe dokumenty lub opłaty. Uprzejmie proszę również o potwierdzenie, że od wskazanej daty nie ciążą na mnie obowiązki związane z rejestracją pojazdu, oraz o wskazanie terminu, w jakim zawiadomienie należało złożyć zgodnie z przepisami Prawa o ruchu drogowym."
+  },
+  "adress-freunde": {
+   "titel": "Nowy adres – wiadomość dla rodziny i przyjaciół",
+   "body": "chcieliśmy Wam przekazać, że się przeprowadzamy i od podanej niżej daty będzie nas można zastać pod nowym adresem.\n\nNasz nowy adres:\n{neueAdresse}\n\nOd kiedy: {datum}\n\nNumery telefonów i adresy e-mail pozostają bez zmian. Bardzo się cieszymy na Wasze odwiedziny w nowym miejscu!"
+  },
+  "namens-mitteilen": {
+   "titel": "Zmiana nazwiska – wiadomość dla rodziny i przyjaciół",
+   "body": "chciałem(-am) Wam przekazać, że zmieniło się moje nazwisko.\n\nDotychczas: {altName}\nOd teraz: {neuName}\n\nOd kiedy: {datum}\n\nBędę wdzięczny(-a) za zaktualizowanie moich danych w Waszych kontaktach i za używanie nowego nazwiska w korespondencji. Dziękuję!"
+  },
+  "todesfall": {
+   "titel": "Zawiadomienie o śmierci bliskiej osoby",
+   "body": "z głębokim żalem zawiadamiamy, że odeszła od nas bliska nam osoba.\n\nImię i nazwisko: {verstorben}\nData śmierci: {sterbedatum}\n\n{text}\n\nO terminie i miejscu uroczystości pogrzebowych poinformujemy w osobnej wiadomości.\n\nProsimy o chwilę cichej zadumy i pamięć o Zmarłym(-ej)."
+  },
+  "vollmacht": {
+   "titel": "Pełnomocnictwo",
+   "body": "PEŁNOMOCNICTWO\n\nJa, niżej podpisany(-a) {name}, zamieszkały(-a):\n{absAdresse}\n\nniniejszym udzielam pełnomocnictwa następującej osobie:\n\n{bevoll}\n\ndo działania w moim imieniu w następującym zakresie:\n\n{zweck}\n\nPełnomocnictwo obowiązuje od dnia: {datum}\nPełnomocnictwo obowiązuje do odwołania.\n\nPełnomocnik jest uprawniony do składania w moim imieniu oświadczeń woli, odbioru korespondencji oraz dokonywania czynności niezbędnych do realizacji wskazanego wyżej zakresu umocowania.\n\n………………………………………\n(miejscowość, data i własnoręczny podpis mocodawcy)\n\nInformacja: pełnomocnictwo ogólne, obejmujące umocowanie do czynności zwykłego zarządu, wymaga pod rygorem nieważności formy pisemnej. Jeżeli czynność, której pełnomocnictwo dotyczy, wymaga formy szczególnej (na przykład aktu notarialnego), pełnomocnictwo musi zostać udzielone w tej samej formie. W postępowaniu administracyjnym i podatkowym złożenie dokumentu pełnomocnictwa może podlegać opłacie skarbowej."
+  },
+  "frei": {
+   "titel": "Pismo w dowolnej sprawie",
+   "body": "{text}"
+  }
+ }
 }

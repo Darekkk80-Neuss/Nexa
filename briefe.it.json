@@ -1,257 +1,218 @@
 {
-  "land": "IT",
-  "sprache": "it",
-  "formen": {
-    "arbeit": {
-      "label": "Contratto di lavoro subordinato (dimissioni)",
-      "form": "Dimissioni telematiche obbligatorie tramite la procedura del Ministero del Lavoro e delle Politiche Sociali; la lettera cartacea o via e-mail non è sufficiente",
-      "email": "nein",
-      "tipp": "Per la generalità dei rapporti di lavoro subordinato le dimissioni sono valide solo se trasmesse in via telematica sul portale del Ministero del Lavoro, con SPID o CIE oppure tramite un soggetto abilitato (patronato, sindacato, consulente del lavoro, commissione di certificazione). La lettera al datore di lavoro resta utile per comunicare il preavviso, ma da sola non produce effetto. Fanno eccezione alcuni casi particolari, tra cui il lavoro domestico, il periodo di prova e le dimissioni della lavoratrice madre o del lavoratore padre nel periodo protetto, che richiedono la convalida presso l'Ispettorato territoriale del lavoro."
-    },
-    "miete": {
-      "label": "Contratto di locazione a uso abitativo (disdetta o recesso)",
-      "form": "Forma scritta, da inviare con raccomandata A/R o PEC; preavviso di norma di sei mesi, salvo diversa previsione contrattuale",
-      "email": "nein",
-      "tipp": "La disdetta del conduttore va comunicata per iscritto e inviata con raccomandata con avviso di ricevimento oppure via PEC, così da avere prova certa della data di ricezione. Nelle locazioni a uso abitativo il conduttore può di regola recedere con un preavviso di sei mesi quando ciò è previsto dal contratto, e in ogni caso per gravi motivi. Verifichi sempre il termine indicato nel Suo contratto: il preavviso decorre dalla ricezione della comunicazione, non dalla spedizione."
-    },
-    "handy": {
-      "label": "Telefonia mobile, telefonia fissa e internet",
-      "form": "Comunicazione scritta con preavviso non superiore a trenta giorni; ammesse e-mail, PEC, raccomandata e procedura online dell'operatore",
-      "email": "ja",
-      "tipp": "La normativa italiana in materia di comunicazioni elettroniche consente il recesso senza penali con un preavviso non superiore a trenta giorni. L'operatore deve mettere a disposizione modalità di recesso almeno altrettanto semplici di quelle usate per l'attivazione: se ha sottoscritto online, di norma può recedere online o via e-mail. Conservi il numero di pratica o la ricevuta e chieda conferma scritta della data di cessazione e dell'eventuale conguaglio finale."
-    },
-    "strom": {
-      "label": "Energia elettrica e gas",
-      "form": "Comunicazione scritta di recesso; ammesse e-mail, PEC, raccomandata e modulistica online del venditore",
-      "email": "ja",
-      "tipp": "Per i clienti domestici il recesso dal contratto di fornitura si esercita con un breve preavviso, di norma quattordici giorni, e non comporta costi. Se sta cambiando venditore, nella quasi totalità dei casi è il nuovo fornitore a gestire il recesso al posto Suo e non deve inviare nulla. Se invece sta traslocando, chieda al venditore se la pratica corretta sia la cessazione della fornitura con successivo subentro oppure una voltura, e tenga a portata di mano il codice POD (energia elettrica) o PDR (gas) e la lettura del contatore."
-    },
-    "streaming": {
-      "label": "Abbonamenti in streaming e servizi digitali",
-      "form": "Disdetta in forma scritta libera; di norma è sufficiente la procedura online o una e-mail",
-      "email": "ja",
-      "tipp": "Per i servizi sottoscritti online la disdetta si effettua quasi sempre dall'area personale ed è efficace dalla fine del periodo già pagato. Se il contratto è stato concluso a distanza può inoltre valere il diritto di ripensamento entro quattordici giorni previsto dal Codice del consumo, salvo che il contenuto digitale sia già stato fruito con Suo consenso espresso. Salvi sempre la schermata o l'e-mail di conferma della disdetta."
-    },
-    "fitness": {
-      "label": "Palestre e centri sportivi",
-      "form": "Disdetta scritta secondo le modalità e i termini previsti dal contratto, di regola con raccomandata A/R o PEC",
-      "email": "unsicher",
-      "tipp": "Le modalità e i termini di disdetta sono stabiliti dal contratto o dal regolamento del centro: verifichi se è richiesta la raccomandata con avviso di ricevimento e con quanto preavviso rispetto alla scadenza. Se il contratto è stato concluso a distanza o fuori dai locali commerciali, ha diritto al ripensamento entro quattordici giorni ai sensi del Codice del consumo. Le clausole che rendono la disdetta eccessivamente gravosa per il consumatore possono essere contestate come vessatorie; in caso di dubbio invii comunque una raccomandata A/R o una PEC."
-    },
-    "versicherung": {
-      "label": "Polizze assicurative",
-      "form": "Disdetta scritta con raccomandata A/R o PEC, nei termini di preavviso previsti dalle condizioni di polizza",
-      "email": "unsicher",
-      "tipp": "Il termine di preavviso è indicato nelle condizioni generali di polizza ed è spesso di trenta o sessanta giorni prima della scadenza annuale. Per le polizze pluriennali il Codice civile riconosce all'assicurato la facoltà di recedere annualmente dopo il quinto anno, con preavviso di sessanta giorni. Per la RC auto non opera il rinnovo tacito e la copertura prosegue per quindici giorni dopo la scadenza. Salvo diversa indicazione della compagnia, invii la disdetta con raccomandata A/R o PEC e chieda conferma scritta."
-    },
-    "verein": {
-      "label": "Associazioni e circoli",
-      "form": "Dichiarazione scritta di recesso comunicata agli amministratori, ai sensi dell'art. 24 del Codice civile e dello statuto",
-      "email": "unsicher",
-      "tipp": "L'associato può sempre recedere se non si è obbligato a farne parte per un tempo determinato. La dichiarazione di recesso va comunicata per iscritto agli amministratori e, salvo diversa previsione statutaria, ha effetto dalla fine dell'anno in corso purché sia stata inviata almeno tre mesi prima. Consulti lo statuto per verificare se sia richiesta una forma particolare e, in caso di dubbio, invii una raccomandata A/R o una PEC."
-    },
-    "sonstiges": {
-      "label": "Altri contratti",
-      "form": "Secondo quanto previsto dal contratto o dalle condizioni generali; in mancanza di indicazioni, raccomandata A/R o PEC",
-      "email": "unsicher",
-      "tipp": "Verifichi nel contratto o nelle condizioni generali quale forma e quale preavviso siano richiesti per il recesso o la disdetta. Se il contratto è stato concluso a distanza o fuori dai locali commerciali, il Codice del consumo Le riconosce di norma un diritto di ripensamento entro quattordici giorni dalla conclusione o dalla consegna. In caso di dubbio scelga sempre la raccomandata con avviso di ricevimento o la PEC, che forniscono prova certa della data di ricezione."
-    }
+ "land": "IT",
+ "sprache": "it",
+ "formen": {
+  "arbeit": {
+   "label": "Contratto di lavoro subordinato (dimissioni)",
+   "form": "Dimissioni telematiche obbligatorie tramite la procedura del Ministero del Lavoro e delle Politiche Sociali; la lettera cartacea o via e-mail non è sufficiente",
+   "email": "nein",
+   "tipp": "Per la generalità dei rapporti di lavoro subordinato le dimissioni sono valide solo se trasmesse in via telematica sul portale del Ministero del Lavoro, con SPID o CIE oppure tramite un soggetto abilitato (patronato, sindacato, consulente del lavoro, commissione di certificazione). La lettera al datore di lavoro resta utile per comunicare il preavviso, ma da sola non produce effetto. Fanno eccezione alcuni casi particolari, tra cui il lavoro domestico, il periodo di prova e le dimissioni della lavoratrice madre o del lavoratore padre nel periodo protetto, che richiedono la convalida presso l'Ispettorato territoriale del lavoro."
   },
-  "vorlagen": {
-    "miet-kuend": {
-      "titel": "Disdetta del contratto di locazione",
-      "body": "Con la presente comunico formalmente la disdetta del contratto di locazione relativo all'immobile sito in {objekt}, nel rispetto del termine di preavviso previsto dal contratto e dalla normativa vigente in materia di locazioni a uso abitativo.\n\nData di cessazione richiesta: {datum}.\n\nQualora, in base al contratto o alla legge, il preavviso debba decorrere da una data diversa, La prego di indicarmi la prima data utile di cessazione del rapporto.\n\nLe chiedo cortesemente conferma scritta del ricevimento della presente e della data di cessazione della locazione. Le chiedo inoltre di concordare un appuntamento per la riconsegna dell'immobile, con redazione di un verbale in contraddittorio e rilevazione delle letture dei contatori, e di comunicarmi tempi e modalità di restituzione del deposito cauzionale."
-    },
-    "umzug": {
-      "titel": "Comunicazione del nuovo indirizzo",
-      "body": "Con la presente Le comunico il mio trasferimento e il conseguente cambio di indirizzo, chiedendoLe di aggiornare i Suoi archivi.\n\nData del trasferimento: {datum}.\n\nNuovo indirizzo:\n{neueAdresse}\n\nLe chiedo di indirizzare ogni futura comunicazione al nuovo recapito e di confermarmi per iscritto l'avvenuto aggiornamento dei dati."
-    },
-    "nachsende": {
-      "titel": "Comunicazione del nuovo recapito per la corrispondenza",
-      "body": "Con la presente Vi informo che la corrispondenza a me destinata dovrà essere recapitata al nuovo indirizzo sotto indicato.\n\nDecorrenza: {datum}.\n\nNuovo recapito:\n{neueAdresse}\n\nVi prego di aggiornare i Vostri archivi e di confermarmi il ricevimento della presente.\n\nSegnalo che il servizio di rispedizione della corrispondenza «Seguimi» di Poste Italiane deve essere richiesto separatamente presso un ufficio postale o tramite il sito di Poste Italiane: la presente comunicazione non lo sostituisce."
-    },
-    "uebergabe": {
-      "titel": "Lista di controllo per la riconsegna dell'immobile",
-      "body": "- Rilevare e annotare le letture dei contatori (energia elettrica, gas, acqua)\n- Consegnare tutte le chiavi e indicare a verbale il numero esatto dei mazzi\n- Riconsegnare l'immobile pulito e sgombro da mobili e rifiuti\n- Verificare lo stato di pareti, soffitti e pavimenti\n- Chiudere a regola d'arte i fori praticati nelle pareti\n- Verificare il funzionamento di infissi, porte e serrande\n- Redigere e firmare in contraddittorio il verbale di riconsegna\n- Indicare l'IBAN per la restituzione del deposito cauzionale\n- Scattare fotografie datate dello stato dei locali\n- Richiedere la cessazione o la voltura delle utenze (luce, gas, acqua) e presentare la dichiarazione TARI al Comune\n- Attivare, se necessario, il servizio «Seguimi» di Poste Italiane\n- Presentare la dichiarazione di cambio di residenza all'ufficio anagrafe del Comune"
-    },
-    "maengel": {
-      "titel": "Segnalazione di vizi e richiesta di intervento",
-      "body": "Con la presente segnalo la presenza del seguente difetto nell'immobile sito in {objekt}, da me condotto in locazione:\n\n{mangel}\n\nPoiché gli interventi necessari a mantenere l'immobile idoneo all'uso convenuto sono posti a carico del locatore, La invito a provvedere all'eliminazione del difetto.\n\nTermine richiesto per l'intervento: {datum}.\n\nDecorso inutilmente tale termine, mi riservo di far valere i rimedi previsti dalla legge, ivi compresa la richiesta di riduzione del canone e il risarcimento degli eventuali danni. La prego di confermarmi il ricevimento della presente e di comunicarmi la data in cui l'intervento potrà essere effettuato."
-    },
-    "kaution": {
-      "titel": "Richiesta di restituzione del deposito cauzionale",
-      "body": "Il contratto di locazione relativo all'immobile sito in {objekt} è cessato e l'immobile è stato regolarmente riconsegnato.\n\nData di cessazione della locazione: {datum}.\n\nLa invito pertanto a restituire il deposito cauzionale versato, maggiorato degli interessi legali maturati come previsto dalla disciplina delle locazioni a uso abitativo, entro quattordici giorni dal ricevimento della presente, mediante bonifico sul seguente conto corrente:\n\nIntestatario: {name}\nIBAN: {iban}\n\nIn caso di mancato riscontro nel termine indicato, mi riservo di agire nelle sedi opportune per il recupero della somma. La prego di confermarmi il ricevimento della presente."
-    },
-    "handy-kuend": {
-      "titel": "Recesso dal contratto di telefonia mobile",
-      "body": "Con la presente comunico il mio recesso dal contratto di telefonia mobile a me intestato.\n\nNumero di contratto o codice cliente: {vertragsnr}\n\nData di cessazione richiesta: {datum}.\n\nIl recesso è esercitato nel rispetto del termine massimo di preavviso di trenta giorni previsto dalla normativa vigente in materia di comunicazioni elettroniche, senza applicazione di penali o vincoli non dovuti.\n\nVi prego di confermarmi per iscritto la data di cessazione del servizio, l'importo dell'eventuale conguaglio finale e la chiusura di ogni addebito periodico e di ogni mandato di addebito diretto. Vi chiedo inoltre di indicarmi le modalità di restituzione degli eventuali apparati concessi in comodato e di rimborsarmi le somme già corrisposte per periodi non fruiti."
-    },
-    "internet-kuend": {
-      "titel": "Recesso dal contratto di connessione a internet e telefonia fissa",
-      "body": "Con la presente comunico il mio recesso dal contratto di connessione a internet e di telefonia fissa a me intestato.\n\nNumero di contratto o codice cliente: {vertragsnr}\n\nData di cessazione richiesta: {datum}.\n\nIl recesso è esercitato nel rispetto del termine massimo di preavviso di trenta giorni previsto dalla normativa vigente in materia di comunicazioni elettroniche, senza applicazione di penali o vincoli non dovuti.\n\nVi prego di confermarmi per iscritto la data di cessazione del servizio, l'importo dell'eventuale conguaglio finale e la chiusura di ogni addebito periodico e di ogni mandato di addebito diretto. Vi chiedo inoltre di indicarmi le modalità di restituzione del modem e degli altri apparati concessi in comodato. Qualora io intenda mantenere il numero telefonico presso un altro operatore, la presente comunicazione non deve pregiudicare la procedura di portabilità."
-    },
-    "streaming-kuend": {
-      "titel": "Disdetta dell'abbonamento a servizi in streaming",
-      "body": "Con la presente comunico la disdetta del mio abbonamento al servizio in streaming a me intestato e revoco espressamente il consenso al rinnovo automatico.\n\nNumero di contratto o codice cliente: {vertragsnr}\n\nData di cessazione richiesta: {datum}.\n\nVi prego di non addebitare ulteriori importi successivi alla scadenza del periodo già pagato e di disattivare ogni pagamento ricorrente collegato al mio metodo di pagamento.\n\nVi chiedo di confermarmi per iscritto la data di cessazione dell'abbonamento e l'assenza di ulteriori importi dovuti."
-    },
-    "fitness-kuend": {
-      "titel": "Disdetta dell'abbonamento alla palestra",
-      "body": "Con la presente comunico la disdetta del mio abbonamento presso il Vostro centro, nel rispetto delle modalità e dei termini di preavviso previsti dal contratto e dal regolamento.\n\nNumero di contratto o codice tessera: {vertragsnr}\n\nData di cessazione richiesta: {datum}.\n\nQualora il preavviso contrattuale non consenta la cessazione alla data indicata, Vi prego di comunicarmi la prima data utile.\n\nVi chiedo di confermarmi per iscritto la cessazione dell'abbonamento, di interrompere ogni addebito periodico e di revocare l'eventuale mandato di addebito diretto SEPA collegato al mio conto corrente."
-    },
-    "versicherung-kuend": {
-      "titel": "Disdetta della polizza assicurativa",
-      "body": "Con la presente comunico la disdetta della polizza assicurativa stipulata con la Vostra Compagnia, nel rispetto dei termini di preavviso previsti dalle condizioni generali di polizza e dalla normativa applicabile.\n\nNumero di polizza: {vertragsnr}\n\nData di cessazione richiesta: {datum}.\n\nQualora il termine di preavviso non consenta la cessazione alla data indicata, Vi prego di comunicarmi la prima scadenza utile.\n\nVi chiedo di confermarmi per iscritto la cessazione della copertura, la data esatta di efficacia, l'eventuale rimborso del premio non goduto e la revoca di ogni addebito automatico collegato al mio conto corrente."
-    },
-    "mitgliedschaft-kuend": {
-      "titel": "Recesso dall'associazione",
-      "body": "Con la presente comunico agli amministratori il mio recesso dall'associazione, ai sensi dell'art. 24 del Codice civile e delle previsioni statutarie.\n\nNumero di tessera o codice socio: {vertragsnr}\n\nData di cessazione richiesta: {datum}.\n\nOve lo statuto o la legge prevedano che il recesso abbia effetto a partire da una data diversa, Vi prego di comunicarmi la data esatta di cessazione del rapporto associativo.\n\nVi chiedo di confermarmi per iscritto il ricevimento della presente, la cancellazione dal libro dei soci e l'interruzione di ogni addebito periodico della quota associativa."
-    },
-    "adress-behoerde": {
-      "titel": "Comunicazione del nuovo indirizzo",
-      "body": "Con la presente comunico il mio nuovo indirizzo e chiedo il conseguente aggiornamento dei Vostri archivi.\n\nDecorrenza: {datum}.\n\nNuovo indirizzo:\n{neueAdresse}\n\nVi prego di indirizzare ogni futura comunicazione al nuovo recapito, di confermarmi per iscritto l'avvenuto aggiornamento e di indicarmi se sia necessario presentare ulteriore documentazione o utilizzare una specifica modulistica."
-    },
-    "namensaenderung": {
-      "titel": "Comunicazione di variazione del nominativo",
-      "body": "Con la presente comunico che il mio nominativo è variato.\n\nNominativo precedente: {altName}\nNuovo nominativo: {neuName}\n\nDecorrenza: {datum}.\n\nVi prego di aggiornare i Vostri archivi e ogni documento a me intestato, di confermarmi per iscritto l'avvenuta modifica e di indicarmi quale documentazione giustificativa debba eventualmente essere allegata."
-    },
-    "aenderungsmitteilung": {
-      "titel": "Comunicazione di variazione",
-      "body": "Con la presente comunico la seguente variazione della mia situazione personale:\n\n{text}\n\nVi prego di tenere conto di quanto sopra nei Vostri archivi, di confermarmi per iscritto il ricevimento della presente e di indicarmi se sia necessario presentare ulteriore documentazione o utilizzare una specifica modulistica."
-    },
-    "kindergeld": {
-      "titel": "Comunicazione relativa all'Assegno Unico e Universale",
-      "body": "Con la presente comunico quanto segue in relazione alla mia domanda di Assegno Unico e Universale per i figli a carico:\n\n{text}\n\nNumero di domanda o protocollo: {vertragsnr}\n\nVi prego di prendere atto di quanto sopra e di confermarmi il ricevimento della presente. Sono consapevole che le variazioni rilevanti devono essere inserite anche nella domanda telematica e che l'importo spettante dipende dalla DSU e dall'ISEE in corso di validità; resto pertanto a disposizione per integrare la documentazione eventualmente necessaria."
-    },
-    "steuer-adress": {
-      "titel": "Comunicazione di variazione dell'indirizzo ai fini fiscali",
-      "body": "Con la presente comunico la variazione del mio indirizzo ai fini fiscali e chiedo l'aggiornamento dei Vostri archivi.\n\nCodice fiscale o numero di riferimento: {vertragsnr}\n\nDecorrenza: {datum}.\n\nNuovo indirizzo:\n{neueAdresse}\n\nVi prego di indirizzare ogni futura comunicazione al nuovo recapito e di confermarmi per iscritto l'avvenuto aggiornamento. Ho già provveduto, ove necessario, alla dichiarazione di cambio di residenza presso l'ufficio anagrafe del Comune competente e resto a disposizione per fornire ulteriore documentazione."
-    },
-    "eigenkuendigung": {
-      "titel": "Comunicazione di dimissioni volontarie",
-      "body": "Con la presente rassegno le mie dimissioni dal rapporto di lavoro in essere, nel rispetto del termine di preavviso previsto dal CCNL applicato e dal contratto individuale.\n\nUltimo giorno di lavoro richiesto: {datum}.\n\nLe dimissioni sono trasmesse anche in via telematica, secondo la procedura obbligatoria prevista dalla normativa vigente, attraverso il portale del Ministero del Lavoro e delle Politiche Sociali, direttamente oppure per il tramite di un soggetto abilitato. La presente lettera vale quale comunicazione del preavviso nei Vostri confronti.\n\nVi prego di confermarmi per iscritto il ricevimento della presente e la data di cessazione del rapporto, nonché di comunicarmi il numero di giorni di ferie e permessi residui. Vi chiedo inoltre che, alla cessazione, mi vengano consegnati il certificato di lavoro, la Certificazione Unica e il prospetto di liquidazione del trattamento di fine rapporto."
-    },
-    "arbeit-bank": {
-      "titel": "Variazione delle coordinate bancarie per l'accredito della retribuzione",
-      "body": "Con la presente comunico la variazione delle coordinate bancarie sulle quali accreditare la mia retribuzione.\n\nDecorrenza: {datum}.\n\nIntestatario del conto: {name}\nIBAN: {iban}\n\nVi prego di aggiornare i Vostri archivi, di effettuare i successivi accrediti sul conto sopra indicato e di confermarmi per iscritto l'avvenuta modifica. Resto a disposizione per fornire la documentazione bancaria eventualmente necessaria."
-    },
-    "elternzeit": {
-      "titel": "Richiesta di congedo parentale",
-      "body": "Con la presente chiedo di poter usufruire del congedo parentale previsto dalla normativa vigente a tutela della maternità e della paternità, nel rispetto del termine di preavviso stabilito dalla legge e dal CCNL applicato.\n\nPeriodo richiesto:\nDal: {von}\nAl: {bis}\n\nLa domanda è presentata anche in via telematica all'INPS secondo la procedura prevista; resto a disposizione per fornirVi gli estremi di protocollo e la documentazione necessaria.\n\nVi prego di confermarmi per iscritto l'accoglimento della richiesta e la data di inizio del congedo. Sono a disposizione per concordare le modalità organizzative e il passaggio delle attività in corso."
-    },
-    "urlaub": {
-      "titel": "Richiesta di ferie",
-      "body": "Con la presente chiedo di poter usufruire di un periodo di ferie.\n\nPeriodo richiesto:\nDal: {von}\nAl: {bis}\n\nResto a disposizione per adattare il periodo alle esigenze di servizio e per garantire il passaggio delle attività in corso.\n\nVi prego di confermarmi l'approvazione della richiesta. Grazie per la cortese attenzione."
-    },
-    "arbeitszeugnis": {
-      "titel": "Richiesta di certificato di lavoro e documentazione di fine rapporto",
-      "body": "Il rapporto di lavoro intercorso tra noi è cessato.\n\nData di cessazione: {datum}.\n\nVi chiedo cortesemente di rilasciarmi il certificato di lavoro, con l'indicazione della durata del rapporto, della qualifica e delle mansioni svolte, come previsto dal Codice civile.\n\nOve lo riteniate possibile, gradirei ricevere anche una lettera di referenze relativa all'attività svolta; sono consapevole che il rilascio di tale lettera non costituisce un obbligo di legge e resta rimesso alla Vostra valutazione.\n\nVi prego inoltre di trasmettermi la Certificazione Unica relativa all'ultimo periodo di lavoro e il prospetto di liquidazione del trattamento di fine rapporto. La documentazione può essere inviata al seguente indirizzo:\n{absAdresse}"
-    },
-    "fin-bank": {
-      "titel": "Variazione delle coordinate bancarie",
-      "body": "Con la presente comunico le mie nuove coordinate bancarie e Vi chiedo di addebitare gli importi dovuti sul conto corrente sotto indicato.\n\nNumero di contratto o codice cliente: {vertragsnr}\n\nDecorrenza: {datum}.\n\nIntestatario del conto: {name}\nIBAN: {iban}\n\nVi prego di aggiornare i Vostri archivi, di predisporre l'eventuale nuovo mandato di addebito diretto SEPA e di confermarmi per iscritto l'avvenuta modifica, indicando la prima scadenza interessata."
-    },
-    "lastschrift": {
-      "titel": "Revoca del mandato di addebito diretto SEPA",
-      "body": "Con la presente revoco il mandato di addebito diretto SEPA rilasciato a Vostro favore sul mio conto corrente.\n\nNumero di contratto o codice cliente: {vertragsnr}\nImporto dell'addebito interessato: {betrag}\nData dell'addebito: {datum}\n\nVi invito a non effettuare ulteriori addebiti sul mio conto corrente e a confermarmi per iscritto la revoca, indicandomi le modalità con cui provvedere al pagamento degli importi eventualmente ancora dovuti.\n\nProvvederò a comunicare la revoca anche alla mia banca, affinché non dia corso a ulteriori addebiti."
-    },
-    "reklamation": {
-      "titel": "Reclamo per un addebito non riconosciuto",
-      "body": "Sul mio conto corrente risulta effettuato un addebito che non riconosco e con il quale non sono d'accordo.\n\nImporto contestato: {betrag}\nData dell'addebito: {datum}\n\nMotivo del reclamo:\n{text}\n\nVi chiedo di verificare l'operazione e di procedere al rimborso dell'importo addebitato. Ricordo che, per gli addebiti diretti SEPA autorizzati, la richiesta di rimborso può essere presentata alla banca entro otto settimane dalla data dell'addebito, mentre per le operazioni non autorizzate valgono termini e tutele più ampi.\n\nVi prego di confermarmi il ricevimento del presente reclamo e di fornirmi riscontro scritto e motivato. In mancanza di una risposta soddisfacente mi riservo di rivolgermi agli organismi di risoluzione stragiudiziale competenti."
-    },
-    "ratenzahlung": {
-      "titel": "Richiesta di pagamento rateale",
-      "body": "Con riferimento all'importo ancora dovuto, Vi chiedo la possibilità di concordare un piano di pagamento rateale.\n\nNumero di fattura o codice cliente: {vertragsnr}\nImporto ancora dovuto: {betrag}\n\nLa mia attuale situazione economica non mi consente di provvedere al pagamento in un'unica soluzione; sono tuttavia intenzionato a saldare integralmente quanto dovuto e a rispettare puntualmente il piano concordato.\n\n{text}\n\nVi prego di comunicarmi per iscritto se accettate la proposta oppure quale piano di rientro riteniate praticabile, sospendendo nel frattempo eventuali azioni di recupero."
-    },
-    "strom": {
-      "titel": "Trasferimento della fornitura di energia elettrica per cambio di indirizzo",
-      "body": "Con la presente Vi comunico il mio trasferimento e Vi chiedo di aggiornare la fornitura di energia elettrica a me intestata.\n\nCodice cliente o codice POD: {vertragsnr}\n\nData del trasferimento: {datum}.\n\nNuovo indirizzo di fornitura:\n{neueAdresse}\n\nVi chiedo di indicarmi se la pratica debba essere gestita come cessazione della fornitura presso l'indirizzo attuale con successivo subentro presso il nuovo indirizzo, come voltura oppure secondo altra procedura da Voi prevista, e quali dati e documenti siano necessari (lettura del contatore, codice POD, documento d'identità, codice fiscale).\n\nVi prego di confermarmi per iscritto la data di decorrenza, l'emissione della fattura di chiusura relativa all'indirizzo precedente e il mantenimento o l'aggiornamento delle modalità di pagamento."
-    },
-    "gas": {
-      "titel": "Trasferimento della fornitura di gas per cambio di indirizzo",
-      "body": "Con la presente Vi comunico il mio trasferimento e Vi chiedo di aggiornare la fornitura di gas a me intestata.\n\nCodice cliente o codice PDR: {vertragsnr}\n\nData del trasferimento: {datum}.\n\nNuovo indirizzo di fornitura:\n{neueAdresse}\n\nVi chiedo di indicarmi se la pratica debba essere gestita come cessazione della fornitura presso l'indirizzo attuale con successivo subentro presso il nuovo indirizzo, come voltura oppure secondo altra procedura da Voi prevista, e quali dati e documenti siano necessari (lettura del contatore, codice PDR, documento d'identità, codice fiscale).\n\nVi prego di confermarmi per iscritto la data di decorrenza, l'emissione della fattura di chiusura relativa all'indirizzo precedente e le eventuali verifiche tecniche necessarie per l'attivazione."
-    },
-    "wasser": {
-      "titel": "Voltura della fornitura idrica per cambio di indirizzo",
-      "body": "Con la presente Vi comunico il mio trasferimento e Vi chiedo di aggiornare l'utenza idrica a me intestata.\n\nNumero utenza o codice cliente: {vertragsnr}\n\nData del trasferimento: {datum}.\n\nNuovo indirizzo di fornitura:\n{neueAdresse}\n\nVi chiedo di indicarmi se la pratica debba essere gestita come disdetta dell'utenza presso l'indirizzo attuale con nuova attivazione presso il nuovo indirizzo oppure come voltura, e quali dati e documenti siano necessari (lettura del contatore, documento d'identità, codice fiscale, dati catastali dell'immobile).\n\nQualora il nuovo indirizzo ricada nell'area servita da un diverso gestore del servizio idrico, Vi prego di segnalarmelo. Vi chiedo infine conferma scritta della data di decorrenza e della fattura di chiusura."
-    },
-    "muell": {
-      "titel": "Dichiarazione di variazione della tassa sui rifiuti (TARI)",
-      "body": "Con la presente comunico il mio trasferimento e chiedo l'aggiornamento della mia posizione ai fini della tassa sui rifiuti (TARI).\n\nCodice utente o numero di riferimento: {vertragsnr}\n\nData del trasferimento: {datum}.\n\nNuovo indirizzo:\n{neueAdresse}\n\nChiedo la registrazione della cessazione dell'occupazione dell'immobile precedente e, ove di Vostra competenza, l'attivazione della posizione presso il nuovo indirizzo. Qualora il nuovo immobile ricada nel territorio di un altro Comune, presenterò separata dichiarazione all'ufficio tributi competente.\n\nVi prego di comunicarmi quale modulistica sia necessaria e se la dichiarazione debba essere presentata tramite il portale telematico del Comune, nonché di confermarmi per iscritto la registrazione, la data di decorrenza e l'eventuale conguaglio a credito o a debito."
-    },
-    "rundfunk": {
-      "titel": "Comunicazione relativa al canone di abbonamento alla televisione",
-      "body": "Con la presente comunico il mio trasferimento e il conseguente cambio di indirizzo, ai fini della corretta gestione del canone di abbonamento alla televisione per uso privato.\n\nNumero di abbonamento o codice fiscale: {vertragsnr}\n\nData del trasferimento: {datum}.\n\nNuovo indirizzo di residenza:\n{neueAdresse}\n\nRicordo che il canone per uso privato è dovuto una sola volta per famiglia anagrafica ed è di norma addebitato nelle fatture dell'energia elettrica relative all'utenza dell'abitazione di residenza.\n\nVi prego di aggiornare i dati a me riferiti e di comunicarmi se, nella mia situazione, sia necessario presentare una dichiarazione sostitutiva all'Agenzia delle Entrate oppure una comunicazione al fornitore di energia elettrica."
-    },
-    "kfz-vers-kuend": {
-      "titel": "Disdetta della polizza di assicurazione RC auto",
-      "body": "Con la presente comunico la disdetta della polizza di assicurazione della responsabilità civile per la circolazione dei veicoli a motore stipulata con la Vostra Compagnia.\n\nTarga del veicolo: {kennzeichen}\nNumero di polizza: {vertragsnr}\n\nData di cessazione richiesta: {datum}.\n\nRicordo che per le polizze RC auto non opera il rinnovo tacito e che la garanzia prosegue per i quindici giorni successivi alla scadenza. Provvederò a stipulare una nuova copertura in modo da evitare qualsiasi interruzione di garanzia.\n\nVi prego di confermarmi per iscritto la cessazione della polizza, la data esatta di efficacia, l'eventuale rimborso del premio non goduto e di rendere disponibile l'attestato di rischio aggiornato, nonché di revocare ogni addebito automatico collegato al mio conto corrente."
-    },
-    "fahrzeug-anab": {
-      "titel": "Richiesta relativa all'immatricolazione o alla radiazione di un veicolo",
-      "body": "Con la presente mi rivolgo a Voi in merito alla pratica riguardante il veicolo a me intestato.\n\nTarga del veicolo: {kennzeichen}\n\nOggetto della richiesta:\n{text}\n\nData richiesta per la decorrenza: {datum}.\n\nVi prego di comunicarmi quali documenti siano necessari (carta di circolazione, certificato di proprietà digitale, documento d'identità, codice fiscale, eventuale documentazione assicurativa), quali diritti e imposte debbano essere versati e se sia necessario fissare un appuntamento presso lo Sportello Telematico dell'Automobilista, l'Ufficio provinciale ACI-PRA o la Motorizzazione Civile.\n\nResto a disposizione per ogni chiarimento e Vi chiedo conferma scritta del ricevimento della presente."
-    },
-    "halterwechsel": {
-      "titel": "Comunicazione di passaggio di proprietà del veicolo",
-      "body": "Con la presente comunico il passaggio di proprietà del veicolo a me intestato.\n\nTarga del veicolo: {kennzeichen}\n\nDati relativi al nuovo proprietario:\n{text}\n\nData del trasferimento: {datum}.\n\nVi prego di prendere atto della cessione e di aggiornare i Vostri archivi. Ricordo che il trasferimento di proprietà richiede l'autenticazione della firma del venditore sull'atto di vendita e la registrazione presso il Pubblico Registro Automobilistico entro sessanta giorni dall'autenticazione, a cura dell'acquirente.\n\nVi chiedo di comunicarmi quali documenti siano ancora necessari e di confermarmi per iscritto l'aggiornamento dell'intestazione, affinché da tale data non mi siano più imputati oneri, tributi o sanzioni relativi al veicolo."
-    },
-    "adress-freunde": {
-      "titel": "Abbiamo cambiato casa!",
-      "body": "Vi comunichiamo con piacere che ci siamo trasferiti.\n\nData del trasferimento: {datum}.\n\nDa quel momento potete trovarci al nuovo indirizzo:\n{neueAdresse}\n\nSaremo felici di ospitarvi presto!"
-    },
-    "namens-mitteilen": {
-      "titel": "Ho un nuovo nome",
-      "body": "Vi comunico che il mio nome è cambiato.\n\nDecorrenza: {datum}.\n\nNome precedente: {altName}\nNuovo nome: {neuName}\n\nVi chiedo di utilizzare d'ora in avanti il nuovo nome nelle comunicazioni e nei documenti che mi riguardano. Grazie!"
-    },
-    "todesfall": {
-      "titel": "Una triste notizia",
-      "body": "Con profondo dolore vi comunichiamo la scomparsa di {verstorben}.\n\nData del decesso: {sterbedatum}\n\n{text}\n\nVi chiediamo di unirvi a noi con un pensiero e di comprendere se, in questo momento, la famiglia avrà bisogno di riservatezza."
-    },
-    "vollmacht": {
-      "titel": "Delega",
-      "body": "Il sottoscritto o la sottoscritta {name}, i cui dati anagrafici e il cui indirizzo sono riportati in intestazione, con la presente conferisce delega a:\n\n{bevoll}\n\nper la seguente finalità:\n\n{zweck}\n\nDecorrenza: {datum}. La presente delega è valida fino a revoca.\n\nLa persona delegata è autorizzata a compiere gli atti e a rendere le dichiarazioni strettamente necessari alla finalità sopra indicata. Alla presente delega devono essere allegate le copie dei documenti d'identità in corso di validità del delegante e del delegato.\n\nLuogo e data: ______________________\n\nFirma del delegante: ______________________\n\nFirma del delegato per accettazione: ______________________\n\nAvvertenza: per determinati atti, in particolare quelli relativi a immobili, successioni, atti notarili e rappresentanza in giudizio, non è sufficiente una delega su carta semplice ed è necessaria una procura conferita nelle forme di legge."
-    },
-    "frei": {
-      "titel": "Comunicazione",
-      "body": "{text}\n\nVi prego di confermarmi il ricevimento della presente e di fornirmi un riscontro scritto."
-    }
+  "miete": {
+   "label": "Contratto di locazione a uso abitativo (disdetta o recesso)",
+   "form": "Forma scritta, da inviare con raccomandata A/R o PEC; preavviso di norma di sei mesi, salvo diversa previsione contrattuale",
+   "email": "nein",
+   "tipp": "La disdetta del conduttore va comunicata per iscritto e inviata con raccomandata con avviso di ricevimento oppure via PEC, così da avere prova certa della data di ricezione. Nelle locazioni a uso abitativo il conduttore può di regola recedere con un preavviso di sei mesi quando ciò è previsto dal contratto, e in ogni caso per gravi motivi. Verifichi sempre il termine indicato nel Suo contratto: il preavviso decorre dalla ricezione della comunicazione, non dalla spedizione."
   },
-  "nicht_anwendbar": [
-    "nachsende",
-    "kindergeld",
-    "muell",
-    "rundfunk",
-    "arbeitszeugnis"
-  ],
-  "hinweise": [
-    "Die Quelldatei enthält 39 Template-IDs. Alle 39 sind abgedeckt.",
-    "Platzhalter-Disziplin: In jedem Body werden ausschließlich Felder verwendet, die im jeweiligen fields-Eintrag der Quelle stehen. Zusätzlich werden nur die globalen Platzhalter {name} (kaution, arbeit-bank, fin-bank, vollmacht) und {absAdresse} (arbeitszeugnis) genutzt, dort wo die deutsche Vorlage p.name bzw. den Briefkopf referenziert hat.",
-    "nachsende: Einen Nachsendeauftrag der Deutschen Post gibt es so nicht. Entsprechung ist der Dienst «Seguimi» von Poste Italiane, der separat im Postamt oder online beauftragt werden muss. Die Vorlage ist deshalb eine reine Mitteilung der neuen Zustelladresse an den Empfänger, mit ausdrücklichem Hinweis, dass sie «Seguimi» nicht ersetzt.",
-    "kindergeld: Kindergeld/Elterngeld nach deutschem Muster existiert nicht. Nächste Entsprechung ist der Assegno Unico e Universale der INPS. Die Vorlage richtet sich nun an INPS bzw. Patronato, nutzt vertragsnr als Protokoll-/Antragsnummer und weist darauf hin, dass Änderungen zusätzlich in der telematischen Domanda und über DSU/ISEE erfasst werden müssen.",
-    "muell: Eine Müllgebühren-Ummeldung bei einem Versorger gibt es nicht. Die TARI ist eine Gemeindeabgabe; bei Umzug ist eine dichiarazione di cessazione beim bisherigen Comune und ggf. eine Aktivierung beim neuen Comune nötig. Die Vorlage ist als Erklärung an das ufficio tributi neu gefasst.",
-    "rundfunk: Kein Rundfunkbeitrag mit eigener Beitragsservice-Struktur. Entsprechung ist der canone RAI, der einmal pro famiglia anagrafica anfällt und in der Regel über die Stromrechnung des Wohnsitzes eingezogen wird. Die Vorlage ist als Adressmitteilung mit Hinweis auf die dichiarazione sostitutiva bei der Agenzia delle Entrate gefasst.",
-    "arbeitszeugnis: Ein qualifiziertes Arbeitszeugnis mit Anspruch auf Bewertung von Leistung und Verhalten kennt das italienische Recht nicht. Anspruch besteht auf ein certificato di lavoro (Dauer, Qualifikation, Tätigkeit); eine lettera di referenze ist freiwillig. Die Vorlage fordert zusätzlich Certificazione Unica und TFR-Abrechnung an.",
-    "eigenkuendigung: Nicht als nicht_anwendbar eingestuft, aber rechtlich grundlegend anders. Dimissioni sind in Italien nur wirksam, wenn sie telematisch über das Portal des Ministero del Lavoro übermittelt werden (SPID/CIE oder über Patronato, Gewerkschaft, Consulente del lavoro). Der Brief dient nur der Preavviso-Mitteilung. Die App sollte diesen Punkt im UI hervorheben.",
-    "elternzeit: Entsprechung ist das congedo parentale. Der Antrag läuft telematisch über die INPS, gegenüber dem Arbeitgeber ist eine Ankündigung mit Vorlauf nötig. Der Brief nutzt von/bis als Zeitraum und verweist auf die INPS-Domanda.",
-    "strom/gas/wasser: Der Begriff Ummelden passt nicht direkt. Italien kennt voltura (Inhaberwechsel an derselben Adresse) und subentro bzw. cessazione + attivazione (Umzug an eine neue Adresse). Die Briefe fragen aktiv nach der richtigen Prozedur und nennen POD (Strom), PDR (Gas) sowie die nötigen Zählerstände.",
-    "fahrzeug-anab und halterwechsel: Immatricolazione, radiazione und passaggio di proprietà laufen nicht per Brief, sondern über Sportello Telematico dell'Automobilista, ACI-PRA oder Motorizzazione Civile, mit beglaubigter Unterschrift und PRA-Eintragung. Die Briefe sind daher als Informations- bzw. Mitteilungsschreiben formuliert; kennzeichen wird als Targa geführt.",
-    "Datumsformulierung: {datum} steht überall hinter einem Doppelpunkt auf eigener Zeile, damit der Fallback «nel più breve tempo possibile» grammatikalisch trägt. Bei Feldern, die ein Datum in der Vergangenheit meinen (kaution = Mietende, arbeitszeugnis = Austrittsdatum, lastschrift und reklamation = Abbuchungsdatum), passt dieser Fallback inhaltlich nicht; dort sollte die App bei leerem Feld einen leeren String oder «non indicata» einsetzen.",
-    "Optionale Felder (vertragsnr, betrag, kennzeichen, von, bis, sterbedatum, text) stehen jeweils als beschriftete eigene Zeile, sodass der Brief bei leerem Feld grammatikalisch intakt bleibt und lediglich die Angabe fehlt.",
-    "Anredeform: Behörden- und Firmenbriefe siezen durchgehend (Lei bzw. Vi). Vermieterbriefe nutzen Lei, Arbeitgeberbriefe Vi. Nur die drei privaten Mitteilungen (adress-freunde, namens-mitteilen, todesfall) verwenden das familiäre Plural-voi."
-  ],
-  "unsicher": [
-    "Dimissioni telematiche: Umfang und Behandlung der Ausnahmen (Hausangestellte, Probezeit, Schutzzeitraum bei Mutterschaft/Vaterschaft, risoluzione consensuale) sollte ein italienischer Arbeitsrechtler oder Consulente del lavoro gegenprüfen, bevor die Vorlage produktiv geht.",
-    "Mietrecht: Die Kündigungsfristen unterscheiden sich je nach Vertragstyp (4+4, 3+2 canone concordato, transitorio, studenti). Der Brief nennt bewusst keine feste Frist, sondern verweist auf Vertrag und Gesetz. Ob das für alle Vertragstypen ausreicht, sollte lokal geprüft werden.",
-    "Kaution: Die 14 Tage sind eine Aufforderung, keine gesetzliche Frist. Ob und in welcher Höhe Zinsen auf das deposito cauzionale geschuldet sind, kann je nach Vertragstyp abweichen.",
-    "Palestra/Fitness: Die Zulässigkeit von Kündigungsklauseln (Mindestlaufzeit, Raccomandata-Pflicht, Fristen) ist stark einzelfallabhängig; der Hinweis auf mögliche Vessatorietà sollte juristisch abgesichert werden.",
-    "Versicherung: Der Verweis auf das jährliche Rücktrittsrecht nach dem fünften Jahr bei mehrjährigen Policen gilt nicht für alle Vertragstypen; bitte prüfen lassen.",
-    "RC auto: Die Aussagen zum Wegfall des tacito rinnovo und zur Fortdauer der Deckung für 15 Tage nach Ablauf bitte gegen die aktuelle Fassung des Codice delle Assicurazioni Private prüfen.",
-    "SEPA-Rückerstattung: Die acht Wochen für autorisierte SDD-Lastschriften folgen dem SEPA-Regelwerk. Die Fristen und Anzeigeobliegenheiten bei nicht autorisierten Zahlungen sollten für Italien konkret benannt werden.",
-    "TARI: Fristen und Modalitäten der dichiarazione di cessazione sind je Comune unterschiedlich (häufig 30 oder 90 Tage). Der Brief nennt bewusst keine Frist.",
-    "Canone RAI: Zuständigkeit (Agenzia delle Entrate vs. Stromversorger) und die Frage, ob eine reine Adressänderung überhaupt eine eigene Meldung erfordert, sollten gegen die aktuelle Praxis geprüft werden.",
-    "Vollmacht/Delega: Die Abgrenzung, für welche Vorgänge eine einfache delega genügt und wann eine procura notarile oder eine Beglaubigung nötig ist, fehlt. Der Warnhinweis am Ende der Vorlage ersetzt keine Prüfung.",
-    "Assegno Unico: Ob die INPS eine formlose Briefmitteilung überhaupt bearbeitet oder ausschließlich telematische Wege akzeptiert, sollte geprüft werden; ggf. sollte die Vorlage klarer als Begleitschreiben ans Patronato ausgestaltet werden.",
-    "Steuerliche Adressänderung: In Italien wird die Wohnsitzänderung über die Anagrafe des Comune an die Agenzia delle Entrate übermittelt. Ob ein separater Brief sinnvoll bleibt oder eher irreführend ist, sollte fachlich entschieden werden.",
-    "Congedo parentale: Vorlauffristen gegenüber dem Arbeitgeber sind gesetzlich und tariflich geregelt und unterscheiden sich je nach Inanspruchnahme (Tage vs. Stunden). Der Brief nennt bewusst keine konkrete Frist.",
-    "Certificato di lavoro: Der genaue Umfang des Anspruchs (und die Frage, ob eine Fundstelle im Codice civile im Text genannt werden soll) sollte lokal bestätigt werden; im Text wird bewusst nur allgemein auf den Codice civile verwiesen."
-  ]
+  "handy": {
+   "label": "Telefonia mobile, telefonia fissa e internet",
+   "form": "Comunicazione scritta con preavviso non superiore a trenta giorni; ammesse e-mail, PEC, raccomandata e procedura online dell'operatore",
+   "email": "ja",
+   "tipp": "La normativa italiana in materia di comunicazioni elettroniche consente il recesso senza penali con un preavviso non superiore a trenta giorni. L'operatore deve mettere a disposizione modalità di recesso almeno altrettanto semplici di quelle usate per l'attivazione: se ha sottoscritto online, di norma può recedere online o via e-mail. Conservi il numero di pratica o la ricevuta e chieda conferma scritta della data di cessazione e dell'eventuale conguaglio finale."
+  },
+  "strom": {
+   "label": "Energia elettrica e gas",
+   "form": "Comunicazione scritta di recesso; ammesse e-mail, PEC, raccomandata e modulistica online del venditore",
+   "email": "ja",
+   "tipp": "Per i clienti domestici il recesso dal contratto di fornitura si esercita con un breve preavviso, di norma quattordici giorni, e non comporta costi. Se sta cambiando venditore, nella quasi totalità dei casi è il nuovo fornitore a gestire il recesso al posto Suo e non deve inviare nulla. Se invece sta traslocando, chieda al venditore se la pratica corretta sia la cessazione della fornitura con successivo subentro oppure una voltura, e tenga a portata di mano il codice POD (energia elettrica) o PDR (gas) e la lettura del contatore."
+  },
+  "streaming": {
+   "label": "Abbonamenti in streaming e servizi digitali",
+   "form": "Disdetta in forma scritta libera; di norma è sufficiente la procedura online o una e-mail",
+   "email": "ja",
+   "tipp": "Per i servizi sottoscritti online la disdetta si effettua quasi sempre dall'area personale ed è efficace dalla fine del periodo già pagato. Se il contratto è stato concluso a distanza può inoltre valere il diritto di ripensamento entro quattordici giorni previsto dal Codice del consumo, salvo che il contenuto digitale sia già stato fruito con Suo consenso espresso. Salvi sempre la schermata o l'e-mail di conferma della disdetta."
+  },
+  "fitness": {
+   "label": "Palestre e centri sportivi",
+   "form": "Disdetta scritta secondo le modalità e i termini previsti dal contratto, di regola con raccomandata A/R o PEC",
+   "email": "unsicher",
+   "tipp": "Le modalità e i termini di disdetta sono stabiliti dal contratto o dal regolamento del centro: verifichi se è richiesta la raccomandata con avviso di ricevimento e con quanto preavviso rispetto alla scadenza. Se il contratto è stato concluso a distanza o fuori dai locali commerciali, ha diritto al ripensamento entro quattordici giorni ai sensi del Codice del consumo. Le clausole che rendono la disdetta eccessivamente gravosa per il consumatore possono essere contestate come vessatorie; in caso di dubbio invii comunque una raccomandata A/R o una PEC."
+  },
+  "versicherung": {
+   "label": "Polizze assicurative",
+   "form": "Disdetta scritta con raccomandata A/R o PEC, nei termini di preavviso previsti dalle condizioni di polizza",
+   "email": "unsicher",
+   "tipp": "Il termine di preavviso è indicato nelle condizioni generali di polizza ed è spesso di trenta o sessanta giorni prima della scadenza annuale. Per le polizze pluriennali il Codice civile riconosce all'assicurato la facoltà di recedere annualmente dopo il quinto anno, con preavviso di sessanta giorni. Per la RC auto non opera il rinnovo tacito e la copertura prosegue per quindici giorni dopo la scadenza. Salvo diversa indicazione della compagnia, invii la disdetta con raccomandata A/R o PEC e chieda conferma scritta."
+  },
+  "verein": {
+   "label": "Associazioni e circoli",
+   "form": "Dichiarazione scritta di recesso comunicata agli amministratori, ai sensi dell'art. 24 del Codice civile e dello statuto",
+   "email": "unsicher",
+   "tipp": "L'associato può sempre recedere se non si è obbligato a farne parte per un tempo determinato. La dichiarazione di recesso va comunicata per iscritto agli amministratori e, salvo diversa previsione statutaria, ha effetto dalla fine dell'anno in corso purché sia stata inviata almeno tre mesi prima. Consulti lo statuto per verificare se sia richiesta una forma particolare e, in caso di dubbio, invii una raccomandata A/R o una PEC."
+  },
+  "sonstiges": {
+   "label": "Altri contratti",
+   "form": "Secondo quanto previsto dal contratto o dalle condizioni generali; in mancanza di indicazioni, raccomandata A/R o PEC",
+   "email": "unsicher",
+   "tipp": "Verifichi nel contratto o nelle condizioni generali quale forma e quale preavviso siano richiesti per il recesso o la disdetta. Se il contratto è stato concluso a distanza o fuori dai locali commerciali, il Codice del consumo Le riconosce di norma un diritto di ripensamento entro quattordici giorni dalla conclusione o dalla consegna. In caso di dubbio scelga sempre la raccomandata con avviso di ricevimento o la PEC, che forniscono prova certa della data di ricezione."
+  }
+ },
+ "vorlagen": {
+  "miet-kuend": {
+   "titel": "Disdetta del contratto di locazione",
+   "body": "Con la presente comunico formalmente la disdetta del contratto di locazione relativo all'immobile sito in {objekt}, nel rispetto del termine di preavviso previsto dal contratto e dalla normativa vigente in materia di locazioni a uso abitativo.\n\nData di cessazione richiesta: {datum}.\n\nQualora, in base al contratto o alla legge, il preavviso debba decorrere da una data diversa, La prego di indicarmi la prima data utile di cessazione del rapporto.\n\nLe chiedo cortesemente conferma scritta del ricevimento della presente e della data di cessazione della locazione. Le chiedo inoltre di concordare un appuntamento per la riconsegna dell'immobile, con redazione di un verbale in contraddittorio e rilevazione delle letture dei contatori, e di comunicarmi tempi e modalità di restituzione del deposito cauzionale."
+  },
+  "umzug": {
+   "titel": "Comunicazione del nuovo indirizzo",
+   "body": "Con la presente Le comunico il mio trasferimento e il conseguente cambio di indirizzo, chiedendoLe di aggiornare i Suoi archivi.\n\nData del trasferimento: {datum}.\n\nNuovo indirizzo:\n{neueAdresse}\n\nLe chiedo di indirizzare ogni futura comunicazione al nuovo recapito e di confermarmi per iscritto l'avvenuto aggiornamento dei dati."
+  },
+  "nachsende": {
+   "titel": "Comunicazione del nuovo recapito per la corrispondenza",
+   "body": "Con la presente Vi informo che la corrispondenza a me destinata dovrà essere recapitata al nuovo indirizzo sotto indicato.\n\nDecorrenza: {datum}.\n\nNuovo recapito:\n{neueAdresse}\n\nVi prego di aggiornare i Vostri archivi e di confermarmi il ricevimento della presente.\n\nSegnalo che il servizio di rispedizione della corrispondenza «Seguimi» di Poste Italiane deve essere richiesto separatamente presso un ufficio postale o tramite il sito di Poste Italiane: la presente comunicazione non lo sostituisce."
+  },
+  "uebergabe": {
+   "titel": "Lista di controllo per la riconsegna dell'immobile",
+   "body": "- Rilevare e annotare le letture dei contatori (energia elettrica, gas, acqua)\n- Consegnare tutte le chiavi e indicare a verbale il numero esatto dei mazzi\n- Riconsegnare l'immobile pulito e sgombro da mobili e rifiuti\n- Verificare lo stato di pareti, soffitti e pavimenti\n- Chiudere a regola d'arte i fori praticati nelle pareti\n- Verificare il funzionamento di infissi, porte e serrande\n- Redigere e firmare in contraddittorio il verbale di riconsegna\n- Indicare l'IBAN per la restituzione del deposito cauzionale\n- Scattare fotografie datate dello stato dei locali\n- Richiedere la cessazione o la voltura delle utenze (luce, gas, acqua) e presentare la dichiarazione TARI al Comune\n- Attivare, se necessario, il servizio «Seguimi» di Poste Italiane\n- Presentare la dichiarazione di cambio di residenza all'ufficio anagrafe del Comune"
+  },
+  "maengel": {
+   "titel": "Segnalazione di vizi e richiesta di intervento",
+   "body": "Con la presente segnalo la presenza del seguente difetto nell'immobile sito in {objekt}, da me condotto in locazione:\n\n{mangel}\n\nPoiché gli interventi necessari a mantenere l'immobile idoneo all'uso convenuto sono posti a carico del locatore, La invito a provvedere all'eliminazione del difetto.\n\nTermine richiesto per l'intervento: {datum}.\n\nDecorso inutilmente tale termine, mi riservo di far valere i rimedi previsti dalla legge, ivi compresa la richiesta di riduzione del canone e il risarcimento degli eventuali danni. La prego di confermarmi il ricevimento della presente e di comunicarmi la data in cui l'intervento potrà essere effettuato."
+  },
+  "kaution": {
+   "titel": "Richiesta di restituzione del deposito cauzionale",
+   "body": "Il contratto di locazione relativo all'immobile sito in {objekt} è cessato e l'immobile è stato regolarmente riconsegnato.\n\nData di cessazione della locazione: {datum}.\n\nLa invito pertanto a restituire il deposito cauzionale versato, maggiorato degli interessi legali maturati come previsto dalla disciplina delle locazioni a uso abitativo, entro quattordici giorni dal ricevimento della presente, mediante bonifico sul seguente conto corrente:\n\nIntestatario: {name}\nIBAN: {iban}\n\nIn caso di mancato riscontro nel termine indicato, mi riservo di agire nelle sedi opportune per il recupero della somma. La prego di confermarmi il ricevimento della presente."
+  },
+  "handy-kuend": {
+   "titel": "Recesso dal contratto di telefonia mobile",
+   "body": "Con la presente comunico il mio recesso dal contratto di telefonia mobile a me intestato.\n\nNumero di contratto o codice cliente: {vertragsnr}\n\nData di cessazione richiesta: {datum}.\n\nIl recesso è esercitato nel rispetto del termine massimo di preavviso di trenta giorni previsto dalla normativa vigente in materia di comunicazioni elettroniche, senza applicazione di penali o vincoli non dovuti.\n\nVi prego di confermarmi per iscritto la data di cessazione del servizio, l'importo dell'eventuale conguaglio finale e la chiusura di ogni addebito periodico e di ogni mandato di addebito diretto. Vi chiedo inoltre di indicarmi le modalità di restituzione degli eventuali apparati concessi in comodato e di rimborsarmi le somme già corrisposte per periodi non fruiti."
+  },
+  "internet-kuend": {
+   "titel": "Recesso dal contratto di connessione a internet e telefonia fissa",
+   "body": "Con la presente comunico il mio recesso dal contratto di connessione a internet e di telefonia fissa a me intestato.\n\nNumero di contratto o codice cliente: {vertragsnr}\n\nData di cessazione richiesta: {datum}.\n\nIl recesso è esercitato nel rispetto del termine massimo di preavviso di trenta giorni previsto dalla normativa vigente in materia di comunicazioni elettroniche, senza applicazione di penali o vincoli non dovuti.\n\nVi prego di confermarmi per iscritto la data di cessazione del servizio, l'importo dell'eventuale conguaglio finale e la chiusura di ogni addebito periodico e di ogni mandato di addebito diretto. Vi chiedo inoltre di indicarmi le modalità di restituzione del modem e degli altri apparati concessi in comodato. Qualora io intenda mantenere il numero telefonico presso un altro operatore, la presente comunicazione non deve pregiudicare la procedura di portabilità."
+  },
+  "streaming-kuend": {
+   "titel": "Disdetta dell'abbonamento a servizi in streaming",
+   "body": "Con la presente comunico la disdetta del mio abbonamento al servizio in streaming a me intestato e revoco espressamente il consenso al rinnovo automatico.\n\nNumero di contratto o codice cliente: {vertragsnr}\n\nData di cessazione richiesta: {datum}.\n\nVi prego di non addebitare ulteriori importi successivi alla scadenza del periodo già pagato e di disattivare ogni pagamento ricorrente collegato al mio metodo di pagamento.\n\nVi chiedo di confermarmi per iscritto la data di cessazione dell'abbonamento e l'assenza di ulteriori importi dovuti."
+  },
+  "fitness-kuend": {
+   "titel": "Disdetta dell'abbonamento alla palestra",
+   "body": "Con la presente comunico la disdetta del mio abbonamento presso il Vostro centro, nel rispetto delle modalità e dei termini di preavviso previsti dal contratto e dal regolamento.\n\nNumero di contratto o codice tessera: {vertragsnr}\n\nData di cessazione richiesta: {datum}.\n\nQualora il preavviso contrattuale non consenta la cessazione alla data indicata, Vi prego di comunicarmi la prima data utile.\n\nVi chiedo di confermarmi per iscritto la cessazione dell'abbonamento, di interrompere ogni addebito periodico e di revocare l'eventuale mandato di addebito diretto SEPA collegato al mio conto corrente."
+  },
+  "versicherung-kuend": {
+   "titel": "Disdetta della polizza assicurativa",
+   "body": "Con la presente comunico la disdetta della polizza assicurativa stipulata con la Vostra Compagnia, nel rispetto dei termini di preavviso previsti dalle condizioni generali di polizza e dalla normativa applicabile.\n\nNumero di polizza: {vertragsnr}\n\nData di cessazione richiesta: {datum}.\n\nQualora il termine di preavviso non consenta la cessazione alla data indicata, Vi prego di comunicarmi la prima scadenza utile.\n\nVi chiedo di confermarmi per iscritto la cessazione della copertura, la data esatta di efficacia, l'eventuale rimborso del premio non goduto e la revoca di ogni addebito automatico collegato al mio conto corrente."
+  },
+  "mitgliedschaft-kuend": {
+   "titel": "Recesso dall'associazione",
+   "body": "Con la presente comunico agli amministratori il mio recesso dall'associazione, ai sensi dell'art. 24 del Codice civile e delle previsioni statutarie.\n\nNumero di tessera o codice socio: {vertragsnr}\n\nData di cessazione richiesta: {datum}.\n\nOve lo statuto o la legge prevedano che il recesso abbia effetto a partire da una data diversa, Vi prego di comunicarmi la data esatta di cessazione del rapporto associativo.\n\nVi chiedo di confermarmi per iscritto il ricevimento della presente, la cancellazione dal libro dei soci e l'interruzione di ogni addebito periodico della quota associativa."
+  },
+  "adress-behoerde": {
+   "titel": "Comunicazione del nuovo indirizzo",
+   "body": "Con la presente comunico il mio nuovo indirizzo e chiedo il conseguente aggiornamento dei Vostri archivi.\n\nDecorrenza: {datum}.\n\nNuovo indirizzo:\n{neueAdresse}\n\nVi prego di indirizzare ogni futura comunicazione al nuovo recapito, di confermarmi per iscritto l'avvenuto aggiornamento e di indicarmi se sia necessario presentare ulteriore documentazione o utilizzare una specifica modulistica."
+  },
+  "namensaenderung": {
+   "titel": "Comunicazione di variazione del nominativo",
+   "body": "Con la presente comunico che il mio nominativo è variato.\n\nNominativo precedente: {altName}\nNuovo nominativo: {neuName}\n\nDecorrenza: {datum}.\n\nVi prego di aggiornare i Vostri archivi e ogni documento a me intestato, di confermarmi per iscritto l'avvenuta modifica e di indicarmi quale documentazione giustificativa debba eventualmente essere allegata."
+  },
+  "aenderungsmitteilung": {
+   "titel": "Comunicazione di variazione",
+   "body": "Con la presente comunico la seguente variazione della mia situazione personale:\n\n{text}\n\nVi prego di tenere conto di quanto sopra nei Vostri archivi, di confermarmi per iscritto il ricevimento della presente e di indicarmi se sia necessario presentare ulteriore documentazione o utilizzare una specifica modulistica."
+  },
+  "kindergeld": {
+   "titel": "Comunicazione relativa all'Assegno Unico e Universale",
+   "body": "Con la presente comunico quanto segue in relazione alla mia domanda di Assegno Unico e Universale per i figli a carico:\n\n{text}\n\nNumero di domanda o protocollo: {vertragsnr}\n\nVi prego di prendere atto di quanto sopra e di confermarmi il ricevimento della presente. Sono consapevole che le variazioni rilevanti devono essere inserite anche nella domanda telematica e che l'importo spettante dipende dalla DSU e dall'ISEE in corso di validità; resto pertanto a disposizione per integrare la documentazione eventualmente necessaria."
+  },
+  "steuer-adress": {
+   "titel": "Comunicazione di variazione dell'indirizzo ai fini fiscali",
+   "body": "Con la presente comunico la variazione del mio indirizzo ai fini fiscali e chiedo l'aggiornamento dei Vostri archivi.\n\nCodice fiscale o numero di riferimento: {vertragsnr}\n\nDecorrenza: {datum}.\n\nNuovo indirizzo:\n{neueAdresse}\n\nVi prego di indirizzare ogni futura comunicazione al nuovo recapito e di confermarmi per iscritto l'avvenuto aggiornamento. Ho già provveduto, ove necessario, alla dichiarazione di cambio di residenza presso l'ufficio anagrafe del Comune competente e resto a disposizione per fornire ulteriore documentazione."
+  },
+  "eigenkuendigung": {
+   "titel": "Comunicazione di dimissioni volontarie",
+   "body": "Con la presente rassegno le mie dimissioni dal rapporto di lavoro in essere, nel rispetto del termine di preavviso previsto dal CCNL applicato e dal contratto individuale.\n\nUltimo giorno di lavoro richiesto: {datum}.\n\nLe dimissioni sono trasmesse anche in via telematica, secondo la procedura obbligatoria prevista dalla normativa vigente, attraverso il portale del Ministero del Lavoro e delle Politiche Sociali, direttamente oppure per il tramite di un soggetto abilitato. La presente lettera vale quale comunicazione del preavviso nei Vostri confronti.\n\nVi prego di confermarmi per iscritto il ricevimento della presente e la data di cessazione del rapporto, nonché di comunicarmi il numero di giorni di ferie e permessi residui. Vi chiedo inoltre che, alla cessazione, mi vengano consegnati il certificato di lavoro, la Certificazione Unica e il prospetto di liquidazione del trattamento di fine rapporto."
+  },
+  "arbeit-bank": {
+   "titel": "Variazione delle coordinate bancarie per l'accredito della retribuzione",
+   "body": "Con la presente comunico la variazione delle coordinate bancarie sulle quali accreditare la mia retribuzione.\n\nDecorrenza: {datum}.\n\nIntestatario del conto: {name}\nIBAN: {iban}\n\nVi prego di aggiornare i Vostri archivi, di effettuare i successivi accrediti sul conto sopra indicato e di confermarmi per iscritto l'avvenuta modifica. Resto a disposizione per fornire la documentazione bancaria eventualmente necessaria."
+  },
+  "elternzeit": {
+   "titel": "Richiesta di congedo parentale",
+   "body": "Con la presente chiedo di poter usufruire del congedo parentale previsto dalla normativa vigente a tutela della maternità e della paternità, nel rispetto del termine di preavviso stabilito dalla legge e dal CCNL applicato.\n\nPeriodo richiesto:\nDal: {von}\nAl: {bis}\n\nLa domanda è presentata anche in via telematica all'INPS secondo la procedura prevista; resto a disposizione per fornirVi gli estremi di protocollo e la documentazione necessaria.\n\nVi prego di confermarmi per iscritto l'accoglimento della richiesta e la data di inizio del congedo. Sono a disposizione per concordare le modalità organizzative e il passaggio delle attività in corso."
+  },
+  "urlaub": {
+   "titel": "Richiesta di ferie",
+   "body": "Con la presente chiedo di poter usufruire di un periodo di ferie.\n\nPeriodo richiesto:\nDal: {von}\nAl: {bis}\n\nResto a disposizione per adattare il periodo alle esigenze di servizio e per garantire il passaggio delle attività in corso.\n\nVi prego di confermarmi l'approvazione della richiesta. Grazie per la cortese attenzione."
+  },
+  "arbeitszeugnis": {
+   "titel": "Richiesta di certificato di lavoro e documentazione di fine rapporto",
+   "body": "Il rapporto di lavoro intercorso tra noi è cessato.\n\nData di cessazione: {datum}.\n\nVi chiedo cortesemente di rilasciarmi il certificato di lavoro, con l'indicazione della durata del rapporto, della qualifica e delle mansioni svolte, come previsto dal Codice civile.\n\nOve lo riteniate possibile, gradirei ricevere anche una lettera di referenze relativa all'attività svolta; sono consapevole che il rilascio di tale lettera non costituisce un obbligo di legge e resta rimesso alla Vostra valutazione.\n\nVi prego inoltre di trasmettermi la Certificazione Unica relativa all'ultimo periodo di lavoro e il prospetto di liquidazione del trattamento di fine rapporto. La documentazione può essere inviata al seguente indirizzo:\n{absAdresse}"
+  },
+  "fin-bank": {
+   "titel": "Variazione delle coordinate bancarie",
+   "body": "Con la presente comunico le mie nuove coordinate bancarie e Vi chiedo di addebitare gli importi dovuti sul conto corrente sotto indicato.\n\nNumero di contratto o codice cliente: {vertragsnr}\n\nDecorrenza: {datum}.\n\nIntestatario del conto: {name}\nIBAN: {iban}\n\nVi prego di aggiornare i Vostri archivi, di predisporre l'eventuale nuovo mandato di addebito diretto SEPA e di confermarmi per iscritto l'avvenuta modifica, indicando la prima scadenza interessata."
+  },
+  "lastschrift": {
+   "titel": "Revoca del mandato di addebito diretto SEPA",
+   "body": "Con la presente revoco il mandato di addebito diretto SEPA rilasciato a Vostro favore sul mio conto corrente.\n\nNumero di contratto o codice cliente: {vertragsnr}\nImporto dell'addebito interessato: {betrag}\nData dell'addebito: {datum}\n\nVi invito a non effettuare ulteriori addebiti sul mio conto corrente e a confermarmi per iscritto la revoca, indicandomi le modalità con cui provvedere al pagamento degli importi eventualmente ancora dovuti.\n\nProvvederò a comunicare la revoca anche alla mia banca, affinché non dia corso a ulteriori addebiti."
+  },
+  "reklamation": {
+   "titel": "Reclamo per un addebito non riconosciuto",
+   "body": "Sul mio conto corrente risulta effettuato un addebito che non riconosco e con il quale non sono d'accordo.\n\nImporto contestato: {betrag}\nData dell'addebito: {datum}\n\nMotivo del reclamo:\n{text}\n\nVi chiedo di verificare l'operazione e di procedere al rimborso dell'importo addebitato. Ricordo che, per gli addebiti diretti SEPA autorizzati, la richiesta di rimborso può essere presentata alla banca entro otto settimane dalla data dell'addebito, mentre per le operazioni non autorizzate valgono termini e tutele più ampi.\n\nVi prego di confermarmi il ricevimento del presente reclamo e di fornirmi riscontro scritto e motivato. In mancanza di una risposta soddisfacente mi riservo di rivolgermi agli organismi di risoluzione stragiudiziale competenti."
+  },
+  "ratenzahlung": {
+   "titel": "Richiesta di pagamento rateale",
+   "body": "Con riferimento all'importo ancora dovuto, Vi chiedo la possibilità di concordare un piano di pagamento rateale.\n\nNumero di fattura o codice cliente: {vertragsnr}\nImporto ancora dovuto: {betrag}\n\nLa mia attuale situazione economica non mi consente di provvedere al pagamento in un'unica soluzione; sono tuttavia intenzionato a saldare integralmente quanto dovuto e a rispettare puntualmente il piano concordato.\n\n{text}\n\nVi prego di comunicarmi per iscritto se accettate la proposta oppure quale piano di rientro riteniate praticabile, sospendendo nel frattempo eventuali azioni di recupero."
+  },
+  "strom": {
+   "titel": "Trasferimento della fornitura di energia elettrica per cambio di indirizzo",
+   "body": "Con la presente Vi comunico il mio trasferimento e Vi chiedo di aggiornare la fornitura di energia elettrica a me intestata.\n\nCodice cliente o codice POD: {vertragsnr}\n\nData del trasferimento: {datum}.\n\nNuovo indirizzo di fornitura:\n{neueAdresse}\n\nVi chiedo di indicarmi se la pratica debba essere gestita come cessazione della fornitura presso l'indirizzo attuale con successivo subentro presso il nuovo indirizzo, come voltura oppure secondo altra procedura da Voi prevista, e quali dati e documenti siano necessari (lettura del contatore, codice POD, documento d'identità, codice fiscale).\n\nVi prego di confermarmi per iscritto la data di decorrenza, l'emissione della fattura di chiusura relativa all'indirizzo precedente e il mantenimento o l'aggiornamento delle modalità di pagamento."
+  },
+  "gas": {
+   "titel": "Trasferimento della fornitura di gas per cambio di indirizzo",
+   "body": "Con la presente Vi comunico il mio trasferimento e Vi chiedo di aggiornare la fornitura di gas a me intestata.\n\nCodice cliente o codice PDR: {vertragsnr}\n\nData del trasferimento: {datum}.\n\nNuovo indirizzo di fornitura:\n{neueAdresse}\n\nVi chiedo di indicarmi se la pratica debba essere gestita come cessazione della fornitura presso l'indirizzo attuale con successivo subentro presso il nuovo indirizzo, come voltura oppure secondo altra procedura da Voi prevista, e quali dati e documenti siano necessari (lettura del contatore, codice PDR, documento d'identità, codice fiscale).\n\nVi prego di confermarmi per iscritto la data di decorrenza, l'emissione della fattura di chiusura relativa all'indirizzo precedente e le eventuali verifiche tecniche necessarie per l'attivazione."
+  },
+  "wasser": {
+   "titel": "Voltura della fornitura idrica per cambio di indirizzo",
+   "body": "Con la presente Vi comunico il mio trasferimento e Vi chiedo di aggiornare l'utenza idrica a me intestata.\n\nNumero utenza o codice cliente: {vertragsnr}\n\nData del trasferimento: {datum}.\n\nNuovo indirizzo di fornitura:\n{neueAdresse}\n\nVi chiedo di indicarmi se la pratica debba essere gestita come disdetta dell'utenza presso l'indirizzo attuale con nuova attivazione presso il nuovo indirizzo oppure come voltura, e quali dati e documenti siano necessari (lettura del contatore, documento d'identità, codice fiscale, dati catastali dell'immobile).\n\nQualora il nuovo indirizzo ricada nell'area servita da un diverso gestore del servizio idrico, Vi prego di segnalarmelo. Vi chiedo infine conferma scritta della data di decorrenza e della fattura di chiusura."
+  },
+  "muell": {
+   "titel": "Dichiarazione di variazione della tassa sui rifiuti (TARI)",
+   "body": "Con la presente comunico il mio trasferimento e chiedo l'aggiornamento della mia posizione ai fini della tassa sui rifiuti (TARI).\n\nCodice utente o numero di riferimento: {vertragsnr}\n\nData del trasferimento: {datum}.\n\nNuovo indirizzo:\n{neueAdresse}\n\nChiedo la registrazione della cessazione dell'occupazione dell'immobile precedente e, ove di Vostra competenza, l'attivazione della posizione presso il nuovo indirizzo. Qualora il nuovo immobile ricada nel territorio di un altro Comune, presenterò separata dichiarazione all'ufficio tributi competente.\n\nVi prego di comunicarmi quale modulistica sia necessaria e se la dichiarazione debba essere presentata tramite il portale telematico del Comune, nonché di confermarmi per iscritto la registrazione, la data di decorrenza e l'eventuale conguaglio a credito o a debito."
+  },
+  "rundfunk": {
+   "titel": "Comunicazione relativa al canone di abbonamento alla televisione",
+   "body": "Con la presente comunico il mio trasferimento e il conseguente cambio di indirizzo, ai fini della corretta gestione del canone di abbonamento alla televisione per uso privato.\n\nNumero di abbonamento o codice fiscale: {vertragsnr}\n\nData del trasferimento: {datum}.\n\nNuovo indirizzo di residenza:\n{neueAdresse}\n\nRicordo che il canone per uso privato è dovuto una sola volta per famiglia anagrafica ed è di norma addebitato nelle fatture dell'energia elettrica relative all'utenza dell'abitazione di residenza.\n\nVi prego di aggiornare i dati a me riferiti e di comunicarmi se, nella mia situazione, sia necessario presentare una dichiarazione sostitutiva all'Agenzia delle Entrate oppure una comunicazione al fornitore di energia elettrica."
+  },
+  "kfz-vers-kuend": {
+   "titel": "Disdetta della polizza di assicurazione RC auto",
+   "body": "Con la presente comunico la disdetta della polizza di assicurazione della responsabilità civile per la circolazione dei veicoli a motore stipulata con la Vostra Compagnia.\n\nTarga del veicolo: {kennzeichen}\nNumero di polizza: {vertragsnr}\n\nData di cessazione richiesta: {datum}.\n\nRicordo che per le polizze RC auto non opera il rinnovo tacito e che la garanzia prosegue per i quindici giorni successivi alla scadenza. Provvederò a stipulare una nuova copertura in modo da evitare qualsiasi interruzione di garanzia.\n\nVi prego di confermarmi per iscritto la cessazione della polizza, la data esatta di efficacia, l'eventuale rimborso del premio non goduto e di rendere disponibile l'attestato di rischio aggiornato, nonché di revocare ogni addebito automatico collegato al mio conto corrente."
+  },
+  "fahrzeug-anab": {
+   "titel": "Richiesta relativa all'immatricolazione o alla radiazione di un veicolo",
+   "body": "Con la presente mi rivolgo a Voi in merito alla pratica riguardante il veicolo a me intestato.\n\nTarga del veicolo: {kennzeichen}\n\nOggetto della richiesta:\n{text}\n\nData richiesta per la decorrenza: {datum}.\n\nVi prego di comunicarmi quali documenti siano necessari (carta di circolazione, certificato di proprietà digitale, documento d'identità, codice fiscale, eventuale documentazione assicurativa), quali diritti e imposte debbano essere versati e se sia necessario fissare un appuntamento presso lo Sportello Telematico dell'Automobilista, l'Ufficio provinciale ACI-PRA o la Motorizzazione Civile.\n\nResto a disposizione per ogni chiarimento e Vi chiedo conferma scritta del ricevimento della presente."
+  },
+  "halterwechsel": {
+   "titel": "Comunicazione di passaggio di proprietà del veicolo",
+   "body": "Con la presente comunico il passaggio di proprietà del veicolo a me intestato.\n\nTarga del veicolo: {kennzeichen}\n\nDati relativi al nuovo proprietario:\n{text}\n\nData del trasferimento: {datum}.\n\nVi prego di prendere atto della cessione e di aggiornare i Vostri archivi. Ricordo che il trasferimento di proprietà richiede l'autenticazione della firma del venditore sull'atto di vendita e la registrazione presso il Pubblico Registro Automobilistico entro sessanta giorni dall'autenticazione, a cura dell'acquirente.\n\nVi chiedo di comunicarmi quali documenti siano ancora necessari e di confermarmi per iscritto l'aggiornamento dell'intestazione, affinché da tale data non mi siano più imputati oneri, tributi o sanzioni relativi al veicolo."
+  },
+  "adress-freunde": {
+   "titel": "Abbiamo cambiato casa!",
+   "body": "Vi comunichiamo con piacere che ci siamo trasferiti.\n\nData del trasferimento: {datum}.\n\nDa quel momento potete trovarci al nuovo indirizzo:\n{neueAdresse}\n\nSaremo felici di ospitarvi presto!"
+  },
+  "namens-mitteilen": {
+   "titel": "Ho un nuovo nome",
+   "body": "Vi comunico che il mio nome è cambiato.\n\nDecorrenza: {datum}.\n\nNome precedente: {altName}\nNuovo nome: {neuName}\n\nVi chiedo di utilizzare d'ora in avanti il nuovo nome nelle comunicazioni e nei documenti che mi riguardano. Grazie!"
+  },
+  "todesfall": {
+   "titel": "Una triste notizia",
+   "body": "Con profondo dolore vi comunichiamo la scomparsa di {verstorben}.\n\nData del decesso: {sterbedatum}\n\n{text}\n\nVi chiediamo di unirvi a noi con un pensiero e di comprendere se, in questo momento, la famiglia avrà bisogno di riservatezza."
+  },
+  "vollmacht": {
+   "titel": "Delega",
+   "body": "Il sottoscritto o la sottoscritta {name}, i cui dati anagrafici e il cui indirizzo sono riportati in intestazione, con la presente conferisce delega a:\n\n{bevoll}\n\nper la seguente finalità:\n\n{zweck}\n\nDecorrenza: {datum}. La presente delega è valida fino a revoca.\n\nLa persona delegata è autorizzata a compiere gli atti e a rendere le dichiarazioni strettamente necessari alla finalità sopra indicata. Alla presente delega devono essere allegate le copie dei documenti d'identità in corso di validità del delegante e del delegato.\n\nLuogo e data: ______________________\n\nFirma del delegante: ______________________\n\nFirma del delegato per accettazione: ______________________\n\nAvvertenza: per determinati atti, in particolare quelli relativi a immobili, successioni, atti notarili e rappresentanza in giudizio, non è sufficiente una delega su carta semplice ed è necessaria una procura conferita nelle forme di legge."
+  },
+  "frei": {
+   "titel": "Comunicazione",
+   "body": "{text}\n\nVi prego di confermarmi il ricevimento della presente e di fornirmi un riscontro scritto."
+  }
+ }
 }

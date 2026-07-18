@@ -1,255 +1,218 @@
 {
-  "land": "FR",
-  "sprache": "fr",
-  "formen": {
-    "arbeit": {
-      "label": "Contrat de travail (démission)",
-      "form": "Aucune forme imposée par la loi ; la lettre recommandée avec accusé de réception (LRAR) ou la remise en main propre contre décharge est vivement conseillée. La durée du préavis résulte du contrat, de la convention collective ou des usages.",
-      "email": "unsicher",
-      "tipp": "En droit français, la démission n'obéit à aucun formalisme légal : elle doit seulement résulter d'une volonté claire, sérieuse et non équivoque. En pratique, privilégiez la LRAR ou la remise en main propre contre décharge, car c'est la date de réception qui fait courir le préavis et un courrier électronique laisse une preuve fragile. Vérifiez impérativement la durée de votre préavis dans votre convention collective avant d'indiquer une date de départ."
-    },
-    "miete": {
-      "label": "Bail d'habitation (congé donné par le locataire)",
-      "form": "Lettre recommandée avec accusé de réception, acte de commissaire de justice ou remise en main propre contre récépissé ou émargement (loi n° 89-462 du 6 juillet 1989).",
-      "email": "nein",
-      "tipp": "Le congé du locataire ne peut pas être donné valablement par simple courrier électronique : la loi du 6 juillet 1989 impose la LRAR, l'acte de commissaire de justice ou la remise en main propre contre récépissé. Le préavis est en principe de trois mois pour une location vide, réduit à un mois en zone tendue, pour une location meublée et dans certains cas personnels (mutation, perte d'emploi, état de santé, bénéficiaires de certaines aides). Le délai court à compter de la réception du congé, et non de son envoi : conservez précieusement l'avis de réception."
-    },
-    "handy": {
-      "label": "Téléphonie mobile, internet et téléphone fixe",
-      "form": "Aucun formalisme légal strict ; la LRAR reste la référence en cas de litige. Pour les contrats souscrits par voie électronique, l'opérateur doit proposer une résiliation en ligne aussi simple que la souscription.",
-      "email": "ja",
-      "tipp": "Un courrier électronique ou le formulaire en ligne de l'opérateur suffisent en principe. Si vous avez souscrit sur internet, cherchez d'abord la fonction de résiliation en ligne : c'est la voie la plus rapide et elle laisse une trace horodatée. Vérifiez néanmoins votre période d'engagement, car des frais de résiliation anticipée peuvent rester dus, ainsi que le préavis contractuel."
-    },
-    "strom": {
-      "label": "Électricité et gaz",
-      "form": "Aucune forme imposée ; résiliation possible par courrier, courriel, téléphone ou espace client. Les contrats de fourniture d'énergie des particuliers sont sans engagement de durée.",
-      "email": "ja",
-      "tipp": "Vous pouvez résilier votre contrat d'énergie à tout moment et sans frais, un courriel ou une demande depuis votre espace client suffisent. Préparez votre numéro de point de livraison ou de comptage ainsi que le relevé d'index du compteur au jour du départ : c'est ce relevé qui détermine la facture de clôture. En cas de déménagement, il ne s'agit pas d'un transfert mais d'une résiliation à l'ancienne adresse suivie d'une nouvelle souscription à la nouvelle."
-    },
-    "streaming": {
-      "label": "Streaming et abonnements en ligne",
-      "form": "Résiliation en ligne pour les contrats souscrits par voie électronique ; à défaut, courriel ou courrier.",
-      "email": "ja",
-      "tipp": "Pour un abonnement souscrit sur internet, le professionnel doit mettre à votre disposition une fonctionnalité de résiliation en ligne accessible en quelques clics. Un courriel reste valable et vous laisse une preuve écrite. Pensez à vérifier la date de reconduction : le professionnel doit vous informer en temps utile de la possibilité de ne pas reconduire un contrat à tacite reconduction, et à défaut vous pouvez y mettre fin à tout moment."
-    },
-    "fitness": {
-      "label": "Salle de sport et abonnement sportif",
-      "form": "Selon le contrat ; LRAR conseillée. La reconduction tacite est encadrée par les dispositions du Code de la consommation issues de la loi Chatel.",
-      "email": "unsicher",
-      "tipp": "Beaucoup de salles imposent contractuellement la lettre recommandée : relisez vos conditions générales avant d'envoyer un simple courriel. Le professionnel doit vous informer, dans un délai raisonnable avant la date de reconduction, de votre faculté de ne pas reconduire l'abonnement ; s'il ne l'a pas fait, vous pouvez résilier gratuitement à tout moment à compter de la reconduction. Un motif légitime et durable (déménagement lointain, problème de santé attesté, perte d'emploi) permet en outre souvent une résiliation anticipée : joignez alors le justificatif."
-    },
-    "versicherung": {
-      "label": "Assurances",
-      "form": "Résiliation à l'échéance annuelle avec un préavis de deux mois (article L. 113-12 du Code des assurances) ; résiliation possible à tout moment après un an pour l'assurance automobile, l'assurance habitation et la complémentaire santé (loi Hamon et résiliation infra-annuelle). Lettre recommandée conseillée ; résiliation en ligne pour les contrats souscrits par voie électronique.",
-      "email": "unsicher",
-      "tipp": "Deux régimes coexistent : la résiliation à l'échéance annuelle, qui suppose de respecter un préavis de deux mois, et la résiliation à tout moment après une première année d'assurance, ouverte notamment pour l'auto, l'habitation et la complémentaire santé. Dans ce second cas, c'est généralement le nouvel assureur qui accomplit les démarches à votre place, ce qui évite toute rupture de garantie. Privilégiez la lettre recommandée avec accusé de réception et demandez systématiquement le remboursement de la prime correspondant à la période non couverte."
-    },
-    "verein": {
-      "label": "Adhésion à une association",
-      "form": "Selon les statuts de l'association ; courrier recommandé conseillé. La loi du 1er juillet 1901 garantit à tout membre le droit de se retirer à tout moment.",
-      "email": "unsicher",
-      "tipp": "La loi du 1er juillet 1901 permet à tout membre de se retirer d'une association à tout moment, après paiement des cotisations échues et de celle de l'année en cours, sauf clause statutaire plus favorable. Consultez les statuts et le règlement intérieur, qui peuvent imposer une forme ou un préavis particuliers. En pratique, une lettre recommandée adressée au président évite toute contestation sur la date de radiation."
-    },
-    "sonstiges": {
-      "label": "Autres contrats",
-      "form": "Dépend du contrat et de ses conditions générales ; la LRAR reste la solution la plus sûre.",
-      "email": "unsicher",
-      "tipp": "En l'absence de règle légale spécifique, ce sont les conditions générales du contrat qui fixent la forme et le préavis à respecter : relisez-les avant d'écrire. En cas de doute, envoyez une lettre recommandée avec accusé de réception et conservez la preuve d'envoi comme la preuve de réception. Demandez toujours une confirmation écrite de la date effective de fin de contrat."
-    }
+ "land": "FR",
+ "sprache": "fr",
+ "formen": {
+  "arbeit": {
+   "label": "Contrat de travail (démission)",
+   "form": "Aucune forme imposée par la loi ; la lettre recommandée avec accusé de réception (LRAR) ou la remise en main propre contre décharge est vivement conseillée. La durée du préavis résulte du contrat, de la convention collective ou des usages.",
+   "email": "unsicher",
+   "tipp": "En droit français, la démission n'obéit à aucun formalisme légal : elle doit seulement résulter d'une volonté claire, sérieuse et non équivoque. En pratique, privilégiez la LRAR ou la remise en main propre contre décharge, car c'est la date de réception qui fait courir le préavis et un courrier électronique laisse une preuve fragile. Vérifiez impérativement la durée de votre préavis dans votre convention collective avant d'indiquer une date de départ."
   },
-  "vorlagen": {
-    "miet-kuend": {
-      "titel": "Congé du locataire (résiliation du bail)",
-      "body": "je vous donne congé du logement situé {objekt}, que j'occupe en qualité de locataire, conformément aux dispositions de la loi n° 89-462 du 6 juillet 1989.\n\nDate de départ souhaitée : {datum}\n\nLe délai de préavis courra à compter de la réception de la présente lettre. Si la durée de préavis applicable à ma situation conduit à une autre date, je vous remercie de me la préciser.\n\nJe vous prie de bien vouloir m'accuser réception de ce congé et de me confirmer par écrit la date exacte de fin de bail. Je vous propose par ailleurs de convenir ensemble d'une date pour l'état des lieux de sortie et la remise des clés.\n\nJe vous remercie enfin de m'indiquer les modalités de restitution du dépôt de garantie ainsi que l'adresse à laquelle vous adresserez le décompte final."
-    },
-    "umzug": {
-      "titel": "Information de changement d'adresse",
-      "body": "je vous informe de mon prochain déménagement et vous prie de bien vouloir mettre à jour mes coordonnées dans vos dossiers.\n\nDate du déménagement : {datum}\n\nMa nouvelle adresse est la suivante :\n{neueAdresse}\n\nJe vous remercie d'adresser désormais l'ensemble de votre correspondance à cette nouvelle adresse et de me confirmer par écrit la prise en compte de ce changement."
-    },
-    "nachsende": {
-      "titel": "Nouvelle adresse de distribution de mon courrier",
-      "body": "je vous informe que mon courrier doit désormais être distribué à l'adresse suivante :\n\n{neueAdresse}\n\nDate de prise d'effet : {datum}\n\nJe vous remercie de bien vouloir tenir compte de ce changement pour tout envoi ultérieur et de m'en accuser réception. Si une mise à jour dans vos systèmes nécessite un justificatif de domicile, je vous le ferai parvenir sur simple demande."
-    },
-    "uebergabe": {
-      "titel": "État des lieux de sortie — liste de contrôle",
-      "body": "Points à vérifier avant et pendant l'état des lieux de sortie :\n\n- Relever les index des compteurs (électricité, gaz, eau) et les faire figurer sur le document\n- Restituer toutes les clés, badges, bips et télécommandes, et en faire indiquer le nombre exact\n- Rendre le logement propre, vide de tout meuble et de tout objet personnel\n- Comparer point par point avec l'état des lieux d'entrée, pièce par pièce\n- Tenir compte de la vétusté : l'usure normale ne peut pas vous être facturée\n- Reboucher proprement les trous de perçage et les fixations murales\n- Contrôler le bon fonctionnement des fenêtres, portes, volets, robinetterie et VMC\n- Faire inscrire vos réserves : ne jamais signer un document incomplet ou pré-rempli\n- Repartir avec un exemplaire signé de l'état des lieux de sortie\n- Prendre des photographies datées de chaque pièce\n- Communiquer votre RIB et votre nouvelle adresse pour la restitution du dépôt de garantie\n- Résilier ou transférer les contrats d'énergie, d'eau, d'internet et l'assurance habitation\n- Souscrire le service de réexpédition du courrier auprès de La Poste"
-    },
-    "maengel": {
-      "titel": "Signalement de désordres dans le logement",
-      "body": "je vous signale les désordres suivants, qui affectent le logement situé {objekt} et que j'occupe en qualité de locataire :\n\n{mangel}\n\nEn votre qualité de bailleur, il vous appartient de délivrer un logement décent, d'en assurer la jouissance paisible et d'y effectuer les réparations autres que celles incombant au locataire, conformément à la loi n° 89-462 du 6 juillet 1989.\n\nDélai souhaité pour la remise en état : {datum}\n\nJe vous remercie de bien vouloir m'accuser réception de la présente et de m'indiquer la date à laquelle une intervention pourra avoir lieu. Je me tiens à votre disposition pour permettre l'accès au logement à un artisan.\n\nÀ défaut d'intervention dans un délai raisonnable, je me réserve la possibilité de saisir la commission départementale de conciliation, puis, le cas échéant, le juge des contentieux de la protection."
-    },
-    "kaution": {
-      "titel": "Demande de restitution du dépôt de garantie",
-      "body": "le bail portant sur le logement situé {objekt} a pris fin et le logement vous a été restitué lors de l'état des lieux de sortie.\n\nDate de fin de bail : {datum}\n\nÀ ce jour, le dépôt de garantie ne m'a pas été restitué. Je vous rappelle qu'en application de la loi n° 89-462 du 6 juillet 1989, le dépôt de garantie doit être restitué dans un délai d'un mois à compter de la remise des clés lorsque l'état des lieux de sortie est conforme à celui d'entrée, et dans un délai de deux mois dans le cas contraire, toute retenue devant être justifiée par des pièces. À défaut de restitution dans ces délais, la somme due est majorée de dix pour cent du loyer mensuel hors charges pour chaque mois de retard commencé.\n\nJe vous prie donc de bien vouloir procéder au virement des sommes dues sur le compte suivant :\n\nTitulaire du compte : {name}\nIBAN : {iban}\n\nJe vous remercie de m'accuser réception de la présente et, en cas de retenue, de m'adresser le décompte détaillé accompagné des justificatifs correspondants."
-    },
-    "handy-kuend": {
-      "titel": "Résiliation de mon contrat de téléphonie mobile",
-      "body": "je vous informe de ma décision de résilier le contrat de téléphonie mobile souscrit auprès de vos services.\n\nRéférence du contrat : {vertragsnr}\nDate d'effet souhaitée : {datum}\n\nJe vous remercie de bien vouloir m'accuser réception de la présente et de me confirmer par écrit la date effective de la résiliation ainsi que le décompte des sommes éventuellement restant dues.\n\nSi la date indiquée ne peut être retenue en raison d'un préavis ou d'une période d'engagement en cours, je vous prie de me préciser la première date de résiliation possible ainsi que le détail et le fondement contractuel des frais qui me seraient réclamés.\n\nJe vous demande enfin de mettre fin à tout prélèvement automatique au-delà de la date de résiliation et de me restituer, le cas échéant, les sommes réglées d'avance. Je souhaite conserver mon numéro et vous précise que je ferai usage, s'il y a lieu, de la portabilité."
-    },
-    "internet-kuend": {
-      "titel": "Résiliation de mon contrat d'accès à internet",
-      "body": "je vous informe de ma décision de résilier le contrat d'accès à internet souscrit auprès de vos services.\n\nRéférence du contrat : {vertragsnr}\nDate d'effet souhaitée : {datum}\n\nJe vous remercie de bien vouloir m'accuser réception de la présente et de me confirmer par écrit la date effective de la résiliation ainsi que le décompte des sommes éventuellement restant dues.\n\nSi la date indiquée ne peut être retenue en raison d'un préavis ou d'une période d'engagement en cours, je vous prie de me préciser la première date de résiliation possible ainsi que le détail et le fondement contractuel des frais qui me seraient réclamés.\n\nJe restituerai les équipements mis à ma disposition selon les modalités que vous voudrez bien m'indiquer et vous remercie de me confirmer leur bonne réception, afin qu'aucun frais de non-restitution ne me soit facturé. Je vous demande également de cesser tout prélèvement au-delà de la date de résiliation."
-    },
-    "streaming-kuend": {
-      "titel": "Résiliation de mon abonnement",
-      "body": "je vous informe de ma décision de résilier l'abonnement souscrit auprès de vos services.\n\nRéférence du compte ou du contrat : {vertragsnr}\nDate d'effet souhaitée : {datum}\n\nJe vous remercie de bien vouloir m'accuser réception de la présente et de me confirmer par écrit la date effective de la résiliation ainsi que la date du dernier jour d'accès au service.\n\nJe vous demande de mettre fin à tout prélèvement ou débit ultérieur sur mon moyen de paiement et de supprimer les données de celui-ci de mon compte.\n\nSi le contrat a été reconduit tacitement sans que j'aie été informé en temps utile de ma faculté de ne pas le reconduire, je vous demande d'en tirer les conséquences et de me rembourser les sommes prélevées depuis la reconduction."
-    },
-    "fitness-kuend": {
-      "titel": "Résiliation de mon abonnement à la salle de sport",
-      "body": "je vous informe de ma décision de résilier l'abonnement souscrit auprès de votre établissement.\n\nRéférence du contrat ou numéro d'adhérent : {vertragsnr}\nDate d'effet souhaitée : {datum}\n\nJe vous remercie de bien vouloir m'accuser réception de la présente, de me confirmer par écrit la date effective de fin d'abonnement et de mettre fin à tout prélèvement au-delà de cette date.\n\nSi une période d'engagement est encore en cours, je vous prie de m'indiquer la première date de résiliation possible ainsi que le détail des sommes qui resteraient dues et leur fondement contractuel.\n\nJe vous rappelle enfin qu'en l'absence d'information préalable sur la possibilité de ne pas reconduire le contrat, la résiliation peut intervenir gratuitement à tout moment à compter de la date de reconduction, conformément aux dispositions du Code de la consommation relatives à la reconduction tacite."
-    },
-    "versicherung-kuend": {
-      "titel": "Résiliation de mon contrat d'assurance",
-      "body": "je vous informe de ma décision de résilier le contrat d'assurance souscrit auprès de votre compagnie.\n\nNuméro de contrat : {vertragsnr}\nDate d'effet souhaitée : {datum}\n\nCette résiliation intervient, selon le cas applicable à mon contrat, à l'échéance annuelle dans le respect du préavis de deux mois prévu à l'article L. 113-12 du Code des assurances, ou au titre de la faculté de résiliation à tout moment après une première année d'assurance, ouverte notamment pour les contrats d'assurance automobile, d'assurance habitation et de complémentaire santé.\n\nJe vous remercie de bien vouloir m'accuser réception de la présente, de me confirmer par écrit la date exacte de cessation des garanties et de me rembourser la fraction de prime correspondant à la période non couverte.\n\nJe vous demande également de mettre fin à tout prélèvement à compter de cette date."
-    },
-    "mitgliedschaft-kuend": {
-      "titel": "Démission de mon adhésion à l'association",
-      "body": "je vous informe de ma décision de mettre fin à mon adhésion à votre association.\n\nNuméro d'adhérent ou référence : {vertragsnr}\nDate d'effet souhaitée : {datum}\n\nConformément à la loi du 1er juillet 1901, tout membre d'une association peut s'en retirer à tout moment, après paiement des cotisations échues et de celle de l'année en cours, sauf disposition statutaire plus favorable.\n\nJe vous remercie de bien vouloir m'accuser réception de la présente, de me confirmer la date de ma radiation de la liste des membres et de mettre fin à tout prélèvement de cotisation.\n\nJe vous prie également de supprimer mes coordonnées de vos fichiers et listes de diffusion, sous réserve des obligations légales de conservation qui vous incombent."
-    },
-    "adress-behoerde": {
-      "titel": "Déclaration de changement d'adresse",
-      "body": "je vous informe de mon changement d'adresse et vous prie de bien vouloir mettre à jour mon dossier.\n\nMa nouvelle adresse est la suivante :\n{neueAdresse}\n\nDate de prise d'effet : {datum}\n\nJe vous remercie d'adresser désormais l'ensemble de votre correspondance à cette adresse et de me confirmer par écrit la prise en compte de ce changement. Si un justificatif de domicile vous est nécessaire, je vous le ferai parvenir sur simple demande."
-    },
-    "namensaenderung": {
-      "titel": "Déclaration de changement de nom",
-      "body": "je vous informe que mon nom a changé et vous prie de bien vouloir mettre à jour mon dossier ainsi que l'ensemble de vos documents me concernant.\n\nNom précédent : {altName}\nNouveau nom : {neuName}\nDate de prise d'effet : {datum}\n\nJe joins à la présente une copie du justificatif correspondant, acte d'état civil ou pièce d'identité mise à jour.\n\nJe vous remercie de m'adresser votre correspondance sous ce nouveau nom et de me confirmer par écrit la prise en compte de cette modification."
-    },
-    "aenderungsmitteilung": {
-      "titel": "Déclaration de changement de situation",
-      "body": "je vous informe du changement suivant, intervenu dans ma situation personnelle :\n\n{text}\n\nJe vous prie de bien vouloir en tenir compte dans mon dossier et de m'indiquer si des pièces justificatives complémentaires vous sont nécessaires ; je vous les ferai parvenir sans délai.\n\nJe vous remercie de m'accuser réception de la présente et de me confirmer, le cas échéant, les conséquences de ce changement sur mes droits ou sur mes obligations."
-    },
-    "kindergeld": {
-      "titel": "Déclaration relative à mes prestations familiales",
-      "body": "je vous informe des éléments suivants concernant mes droits aux prestations familiales.\n\nNuméro d'allocataire : {vertragsnr}\n\n{text}\n\nJe vous prie de bien vouloir prendre en compte cette déclaration dans mon dossier et de m'indiquer les pièces justificatives éventuellement nécessaires à son traitement.\n\nJe vous remercie de m'accuser réception de la présente et de me confirmer par écrit l'incidence de ce changement sur le montant et la date de versement de mes prestations."
-    },
-    "steuer-adress": {
-      "titel": "Changement d'adresse — dossier fiscal",
-      "body": "je vous informe de mon changement d'adresse et vous prie de bien vouloir mettre à jour mon dossier fiscal.\n\nNuméro fiscal : {vertragsnr}\nNouvelle adresse :\n{neueAdresse}\nDate de prise d'effet : {datum}\n\nJe vous remercie d'adresser désormais l'ensemble de ma correspondance fiscale, y compris les avis d'imposition, à cette nouvelle adresse.\n\nJe vous prie de bien vouloir m'accuser réception de la présente et de me confirmer la prise en compte de ce changement, ainsi que de m'indiquer, le cas échéant, les déclarations complémentaires attendues au titre de mon ancien et de mon nouveau logement."
-    },
-    "eigenkuendigung": {
-      "titel": "Lettre de démission",
-      "body": "par la présente, je vous informe de ma décision de démissionner des fonctions que j'occupe au sein de votre entreprise. Cette décision est libre, réfléchie et non équivoque.\n\nDate de fin de contrat souhaitée : {datum}\n\nJe respecterai le préavis applicable en vertu de mon contrat de travail, de la convention collective ou des usages en vigueur. Si vous souhaitez m'en dispenser, en tout ou partie, je vous remercie de me le confirmer par écrit.\n\nJe vous prie de bien vouloir m'accuser réception de la présente et de me confirmer la date effective de sortie des effectifs.\n\nJe vous remercie enfin de bien vouloir préparer, pour mon dernier jour de travail, le certificat de travail, le reçu pour solde de tout compte et l'attestation destinée à France Travail, et de m'indiquer le solde de mes congés payés ainsi que les modalités relatives à mon épargne salariale et à la portabilité de mes garanties de prévoyance et de complémentaire santé."
-    },
-    "arbeit-bank": {
-      "titel": "Changement de mes coordonnées bancaires pour le versement du salaire",
-      "body": "je vous informe que mes coordonnées bancaires ont changé et vous prie de bien vouloir verser ma rémunération sur le compte suivant :\n\nTitulaire du compte : {name}\nIBAN : {iban}\nDate de prise d'effet : {datum}\n\nVous trouverez ci-joint un relevé d'identité bancaire correspondant à ce compte.\n\nJe vous remercie de bien vouloir m'accuser réception de la présente et de me confirmer que ce changement sera pris en compte dès la prochaine échéance de paie."
-    },
-    "elternzeit": {
-      "titel": "Demande de congé parental d'éducation",
-      "body": "par la présente, je sollicite le bénéfice d'un congé parental d'éducation.\n\nDébut souhaité : {von}\nFin souhaitée : {bis}\nForme souhaitée : congé total ou activité à temps partiel (à préciser d'un commun accord)\n\nJe vous adresse cette demande en respectant le délai de prévenance applicable à ma situation et me tiens à votre disposition pour vous transmettre les justificatifs nécessaires, notamment l'acte de naissance de l'enfant.\n\nJe vous prie de bien vouloir m'accuser réception de la présente et de me confirmer par écrit votre accord ainsi que les modalités pratiques de mon départ et de mon retour dans l'entreprise."
-    },
-    "urlaub": {
-      "titel": "Demande de congés payés",
-      "body": "par la présente, je sollicite l'autorisation de prendre des congés payés.\n\nDébut souhaité : {von}\nFin souhaitée : {bis}\n\nJe vous remercie de bien vouloir me confirmer votre accord par écrit et reste à votre disposition pour organiser la continuité de mon activité pendant cette absence ainsi que la transmission des dossiers en cours.\n\nSi ces dates ne devaient pas être compatibles avec les nécessités du service, je vous remercie de me proposer une autre période."
-    },
-    "arbeitszeugnis": {
-      "titel": "Demande de certificat de travail et de documents de fin de contrat",
-      "body": "mon contrat de travail au sein de votre entreprise a pris fin.\n\nDate de fin de contrat : {datum}\n\nÀ ce jour, je n'ai pas reçu l'ensemble des documents devant m'être remis à l'issue de la relation de travail. Je vous prie donc de bien vouloir me délivrer :\n\n- le certificat de travail ;\n- le reçu pour solde de tout compte ;\n- l'attestation destinée à France Travail ;\n- le cas échéant, les informations relatives à mon épargne salariale et à la portabilité de mes garanties de prévoyance et de complémentaire santé.\n\nJe vous remercie de me les faire parvenir à l'adresse figurant en tête de la présente ou de m'indiquer le lieu et les horaires auxquels je peux venir les retirer.\n\nJe me permets par ailleurs de solliciter, si vous l'estimez possible, une lettre de recommandation portant sur les missions que j'ai exercées ; je sais qu'il s'agit d'une démarche purement facultative de votre part."
-    },
-    "fin-bank": {
-      "titel": "Changement de mes coordonnées bancaires",
-      "body": "je vous informe de mes nouvelles coordonnées bancaires et vous prie de bien vouloir prélever les sommes dues sur le compte suivant :\n\nRéférence client ou contrat : {vertragsnr}\nTitulaire du compte : {name}\nIBAN : {iban}\nDate de prise d'effet : {datum}\n\nVous trouverez ci-joint un relevé d'identité bancaire correspondant à ce compte ainsi que, le cas échéant, le mandat de prélèvement SEPA dûment signé.\n\nJe vous remercie de bien vouloir m'accuser réception de la présente, de me confirmer la prise en compte de ce changement et de veiller à ce qu'aucun prélèvement ne soit plus présenté sur mon ancien compte."
-    },
-    "lastschrift": {
-      "titel": "Révocation d'un mandat de prélèvement SEPA",
-      "body": "par la présente, je révoque le mandat de prélèvement SEPA que je vous avais consenti.\n\nRéférence client ou contrat : {vertragsnr}\nMontant concerné : {betrag}\nDate du prélèvement concerné : {datum}\n\nJe vous prie de ne plus émettre aucun prélèvement sur mon compte à compter de la réception de la présente et de m'en accuser réception par écrit. J'informe parallèlement mon établissement bancaire de cette révocation.\n\nJe précise que cette révocation porte sur l'autorisation de prélèvement et ne vaut pas, à elle seule, résiliation du contrat qui nous lie. Je vous remercie de m'indiquer les autres moyens de paiement que vous acceptez pour le règlement des sommes qui resteraient dues."
-    },
-    "reklamation": {
-      "titel": "Contestation d'un prélèvement",
-      "body": "je constate sur mon compte une opération que je conteste.\n\nDate du prélèvement : {datum}\nMontant contesté : {betrag}\n\nMotif de la contestation :\n{text}\n\nJe vous prie de bien vouloir procéder à la vérification de cette opération et de me rembourser la somme correspondante dans les meilleurs délais.\n\nJe vous rappelle que, s'agissant d'un prélèvement SEPA autorisé, le remboursement peut être demandé auprès de ma banque dans un délai de huit semaines à compter de la date de débit, et dans un délai de treize mois lorsque l'opération n'a pas été valablement autorisée. Je me réserve la possibilité de faire usage de cette faculté.\n\nJe vous remercie de m'accuser réception de la présente et de m'informer par écrit des suites qui y seront données."
-    },
-    "ratenzahlung": {
-      "titel": "Demande de délais de paiement",
-      "body": "je me permets de solliciter un échelonnement du règlement de la somme restant due.\n\nRéférence de la facture ou du dossier : {vertragsnr}\nMontant restant dû : {betrag}\n\n{text}\n\nMa situation financière actuelle ne me permet pas de m'acquitter de cette somme en une seule fois. Je m'engage en revanche à respecter scrupuleusement l'échéancier qui sera convenu entre nous et à vous informer sans délai de toute évolution de ma situation.\n\nJe vous remercie de bien vouloir examiner ma demande avec bienveillance, de suspendre toute mesure de recouvrement pendant son examen et de me confirmer votre accord par écrit."
-    },
-    "strom": {
-      "titel": "Déménagement — clôture et souscription de mon contrat d'électricité",
-      "body": "je vous informe de mon déménagement et vous prie de procéder à la clôture de mon contrat d'électricité pour le logement que je quitte.\n\nRéférence client ou point de livraison : {vertragsnr}\nDate du déménagement : {datum}\nNouvelle adresse :\n{neueAdresse}\n\nJe souhaite par ailleurs souscrire un contrat de fourniture pour ma nouvelle adresse à compter de cette même date, afin d'éviter toute interruption de service.\n\nJe vous remercie de m'indiquer les éléments nécessaires à ces deux opérations, notamment le relevé d'index à effectuer le jour du départ et la référence du compteur de mon nouveau logement, ainsi que les modalités d'établissement de la facture de clôture.\n\nJe vous prie de bien vouloir m'accuser réception de la présente et de me confirmer par écrit ces deux démarches."
-    },
-    "gas": {
-      "titel": "Déménagement — clôture et souscription de mon contrat de gaz",
-      "body": "je vous informe de mon déménagement et vous prie de procéder à la clôture de mon contrat de fourniture de gaz naturel pour le logement que je quitte.\n\nRéférence client ou point de comptage : {vertragsnr}\nDate du déménagement : {datum}\nNouvelle adresse :\n{neueAdresse}\n\nJe souhaite par ailleurs souscrire un contrat de fourniture pour ma nouvelle adresse à compter de cette même date, sous réserve que ce logement soit raccordé au réseau de gaz naturel.\n\nJe vous remercie de m'indiquer les éléments nécessaires à ces deux opérations, notamment le relevé d'index à effectuer le jour du départ et la référence du compteur de mon nouveau logement, ainsi que les modalités d'établissement de la facture de clôture.\n\nJe vous prie de bien vouloir m'accuser réception de la présente et de me confirmer par écrit ces deux démarches."
-    },
-    "wasser": {
-      "titel": "Déménagement — contrat de distribution d'eau",
-      "body": "je vous informe de mon déménagement et vous prie de procéder à la clôture de mon abonnement au service de distribution d'eau pour le logement que je quitte.\n\nRéférence client ou numéro de compteur : {vertragsnr}\nDate du déménagement : {datum}\nNouvelle adresse :\n{neueAdresse}\n\nJe vous remercie de m'indiquer la date à laquelle le relevé de compteur sera effectué ou, si le relevé est à ma charge, la manière de vous transmettre l'index de départ, ainsi que les modalités d'établissement de la facture de clôture.\n\nSi ma nouvelle adresse est desservie par vos services, je vous prie de bien vouloir procéder à la souscription d'un nouvel abonnement à compter de la même date ; dans le cas contraire, je vous remercie de m'indiquer l'exploitant compétent pour cette commune.\n\nJe vous prie de bien vouloir m'accuser réception de la présente."
-    },
-    "muell": {
-      "titel": "Déménagement — collecte des déchets ménagers",
-      "body": "je vous informe de mon déménagement et vous prie de bien vouloir mettre à jour mon dossier relatif à la collecte des déchets ménagers.\n\nRéférence du dossier : {vertragsnr}\nDate du déménagement : {datum}\nNouvelle adresse :\n{neueAdresse}\n\nJe vous remercie de m'indiquer les modalités applicables à mon départ : reprise ou restitution des bacs et des badges d'accès à la déchèterie, clôture de la redevance d'enlèvement des ordures ménagères si celle-ci est en vigueur dans votre collectivité, et régularisation éventuelle des sommes dues au prorata.\n\nJe vous prie de bien vouloir m'accuser réception de la présente et de me confirmer par écrit la prise en compte de ce changement, ainsi que, si ma nouvelle adresse relève de votre territoire, l'ouverture d'un dossier à cette adresse."
-    },
-    "rundfunk": {
-      "titel": "Changement d'adresse — abonnement aux services de télévision",
-      "body": "je vous informe de mon déménagement et vous prie de bien vouloir mettre à jour l'adresse rattachée à mon abonnement aux services de télévision.\n\nRéférence client : {vertragsnr}\nDate du déménagement : {datum}\nNouvelle adresse :\n{neueAdresse}\n\nJe vous remercie de m'indiquer les modalités de transfert de l'abonnement et des équipements mis à ma disposition, ainsi que, le cas échéant, les démarches à effectuer si le service ne peut pas être fourni à ma nouvelle adresse.\n\nJe vous prie de bien vouloir m'accuser réception de la présente et de me confirmer par écrit la prise en compte de ce changement, en veillant à ce qu'aucune facturation ne se poursuive au titre de l'ancienne adresse."
-    },
-    "kfz-vers-kuend": {
-      "titel": "Résiliation de mon contrat d'assurance automobile",
-      "body": "je vous informe de ma décision de résilier le contrat d'assurance automobile souscrit auprès de votre compagnie.\n\nNuméro de contrat : {vertragsnr}\nImmatriculation du véhicule assuré : {kennzeichen}\nDate d'effet souhaitée : {datum}\n\nCette résiliation intervient, selon le cas applicable à mon contrat, à l'échéance annuelle dans le respect du préavis de deux mois prévu à l'article L. 113-12 du Code des assurances, ou au titre de la faculté de résiliation à tout moment après une première année d'assurance.\n\nJe vous remercie de bien vouloir m'accuser réception de la présente, de me confirmer par écrit la date exacte de cessation des garanties et de me rembourser la fraction de prime correspondant à la période non couverte.\n\nJe vous prie également de m'adresser mon relevé d'information, nécessaire à la souscription d'un nouveau contrat, et de mettre fin à tout prélèvement à compter de la date de résiliation."
-    },
-    "fahrzeug-anab": {
-      "titel": "Démarche relative au certificat d'immatriculation de mon véhicule",
-      "body": "je me permets de vous saisir au sujet d'une démarche relative au certificat d'immatriculation de mon véhicule.\n\nImmatriculation du véhicule : {kennzeichen}\nDate souhaitée : {datum}\n\nObjet de ma demande :\n{text}\n\nMa démarche a été engagée par voie dématérialisée, les demandes d'immatriculation ne pouvant plus être déposées au guichet. Je vous remercie de bien vouloir m'indiquer l'état d'avancement de mon dossier ainsi que les pièces justificatives qui resteraient nécessaires à son instruction.\n\nJe vous prie de bien vouloir m'accuser réception de la présente et reste à votre disposition pour tout complément d'information."
-    },
-    "halterwechsel": {
-      "titel": "Changement de titulaire du certificat d'immatriculation",
-      "body": "je vous informe du changement de titulaire du certificat d'immatriculation de mon véhicule.\n\nImmatriculation du véhicule : {kennzeichen}\nDate de la cession : {datum}\n\nInformations relatives au nouveau titulaire :\n{text}\n\nLa déclaration de cession a été effectuée par voie dématérialisée dans le délai réglementaire et le code de cession a été remis à l'acquéreur, afin de lui permettre de faire établir le certificat d'immatriculation à son nom.\n\nJe vous remercie de bien vouloir m'accuser réception de la présente et de me confirmer que je ne suis plus considéré comme titulaire de ce véhicule, notamment au regard des avis de contravention et de la responsabilité pécuniaire du titulaire."
-    },
-    "adress-freunde": {
-      "titel": "Nous avons déménagé !",
-      "body": "nous souhaitions vous informer de notre déménagement. Vous pouvez désormais nous joindre à l'adresse suivante :\n\n{neueAdresse}\n\nÀ compter du : {datum}\n\nNos numéros de téléphone et nos adresses électroniques restent inchangés. Nous serons très heureux de vous accueillir bientôt dans notre nouveau logement !"
-    },
-    "namens-mitteilen": {
-      "titel": "J'ai changé de nom",
-      "body": "je souhaitais vous informer d'un changement qui me concerne : je porte désormais un nouveau nom.\n\nAncien nom : {altName}\nNouveau nom : {neuName}\nÀ compter du : {datum}\n\nRien d'autre ne change et vous pouvez me joindre comme auparavant. Je vous remercie simplement d'en tenir compte dans vos carnets d'adresses et dans nos échanges à venir !"
-    },
-    "todesfall": {
-      "titel": "Faire-part de décès",
-      "body": "c'est avec une profonde tristesse que nous vous faisons part du décès de {verstorben}.\n\nDate du décès : {sterbedatum}\n\n{text}\n\nLes informations relatives à la cérémonie et au recueillement vous seront communiquées prochainement.\n\nNous vous remercions par avance d'avoir une pensée pour la personne qui nous quitte et de votre compréhension en ces moments douloureux."
-    },
-    "vollmacht": {
-      "titel": "Procuration",
-      "body": "Je soussigné(e) {name}, demeurant {absAdresse}, donne par la présente procuration à :\n\n{bevoll}\n\nà l'effet de me représenter et d'agir en mon nom dans l'affaire suivante :\n\n{zweck}\n\nPrise d'effet : {datum}\n\nLe mandataire est autorisé à accomplir tous les actes et à signer tous les documents strictement nécessaires à l'exécution de cette mission, à l'exclusion de tout autre. La présente procuration demeure valable jusqu'à sa révocation expresse de ma part.\n\nFait pour servir et valoir ce que de droit.\n\nPièces jointes : copie de ma pièce d'identité et copie de la pièce d'identité du mandataire."
-    },
-    "frei": {
-      "titel": "Courrier libre",
-      "body": "{text}"
-    }
+  "miete": {
+   "label": "Bail d'habitation (congé donné par le locataire)",
+   "form": "Lettre recommandée avec accusé de réception, acte de commissaire de justice ou remise en main propre contre récépissé ou émargement (loi n° 89-462 du 6 juillet 1989).",
+   "email": "nein",
+   "tipp": "Le congé du locataire ne peut pas être donné valablement par simple courrier électronique : la loi du 6 juillet 1989 impose la LRAR, l'acte de commissaire de justice ou la remise en main propre contre récépissé. Le préavis est en principe de trois mois pour une location vide, réduit à un mois en zone tendue, pour une location meublée et dans certains cas personnels (mutation, perte d'emploi, état de santé, bénéficiaires de certaines aides). Le délai court à compter de la réception du congé, et non de son envoi : conservez précieusement l'avis de réception."
   },
-  "nicht_anwendbar": [
-    "nachsende",
-    "kindergeld",
-    "muell",
-    "rundfunk",
-    "arbeitszeugnis",
-    "fahrzeug-anab",
-    "halterwechsel"
-  ],
-  "hinweise": [
-    "nachsende : le « Nachsendeauftrag » de la Deutsche Post n'a pas d'équivalent épistolaire en France. La réexpédition du courrier est un service payant souscrit directement auprès de La Poste (en bureau de poste ou en ligne), et non par lettre. La vorlage a été reconvertie en simple information de nouvelle adresse de distribution, utile envers un expéditeur, un gardien d'immeuble ou un syndic.",
-    "kindergeld : il n'existe pas de « Kindergeld/Elterngeld » en France. L'équivalent le plus proche regroupe les allocations familiales et les prestations versées par la CAF ou la MSA, ainsi que la PreParE (prestation partagée d'éducation de l'enfant). La lettre s'adresse donc à la CAF avec un numéro d'allocataire à la place de la Kindergeld-Nummer.",
-    "muell : la « Müllgebühr » allemande correspond en France soit à la TEOM (taxe d'enlèvement des ordures ménagères), recouvrée avec la taxe foncière et donc due par le propriétaire, souvent refacturée au locataire via les charges, soit à la REOM (redevance) dans certaines collectivités. Il n'y a donc en général aucune déclaration de déménagement à faire pour un locataire ; la lettre porte sur la restitution des bacs et badges et sur la clôture de la redevance là où elle existe.",
-    "rundfunk : la contribution à l'audiovisuel public (« redevance télé ») a été supprimée en France en 2022. Il n'existe plus d'organisme équivalent au Beitragsservice. La vorlage a été reconvertie en changement d'adresse auprès du fournisseur de services de télévision ou de l'opérateur qui met à disposition la box et le décodeur.",
-    "arbeitszeugnis : le « qualifiziertes Arbeitszeugnis » (attestation détaillée sur les performances et le comportement) n'existe pas en droit français. L'employeur doit uniquement remettre le certificat de travail (dates d'entrée et de sortie, emplois occupés), le reçu pour solde de tout compte et l'attestation destinée à France Travail. Une lettre de recommandation reste possible mais purement facultative : la lettre la sollicite donc sans en faire un droit.",
-    "fahrzeug-anab et halterwechsel : depuis la fermeture des guichets « cartes grises » des préfectures, l'immatriculation, la cession et le changement de titulaire se font exclusivement en ligne, via le téléservice national ou un professionnel habilité. Une lettre ne constitue donc pas la voie normale. Les vorlagen ont été reformulées en lettre de suivi ou de relance de dossier et en confirmation écrite de cession, la déclaration de cession devant être effectuée en ligne dans les quinze jours suivant la vente.",
-    "maengel : la « Mietminderung » (réduction unilatérale du loyer par le locataire) n'existe pas en droit français ; le locataire qui cesse de payer s'expose à une procédure. La lettre annonce donc, comme suite logique, la saisine de la commission départementale de conciliation puis du juge des contentieux de la protection.",
-    "eigenkuendigung : l'exigence allemande de forme écrite (§ 623 BGB) n'a pas d'équivalent français ; la démission n'est soumise à aucun formalisme légal. La lettre ne revendique donc aucune forme obligatoire et se concentre sur la preuve de la date et sur les documents de fin de contrat.",
-    "strom, gas, wasser : en France il n'existe pas de « transfert » (Ummeldung) d'un contrat d'énergie ou d'eau vers une nouvelle adresse. La démarche est une résiliation à l'ancienne adresse suivie d'une nouvelle souscription. Les lettres ont été rédigées en conséquence, avec relevé d'index et facture de clôture.",
-    "Chaque body n'utilise que les marqueurs figurant dans le champ `fields` de la vorlage correspondante : {von} et {bis} pour elternzeit et urlaub, {betrag} pour lastschrift, reklamation et ratenzahlung, {kennzeichen} pour kfz-vers-kuend, fahrzeug-anab et halterwechsel, {verstorben} et {sterbedatum} pour todesfall, {bevoll} et {zweck} pour vollmacht. Aucun emplacement « ____ » ne subsiste.",
-    "{name} est utilisé comme titulaire du compte dans kaution, arbeit-bank et fin-bank, et {name} ainsi que {absAdresse} identifient le mandant dans la procuration, conformément à l'usage français qui exige que le mandant soit nommément désigné dans le corps de l'acte.",
-    "Toutes les dates sont introduites par une ligne étiquetée (« Date d'effet souhaitée : {datum} ») afin que la phrase reste correcte aussi bien avec une date écrite en toutes lettres qu'avec la formule de repli « dans les meilleurs délais ».",
-    "Les références de contrat sont également placées sur une ligne étiquetée distincte, de sorte que la lettre reste lisible lorsque l'utilisateur ne renseigne pas le champ.",
-    "Typographie : espaces fines insécables avant les deux-points, points-virgules, points d'exclamation et d'interrogation, conformément à l'usage français."
-  ],
-  "unsicher": [
-    "Durée exacte du préavis de démission : elle n'est pas fixée par la loi pour la plupart des salariés mais par la convention collective, le contrat ou les usages, et varie fortement selon la branche et le statut (cadre ou non-cadre). Les modèles renvoient volontairement à ces sources sans indiquer de durée.",
-    "Congé parental d'éducation : les conditions d'ancienneté et les délais de prévenance à respecter avant la demande n'ont volontairement pas été chiffrés dans le corps de la lettre. Un avocat local devrait valider la formulation ou compléter le conseil affiché dans l'application.",
-    "Résiliation infra-annuelle des contrats d'assurance : le champ exact des contrats concernés (automobile, habitation, complémentaire santé, contrats affinitaires) et l'articulation avec la loi Chatel mériteraient une relecture par un praticien du droit des assurances, notamment pour les contrats professionnels ou les contrats collectifs.",
-    "Reconduction tacite et obligation d'information du professionnel (loi Chatel) : les conséquences précises d'un défaut d'information ont été décrites sans référence d'article. À faire confirmer, en particulier pour les salles de sport et les abonnements en ligne.",
-    "Frais de résiliation anticipée en téléphonie : le régime applicable selon que l'engagement est de douze ou vingt-quatre mois et selon l'existence d'un motif légitime devrait être vérifié avant d'être affiché comme conseil à l'utilisateur.",
-    "Restitution du dépôt de garantie : les délais d'un et deux mois ainsi que la majoration de dix pour cent par mois de retard sont décrits selon la loi du 6 juillet 1989 ; les modalités particulières applicables en copropriété (retenue provisionnelle dans l'attente de l'arrêté des comptes annuel) n'ont pas été détaillées.",
-    "Contestation d'un prélèvement SEPA : les délais de huit semaines et de treize mois sont décrits sans référence d'article. Leur articulation exacte avec les conditions de la banque devrait être confirmée.",
-    "Procuration : le modèle est une procuration sous seing privé à usage courant. De nombreux organismes (banques, notaires, La Poste, administrations) imposent leur propre formulaire, et certains actes exigent une procuration authentique. Ce point devrait être signalé à l'utilisateur dans l'interface.",
-    "Collecte des déchets : la distinction TEOM/REOM et la compétence de la commune, de l'intercommunalité ou du syndicat varient d'un territoire à l'autre ; la lettre est volontairement générique.",
-    "Immatriculation et cession de véhicule : le délai de quinze jours pour la déclaration de cession et l'obligation de passer par le téléservice sont mentionnés sans référence de texte. Une relecture est recommandée avant publication."
-  ]
+  "handy": {
+   "label": "Téléphonie mobile, internet et téléphone fixe",
+   "form": "Aucun formalisme légal strict ; la LRAR reste la référence en cas de litige. Pour les contrats souscrits par voie électronique, l'opérateur doit proposer une résiliation en ligne aussi simple que la souscription.",
+   "email": "ja",
+   "tipp": "Un courrier électronique ou le formulaire en ligne de l'opérateur suffisent en principe. Si vous avez souscrit sur internet, cherchez d'abord la fonction de résiliation en ligne : c'est la voie la plus rapide et elle laisse une trace horodatée. Vérifiez néanmoins votre période d'engagement, car des frais de résiliation anticipée peuvent rester dus, ainsi que le préavis contractuel."
+  },
+  "strom": {
+   "label": "Électricité et gaz",
+   "form": "Aucune forme imposée ; résiliation possible par courrier, courriel, téléphone ou espace client. Les contrats de fourniture d'énergie des particuliers sont sans engagement de durée.",
+   "email": "ja",
+   "tipp": "Vous pouvez résilier votre contrat d'énergie à tout moment et sans frais, un courriel ou une demande depuis votre espace client suffisent. Préparez votre numéro de point de livraison ou de comptage ainsi que le relevé d'index du compteur au jour du départ : c'est ce relevé qui détermine la facture de clôture. En cas de déménagement, il ne s'agit pas d'un transfert mais d'une résiliation à l'ancienne adresse suivie d'une nouvelle souscription à la nouvelle."
+  },
+  "streaming": {
+   "label": "Streaming et abonnements en ligne",
+   "form": "Résiliation en ligne pour les contrats souscrits par voie électronique ; à défaut, courriel ou courrier.",
+   "email": "ja",
+   "tipp": "Pour un abonnement souscrit sur internet, le professionnel doit mettre à votre disposition une fonctionnalité de résiliation en ligne accessible en quelques clics. Un courriel reste valable et vous laisse une preuve écrite. Pensez à vérifier la date de reconduction : le professionnel doit vous informer en temps utile de la possibilité de ne pas reconduire un contrat à tacite reconduction, et à défaut vous pouvez y mettre fin à tout moment."
+  },
+  "fitness": {
+   "label": "Salle de sport et abonnement sportif",
+   "form": "Selon le contrat ; LRAR conseillée. La reconduction tacite est encadrée par les dispositions du Code de la consommation issues de la loi Chatel.",
+   "email": "unsicher",
+   "tipp": "Beaucoup de salles imposent contractuellement la lettre recommandée : relisez vos conditions générales avant d'envoyer un simple courriel. Le professionnel doit vous informer, dans un délai raisonnable avant la date de reconduction, de votre faculté de ne pas reconduire l'abonnement ; s'il ne l'a pas fait, vous pouvez résilier gratuitement à tout moment à compter de la reconduction. Un motif légitime et durable (déménagement lointain, problème de santé attesté, perte d'emploi) permet en outre souvent une résiliation anticipée : joignez alors le justificatif."
+  },
+  "versicherung": {
+   "label": "Assurances",
+   "form": "Résiliation à l'échéance annuelle avec un préavis de deux mois (article L. 113-12 du Code des assurances) ; résiliation possible à tout moment après un an pour l'assurance automobile, l'assurance habitation et la complémentaire santé (loi Hamon et résiliation infra-annuelle). Lettre recommandée conseillée ; résiliation en ligne pour les contrats souscrits par voie électronique.",
+   "email": "unsicher",
+   "tipp": "Deux régimes coexistent : la résiliation à l'échéance annuelle, qui suppose de respecter un préavis de deux mois, et la résiliation à tout moment après une première année d'assurance, ouverte notamment pour l'auto, l'habitation et la complémentaire santé. Dans ce second cas, c'est généralement le nouvel assureur qui accomplit les démarches à votre place, ce qui évite toute rupture de garantie. Privilégiez la lettre recommandée avec accusé de réception et demandez systématiquement le remboursement de la prime correspondant à la période non couverte."
+  },
+  "verein": {
+   "label": "Adhésion à une association",
+   "form": "Selon les statuts de l'association ; courrier recommandé conseillé. La loi du 1er juillet 1901 garantit à tout membre le droit de se retirer à tout moment.",
+   "email": "unsicher",
+   "tipp": "La loi du 1er juillet 1901 permet à tout membre de se retirer d'une association à tout moment, après paiement des cotisations échues et de celle de l'année en cours, sauf clause statutaire plus favorable. Consultez les statuts et le règlement intérieur, qui peuvent imposer une forme ou un préavis particuliers. En pratique, une lettre recommandée adressée au président évite toute contestation sur la date de radiation."
+  },
+  "sonstiges": {
+   "label": "Autres contrats",
+   "form": "Dépend du contrat et de ses conditions générales ; la LRAR reste la solution la plus sûre.",
+   "email": "unsicher",
+   "tipp": "En l'absence de règle légale spécifique, ce sont les conditions générales du contrat qui fixent la forme et le préavis à respecter : relisez-les avant d'écrire. En cas de doute, envoyez une lettre recommandée avec accusé de réception et conservez la preuve d'envoi comme la preuve de réception. Demandez toujours une confirmation écrite de la date effective de fin de contrat."
+  }
+ },
+ "vorlagen": {
+  "miet-kuend": {
+   "titel": "Congé du locataire (résiliation du bail)",
+   "body": "je vous donne congé du logement situé {objekt}, que j'occupe en qualité de locataire, conformément aux dispositions de la loi n° 89-462 du 6 juillet 1989.\n\nDate de départ souhaitée : {datum}\n\nLe délai de préavis courra à compter de la réception de la présente lettre. Si la durée de préavis applicable à ma situation conduit à une autre date, je vous remercie de me la préciser.\n\nJe vous prie de bien vouloir m'accuser réception de ce congé et de me confirmer par écrit la date exacte de fin de bail. Je vous propose par ailleurs de convenir ensemble d'une date pour l'état des lieux de sortie et la remise des clés.\n\nJe vous remercie enfin de m'indiquer les modalités de restitution du dépôt de garantie ainsi que l'adresse à laquelle vous adresserez le décompte final."
+  },
+  "umzug": {
+   "titel": "Information de changement d'adresse",
+   "body": "je vous informe de mon prochain déménagement et vous prie de bien vouloir mettre à jour mes coordonnées dans vos dossiers.\n\nDate du déménagement : {datum}\n\nMa nouvelle adresse est la suivante :\n{neueAdresse}\n\nJe vous remercie d'adresser désormais l'ensemble de votre correspondance à cette nouvelle adresse et de me confirmer par écrit la prise en compte de ce changement."
+  },
+  "nachsende": {
+   "titel": "Nouvelle adresse de distribution de mon courrier",
+   "body": "je vous informe que mon courrier doit désormais être distribué à l'adresse suivante :\n\n{neueAdresse}\n\nDate de prise d'effet : {datum}\n\nJe vous remercie de bien vouloir tenir compte de ce changement pour tout envoi ultérieur et de m'en accuser réception. Si une mise à jour dans vos systèmes nécessite un justificatif de domicile, je vous le ferai parvenir sur simple demande."
+  },
+  "uebergabe": {
+   "titel": "État des lieux de sortie — liste de contrôle",
+   "body": "Points à vérifier avant et pendant l'état des lieux de sortie :\n\n- Relever les index des compteurs (électricité, gaz, eau) et les faire figurer sur le document\n- Restituer toutes les clés, badges, bips et télécommandes, et en faire indiquer le nombre exact\n- Rendre le logement propre, vide de tout meuble et de tout objet personnel\n- Comparer point par point avec l'état des lieux d'entrée, pièce par pièce\n- Tenir compte de la vétusté : l'usure normale ne peut pas vous être facturée\n- Reboucher proprement les trous de perçage et les fixations murales\n- Contrôler le bon fonctionnement des fenêtres, portes, volets, robinetterie et VMC\n- Faire inscrire vos réserves : ne jamais signer un document incomplet ou pré-rempli\n- Repartir avec un exemplaire signé de l'état des lieux de sortie\n- Prendre des photographies datées de chaque pièce\n- Communiquer votre RIB et votre nouvelle adresse pour la restitution du dépôt de garantie\n- Résilier ou transférer les contrats d'énergie, d'eau, d'internet et l'assurance habitation\n- Souscrire le service de réexpédition du courrier auprès de La Poste"
+  },
+  "maengel": {
+   "titel": "Signalement de désordres dans le logement",
+   "body": "je vous signale les désordres suivants, qui affectent le logement situé {objekt} et que j'occupe en qualité de locataire :\n\n{mangel}\n\nEn votre qualité de bailleur, il vous appartient de délivrer un logement décent, d'en assurer la jouissance paisible et d'y effectuer les réparations autres que celles incombant au locataire, conformément à la loi n° 89-462 du 6 juillet 1989.\n\nDélai souhaité pour la remise en état : {datum}\n\nJe vous remercie de bien vouloir m'accuser réception de la présente et de m'indiquer la date à laquelle une intervention pourra avoir lieu. Je me tiens à votre disposition pour permettre l'accès au logement à un artisan.\n\nÀ défaut d'intervention dans un délai raisonnable, je me réserve la possibilité de saisir la commission départementale de conciliation, puis, le cas échéant, le juge des contentieux de la protection."
+  },
+  "kaution": {
+   "titel": "Demande de restitution du dépôt de garantie",
+   "body": "le bail portant sur le logement situé {objekt} a pris fin et le logement vous a été restitué lors de l'état des lieux de sortie.\n\nDate de fin de bail : {datum}\n\nÀ ce jour, le dépôt de garantie ne m'a pas été restitué. Je vous rappelle qu'en application de la loi n° 89-462 du 6 juillet 1989, le dépôt de garantie doit être restitué dans un délai d'un mois à compter de la remise des clés lorsque l'état des lieux de sortie est conforme à celui d'entrée, et dans un délai de deux mois dans le cas contraire, toute retenue devant être justifiée par des pièces. À défaut de restitution dans ces délais, la somme due est majorée de dix pour cent du loyer mensuel hors charges pour chaque mois de retard commencé.\n\nJe vous prie donc de bien vouloir procéder au virement des sommes dues sur le compte suivant :\n\nTitulaire du compte : {name}\nIBAN : {iban}\n\nJe vous remercie de m'accuser réception de la présente et, en cas de retenue, de m'adresser le décompte détaillé accompagné des justificatifs correspondants."
+  },
+  "handy-kuend": {
+   "titel": "Résiliation de mon contrat de téléphonie mobile",
+   "body": "je vous informe de ma décision de résilier le contrat de téléphonie mobile souscrit auprès de vos services.\n\nRéférence du contrat : {vertragsnr}\nDate d'effet souhaitée : {datum}\n\nJe vous remercie de bien vouloir m'accuser réception de la présente et de me confirmer par écrit la date effective de la résiliation ainsi que le décompte des sommes éventuellement restant dues.\n\nSi la date indiquée ne peut être retenue en raison d'un préavis ou d'une période d'engagement en cours, je vous prie de me préciser la première date de résiliation possible ainsi que le détail et le fondement contractuel des frais qui me seraient réclamés.\n\nJe vous demande enfin de mettre fin à tout prélèvement automatique au-delà de la date de résiliation et de me restituer, le cas échéant, les sommes réglées d'avance. Je souhaite conserver mon numéro et vous précise que je ferai usage, s'il y a lieu, de la portabilité."
+  },
+  "internet-kuend": {
+   "titel": "Résiliation de mon contrat d'accès à internet",
+   "body": "je vous informe de ma décision de résilier le contrat d'accès à internet souscrit auprès de vos services.\n\nRéférence du contrat : {vertragsnr}\nDate d'effet souhaitée : {datum}\n\nJe vous remercie de bien vouloir m'accuser réception de la présente et de me confirmer par écrit la date effective de la résiliation ainsi que le décompte des sommes éventuellement restant dues.\n\nSi la date indiquée ne peut être retenue en raison d'un préavis ou d'une période d'engagement en cours, je vous prie de me préciser la première date de résiliation possible ainsi que le détail et le fondement contractuel des frais qui me seraient réclamés.\n\nJe restituerai les équipements mis à ma disposition selon les modalités que vous voudrez bien m'indiquer et vous remercie de me confirmer leur bonne réception, afin qu'aucun frais de non-restitution ne me soit facturé. Je vous demande également de cesser tout prélèvement au-delà de la date de résiliation."
+  },
+  "streaming-kuend": {
+   "titel": "Résiliation de mon abonnement",
+   "body": "je vous informe de ma décision de résilier l'abonnement souscrit auprès de vos services.\n\nRéférence du compte ou du contrat : {vertragsnr}\nDate d'effet souhaitée : {datum}\n\nJe vous remercie de bien vouloir m'accuser réception de la présente et de me confirmer par écrit la date effective de la résiliation ainsi que la date du dernier jour d'accès au service.\n\nJe vous demande de mettre fin à tout prélèvement ou débit ultérieur sur mon moyen de paiement et de supprimer les données de celui-ci de mon compte.\n\nSi le contrat a été reconduit tacitement sans que j'aie été informé en temps utile de ma faculté de ne pas le reconduire, je vous demande d'en tirer les conséquences et de me rembourser les sommes prélevées depuis la reconduction."
+  },
+  "fitness-kuend": {
+   "titel": "Résiliation de mon abonnement à la salle de sport",
+   "body": "je vous informe de ma décision de résilier l'abonnement souscrit auprès de votre établissement.\n\nRéférence du contrat ou numéro d'adhérent : {vertragsnr}\nDate d'effet souhaitée : {datum}\n\nJe vous remercie de bien vouloir m'accuser réception de la présente, de me confirmer par écrit la date effective de fin d'abonnement et de mettre fin à tout prélèvement au-delà de cette date.\n\nSi une période d'engagement est encore en cours, je vous prie de m'indiquer la première date de résiliation possible ainsi que le détail des sommes qui resteraient dues et leur fondement contractuel.\n\nJe vous rappelle enfin qu'en l'absence d'information préalable sur la possibilité de ne pas reconduire le contrat, la résiliation peut intervenir gratuitement à tout moment à compter de la date de reconduction, conformément aux dispositions du Code de la consommation relatives à la reconduction tacite."
+  },
+  "versicherung-kuend": {
+   "titel": "Résiliation de mon contrat d'assurance",
+   "body": "je vous informe de ma décision de résilier le contrat d'assurance souscrit auprès de votre compagnie.\n\nNuméro de contrat : {vertragsnr}\nDate d'effet souhaitée : {datum}\n\nCette résiliation intervient, selon le cas applicable à mon contrat, à l'échéance annuelle dans le respect du préavis de deux mois prévu à l'article L. 113-12 du Code des assurances, ou au titre de la faculté de résiliation à tout moment après une première année d'assurance, ouverte notamment pour les contrats d'assurance automobile, d'assurance habitation et de complémentaire santé.\n\nJe vous remercie de bien vouloir m'accuser réception de la présente, de me confirmer par écrit la date exacte de cessation des garanties et de me rembourser la fraction de prime correspondant à la période non couverte.\n\nJe vous demande également de mettre fin à tout prélèvement à compter de cette date."
+  },
+  "mitgliedschaft-kuend": {
+   "titel": "Démission de mon adhésion à l'association",
+   "body": "je vous informe de ma décision de mettre fin à mon adhésion à votre association.\n\nNuméro d'adhérent ou référence : {vertragsnr}\nDate d'effet souhaitée : {datum}\n\nConformément à la loi du 1er juillet 1901, tout membre d'une association peut s'en retirer à tout moment, après paiement des cotisations échues et de celle de l'année en cours, sauf disposition statutaire plus favorable.\n\nJe vous remercie de bien vouloir m'accuser réception de la présente, de me confirmer la date de ma radiation de la liste des membres et de mettre fin à tout prélèvement de cotisation.\n\nJe vous prie également de supprimer mes coordonnées de vos fichiers et listes de diffusion, sous réserve des obligations légales de conservation qui vous incombent."
+  },
+  "adress-behoerde": {
+   "titel": "Déclaration de changement d'adresse",
+   "body": "je vous informe de mon changement d'adresse et vous prie de bien vouloir mettre à jour mon dossier.\n\nMa nouvelle adresse est la suivante :\n{neueAdresse}\n\nDate de prise d'effet : {datum}\n\nJe vous remercie d'adresser désormais l'ensemble de votre correspondance à cette adresse et de me confirmer par écrit la prise en compte de ce changement. Si un justificatif de domicile vous est nécessaire, je vous le ferai parvenir sur simple demande."
+  },
+  "namensaenderung": {
+   "titel": "Déclaration de changement de nom",
+   "body": "je vous informe que mon nom a changé et vous prie de bien vouloir mettre à jour mon dossier ainsi que l'ensemble de vos documents me concernant.\n\nNom précédent : {altName}\nNouveau nom : {neuName}\nDate de prise d'effet : {datum}\n\nJe joins à la présente une copie du justificatif correspondant, acte d'état civil ou pièce d'identité mise à jour.\n\nJe vous remercie de m'adresser votre correspondance sous ce nouveau nom et de me confirmer par écrit la prise en compte de cette modification."
+  },
+  "aenderungsmitteilung": {
+   "titel": "Déclaration de changement de situation",
+   "body": "je vous informe du changement suivant, intervenu dans ma situation personnelle :\n\n{text}\n\nJe vous prie de bien vouloir en tenir compte dans mon dossier et de m'indiquer si des pièces justificatives complémentaires vous sont nécessaires ; je vous les ferai parvenir sans délai.\n\nJe vous remercie de m'accuser réception de la présente et de me confirmer, le cas échéant, les conséquences de ce changement sur mes droits ou sur mes obligations."
+  },
+  "kindergeld": {
+   "titel": "Déclaration relative à mes prestations familiales",
+   "body": "je vous informe des éléments suivants concernant mes droits aux prestations familiales.\n\nNuméro d'allocataire : {vertragsnr}\n\n{text}\n\nJe vous prie de bien vouloir prendre en compte cette déclaration dans mon dossier et de m'indiquer les pièces justificatives éventuellement nécessaires à son traitement.\n\nJe vous remercie de m'accuser réception de la présente et de me confirmer par écrit l'incidence de ce changement sur le montant et la date de versement de mes prestations."
+  },
+  "steuer-adress": {
+   "titel": "Changement d'adresse — dossier fiscal",
+   "body": "je vous informe de mon changement d'adresse et vous prie de bien vouloir mettre à jour mon dossier fiscal.\n\nNuméro fiscal : {vertragsnr}\nNouvelle adresse :\n{neueAdresse}\nDate de prise d'effet : {datum}\n\nJe vous remercie d'adresser désormais l'ensemble de ma correspondance fiscale, y compris les avis d'imposition, à cette nouvelle adresse.\n\nJe vous prie de bien vouloir m'accuser réception de la présente et de me confirmer la prise en compte de ce changement, ainsi que de m'indiquer, le cas échéant, les déclarations complémentaires attendues au titre de mon ancien et de mon nouveau logement."
+  },
+  "eigenkuendigung": {
+   "titel": "Lettre de démission",
+   "body": "par la présente, je vous informe de ma décision de démissionner des fonctions que j'occupe au sein de votre entreprise. Cette décision est libre, réfléchie et non équivoque.\n\nDate de fin de contrat souhaitée : {datum}\n\nJe respecterai le préavis applicable en vertu de mon contrat de travail, de la convention collective ou des usages en vigueur. Si vous souhaitez m'en dispenser, en tout ou partie, je vous remercie de me le confirmer par écrit.\n\nJe vous prie de bien vouloir m'accuser réception de la présente et de me confirmer la date effective de sortie des effectifs.\n\nJe vous remercie enfin de bien vouloir préparer, pour mon dernier jour de travail, le certificat de travail, le reçu pour solde de tout compte et l'attestation destinée à France Travail, et de m'indiquer le solde de mes congés payés ainsi que les modalités relatives à mon épargne salariale et à la portabilité de mes garanties de prévoyance et de complémentaire santé."
+  },
+  "arbeit-bank": {
+   "titel": "Changement de mes coordonnées bancaires pour le versement du salaire",
+   "body": "je vous informe que mes coordonnées bancaires ont changé et vous prie de bien vouloir verser ma rémunération sur le compte suivant :\n\nTitulaire du compte : {name}\nIBAN : {iban}\nDate de prise d'effet : {datum}\n\nVous trouverez ci-joint un relevé d'identité bancaire correspondant à ce compte.\n\nJe vous remercie de bien vouloir m'accuser réception de la présente et de me confirmer que ce changement sera pris en compte dès la prochaine échéance de paie."
+  },
+  "elternzeit": {
+   "titel": "Demande de congé parental d'éducation",
+   "body": "par la présente, je sollicite le bénéfice d'un congé parental d'éducation.\n\nDébut souhaité : {von}\nFin souhaitée : {bis}\nForme souhaitée : congé total ou activité à temps partiel (à préciser d'un commun accord)\n\nJe vous adresse cette demande en respectant le délai de prévenance applicable à ma situation et me tiens à votre disposition pour vous transmettre les justificatifs nécessaires, notamment l'acte de naissance de l'enfant.\n\nJe vous prie de bien vouloir m'accuser réception de la présente et de me confirmer par écrit votre accord ainsi que les modalités pratiques de mon départ et de mon retour dans l'entreprise."
+  },
+  "urlaub": {
+   "titel": "Demande de congés payés",
+   "body": "par la présente, je sollicite l'autorisation de prendre des congés payés.\n\nDébut souhaité : {von}\nFin souhaitée : {bis}\n\nJe vous remercie de bien vouloir me confirmer votre accord par écrit et reste à votre disposition pour organiser la continuité de mon activité pendant cette absence ainsi que la transmission des dossiers en cours.\n\nSi ces dates ne devaient pas être compatibles avec les nécessités du service, je vous remercie de me proposer une autre période."
+  },
+  "arbeitszeugnis": {
+   "titel": "Demande de certificat de travail et de documents de fin de contrat",
+   "body": "mon contrat de travail au sein de votre entreprise a pris fin.\n\nDate de fin de contrat : {datum}\n\nÀ ce jour, je n'ai pas reçu l'ensemble des documents devant m'être remis à l'issue de la relation de travail. Je vous prie donc de bien vouloir me délivrer :\n\n- le certificat de travail ;\n- le reçu pour solde de tout compte ;\n- l'attestation destinée à France Travail ;\n- le cas échéant, les informations relatives à mon épargne salariale et à la portabilité de mes garanties de prévoyance et de complémentaire santé.\n\nJe vous remercie de me les faire parvenir à l'adresse figurant en tête de la présente ou de m'indiquer le lieu et les horaires auxquels je peux venir les retirer.\n\nJe me permets par ailleurs de solliciter, si vous l'estimez possible, une lettre de recommandation portant sur les missions que j'ai exercées ; je sais qu'il s'agit d'une démarche purement facultative de votre part."
+  },
+  "fin-bank": {
+   "titel": "Changement de mes coordonnées bancaires",
+   "body": "je vous informe de mes nouvelles coordonnées bancaires et vous prie de bien vouloir prélever les sommes dues sur le compte suivant :\n\nRéférence client ou contrat : {vertragsnr}\nTitulaire du compte : {name}\nIBAN : {iban}\nDate de prise d'effet : {datum}\n\nVous trouverez ci-joint un relevé d'identité bancaire correspondant à ce compte ainsi que, le cas échéant, le mandat de prélèvement SEPA dûment signé.\n\nJe vous remercie de bien vouloir m'accuser réception de la présente, de me confirmer la prise en compte de ce changement et de veiller à ce qu'aucun prélèvement ne soit plus présenté sur mon ancien compte."
+  },
+  "lastschrift": {
+   "titel": "Révocation d'un mandat de prélèvement SEPA",
+   "body": "par la présente, je révoque le mandat de prélèvement SEPA que je vous avais consenti.\n\nRéférence client ou contrat : {vertragsnr}\nMontant concerné : {betrag}\nDate du prélèvement concerné : {datum}\n\nJe vous prie de ne plus émettre aucun prélèvement sur mon compte à compter de la réception de la présente et de m'en accuser réception par écrit. J'informe parallèlement mon établissement bancaire de cette révocation.\n\nJe précise que cette révocation porte sur l'autorisation de prélèvement et ne vaut pas, à elle seule, résiliation du contrat qui nous lie. Je vous remercie de m'indiquer les autres moyens de paiement que vous acceptez pour le règlement des sommes qui resteraient dues."
+  },
+  "reklamation": {
+   "titel": "Contestation d'un prélèvement",
+   "body": "je constate sur mon compte une opération que je conteste.\n\nDate du prélèvement : {datum}\nMontant contesté : {betrag}\n\nMotif de la contestation :\n{text}\n\nJe vous prie de bien vouloir procéder à la vérification de cette opération et de me rembourser la somme correspondante dans les meilleurs délais.\n\nJe vous rappelle que, s'agissant d'un prélèvement SEPA autorisé, le remboursement peut être demandé auprès de ma banque dans un délai de huit semaines à compter de la date de débit, et dans un délai de treize mois lorsque l'opération n'a pas été valablement autorisée. Je me réserve la possibilité de faire usage de cette faculté.\n\nJe vous remercie de m'accuser réception de la présente et de m'informer par écrit des suites qui y seront données."
+  },
+  "ratenzahlung": {
+   "titel": "Demande de délais de paiement",
+   "body": "je me permets de solliciter un échelonnement du règlement de la somme restant due.\n\nRéférence de la facture ou du dossier : {vertragsnr}\nMontant restant dû : {betrag}\n\n{text}\n\nMa situation financière actuelle ne me permet pas de m'acquitter de cette somme en une seule fois. Je m'engage en revanche à respecter scrupuleusement l'échéancier qui sera convenu entre nous et à vous informer sans délai de toute évolution de ma situation.\n\nJe vous remercie de bien vouloir examiner ma demande avec bienveillance, de suspendre toute mesure de recouvrement pendant son examen et de me confirmer votre accord par écrit."
+  },
+  "strom": {
+   "titel": "Déménagement — clôture et souscription de mon contrat d'électricité",
+   "body": "je vous informe de mon déménagement et vous prie de procéder à la clôture de mon contrat d'électricité pour le logement que je quitte.\n\nRéférence client ou point de livraison : {vertragsnr}\nDate du déménagement : {datum}\nNouvelle adresse :\n{neueAdresse}\n\nJe souhaite par ailleurs souscrire un contrat de fourniture pour ma nouvelle adresse à compter de cette même date, afin d'éviter toute interruption de service.\n\nJe vous remercie de m'indiquer les éléments nécessaires à ces deux opérations, notamment le relevé d'index à effectuer le jour du départ et la référence du compteur de mon nouveau logement, ainsi que les modalités d'établissement de la facture de clôture.\n\nJe vous prie de bien vouloir m'accuser réception de la présente et de me confirmer par écrit ces deux démarches."
+  },
+  "gas": {
+   "titel": "Déménagement — clôture et souscription de mon contrat de gaz",
+   "body": "je vous informe de mon déménagement et vous prie de procéder à la clôture de mon contrat de fourniture de gaz naturel pour le logement que je quitte.\n\nRéférence client ou point de comptage : {vertragsnr}\nDate du déménagement : {datum}\nNouvelle adresse :\n{neueAdresse}\n\nJe souhaite par ailleurs souscrire un contrat de fourniture pour ma nouvelle adresse à compter de cette même date, sous réserve que ce logement soit raccordé au réseau de gaz naturel.\n\nJe vous remercie de m'indiquer les éléments nécessaires à ces deux opérations, notamment le relevé d'index à effectuer le jour du départ et la référence du compteur de mon nouveau logement, ainsi que les modalités d'établissement de la facture de clôture.\n\nJe vous prie de bien vouloir m'accuser réception de la présente et de me confirmer par écrit ces deux démarches."
+  },
+  "wasser": {
+   "titel": "Déménagement — contrat de distribution d'eau",
+   "body": "je vous informe de mon déménagement et vous prie de procéder à la clôture de mon abonnement au service de distribution d'eau pour le logement que je quitte.\n\nRéférence client ou numéro de compteur : {vertragsnr}\nDate du déménagement : {datum}\nNouvelle adresse :\n{neueAdresse}\n\nJe vous remercie de m'indiquer la date à laquelle le relevé de compteur sera effectué ou, si le relevé est à ma charge, la manière de vous transmettre l'index de départ, ainsi que les modalités d'établissement de la facture de clôture.\n\nSi ma nouvelle adresse est desservie par vos services, je vous prie de bien vouloir procéder à la souscription d'un nouvel abonnement à compter de la même date ; dans le cas contraire, je vous remercie de m'indiquer l'exploitant compétent pour cette commune.\n\nJe vous prie de bien vouloir m'accuser réception de la présente."
+  },
+  "muell": {
+   "titel": "Déménagement — collecte des déchets ménagers",
+   "body": "je vous informe de mon déménagement et vous prie de bien vouloir mettre à jour mon dossier relatif à la collecte des déchets ménagers.\n\nRéférence du dossier : {vertragsnr}\nDate du déménagement : {datum}\nNouvelle adresse :\n{neueAdresse}\n\nJe vous remercie de m'indiquer les modalités applicables à mon départ : reprise ou restitution des bacs et des badges d'accès à la déchèterie, clôture de la redevance d'enlèvement des ordures ménagères si celle-ci est en vigueur dans votre collectivité, et régularisation éventuelle des sommes dues au prorata.\n\nJe vous prie de bien vouloir m'accuser réception de la présente et de me confirmer par écrit la prise en compte de ce changement, ainsi que, si ma nouvelle adresse relève de votre territoire, l'ouverture d'un dossier à cette adresse."
+  },
+  "rundfunk": {
+   "titel": "Changement d'adresse — abonnement aux services de télévision",
+   "body": "je vous informe de mon déménagement et vous prie de bien vouloir mettre à jour l'adresse rattachée à mon abonnement aux services de télévision.\n\nRéférence client : {vertragsnr}\nDate du déménagement : {datum}\nNouvelle adresse :\n{neueAdresse}\n\nJe vous remercie de m'indiquer les modalités de transfert de l'abonnement et des équipements mis à ma disposition, ainsi que, le cas échéant, les démarches à effectuer si le service ne peut pas être fourni à ma nouvelle adresse.\n\nJe vous prie de bien vouloir m'accuser réception de la présente et de me confirmer par écrit la prise en compte de ce changement, en veillant à ce qu'aucune facturation ne se poursuive au titre de l'ancienne adresse."
+  },
+  "kfz-vers-kuend": {
+   "titel": "Résiliation de mon contrat d'assurance automobile",
+   "body": "je vous informe de ma décision de résilier le contrat d'assurance automobile souscrit auprès de votre compagnie.\n\nNuméro de contrat : {vertragsnr}\nImmatriculation du véhicule assuré : {kennzeichen}\nDate d'effet souhaitée : {datum}\n\nCette résiliation intervient, selon le cas applicable à mon contrat, à l'échéance annuelle dans le respect du préavis de deux mois prévu à l'article L. 113-12 du Code des assurances, ou au titre de la faculté de résiliation à tout moment après une première année d'assurance.\n\nJe vous remercie de bien vouloir m'accuser réception de la présente, de me confirmer par écrit la date exacte de cessation des garanties et de me rembourser la fraction de prime correspondant à la période non couverte.\n\nJe vous prie également de m'adresser mon relevé d'information, nécessaire à la souscription d'un nouveau contrat, et de mettre fin à tout prélèvement à compter de la date de résiliation."
+  },
+  "fahrzeug-anab": {
+   "titel": "Démarche relative au certificat d'immatriculation de mon véhicule",
+   "body": "je me permets de vous saisir au sujet d'une démarche relative au certificat d'immatriculation de mon véhicule.\n\nImmatriculation du véhicule : {kennzeichen}\nDate souhaitée : {datum}\n\nObjet de ma demande :\n{text}\n\nMa démarche a été engagée par voie dématérialisée, les demandes d'immatriculation ne pouvant plus être déposées au guichet. Je vous remercie de bien vouloir m'indiquer l'état d'avancement de mon dossier ainsi que les pièces justificatives qui resteraient nécessaires à son instruction.\n\nJe vous prie de bien vouloir m'accuser réception de la présente et reste à votre disposition pour tout complément d'information."
+  },
+  "halterwechsel": {
+   "titel": "Changement de titulaire du certificat d'immatriculation",
+   "body": "je vous informe du changement de titulaire du certificat d'immatriculation de mon véhicule.\n\nImmatriculation du véhicule : {kennzeichen}\nDate de la cession : {datum}\n\nInformations relatives au nouveau titulaire :\n{text}\n\nLa déclaration de cession a été effectuée par voie dématérialisée dans le délai réglementaire et le code de cession a été remis à l'acquéreur, afin de lui permettre de faire établir le certificat d'immatriculation à son nom.\n\nJe vous remercie de bien vouloir m'accuser réception de la présente et de me confirmer que je ne suis plus considéré comme titulaire de ce véhicule, notamment au regard des avis de contravention et de la responsabilité pécuniaire du titulaire."
+  },
+  "adress-freunde": {
+   "titel": "Nous avons déménagé !",
+   "body": "nous souhaitions vous informer de notre déménagement. Vous pouvez désormais nous joindre à l'adresse suivante :\n\n{neueAdresse}\n\nÀ compter du : {datum}\n\nNos numéros de téléphone et nos adresses électroniques restent inchangés. Nous serons très heureux de vous accueillir bientôt dans notre nouveau logement !"
+  },
+  "namens-mitteilen": {
+   "titel": "J'ai changé de nom",
+   "body": "je souhaitais vous informer d'un changement qui me concerne : je porte désormais un nouveau nom.\n\nAncien nom : {altName}\nNouveau nom : {neuName}\nÀ compter du : {datum}\n\nRien d'autre ne change et vous pouvez me joindre comme auparavant. Je vous remercie simplement d'en tenir compte dans vos carnets d'adresses et dans nos échanges à venir !"
+  },
+  "todesfall": {
+   "titel": "Faire-part de décès",
+   "body": "c'est avec une profonde tristesse que nous vous faisons part du décès de {verstorben}.\n\nDate du décès : {sterbedatum}\n\n{text}\n\nLes informations relatives à la cérémonie et au recueillement vous seront communiquées prochainement.\n\nNous vous remercions par avance d'avoir une pensée pour la personne qui nous quitte et de votre compréhension en ces moments douloureux."
+  },
+  "vollmacht": {
+   "titel": "Procuration",
+   "body": "Je soussigné(e) {name}, demeurant {absAdresse}, donne par la présente procuration à :\n\n{bevoll}\n\nà l'effet de me représenter et d'agir en mon nom dans l'affaire suivante :\n\n{zweck}\n\nPrise d'effet : {datum}\n\nLe mandataire est autorisé à accomplir tous les actes et à signer tous les documents strictement nécessaires à l'exécution de cette mission, à l'exclusion de tout autre. La présente procuration demeure valable jusqu'à sa révocation expresse de ma part.\n\nFait pour servir et valoir ce que de droit.\n\nPièces jointes : copie de ma pièce d'identité et copie de la pièce d'identité du mandataire."
+  },
+  "frei": {
+   "titel": "Courrier libre",
+   "body": "{text}"
+  }
+ }
 }

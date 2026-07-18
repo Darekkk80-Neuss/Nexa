@@ -3,7 +3,7 @@
    (kein „hängengebliebenes" altes HTML), offline greift der Cache.
    Nur GET-Anfragen der eigenen Origin werden abgefangen – Supabase, OpenAI,
    Google Fonts usw. laufen immer direkt durch. */
-const CACHE = 'effyra-v9';
+const CACHE = 'effyra-v10';
 const SHELL = ['./', './index.html', './manifest.webmanifest', './icon.svg', './bg.jpg',
   './impressum.html', './datenschutz.html', './nutzungsbedingungen.html', './konto-loeschen.html',
   './fonts/effyra-fonts.css', './vendor/supabase.min.js',

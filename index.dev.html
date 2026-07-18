@@ -7792,7 +7792,15 @@ function dgResultHTML() {
   h += '<button class="btn btn-primary btn-sm" data-dg="print">🖨️ PDF / Drucken</button>';
   h += '<button class="btn btn-sm" data-dg="copy">📋 Kopieren</button>';
   h += '<button class="btn btn-sm" data-dg="mail">✉️ Als E-Mail</button>';
-  if (t.deadline && dgValues.datum) h += '<span class="btn btn-sm" style="cursor:default;opacity:.8" title="Automatisch in Aufgaben & Kalender übernommen" data-noi18n>⏰ Frist gemerkt</span>';
+  /* data-noi18n schließt den Sweep aus – Text und Tooltip daher direkt lokalisieren. */
+  if (t.deadline && dgValues.datum) h += '<span class="btn btn-sm" style="cursor:default;opacity:.8" title="' + esc(pickLang({
+    de: 'Automatisch in Aufgaben & Kalender übernommen', en: 'Added to tasks & calendar automatically',
+    fr: 'Ajouté automatiquement aux tâches et au calendrier', es: 'Añadido automáticamente a tareas y calendario',
+    it: 'Aggiunto automaticamente ad attività e calendario', pl: 'Automatycznie dodano do zadań i kalendarza'
+  })) + '" data-noi18n>' + esc(pickLang({
+    de: '⏰ Frist gemerkt', en: '⏰ Deadline saved', fr: '⏰ Échéance enregistrée',
+    es: '⏰ Plazo guardado', it: '⏰ Scadenza salvata', pl: '⏰ Termin zapisany'
+  })) + '</span>';
   if (t.type !== 'checklist') h += '<button class="btn btn-sm" data-dg="ai">✨ Mit KI verbessern</button>';
   h += '</div><div id="dgLetter">' + letterHTML(t, dgValues, store.profile) + '</div>';
   if (kuendActive(t)) h += kuendVersandHTML(t);   // Zustellung & Nachweis (Einschreiben/E-Mail speichern; nur DE)
