@@ -1,0 +1,262 @@
+{
+  "land": "INT",
+  "sprache": "en",
+  "formen": {
+    "arbeit": {
+      "label": "Employment contract",
+      "form": "Signed written notice is the safest option; some employers accept email — check your contract",
+      "email": "unsicher",
+      "tipp": "Employment law differs considerably from country to country, and some jurisdictions require a handwritten signature on paper for a resignation to be valid. Check your employment contract and any staff handbook first, and if in doubt send a signed letter by recorded or registered post and keep proof of delivery. A short email confirming that the signed letter is on its way is a useful backup, not a replacement."
+    },
+    "miete": {
+      "label": "Home / tenancy agreement",
+      "form": "Signed written notice is normally expected; email alone is often not sufficient — check your tenancy agreement",
+      "email": "unsicher",
+      "tipp": "Tenancy law is strongly national and often protective of tenants, including strict rules on how notice must be given. Read the notice clause in your tenancy agreement and check the rules that apply where the property is located. In practice a signed letter sent by recorded or registered post, with a copy kept for your records, is the safest route."
+    },
+    "handy": {
+      "label": "Mobile / internet / phone",
+      "form": "Written notice; many providers also accept email or an online cancellation function — check your contract",
+      "email": "unsicher",
+      "tipp": "Most telecoms providers set out an accepted cancellation channel in their terms and conditions, and many now offer an online cancellation option or a dedicated cancellation address. Follow the channel named in your contract, and keep the confirmation email, reference number or screenshot as proof. If no channel is named, send written notice and ask for written confirmation of the end date."
+    },
+    "strom": {
+      "label": "Electricity / gas",
+      "form": "Written notice; many suppliers also accept email or an online account request — check your contract",
+      "email": "unsicher",
+      "tipp": "Energy suppliers usually describe the cancellation or switching procedure in their terms and conditions, and in many markets a switch is handled by the new supplier on your behalf. Check your contract and your local rules before sending anything, and note that supply contracts often have a separate deregistration step when you move. Always record your final meter readings and keep written confirmation."
+    },
+    "streaming": {
+      "label": "Streaming / subscription",
+      "form": "Written notice; most providers also accept cancellation in the account settings or by email — check your contract",
+      "email": "unsicher",
+      "tipp": "Subscriptions taken out online can usually be cancelled online, and that is generally the quickest and best-documented route. Check the terms you accepted at sign-up for the cancellation method and any minimum term. Take a screenshot of the confirmation and check your next statement to make sure billing has actually stopped."
+    },
+    "fitness": {
+      "label": "Gym / fitness membership",
+      "form": "Written notice; some operators also accept email — check your membership agreement",
+      "email": "unsicher",
+      "tipp": "Gym memberships often combine a minimum term with an automatic renewal clause, so the cancellation deadline matters as much as the method. Read your membership agreement carefully and send your notice well before the renewal date. If the agreement does not clearly permit email, send a signed letter by recorded or registered post and keep proof."
+    },
+    "versicherung": {
+      "label": "Insurance",
+      "form": "Written notice; requirements vary between insurers and jurisdictions — check your policy documents",
+      "email": "unsicher",
+      "tipp": "Insurance policies frequently set out their own notice requirements, including the permitted method and any cooling-off or renewal windows. Read your policy documents and any renewal notice before cancelling, and make sure you have replacement cover in place where cover is legally required. If the permitted method is unclear, written notice sent by recorded or registered post is the safer choice."
+    },
+    "verein": {
+      "label": "Club / association membership",
+      "form": "As set out in the club's rules, statutes or constitution",
+      "email": "unsicher",
+      "tipp": "Clubs and associations are usually governed by their own statutes or rules, which may specify who must receive the notice, in what form and by what date. Ask for a copy of the rules if you do not have one, and address your notice to the person or office named there. If nothing is specified, send written notice and request written acknowledgement."
+    },
+    "sonstiges": {
+      "label": "Other contract",
+      "form": "Depends on the contract; written notice is the safest default — check your terms and conditions",
+      "email": "unsicher",
+      "tipp": "Where the contract type is not covered above, the terms and conditions you agreed to are the first place to look, followed by the consumer rules that apply where you live. If the contract is silent or ambiguous, send written notice and ask for written confirmation of receipt and of the end date. Keeping proof of delivery costs little and settles most later disputes."
+    }
+  },
+  "vorlagen": {
+    "miet-kuend": {
+      "titel": "Ending a tenancy agreement",
+      "body": "I am writing to give notice to end the tenancy for the property at {objekt}, in accordance with the notice period stated in my tenancy agreement.\n\nRequested end of tenancy: {datum}\n\nIf notice to that date is not possible, I ask you to end the tenancy at the earliest date permitted under the agreement and to let me know that date.\n\nPlease confirm receipt of this notice and the end date of the tenancy in writing. I would also like to arrange a joint handover inspection of the property, and I ask you to let me know how and when the deposit will be returned."
+    },
+    "umzug": {
+      "titel": "Notifying a change of address",
+      "body": "I am writing to let you know that I am moving. Please update my address in your records accordingly.\n\nMy new address:\n{neueAdresse}\n\nEffective from: {datum}\n\nPlease send all future correspondence to the new address and confirm that the change has been made."
+    },
+    "nachsende": {
+      "titel": "Redirecting my mail to a new address",
+      "body": "I am writing to inform you that my post should be delivered to the following address:\n\n{neueAdresse}\n\nEffective from: {datum}\n\nPlease update your delivery records accordingly and confirm receipt of this request. If a separate form, identification or fee is required to set up a mail redirection, please let me know what you need from me."
+    },
+    "uebergabe": {
+      "titel": "Property handover checklist",
+      "body": "Checklist for handing back a rented property:\n\n- Record all meter readings (electricity, gas, water) and photograph them\n- Hand over every key and record how many of each type were returned\n- Leave the property clean and clear of your belongings\n- Check walls, ceilings and floors for damage\n- Fill and make good any drill holes, where your agreement requires it\n- Check that windows, doors and fittings work properly\n- Complete and sign a joint handover record with the landlord or agent\n- Provide bank details for the return of the deposit\n- Take dated photographs of the condition of every room\n- Arrange redirection of your post to your new address\n- Confirm the final billing date with your utility providers"
+    },
+    "maengel": {
+      "titel": "Reporting a defect to the landlord",
+      "body": "I am writing to report the following defect at the property {objekt}:\n\n{mangel}\n\nRequested date for the repair to be completed: {datum}\n\nI ask you to arrange for the defect to be put right by that date. Please contact me to agree a suitable appointment for access if this is needed. If the defect is not remedied, I reserve the right to take such further steps as are available to me under my tenancy agreement and the law that applies where the property is located.\n\nPlease confirm receipt of this notice in writing."
+    },
+    "kaution": {
+      "titel": "Requesting the return of a tenancy deposit",
+      "body": "I am writing regarding the tenancy for the property at {objekt}, which has now ended. The property was handed back in accordance with the agreement.\n\nEnd of tenancy: {datum}\n\nI ask you to return the deposit in full, together with any interest due, to the following account:\n\nAccount holder: {name}\nIBAN / account number: {iban}\n\nIf you intend to make any deduction from the deposit, please provide an itemised statement setting out the amount and the reason for each deduction, together with supporting evidence. Please also confirm receipt of this letter."
+    },
+    "handy-kuend": {
+      "titel": "Cancelling a mobile phone contract",
+      "body": "I am writing to give notice to cancel my mobile phone contract, in accordance with the notice period stated in my contract.\n\nContract / customer reference: {vertragsnr}\nRequested end date: {datum}\n\nIf cancellation to that date is not possible, please treat this as notice for the earliest date permitted under the contract and let me know that date.\n\nPlease confirm the cancellation and the exact end date in writing, and confirm that no further payments will be collected after that date. If my number is eligible to be transferred to another provider, please also send me the details I need for the transfer."
+    },
+    "internet-kuend": {
+      "titel": "Cancelling an internet or broadband contract",
+      "body": "I am writing to give notice to cancel my internet or broadband contract, in accordance with the notice period stated in my contract.\n\nContract / customer reference: {vertragsnr}\nRequested end date: {datum}\n\nIf cancellation to that date is not possible, please treat this as notice for the earliest date permitted under the contract and let me know that date.\n\nPlease confirm the cancellation and the exact end date in writing, and confirm that no further payments will be collected after that date. Please also let me know how and by when any equipment belonging to you should be returned."
+    },
+    "streaming-kuend": {
+      "titel": "Cancelling a streaming subscription",
+      "body": "I am writing to give notice to cancel my streaming subscription, in accordance with the notice period stated in my contract.\n\nContract / customer reference: {vertragsnr}\nRequested end date: {datum}\n\nIf cancellation to that date is not possible, please treat this as notice for the earliest date permitted under the contract and let me know that date.\n\nPlease confirm the cancellation and the exact end date in writing, and confirm that no further payments will be collected from my account after that date."
+    },
+    "fitness-kuend": {
+      "titel": "Cancelling a gym membership",
+      "body": "I am writing to give notice to cancel my gym membership, in accordance with the notice period stated in my membership agreement.\n\nMembership / customer reference: {vertragsnr}\nRequested end date: {datum}\n\nIf cancellation to that date is not possible, please treat this as notice for the earliest date permitted under the agreement and let me know that date.\n\nPlease confirm the cancellation and the exact end date in writing, confirm that the membership will not renew automatically, and confirm that no further payments will be collected after that date."
+    },
+    "versicherung-kuend": {
+      "titel": "Cancelling an insurance policy",
+      "body": "I am writing to give notice to cancel the insurance policy referred to above, in accordance with the notice period stated in my policy documents.\n\nPolicy number: {vertragsnr}\nRequested end date: {datum}\n\nIf cancellation to that date is not possible, please treat this as notice for the earliest date permitted under the policy and let me know that date.\n\nPlease confirm the cancellation and the exact date on which cover ends in writing, confirm that no further premiums will be collected after that date, and let me know whether any premium already paid will be refunded."
+    },
+    "mitgliedschaft-kuend": {
+      "titel": "Ending a membership",
+      "body": "I am writing to give notice to end my membership, in accordance with the notice period set out in the membership terms or the organisation's rules.\n\nMembership number: {vertragsnr}\nRequested end date: {datum}\n\nIf cancellation to that date is not possible, please treat this as notice for the earliest date permitted and let me know that date.\n\nPlease confirm the end of my membership in writing, and confirm that no further contributions or fees will be collected after that date."
+    },
+    "adress-behoerde": {
+      "titel": "Notifying an authority of a new address",
+      "body": "I am writing to notify you of my new address. Please update my records accordingly.\n\nMy new address:\n{neueAdresse}\n\nEffective from: {datum}\n\nPlease send all future correspondence to this address and confirm the change in writing. If you require a separate form, proof of address or identification in order to process this change, please let me know what is needed."
+    },
+    "namensaenderung": {
+      "titel": "Notifying a change of name",
+      "body": "I am writing to inform you that my name has changed.\n\nPrevious name: {altName}\nNew name: {neuName}\nEffective from: {datum}\n\nPlease update your records accordingly and confirm the change in writing. If you require documentary evidence of the change of name, please let me know which document you need and I will provide a copy."
+    },
+    "aenderungsmitteilung": {
+      "titel": "Notifying an authority of a change in circumstances",
+      "body": "I am writing to notify you of the following change in my personal circumstances:\n\n{text}\n\nPlease update your records accordingly and take this change into account in any ongoing matter or claim. If any further information, form or supporting document is required, please let me know.\n\nPlease confirm receipt of this notification."
+    },
+    "kindergeld": {
+      "titel": "Notifying a change relating to child benefit or family payments",
+      "body": "I am writing in connection with my entitlement to child benefit or family-related payments to notify you of the following:\n\n{text}\n\nReference number: {vertragsnr}\n\nPlease take this information into account when assessing my entitlement and update your records accordingly. If any further information or supporting evidence is required, please let me know what you need and by when.\n\nPlease confirm receipt of this notification."
+    },
+    "steuer-adress": {
+      "titel": "Notifying the tax authority of a new address",
+      "body": "I am writing to notify you of my new address for tax purposes. Please update my records accordingly.\n\nMy new address:\n{neueAdresse}\n\nTax reference number: {vertragsnr}\nEffective from: {datum}\n\nPlease send all future correspondence, assessments and notices to this address and confirm the change in writing. If this change needs to be submitted through a particular form or online service, please let me know."
+    },
+    "eigenkuendigung": {
+      "titel": "Resignation letter",
+      "body": "I am writing to give notice to terminate my employment, in accordance with the notice period stated in my contract of employment.\n\nRequested last day of employment: {datum}\n\nIf my notice period means that a different date applies, please treat this as notice for the earliest date permitted under my contract and confirm that date to me.\n\nPlease confirm receipt of this letter and my final working day in writing. I would also be grateful for a written reference covering my role and performance, together with a statement of any outstanding holiday entitlement and final pay. I will of course do what I can to ensure a smooth handover of my work."
+    },
+    "arbeit-bank": {
+      "titel": "Changing bank details for salary payments",
+      "body": "I am writing to let you know that my bank details for salary payments have changed. Please pay my salary into the following account:\n\nAccount holder: {name}\nIBAN / account number: {iban}\n\nEffective from: {datum}\n\nPlease confirm the change in writing before the next payroll run. If you require this instruction on a particular form or through the employee self-service system, please let me know."
+    },
+    "elternzeit": {
+      "titel": "Requesting parental leave",
+      "body": "I am writing to request parental leave for the period set out below.\n\nStart of leave: {von}\nEnd of leave: {bis}\n\nI am happy to discuss the details with you, including how my duties can best be covered during my absence and any part-time or phased return arrangements.\n\nPlease confirm the leave in writing, together with any conditions, notice requirements or supporting documents that apply under my contract and under the rules in force where I am employed."
+    },
+    "urlaub": {
+      "titel": "Requesting annual leave",
+      "body": "I am writing to request annual leave for the period set out below.\n\nFrom: {von}\nTo: {bis}\n\nI will make sure my current work is handed over before I go. Please let me know if a different period would fit better with the team's planning.\n\nPlease confirm the leave. Thank you."
+    },
+    "arbeitszeugnis": {
+      "titel": "Requesting a written employment reference",
+      "body": "My employment with you has now ended.\n\nLast day of employment: {datum}\n\nI would be grateful if you could provide me with a written reference covering my role, my responsibilities and my performance and conduct during my time with the company.\n\nPlease send the reference to the address given above, or by email if that is more convenient. If your policy is to provide references only in a standard format or only on request from a future employer, please let me know so that I can pass on the correct contact details. Thank you."
+    },
+    "fin-bank": {
+      "titel": "Changing bank details",
+      "body": "I am writing to notify you of my new bank details. Please collect any amounts due from the following account:\n\nAccount holder: {name}\nIBAN / account number: {iban}\nCustomer reference: {vertragsnr}\n\nEffective from: {datum}\n\nPlease confirm the change in writing and confirm that no further amounts will be taken from my previous account. If a new direct debit mandate or authorisation form is required, please send it to me."
+    },
+    "lastschrift": {
+      "titel": "Cancelling a direct debit authorisation",
+      "body": "I am writing to cancel the direct debit mandate or recurring payment authorisation you hold for my account.\n\nCustomer reference: {vertragsnr}\nAmount concerned: {betrag}\nDate from which the cancellation applies: {datum}\n\nPlease do not collect any further payments from my account from that date and confirm the cancellation in writing.\n\nIf any amount is still genuinely due under our contract, please send me an invoice setting out what is owed and why, and I will arrange payment separately. Please note that cancelling this authorisation does not by itself terminate the underlying contract."
+    },
+    "reklamation": {
+      "titel": "Disputing a payment taken from my account",
+      "body": "A payment has been taken from my account which I do not agree with, and I am writing to dispute it.\n\nAmount: {betrag}\nDate of the payment: {datum}\n\nThe reason for my objection is as follows:\n\n{text}\n\nI ask you to review the transaction and to refund the amount to my account. Please also confirm what, if anything, you need from me in order to complete the review, and let me know how long it will take.\n\nPlease confirm receipt of this complaint. If you are unable to resolve it, please let me know how I can escalate it and which complaints body or ombudsman scheme covers your service."
+    },
+    "ratenzahlung": {
+      "titel": "Requesting to pay in instalments",
+      "body": "I am writing about the outstanding balance on my account to ask whether it would be possible to pay in instalments.\n\nInvoice / customer reference: {vertragsnr}\nOutstanding amount: {betrag}\n\n{text}\n\nMy current financial circumstances mean that I am not able to settle the full amount in a single payment, but I do want to clear the balance and I am able to make regular payments towards it.\n\nI would be grateful if you would agree to an instalment arrangement and confirm it in writing, including the amount and due date of each instalment. Please also confirm that no further charges, interest or recovery action will be added while the agreed instalments are being paid on time."
+    },
+    "strom": {
+      "titel": "Transferring an electricity contract to a new address",
+      "body": "I am writing to let you know that I am moving. Please transfer my electricity contract to my new address:\n\n{neueAdresse}\n\nMeter / customer number: {vertragsnr}\nDate of the move: {datum}\n\nPlease let me know which meter readings and documents you need from me, whether the supply at the new address can be taken over on the same contract, and whether any change to my tariff will apply. Please confirm the transfer in writing and send me a final statement for the old address."
+    },
+    "gas": {
+      "titel": "Transferring a gas contract to a new address",
+      "body": "I am writing to let you know that I am moving. Please transfer my gas contract to my new address:\n\n{neueAdresse}\n\nMeter / customer number: {vertragsnr}\nDate of the move: {datum}\n\nPlease let me know which meter readings and documents you need from me, whether the supply at the new address can be taken over on the same contract, and whether any change to my tariff will apply. Please confirm the transfer in writing and send me a final statement for the old address."
+    },
+    "wasser": {
+      "titel": "Transferring a water account to a new address",
+      "body": "I am writing to let you know that I am moving. Please transfer my water account to my new address:\n\n{neueAdresse}\n\nMeter / customer number: {vertragsnr}\nDate of the move: {datum}\n\nPlease let me know which meter readings and documents you need from me, and whether the account at the new address needs to be opened separately. Please confirm the change in writing and send me a final statement for the old address."
+    },
+    "muell": {
+      "titel": "Updating waste collection charges after a move",
+      "body": "I am writing to let you know that I am moving. Please update the account for waste collection and refuse charges to my new address:\n\n{neueAdresse}\n\nAccount / file reference: {vertragsnr}\nDate of the move: {datum}\n\nPlease let me know what you need from me in order to close the account for my old address and to register the new one, including any arrangements for collecting or delivering bins or containers. Please confirm the change in writing and send me a final statement for the old address."
+    },
+    "rundfunk": {
+      "titel": "Updating a public broadcasting fee or licence after a move",
+      "body": "I am writing to let you know that I am moving. Please update my address for the public broadcasting fee or licence:\n\n{neueAdresse}\n\nAccount / licence number: {vertragsnr}\nDate of the move: {datum}\n\nPlease confirm the change in writing and let me know whether any payment is due or refundable as a result, and whether any separate form or declaration is required for the new address."
+    },
+    "kfz-vers-kuend": {
+      "titel": "Cancelling a motor insurance policy",
+      "body": "I am writing to give notice to cancel the motor insurance policy for my vehicle, in accordance with the notice period stated in my policy documents.\n\nVehicle registration number: {kennzeichen}\nPolicy number: {vertragsnr}\nRequested end of cover: {datum}\n\nIf cancellation to that date is not possible, please treat this as notice for the earliest date permitted under the policy and let me know that date.\n\nPlease confirm the cancellation and the exact date on which cover ends in writing, confirm that no further premiums will be collected, and let me know whether any premium already paid will be refunded. Please also send me a statement of my claims and no-claims history for use with a new insurer.\n\nI am aware that motor insurance is compulsory in most countries and I will ensure that replacement cover is in place before this policy ends."
+    },
+    "fahrzeug-anab": {
+      "titel": "Registering or deregistering a vehicle",
+      "body": "I am writing regarding the registration of my vehicle.\n\nVehicle registration number: {kennzeichen}\n\n{text}\n\nRequested effective date: {datum}\n\nPlease let me know which documents, forms and evidence you require from me, whether the matter can be dealt with by post or online, and whether any fee is payable. Please also confirm what will happen to the registration documents and number plates.\n\nPlease confirm receipt of this request and let me know once it has been processed."
+    },
+    "halterwechsel": {
+      "titel": "Notifying a change of registered keeper",
+      "body": "I am writing to notify you of a change of registered keeper for my vehicle.\n\nVehicle registration number: {kennzeichen}\n\nDetails of the new keeper:\n\n{text}\n\nRequested effective date: {datum}\n\nPlease let me know which documents and forms are required to complete the transfer, whether both parties need to sign, and whether any fee is payable. Please also confirm from which date I am no longer responsible for the vehicle, including for any tax, charges or penalties.\n\nPlease confirm receipt of this notification and send me written confirmation once the change has been recorded."
+    },
+    "adress-freunde": {
+      "titel": "Telling friends and family about a new address",
+      "body": "We would like to let you know that we have moved. Our new address is:\n\n{neueAdresse}\n\nWe can be reached there from: {datum}\n\nOur phone numbers and email addresses stay the same. We would love to see you at our new place, so do get in touch — you are very welcome to visit."
+    },
+    "namens-mitteilen": {
+      "titel": "Telling friends and family about a change of name",
+      "body": "I would like to let you know that my name has changed.\n\nPrevious name: {altName}\nNew name: {neuName}\nEffective from: {datum}\n\nNothing else changes — same person, same phone number, same email address. I would be grateful if you could use my new name from now on and update it in your contacts. Thank you."
+    },
+    "todesfall": {
+      "titel": "Announcing a death",
+      "body": "It is with great sadness that we must let you know that {verstorben} has died.\n\nDate of death: {sterbedatum}\n\n{text}\n\nWe are grateful for the kindness and friendship shown over the years, and we know that this news will be difficult for many of you to receive.\n\nDetails of the funeral arrangements will follow. In the meantime we ask for your quiet thoughts and for your understanding if we are slow to reply to messages."
+    },
+    "vollmacht": {
+      "titel": "Authorisation to act on my behalf",
+      "body": "I, {name}, hereby authorise the following person to act on my behalf:\n\n{bevoll}\n\nThe authorisation covers the following matter:\n\n{zweck}\n\nEffective from: {datum}\n\nThis authorisation remains in force until I revoke it in writing. The authorised person may take the steps and make the statements reasonably required to deal with the matter described above on my behalf. It does not extend to any other matter.\n\nPlease note: the formal requirements for an authorisation of this kind vary from country to country, and for property, banking, health and legal proceedings a notarised or otherwise formally executed document is often required. Please confirm whether this document is sufficient for your purposes or whether a specific form is needed."
+    },
+    "frei": {
+      "titel": "Free-form letter",
+      "body": "{text}\n\nI would be grateful for your written confirmation that you have received this letter, and for a reply setting out how you intend to deal with the matter. If you need any further information from me, please let me know."
+    }
+  },
+  "nicht_anwendbar": [
+    "nachsende",
+    "kindergeld",
+    "steuer-adress",
+    "muell",
+    "rundfunk",
+    "elternzeit",
+    "lastschrift",
+    "fahrzeug-anab",
+    "halterwechsel",
+    "vollmacht"
+  ],
+  "hinweise": [
+    "nachsende: the German 'Nachsendeauftrag' of Deutsche Post has been generalised to a neutral request for mail redirection addressed to any postal operator, with an added sentence asking which form, ID or fee is required.",
+    "kindergeld: 'Kindergeld/Elterngeld' has been generalised to 'child benefit or family-related payments' without naming any agency, benefit scheme or reference-number format.",
+    "steuer-adress: the German 'Steuernummer' and Finanzamt structure has been generalised to 'the tax authority' and a neutral tax reference number; a sentence was added asking whether a specific form or online service must be used.",
+    "muell: 'Müllgebühren' has been generalised to 'waste collection and refuse charges', which may be billed by a municipality, a utility or a private contractor depending on the country.",
+    "rundfunk: 'Rundfunkbeitrag' has been generalised to 'public broadcasting fee or licence'; several countries (including Ireland's TV licence and the UK licence fee) have comparable but differently structured schemes, and some have none at all.",
+    "elternzeit: German statutory 'Elternzeit' has been generalised to a request for parental leave under the contract and applicable local rules; no statutory duration or entitlement is asserted.",
+    "lastschrift: the SEPA direct debit mandate has been generalised to 'direct debit mandate or recurring payment authorisation'; an explicit sentence was added clarifying that cancelling the mandate does not terminate the underlying contract.",
+    "fahrzeug-anab and halterwechsel: German vehicle registration (Zulassungsstelle, Halter) has been generalised to a neutral request to the vehicle registration authority; the letters ask which documents and fees apply rather than assuming a procedure. Both now use {kennzeichen} on a labelled line, since a registration number is not formatted the same way in every country.",
+    "vollmacht: kept as a general authorisation to act, now using {name}, {bevoll} and {zweck}, with an express warning that formal or notarial requirements vary and that banks, authorities and courts often require their own form.",
+    "kaution: the German 14-day payment deadline was removed and replaced with a request for an itemised statement of any deductions, since deposit-protection rules and repayment deadlines differ widely (for example statutory deposit schemes in the UK and Ireland).",
+    "uebergabe is a checklist rather than a letter; it has been rendered as a plain bullet list in the body field and the German 'besenrein' standard was replaced with a neutral 'clean and clear of your belongings'.",
+    "Placeholder discipline: every body was checked against that template's own `fields` list in the source file. No body contains a placeholder the template does not offer. {name} is used in kaution, arbeit-bank, fin-bank and vollmacht, where the German original inserted the sender name via p.name; {absAdresse} and {betreffFrei} are available but not needed in any body.",
+    "Optional fields are rendered on their own labelled line ('Policy number: {vertragsnr}', 'Amount: {betrag}', 'Date of death: {sterbedatum}') rather than inline in a sentence. This is a change from the previous version: with generic raw substitution an inline 'my contract{vertragsnr}' would render as 'my contract12345', whereas a labelled line stays grammatical whether the value is present or an empty string.",
+    "Date handling: {datum} always appears on a labelled line ('Requested end date: {datum}', 'Effective from: {datum}'). That reads correctly with a formatted date, with the fallback wording 'at the earliest possible date', and with an empty string, so it is safe under either substitution behaviour.",
+    "Corrections to the previous version: elternzeit and urlaub used {datum}, which is not in their fields — they now use {von} and {bis}. todesfall routed the name of the deceased through {text} and now uses {verstorben} and {sterbedatum}, with {text} reserved for the optional additional words the form actually offers. vollmacht routed the authorised person and the purpose through {text} and now uses {bevoll} and {zweck}. lastschrift, reklamation and ratenzahlung now use {betrag}; kfz-vers-kuend, fahrzeug-anab and halterwechsel now use {kennzeichen}.",
+    "No national statutes are cited anywhere, and no concrete notice period is asserted; all termination letters refer to 'the notice period stated in my contract' and include a fallback request for the earliest permitted date."
+  ],
+  "unsicher": [
+    "Employment termination form requirements: several jurisdictions require a handwritten signature on paper for a resignation to be effective, others accept email. The 'arbeit' entry is deliberately set to 'unsicher'; a local employment lawyer should confirm the wording used in each launch country.",
+    "Tenancy notice: notice periods, permitted service methods and deposit-return deadlines are strongly national (statutory deposit protection schemes in the UK and Ireland, rent-pressure rules, etc.). Both miet-kuend and kaution should be reviewed per country.",
+    "kaution / fin-bank / arbeit-bank: the {iban} field is labelled 'IBAN / account number' because IBAN is not used in every target market (the UK uses sort code and account number). If the UK is a launch market, a separate field or label may be needed.",
+    "{betrag} is a free-text field, so the user supplies the currency. The letters never name a currency themselves; check that the field placeholder shown in the English UI does not suggest euro amounts.",
+    "reklamation: chargeback and payment-dispute rights, and the applicable time limits, differ between jurisdictions and between card schemes and bank transfers. The letter deliberately makes no claim about a right to a refund and instead asks for a review.",
+    "vollmacht: the highest-risk template. In many jurisdictions a private written authorisation will be refused by banks, land registries, hospitals and courts. Local legal review is strongly recommended, and consider adding an in-app warning.",
+    "todesfall: probate and estate notification requirements are entirely national; this template is written purely as a personal announcement to friends and family and should not be presented as sufficient notification to any institution.",
+    "elternzeit: entitlement, minimum notice and the form of the application vary greatly. Both {von} and {bis} are optional in the form, so the letter is phrased to work as an opening request even if only one date is given.",
+    "kfz-vers-kuend: the compulsory-insurance warning is worded generally ('in most countries'); confirm that this is accurate for each launch market.",
+    "rundfunk: some target countries have no public broadcasting fee at all, so this template may be better hidden per country rather than shown with a generalised text.",
+    "Rendering of empty optional fields: labelled lines keep the grammar intact, but an empty value leaves a dangling label such as 'Amount:'. Consider having the app drop an entire line when its only placeholder resolves to an empty string, and collapse the resulting blank paragraphs — that would make these templates read perfectly in every combination. This affects the optional free-text fields too ({text} in ratenzahlung, todesfall).",
+    "General: the entire set is written as orientation for the user, not as legal advice. A short disclaimer to that effect should be displayed alongside the English templates, mirroring KUENDIGUNG_DISCLAIMER in the German version."
+  ]
+}

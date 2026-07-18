@@ -1,0 +1,256 @@
+{
+  "land": "ES",
+  "sprache": "es",
+  "formen": {
+    "arbeit": {
+      "label": "Contrato de trabajo (baja voluntaria)",
+      "form": "No existe una forma legal obligatoria, pero debe respetarse el plazo de preaviso que fije el convenio colectivo o el contrato (con frecuencia quince días). Lo habitual es entregar la carta de dimisión por escrito y conservar prueba de su recepción.",
+      "email": "unsicher",
+      "tipp": "Compruebe primero el plazo de preaviso en su convenio colectivo y en su contrato: si no lo respeta, la empresa puede descontarle de la liquidación los días no preavisados. Entregue la carta firmada y pida copia sellada con fecha, o envíela por burofax con acuse de recibo y certificación de texto. El correo electrónico suele aceptarse, pero deja una prueba más débil si después hay discrepancias."
+    },
+    "miete": {
+      "label": "Contrato de arrendamiento de vivienda",
+      "form": "Comunicación escrita a la parte arrendadora. En el arrendamiento de vivienda habitual, la Ley de Arrendamientos Urbanos permite al inquilino desistir del contrato una vez transcurridos al menos seis meses, avisando con al menos treinta días de antelación.",
+      "email": "unsicher",
+      "tipp": "Revise su contrato: puede prever una indemnización por desistimiento anticipado de hasta una mensualidad de renta por cada año que quede pendiente de cumplir. El burofax con acuse de recibo y certificación de texto es la vía de prueba más habitual y la que evita discusiones sobre la fecha. Acuerde por escrito el día de entrega de llaves y el procedimiento de devolución de la fianza."
+    },
+    "handy": {
+      "label": "Telefonía móvil, telefonía fija e internet",
+      "form": "Basta una comunicación escrita; se admite el correo electrónico y los canales de atención que ofrezca el operador. La baja debe poder solicitarse con un preaviso mínimo de dos días hábiles.",
+      "email": "ja",
+      "tipp": "Pida siempre el número de referencia de la baja: es su principal prueba frente al operador. La baja debe poder tramitarse por el mismo canal por el que contrató y sin trabas añadidas. Compruebe antes si tiene un compromiso de permanencia pendiente, ya que puede generar penalización, y devuelva el router u otros equipos cedidos dejando constancia de la entrega."
+    },
+    "strom": {
+      "label": "Electricidad y gas",
+      "form": "Comunicación escrita a la comercializadora; se admite el correo electrónico y los canales de atención al cliente.",
+      "email": "ja",
+      "tipp": "Indique el código CUPS del punto de suministro y la lectura del contador en la fecha de baja o de cambio. Si se muda, valore si le conviene más dar de baja el contrato o traspasar la titularidad, porque dar de baja el punto de suministro puede obligar al siguiente ocupante a pagar de nuevo los derechos de alta. Solicite siempre la factura de cierre y la confirmación por escrito."
+    },
+    "streaming": {
+      "label": "Suscripciones y servicios digitales",
+      "form": "Comunicación escrita; el correo electrónico es válido. La cancelación debe ser al menos tan sencilla como lo fue la contratación.",
+      "email": "ja",
+      "tipp": "Si contrató a través de la web o de la aplicación, cancele por ese mismo canal y guarde la confirmación o una captura de pantalla con la fecha. Si la suscripción se contrató mediante una tienda de aplicaciones (App Store o Google Play), la baja se gestiona en su cuenta de esa tienda y no ante el proveedor del servicio. Vigile el siguiente cargo y reclámelo si se produce después de la baja."
+    },
+    "fitness": {
+      "label": "Gimnasio y centros deportivos",
+      "form": "Comunicación escrita conforme a las condiciones contratadas; normalmente se admite el correo electrónico.",
+      "email": "ja",
+      "tipp": "Revise el plazo de preaviso y el compromiso de permanencia que figuran en su contrato, porque de ellos depende la fecha efectiva de la baja. Frente a consumidores, las cláusulas que dificultan la baja de forma desproporcionada o que exigen un canal más gravoso que el utilizado para el alta pueden considerarse abusivas. Cancele la domiciliación bancaria solo cuando le hayan confirmado la baja, para no generar recibos impagados."
+    },
+    "versicherung": {
+      "label": "Seguros",
+      "form": "Oposición a la prórroga del contrato comunicada por escrito. La Ley de Contrato de Seguro exige que el tomador la notifique con al menos un mes de antelación al vencimiento de la póliza.",
+      "email": "unsicher",
+      "tipp": "El plazo de un mes antes del vencimiento es decisivo: si lo incumple, la póliza se prorroga normalmente por otro año. Muchas aseguradoras aceptan el correo electrónico o su área de cliente, pero el burofax con acuse de recibo sigue siendo la prueba más segura. Indique siempre el número de póliza y pida confirmación escrita de la no renovación y de la anulación de los recibos domiciliados."
+    },
+    "verein": {
+      "label": "Asociaciones y clubes",
+      "form": "Según lo previsto en los estatutos de la asociación. El derecho a separarse voluntariamente está legalmente reconocido; los estatutos regulan la forma y el preaviso.",
+      "email": "unsicher",
+      "tipp": "Consulte los estatutos antes de escribir: suelen exigir comunicación dirigida a la secretaría y, en ocasiones, un preaviso antes del cierre del ejercicio. Nadie puede ser obligado a permanecer en una asociación, de modo que la baja no puede denegarse, aunque sí pueden reclamarse las cuotas ya devengadas. Pida acuse de recibo y confirme que se cancela la domiciliación de la cuota."
+    },
+    "sonstiges": {
+      "label": "Otros contratos",
+      "form": "Depende de lo pactado en el contrato o en las condiciones generales.",
+      "email": "unsicher",
+      "tipp": "Revise el contrato y las condiciones generales: allí figuran la forma admitida, el plazo de preaviso y el canal de comunicación. Si actúa como consumidor, las cláusulas que le impongan obstáculos desproporcionados para darse de baja pueden ser abusivas. En caso de duda, envíe la comunicación por burofax con acuse de recibo y certificación de texto y conserve el justificante."
+    }
+  },
+  "vorlagen": {
+    "miet-kuend": {
+      "titel": "Desistimiento del contrato de arrendamiento de vivienda",
+      "body": "Por la presente les comunico mi voluntad de desistir del contrato de arrendamiento de la vivienda sita en {objekt}, del que soy parte arrendataria, con efectos {datum}.\n\nCon este escrito entiendo cumplido el plazo de preaviso previsto en el contrato y en la normativa de arrendamientos urbanos. Si por razón de dicho plazo la fecha indicada no fuera posible, les ruego que me comuniquen la primera fecha en que el contrato pueda quedar resuelto.\n\nLes agradeceré que me confirmen por escrito la recepción de esta comunicación y la fecha de finalización del arrendamiento, y que me propongan día y hora para la entrega de llaves y la revisión conjunta del estado de la vivienda.\n\nAsimismo les solicito que me indiquen el procedimiento y el plazo previstos para la devolución de la fianza depositada."
+    },
+    "umzug": {
+      "titel": "Comunicación de cambio de domicilio",
+      "body": "Por la presente les comunico que voy a trasladar mi domicilio y les ruego que actualicen mis datos en sus registros.\n\nFecha del traslado: {datum}\nNueva dirección:\n\n{neueAdresse}\n\nLes agradeceré que, a partir de esa fecha, dirijan toda la correspondencia y las facturas a la nueva dirección y que me confirmen por escrito la modificación de mis datos. Si necesitan algún documento adicional para tramitar el cambio, les ruego que me lo indiquen."
+    },
+    "nachsende": {
+      "titel": "Comunicación de nueva dirección de entrega",
+      "body": "Por la presente les informo de que, a partir de la fecha que se indica a continuación, deseo recibir en una nueva dirección toda la correspondencia que me remitan.\n\nFecha de efecto: {datum}\nNueva dirección de entrega:\n\n{neueAdresse}\n\nLes ruego que tengan en cuenta este cambio en sus envíos y que me confirmen por escrito su recepción. He solicitado además el servicio de reenvío postal para el periodo de transición, pero les agradecería que actualizaran directamente mis datos para evitar retrasos en las notificaciones."
+    },
+    "uebergabe": {
+      "titel": "Lista de comprobación para la entrega de la vivienda",
+      "body": "- Anotar y fotografiar las lecturas de los contadores de luz, gas y agua el día de la entrega\n- Entregar todas las llaves y hacer constar por escrito cuántas se entregan\n- Dejar la vivienda vacía de enseres y en condiciones de limpieza\n- Revisar paredes, techos y suelos en busca de desperfectos\n- Tapar y reparar correctamente los agujeros de taladros y anclajes\n- Comprobar el funcionamiento de puertas, ventanas, persianas y grifería\n- Firmar con la propiedad un acta de entrega que refleje el estado real de la vivienda\n- Facilitar por escrito el número de cuenta (IBAN) para la devolución de la fianza\n- Hacer fotografías o un vídeo fechado de todas las estancias antes de entregar las llaves\n- Dar de baja o cambiar la titularidad de los suministros: luz, gas, agua e internet\n- Contratar en Correos el servicio de reenvío postal a la nueva dirección\n- Comunicar el cambio de domicilio en el padrón municipal del nuevo ayuntamiento"
+    },
+    "maengel": {
+      "titel": "Comunicación de desperfectos a la propiedad",
+      "body": "Por la presente les comunico la existencia del siguiente desperfecto en la vivienda arrendada sita en {objekt}:\n\n{mangel}\n\nComo parte arrendadora les corresponde realizar las reparaciones necesarias para conservar la vivienda en condiciones de habitabilidad, salvo que el deterioro sea imputable a mi uso o se trate de pequeñas reparaciones derivadas del desgaste ordinario, que asumo por mi parte.\n\nPor ello les ruego que adopten las medidas necesarias para su subsanación dentro del plazo que se indica.\n\nPlazo solicitado para la subsanación: {datum}\n\nSi transcurrido ese plazo el desperfecto no se hubiera subsanado, me veré obligado a valorar las acciones que el ordenamiento me reconoce, entre ellas reclamar la ejecución de la reparación o una reducción de la renta.\n\nLes agradeceré que me confirmen por escrito la recepción de este escrito y la fecha prevista de intervención."
+    },
+    "kaution": {
+      "titel": "Solicitud de devolución de la fianza",
+      "body": "El contrato de arrendamiento de la vivienda sita en {objekt} ha finalizado y la vivienda ha sido entregada en las condiciones pactadas.\n\nFecha de finalización del arrendamiento: {datum}\n\nPor ello les solicito la devolución del importe de la fianza depositada. Conforme a la normativa de arrendamientos urbanos, transcurrido un mes desde la entrega de llaves sin que se haya hecho efectiva la devolución del saldo, la cantidad adeudada devenga el interés legal del dinero.\n\nLes ruego que realicen la transferencia en el plazo máximo de catorce días a la siguiente cuenta:\n\nTitular de la cuenta: {name}\nIBAN: {iban}\n\nSi consideran que procede alguna deducción, les ruego que me la detallen por escrito y la justifiquen documentalmente mediante facturas o presupuestos. Les agradeceré que me confirmen la recepción de esta solicitud."
+    },
+    "handy-kuend": {
+      "titel": "Baja del contrato de telefonía móvil",
+      "body": "Por la presente les comunico mi voluntad de causar baja en el contrato de telefonía móvil que tengo suscrito con ustedes, con efectos {datum}.\n\nNúmero de contrato o de cliente: {vertragsnr}\n\nLes ruego que tramiten la baja en los términos solicitados y que me faciliten el número de referencia de la solicitud, así como la confirmación escrita de la fecha efectiva. Si la fecha indicada no fuera posible, les ruego que me comuniquen la primera fecha en que pueda hacerse efectiva.\n\nAsimismo les solicito que me informen de cualquier importe pendiente, incluida una eventual penalización por compromiso de permanencia, y de la forma y el plazo para la devolución de los equipos cedidos. A partir de la fecha de baja no autorizo ningún cargo adicional en mi cuenta."
+    },
+    "internet-kuend": {
+      "titel": "Baja del contrato de internet y telefonía fija",
+      "body": "Por la presente les comunico mi voluntad de causar baja en el contrato de internet y telefonía fija que tengo suscrito con ustedes, con efectos {datum}.\n\nNúmero de contrato o de cliente: {vertragsnr}\n\nLes ruego que tramiten la baja en los términos solicitados y que me faciliten el número de referencia de la solicitud, así como la confirmación escrita de la fecha efectiva. Si la fecha indicada no fuera posible, les ruego que me comuniquen la primera fecha en que pueda hacerse efectiva.\n\nLes solicito además que me informen de cualquier importe pendiente, incluida una eventual penalización por compromiso de permanencia, y que me indiquen cómo y en qué plazo debo devolver el router y los demás equipos cedidos, dejando constancia escrita de la entrega. A partir de la fecha de baja no autorizo ningún cargo adicional en mi cuenta."
+    },
+    "streaming-kuend": {
+      "titel": "Cancelación de la suscripción",
+      "body": "Por la presente les comunico mi voluntad de cancelar la suscripción que tengo contratada con ustedes, con efectos {datum}, y de no renovarla para periodos posteriores.\n\nNúmero de contrato o de cliente: {vertragsnr}\n\nLes ruego que confirmen por escrito la cancelación y la fecha exacta en la que el servicio dejará de estar activo, y que cesen los cargos periódicos a partir de ese momento. Si la cancelación no pudiera hacerse efectiva en la fecha indicada, les agradeceré que me comuniquen la primera fecha posible.\n\nEn caso de que se produjera algún cargo posterior a la fecha de baja, solicito desde ahora su devolución."
+    },
+    "fitness-kuend": {
+      "titel": "Baja de la cuota del gimnasio",
+      "body": "Por la presente les comunico mi voluntad de causar baja en la cuota de socio que tengo contratada con ustedes, con efectos {datum}.\n\nNúmero de socio o de contrato: {vertragsnr}\n\nCon este escrito entiendo cumplido el plazo de preaviso previsto en las condiciones del contrato. Si entendieran que la fecha indicada no es posible, les ruego que me comuniquen por escrito la primera fecha en que la baja pueda hacerse efectiva y el motivo.\n\nLes solicito la confirmación escrita de la baja, la cancelación de la domiciliación bancaria a partir de esa fecha y el detalle de cualquier importe que consideren pendiente. A partir de la fecha de baja no autorizo nuevos cargos en mi cuenta."
+    },
+    "versicherung-kuend": {
+      "titel": "Oposición a la prórroga de la póliza de seguro",
+      "body": "Por la presente les comunico mi oposición a la prórroga del contrato de seguro que tengo suscrito con ustedes, con efectos {datum}, de modo que la póliza quede sin efecto a su vencimiento.\n\nNúmero de póliza: {vertragsnr}\n\nCon este escrito pretendo respetar la antelación mínima de un mes respecto del vencimiento que exige la Ley de Contrato de Seguro. Si entendieran que ese plazo no queda cubierto, les ruego que me lo comuniquen de inmediato indicando la fecha exacta de vencimiento y la primera fecha en que la póliza puede quedar resuelta.\n\nLes solicito la confirmación escrita de la no renovación, la anulación de los recibos domiciliados a partir de esa fecha y, si procediera, la devolución de la parte de prima no consumida."
+    },
+    "mitgliedschaft-kuend": {
+      "titel": "Baja voluntaria como socio",
+      "body": "Por la presente les comunico mi voluntad de causar baja voluntaria como miembro de esa entidad, con efectos {datum}.\n\nNúmero de socio: {vertragsnr}\n\nEjercito con ello mi derecho a separarme voluntariamente, en los términos previstos en los estatutos. Si estos exigieran un plazo de preaviso distinto del indicado, les ruego que me comuniquen por escrito la fecha en que la baja quedará efectiva.\n\nLes solicito la confirmación escrita de la baja, la cancelación de la domiciliación de las cuotas a partir de ese momento y el detalle de cualquier importe que consideren devengado y pendiente de pago."
+    },
+    "adress-behoerde": {
+      "titel": "Comunicación de cambio de domicilio",
+      "body": "Por la presente les comunico mi nuevo domicilio a efectos de notificaciones y les ruego que actualicen mis datos en el expediente correspondiente.\n\nFecha de efecto: {datum}\nNuevo domicilio:\n\n{neueAdresse}\n\nLes agradeceré que dirijan a esta dirección cualquier comunicación posterior y que me confirmen por escrito la actualización de mis datos.\n\nSi para tramitar este cambio fuera necesario presentar un impreso oficial o aportar documentación adicional, les ruego que me lo indiquen y les será remitida a la mayor brevedad."
+    },
+    "namensaenderung": {
+      "titel": "Comunicación de cambio de nombre",
+      "body": "Por la presente les comunico que se ha modificado mi nombre y les ruego que actualicen mis datos en sus registros.\n\nNombre anterior: {altName}\nNombre actual: {neuName}\nFecha de efecto: {datum}\n\nSi necesitan justificación documental del cambio, les ruego que me indiquen qué documento requieren y les será remitido a la mayor brevedad.\n\nLes agradeceré que me confirmen por escrito la actualización de mis datos y que emitan a mi nombre actual toda la documentación posterior."
+    },
+    "aenderungsmitteilung": {
+      "titel": "Comunicación de modificación de datos",
+      "body": "Por la presente pongo en su conocimiento la siguiente modificación de mis circunstancias personales, a los efectos que procedan en mi expediente:\n\n{text}\n\nLes ruego que tomen razón de esta comunicación, que actualicen mis datos y que me confirmen por escrito su recepción.\n\nSi fuera necesario aportar documentación justificativa o presentar un impreso oficial concreto, les agradeceré que me lo indiquen para poder completar el trámite dentro de plazo."
+    },
+    "kindergeld": {
+      "titel": "Comunicación relativa a una prestación familiar",
+      "body": "Por la presente les comunico lo siguiente en relación con la prestación familiar de la que soy beneficiario:\n\n{text}\n\nNúmero de expediente o de referencia: {vertragsnr}\n\nRealizo esta comunicación a los efectos de que se tenga en cuenta en la tramitación, el mantenimiento o la revisión de la prestación, y con el fin de evitar cobros indebidos.\n\nLes ruego que me confirmen por escrito la recepción de este escrito y que me indiquen si debo aportar documentación adicional o presentar algún modelo oficial para completar el trámite."
+    },
+    "steuer-adress": {
+      "titel": "Comunicación de cambio de domicilio fiscal",
+      "body": "Por la presente les comunico mi nuevo domicilio a efectos fiscales y de notificaciones.\n\nNúmero de identificación fiscal o de expediente: {vertragsnr}\nFecha de efecto: {datum}\nNuevo domicilio:\n\n{neueAdresse}\n\nLes ruego que actualicen mis datos censales y que dirijan a esta dirección cualquier notificación posterior.\n\nSoy consciente de que el cambio de domicilio fiscal suele comunicarse mediante el modelo oficial correspondiente o a través de la sede electrónica; si fuera necesario completar este escrito con dicho trámite, les agradeceré que me lo indiquen. Les solicito confirmación escrita de la modificación."
+    },
+    "eigenkuendigung": {
+      "titel": "Carta de baja voluntaria (dimisión)",
+      "body": "Por la presente les comunico mi decisión de extinguir por voluntad propia la relación laboral que me une a esa empresa, con efectos {datum}, fecha en la que quedará finalizada la prestación de mis servicios.\n\nCon este escrito pretendo respetar el plazo de preaviso previsto en el convenio colectivo de aplicación y en mi contrato de trabajo. Si entendieran que dicho plazo no queda cubierto, les ruego que me lo comuniquen de inmediato.\n\nLes solicito que me confirmen por escrito la recepción de esta comunicación y la fecha de baja, y que pongan a mi disposición la liquidación de partes proporcionales, con el detalle de las vacaciones devengadas y no disfrutadas.\n\nAsimismo les ruego que tramiten mi baja en la Seguridad Social y que me faciliten el certificado de empresa y un certificado de los servicios prestados.\n\nAgradezco la confianza depositada en mí durante este tiempo y quedo a su disposición para facilitar el traspaso ordenado de mis tareas."
+    },
+    "arbeit-bank": {
+      "titel": "Comunicación de cambio de cuenta bancaria para la nómina",
+      "body": "Por la presente les comunico que he modificado la cuenta bancaria en la que deseo recibir el abono de mi nómina.\n\nTitular de la cuenta: {name}\nIBAN: {iban}\nFecha de efecto: {datum}\n\nLes ruego que actualicen este dato en sus registros y que ingresen en dicha cuenta las cantidades que se devenguen a partir de esa fecha.\n\nSi necesitan que firme algún impreso interno o que aporte un justificante de titularidad de la cuenta, les agradeceré que me lo indiquen. Les ruego que me confirmen por escrito la modificación."
+    },
+    "elternzeit": {
+      "titel": "Solicitud de excedencia por cuidado de hijo",
+      "body": "Por la presente les solicito el disfrute de una excedencia por cuidado de hijo en el periodo que se indica a continuación.\n\nInicio de la excedencia: {von}\nFinalización de la excedencia: {bis}\n\nDurante ese periodo mantendré, conforme al Estatuto de los Trabajadores, el derecho de reserva de mi puesto de trabajo en los términos legalmente previstos, y el tiempo de excedencia será computable a efectos de antigüedad.\n\nLes ruego que me confirmen por escrito la concesión y las fechas exactas, y que me indiquen la documentación que deba aportar, así como los trámites internos necesarios.\n\nQuedo a su disposición para concretar los detalles y para organizar con la debida antelación el reparto de mis tareas durante mi ausencia."
+    },
+    "urlaub": {
+      "titel": "Solicitud de vacaciones",
+      "body": "Por la presente les solicito el disfrute de mis vacaciones anuales retribuidas en el periodo que se indica a continuación.\n\nInicio de las vacaciones: {von}\nFinalización de las vacaciones: {bis}\n\nAl proponer estas fechas he tenido en cuenta las necesidades del servicio y he previsto la organización de mis tareas durante ese periodo.\n\nLes ruego que me confirmen por escrito la aprobación de las fechas solicitadas o, si no fuera posible, que me propongan una alternativa. Muchas gracias."
+    },
+    "arbeitszeugnis": {
+      "titel": "Solicitud de certificado de servicios prestados",
+      "body": "Mi relación laboral con esa empresa ha finalizado en la fecha que se indica a continuación.\n\nFecha de finalización de la relación laboral: {datum}\n\nPor la presente les solicito que me expidan un certificado de los servicios prestados en el que consten mi grupo o categoría profesional, las funciones desempeñadas y el periodo trabajado. Si lo estiman oportuno, les agradecería que incluyeran además una valoración de mi desempeño, sin que ello suponga obligación alguna por su parte.\n\nAsimismo les ruego que me faciliten copia del certificado de empresa remitido al servicio público de empleo y el detalle de la liquidación final.\n\nLes agradeceré que me remitan la documentación a la dirección que consta en el encabezado de este escrito. Muchas gracias por su atención."
+    },
+    "fin-bank": {
+      "titel": "Comunicación de cambio de cuenta bancaria",
+      "body": "Por la presente les comunico mi nueva cuenta bancaria y les ruego que giren en ella los recibos que se devenguen.\n\nTitular de la cuenta: {name}\nIBAN: {iban}\nNúmero de cliente o de contrato: {vertragsnr}\nFecha de efecto: {datum}\n\nLes ruego que actualicen la orden de domiciliación en sus registros y que me confirmen por escrito la modificación, indicando a partir de qué recibo será efectiva.\n\nSi necesitan que firme un nuevo mandato de domiciliación, les agradeceré que me lo remitan."
+    },
+    "lastschrift": {
+      "titel": "Revocación de la orden de domiciliación bancaria",
+      "body": "Por la presente revoco la orden de domiciliación bancaria (mandato SEPA) que les autorizaba a girar recibos con cargo a mi cuenta.\n\nNúmero de cliente o de contrato: {vertragsnr}\nImporte del recibo afectado: {betrag}\nFecha de efecto de la revocación: {datum}\n\nA partir de esa fecha no autorizo ningún nuevo cargo en mi cuenta, y cualquier adeudo posterior será devuelto por carecer de autorización.\n\nHago constar que esta revocación afecta únicamente al medio de pago y no supone por sí sola la resolución del contrato ni la renuncia a los importes que legítimamente se hayan devengado. Les ruego que me indiquen un medio de pago alternativo para las cantidades que estuvieran pendientes.\n\nLes agradeceré que me confirmen por escrito la revocación. Comunico igualmente esta decisión a mi entidad bancaria."
+    },
+    "reklamation": {
+      "titel": "Reclamación de un cargo en cuenta",
+      "body": "Por la presente les manifiesto mi disconformidad con un cargo efectuado en mi cuenta.\n\nImporte reclamado: {betrag}\nFecha del cargo: {datum}\n\nEl motivo de mi reclamación es el siguiente:\n\n{text}\n\nLes ruego que revisen la operación y que procedan a la devolución del importe reclamado. En el caso de los adeudos domiciliados SEPA autorizados, la devolución puede solicitarse a la entidad bancaria dentro de las ocho semanas siguientes al cargo; si el adeudo no estaba autorizado, el plazo para reclamar es más amplio.\n\nLes agradeceré que me confirmen por escrito la recepción de esta reclamación y que me comuniquen el resultado de sus comprobaciones. Si no obtuviera una respuesta satisfactoria, me dirigiré al servicio de atención al cliente y, en su caso, a los organismos de consumo o de supervisión que correspondan."
+    },
+    "ratenzahlung": {
+      "titel": "Solicitud de fraccionamiento del pago",
+      "body": "En relación con la cantidad pendiente de pago que figura en sus registros, les solicito la posibilidad de abonarla de forma fraccionada.\n\nNúmero de factura, expediente o de cliente: {vertragsnr}\nImporte pendiente: {betrag}\n\nMi propuesta es la siguiente:\n\n{text}\n\nMi situación económica actual no me permite atender el pago en un solo abono, pero es mi voluntad hacer frente a la deuda y regularizar mi situación en el menor plazo posible.\n\nLes ruego que valoren esta propuesta o que, en su caso, me indiquen un plan de pagos alternativo que resulte asumible. Les agradeceré que me confirmen por escrito su decisión y que, mientras se resuelve esta solicitud, se abstengan de iniciar actuaciones de reclamación adicionales."
+    },
+    "strom": {
+      "titel": "Traslado de domicilio: contrato de electricidad",
+      "body": "Por la presente les comunico que voy a trasladar mi domicilio y les ruego que gestionen lo que corresponda respecto de mi contrato de suministro eléctrico.\n\nNúmero de contrato, de cliente o CUPS: {vertragsnr}\nFecha del traslado: {datum}\nNueva dirección:\n\n{neueAdresse}\n\nLes ruego que me indiquen si en mi caso procede un cambio de titularidad en el nuevo domicilio, un alta nueva o la baja del suministro anterior, y qué documentación necesitan para ello.\n\nComunicaré la lectura del contador en la fecha del traslado. Les solicito la factura de cierre del suministro que dejo y la confirmación por escrito de la gestión realizada."
+    },
+    "gas": {
+      "titel": "Traslado de domicilio: contrato de gas",
+      "body": "Por la presente les comunico que voy a trasladar mi domicilio y les ruego que gestionen lo que corresponda respecto de mi contrato de suministro de gas.\n\nNúmero de contrato, de cliente o CUPS: {vertragsnr}\nFecha del traslado: {datum}\nNueva dirección:\n\n{neueAdresse}\n\nLes ruego que me indiquen si en mi caso procede un cambio de titularidad en el nuevo domicilio, un alta nueva o la baja del suministro anterior, y qué documentación necesitan para ello.\n\nComunicaré la lectura del contador en la fecha del traslado. Les solicito la factura de cierre del suministro que dejo, información sobre el certificado de la instalación si fuera necesario, y la confirmación por escrito de la gestión."
+    },
+    "wasser": {
+      "titel": "Traslado de domicilio: suministro de agua",
+      "body": "Por la presente les comunico que voy a trasladar mi domicilio y les ruego que gestionen lo que corresponda respecto del contrato de suministro de agua.\n\nNúmero de contrato, de abonado o de póliza: {vertragsnr}\nFecha del traslado: {datum}\nNueva dirección:\n\n{neueAdresse}\n\nLes ruego que me indiquen si procede un cambio de titularidad, un alta nueva o la baja del suministro en el domicilio que dejo, y qué documentación deben aportar tanto la persona saliente como la entrante.\n\nComunicaré la lectura del contador en la fecha del traslado y les solicito la factura de cierre, así como la confirmación por escrito de la gestión."
+    },
+    "muell": {
+      "titel": "Comunicación relativa a la tasa de residuos",
+      "body": "Por la presente les comunico un cambio en mis circunstancias a efectos de la tasa municipal de recogida y tratamiento de residuos.\n\nNúmero de expediente o de referencia: {vertragsnr}\nFecha del traslado: {datum}\nNueva dirección:\n\n{neueAdresse}\n\nLes ruego que actualicen mis datos y que me indiquen si en mi caso procede la baja como obligado al pago en el domicilio que dejo, el alta en el nuevo o únicamente el cambio de la dirección de notificación y de la cuenta de domiciliación.\n\nSoy consciente de que esta tasa puede estar vinculada al inmueble y recaer sobre la persona propietaria; les agradeceré que me confirmen quién resulta obligado en mi caso y que me remitan confirmación escrita de la gestión."
+    },
+    "rundfunk": {
+      "titel": "Cambio de domicilio en el padrón municipal",
+      "body": "Por la presente les comunico mi traslado de domicilio a efectos del padrón municipal de habitantes y de las notificaciones que puedan dirigirme.\n\nNúmero de expediente o de referencia: {vertragsnr}\nFecha del traslado: {datum}\nNuevo domicilio:\n\n{neueAdresse}\n\nLes ruego que me indiquen el procedimiento para formalizar el alta o el cambio de domicilio en el padrón y la documentación que debo aportar, como el documento de identidad y el título que acredite el uso de la vivienda.\n\nLes agradeceré asimismo que me confirmen si el trámite puede realizarse de forma telemática o si es necesaria mi comparecencia con cita previa, y que me remitan confirmación escrita una vez efectuado el cambio."
+    },
+    "kfz-vers-kuend": {
+      "titel": "Oposición a la prórroga del seguro del vehículo",
+      "body": "Por la presente les comunico mi oposición a la prórroga de la póliza de seguro del vehículo de mi titularidad, con efectos {datum}, de modo que quede sin efecto a su vencimiento.\n\nMatrícula del vehículo: {kennzeichen}\nNúmero de póliza: {vertragsnr}\n\nCon este escrito pretendo respetar la antelación mínima de un mes respecto del vencimiento que exige la Ley de Contrato de Seguro. Si entendieran que ese plazo no queda cubierto, les ruego que me lo comuniquen de inmediato indicando la fecha exacta de vencimiento.\n\nLes solicito la confirmación escrita de la no renovación, la anulación de los recibos domiciliados a partir de esa fecha y la remisión del certificado de siniestralidad de los últimos años.\n\nSoy consciente de que la circulación de un vehículo exige mantener en vigor el seguro obligatorio de responsabilidad civil, por lo que garantizaré la cobertura ininterrumpida mediante una nueva póliza o, en su caso, tramitando la baja del vehículo."
+    },
+    "fahrzeug-anab": {
+      "titel": "Solicitud relativa al alta o la baja de un vehículo",
+      "body": "Por la presente me dirijo a ustedes en relación con el vehículo del que soy titular, con el siguiente motivo:\n\n{text}\n\nMatrícula del vehículo: {kennzeichen}\nFecha solicitada: {datum}\n\nLes ruego que me indiquen la documentación necesaria para tramitar esta gestión, como el permiso de circulación, la ficha técnica, mi documento de identidad y el justificante del pago de la tasa correspondiente, así como si puedo presentarla de forma telemática o debo solicitar cita previa.\n\nLes agradeceré que me confirmen por escrito la recepción de esta solicitud y el resultado del trámite."
+    },
+    "halterwechsel": {
+      "titel": "Comunicación de cambio de titularidad del vehículo",
+      "body": "Por la presente les comunico el cambio de titularidad del vehículo del que soy titular. Los datos de la operación y de la nueva persona titular son los siguientes:\n\n{text}\n\nMatrícula del vehículo: {kennzeichen}\nFecha solicitada: {datum}\n\nLes ruego que me indiquen la documentación necesaria para formalizar la transferencia, como el contrato de compraventa, el permiso de circulación, la ficha técnica, los documentos de identidad de ambas partes, el justificante de estar al corriente en el impuesto municipal sobre vehículos y el justificante de la tasa correspondiente.\n\nLes agradeceré que me confirmen por escrito la recepción de esta comunicación y la fecha en que quede formalizado el cambio de titularidad, ya que a partir de ese momento dejo de ser responsable del vehículo."
+    },
+    "adress-freunde": {
+      "titel": "¡Nos hemos mudado!",
+      "body": "Queremos contaros que a partir de la fecha que os indicamos nos vais a poder encontrar en una nueva dirección.\n\nA partir de: {datum}\nNuestra nueva dirección:\n\n{neueAdresse}\n\nNuestros teléfonos y correos electrónicos siguen siendo los mismos, así que podéis escribirnos cuando queráis.\n\n¡Nos hará mucha ilusión veros pronto por casa!"
+    },
+    "namens-mitteilen": {
+      "titel": "Tengo un nombre nuevo",
+      "body": "Quiero contaros que he cambiado de nombre.\n\nAntes: {altName}\nAhora: {neuName}\nA partir de: {datum}\n\nOs agradecería mucho que a partir de ahora os dirijáis a mí con mi nuevo nombre y que lo actualicéis en vuestros contactos.\n\nGracias de corazón por vuestro apoyo."
+    },
+    "todesfall": {
+      "titel": "Una triste noticia",
+      "body": "Con profundo dolor os comunicamos el fallecimiento de nuestro ser querido:\n\n{verstorben}\nFecha del fallecimiento: {sterbedatum}\n\n{text}\n\nNos queda el recuerdo de su vida y de todo lo que compartimos a su lado. Os pedimos un momento de silencio y una oración en su memoria.\n\nOs agradecemos de corazón vuestro cariño, vuestra cercanía y vuestro respeto en estos momentos.\n\nOs informaremos a la mayor brevedad de los detalles de la ceremonia de despedida."
+    },
+    "vollmacht": {
+      "titel": "Autorización",
+      "body": "Por el presente documento, yo, {name}, autorizo expresamente a la siguiente persona:\n\n{bevoll}\n\npara que actúe en mi nombre y representación en el siguiente asunto:\n\n{zweck}\n\nFecha de efecto: {datum}\n\nLa presente autorización se otorga hasta su revocación expresa. La persona autorizada queda facultada para realizar cuantas gestiones, comparecencias y firmas resulten necesarias para el fin indicado, y para recibir la documentación que de ello se derive.\n\nA esta autorización se acompañará copia del documento de identidad de la persona que autoriza y de la persona autorizada.\n\nAdvertencia: para determinados actos, entre otros la compraventa de inmuebles, las actuaciones ante notario o la aceptación de una herencia, no basta con una autorización privada y es necesario otorgar un poder notarial. Algunos organismos y entidades exigen además su propio modelo de autorización."
+    },
+    "frei": {
+      "titel": "Mi solicitud",
+      "body": "{text}"
+    }
+  },
+  "nicht_anwendbar": [
+    "nachsende",
+    "kindergeld",
+    "elternzeit",
+    "arbeitszeugnis",
+    "muell",
+    "rundfunk"
+  ],
+  "hinweise": [
+    "Die Quelldatei enthält 39 Vorlagen-IDs. Alle 39 IDs sind mit spanischem Titel und Body enthalten.",
+    "nachsende: Der deutsche Nachsendeauftrag existiert in Spanien als kostenpflichtiger Dienst 'reenvío postal' von Correos, der direkt bei Correos beauftragt wird – nicht per Brief an Dritte. Die Vorlage wurde daher zu einer Mitteilung der neuen Zustelladresse an einen Absender umformuliert, mit Hinweis auf den Correos-Dienst.",
+    "kindergeld: Ein Pendant zum deutschen Kindergeld/Elterngeld gibt es nicht. Nächstliegend sind die Familienleistungen des INSS (prestaciones familiares, complemento de ayuda para la infancia im Rahmen des Ingreso Mínimo Vital, prestación por nacimiento y cuidado de menor). Die Vorlage wurde als neutrale 'comunicación relativa a una prestación familiar' formuliert, die für alle diese Leistungen passt.",
+    "elternzeit: Die deutsche Elternzeit hat keine identische Entsprechung. Nächstliegend ist die 'excedencia por cuidado de hijo' nach dem Estatuto de los Trabajadores; daneben kommen 'permiso por nacimiento y cuidado del menor' und 'reducción de jornada' in Betracht. Die Vorlage wurde als excedencia-Antrag gefasst.",
+    "arbeitszeugnis: Das qualifizierte Arbeitszeugnis mit Leistungs- und Verhaltensbeurteilung gibt es in Spanien nicht. Gesetzlich vorgesehen ist das 'certificado de empresa' (an das SEPE) sowie in der Praxis das 'certificado de servicios prestados'. Die Vorlage fordert beides an; eine Leistungsbeurteilung wird ausdrücklich nur als freiwillige Bitte formuliert.",
+    "muell: Die 'tasa de basuras' bzw. 'tasa de residuos' existiert in Spanien, ist aber kommunal geregelt und häufig an die Immobilie gebunden und vom Eigentümer geschuldet – ein bundesweit einheitliches Ummeldeverfahren wie in Deutschland gibt es nicht. Die Vorlage fragt daher offen nach der zuständigen Behandlung, statt eine Ummeldung zu behaupten.",
+    "rundfunk: Es gibt in Spanien keinen haushaltsbezogenen Rundfunkbeitrag; RTVE wird nicht über Haushaltsabgaben finanziert. Die ID wurde inhaltlich mit der beim Umzug tatsächlich relevanten spanischen Pflicht belegt: Ummeldung im 'padrón municipal' beim neuen Ayuntamiento.",
+    "uebergabe ist eine Checkliste; der Body enthält die Punkte als Liste mit '- ' und wurde an spanische Verhältnisse angepasst (acta de entrega, fianza, CUPS/Zählerstände, padrón, reenvío postal).",
+    "Platzhalter: Jede Vorlage verwendet ausschließlich Platzhalter, die in ihrem eigenen fields-Eintrag der Quelldatei stehen. Zusätzlich wird {name} (Absendername) dort eingesetzt, wo die deutsche Vorlage p.name nutzt: kaution, arbeit-bank, fin-bank und vollmacht. {absAdresse} wird nirgends benötigt, da die App den Briefkopf selbst setzt. {empfName} und {empfAddr} kommen in keinem Body vor, weil sie zur Empfängeranschrift gehören.",
+    "Fachlich passende Felder statt {text}: betrag in lastschrift, reklamation und ratenzahlung; kennzeichen in kfz-vers-kuend, fahrzeug-anab und halterwechsel; von/bis in elternzeit und urlaub; verstorben/sterbedatum in todesfall; bevoll/zweck in vollmacht. {text} wird nur dort verwendet, wo es selbst ein Feld der Vorlage ist.",
+    "{datum} wird überall dort, wo ein Datum auch fehlen kann, als eigene beschriftete Zeile gesetzt ('Fecha de efecto: {datum}'), damit sowohl das ausgeschriebene Datum als auch der Fallback 'a la mayor brevedad posible' grammatikalisch passt. In Kündigungen wird die Formulierung 'con efectos {datum}' verwendet, die in beiden Fällen korrekt liest.",
+    "Alle optionalen Felder (vertragsnr?, betrag?, kennzeichen?, von?, bis?, sterbedatum?, text?, datum?) stehen als eigene beschriftete Zeile ('Etikett: {feld}') im Body und nie mitten im Fließtext. Dadurch bleibt der Satzbau bei leerem Feld intakt; es bleibt lediglich eine Zeile ohne Wert stehen. Empfehlung an die App: beim Rendern Zeilen, deren Platzhalter leer aufgelöst wird, komplett entfernen.",
+    "Die drei privaten Mitteilungen (adress-freunde, namens-mitteilen, todesfall) sind bewusst im vertrauten 'vosotros' formuliert, alle übrigen Vorlagen durchgehend im förmlichen 'ustedes'.",
+    "Deutsche Rechtsfiguren wurden nicht übernommen: keine Schriftform nach § 623/§ 568 BGB, keine 'Textform'. Stattdessen: preaviso-Fristen, burofax con acuse de recibo als üblicher Nachweisweg, Fianza statt Kaution, desistimiento nach LAU statt ordentlicher Kündigung, oposición a la prórroga nach der Ley de Contrato de Seguro statt Versicherungskündigung.",
+    "Es werden bewusst keine Artikelnummern zitiert. Normen werden nur mit ihrem Namen benannt (Ley de Arrendamientos Urbanos, Estatuto de los Trabajadores, Ley de Contrato de Seguro) und inhaltlich beschrieben."
+  ],
+  "unsicher": [
+    "Telekommunikation: Der Mindest-Preaviso von zwei Werktagen und die Pflicht zur Ausgabe einer Baja-Referenznummer stammen aus der Verbraucherschutzregulierung für elektronische Kommunikationsdienste. Die Rechtsgrundlage wurde zuletzt mehrfach neu gefasst – ein lokaler Anwalt sollte prüfen, ob die genannten Pflichten in der aktuell geltenden Fassung unverändert bestehen.",
+    "Arbeitsrecht/Preaviso: Der Standardwert von fünfzehn Tagen ist branchenüblich, aber vollständig vom jeweiligen Convenio colectivo abhängig. Die Formulierung 'con frecuencia quince días' sollte ggf. neutraler gefasst oder je Branche differenziert werden.",
+    "Baja voluntaria per E-Mail: Für die Dimisión besteht keine gesetzliche Formvorschrift, in der Praxis verlangen Unternehmen aber ein unterschriebenes Dokument und die Beweislast liegt beim Arbeitnehmer. Deshalb wurde email: 'unsicher' gesetzt – ein lokaler Anwalt sollte bestätigen, ob 'ja' vertretbarer wäre.",
+    "LAU-Desistimiento: Sechs Monate Mindestlaufzeit und dreißig Tage Preaviso gelten für die Vermietung von Wohnraum als Hauptwohnsitz. Für Vermietung 'de temporada', Zimmervermietung, Untermiete und gewerbliche Mietverhältnisse gelten abweichende Regeln – die Vorlage miet-kuend unterscheidet das nicht.",
+    "Indemnización por desistimiento: Die Entschädigung von einer Monatsmiete je verbleibendem Vertragsjahr ist nur geschuldet, wenn sie ausdrücklich vereinbart wurde. Der tipp formuliert das als Möglichkeit; bitte prüfen, ob die Darstellung ausreichend klar ist.",
+    "Seguro / Art. 22 LCS: Die Monatsfrist für die Nichtverlängerung durch den Versicherungsnehmer gilt vorbehaltlich abweichender, für den Versicherungsnehmer günstigerer Policenbedingungen. Bei bestimmten Sparten (z. B. Lebensversicherung) gelten Sonderregeln, die in der Vorlage nicht abgebildet sind.",
+    "SEPA-Rückgabefrist: Die Acht-Wochen-Frist für autorisierte SEPA-Basislastschriften richtet sich an die Bank, nicht an den Gläubiger. In der Vorlage reklamation wird das erwähnt – bitte prüfen, ob die Adressierung an den Gläubiger irreführend wirken könnte.",
+    "Vollmacht/autorización: Eine privatschriftliche Autorización wird längst nicht überall akzeptiert; viele Verwaltungen (AEAT, DGT, Seguridad Social, Ayuntamientos) verlangen eigene Formulare, eine 'apoderamiento apud acta' oder ein notarielles poder. Der Warnhinweis im Body sollte fachlich abgesegnet werden.",
+    "Steuerlicher Wohnsitzwechsel: Der eigentliche Weg ist das Modelo 030 bzw. die Sede Electrónica der AEAT; ein formloser Brief ersetzt das in der Regel nicht. Die Vorlage weist darauf hin, ist aber ggf. als alleiniges Mittel unzureichend.",
+    "Fahrzeug (DGT): Alta, baja und cambio de titularidad werden praktisch ausschließlich über cita previa bzw. telematisch über die DGT oder einen Gestor abgewickelt; ein Brief ist unüblich. Die Vorlagen wurden deshalb als Anfrage nach Verfahren und Unterlagen formuliert.",
+    "Tasa de residuos: Seit der Reform des Abfallrechts sind die Gemeinden verpflichtet, eine kostendeckende Abfallgebühr zu erheben; Ausgestaltung, Schuldner und Ummeldeverfahren unterscheiden sich jedoch von Gemeinde zu Gemeinde. Eine landesweit gültige Formulierung ist hier kaum möglich."
+  ]
+}

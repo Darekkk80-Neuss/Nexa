@@ -2602,6 +2602,16 @@ const TDICT_SRC = {
   /* --- Nachtrag: UI-Texte, die zwischen KI-Prompts stehen (Arbeitszeit, Urlaubsantrag,
      Dokumentenanalyse). Der Prompt-Text selbst bleibt bewusst deutsch – er ist eine
      Anweisung an das Modell, keine Anzeige; die Ausgabesprache regelt langRule. --- */
+  /* Briefgenerator-Buttons (im Live-Test auf Polnisch als deutsche Reste gefunden). */
+  '🖨️ PDF / Drucken': { en: '🖨️ PDF / Print', fr: '🖨️ PDF / Imprimer', es: '🖨️ PDF / Imprimir', it: '🖨️ PDF / Stampa', pl: '🖨️ PDF / Drukuj' },
+  '📋 Kopieren': { en: '📋 Copy', fr: '📋 Copier', es: '📋 Copiar', it: '📋 Copia', pl: '📋 Kopiuj' },
+  '✉️ Als E-Mail': { en: '✉️ As email', fr: '✉️ Par e-mail', es: '✉️ Por correo', it: '✉️ Via e-mail', pl: '✉️ Jako e-mail' },
+  '✨ Mit KI verbessern': { en: '✨ Improve with AI', fr: '✨ Améliorer avec l\'IA', es: '✨ Mejorar con IA', it: '✨ Migliora con l\'IA', pl: '✨ Popraw z AI' },
+
+  '📝 Brief erstellen': { en: '📝 Create letter', fr: '📝 Créer le courrier', es: '📝 Crear carta', it: '📝 Crea lettera', pl: '📝 Utwórz pismo' },
+  '📄 Brief erstellen': { en: '📄 Create letter', fr: '📄 Créer le courrier', es: '📄 Crear carta', it: '📄 Crea lettera', pl: '📄 Utwórz pismo' },
+  '✓ Checkliste erstellen': { en: '✓ Create checklist', fr: '✓ Créer la check-list', es: '✓ Crear lista de control', it: '✓ Crea checklist', pl: '✓ Utwórz listę kontrolną' },
+
   /* --- Wetterlagen (wCode) und Pollenarten. Werden verkettet ausgegeben („21° Bedeckt")
      und daher über trStr() an der Quelle übersetzt, nicht über den DOM-Sweep. --- */
   'Klar': { en: 'Clear', fr: 'Dégagé', es: 'Despejado', it: 'Sereno', pl: 'Bezchmurnie' },
@@ -7514,6 +7524,105 @@ const DOC_TPL = [
 
 let dgState = 'browse', dgActiveId = null, dgValues = {}, dgQuery = '', dgSign = true, dgOverrideBody = null, dgProfileOpen = false, dgKuendArt = null, dgKuendConfirmed = false;
 const curTpl = () => DOC_TPL.find(x => x.id === dgActiveId);
+
+/* ===== Musterbriefe nach Landesrecht =====
+   Die deutschen Vorlagen oben bilden deutsches Recht ab (Schriftform § 623/§ 568 BGB,
+   Textform § 126b BGB, deutsche Behördenstruktur). Das lässt sich NICHT übersetzen –
+   Polen, Frankreich, Spanien und Italien haben je eigene Formerfordernisse. Darum liegt
+   je Sprache eine eigenständige, von Landesjuristen erstellte Fassung als
+   briefe.<lang>.json vor; Deutsch bleibt die eingebaute Quelle.
+   Fällt die Datei aus, greift automatisch die deutsche Vorlage (dokumentiert im Hinweis). */
+let _letterPack = null, _letterPackLang = null, _letterPackLoad = null;
+function letterPackLoad() {
+  const lang = (typeof curLang !== 'undefined' && curLang) ? curLang : 'de';
+  if (lang === 'de') { _letterPack = null; _letterPackLang = 'de'; return Promise.resolve(null); }
+  if (_letterPackLang === lang && _letterPackLoad) return _letterPackLoad;
+  _letterPackLang = lang;
+  _letterPackLoad = fetch('briefe.' + lang + '.json', { cache: 'force-cache' })
+    .then(r => (r.ok ? r.json() : Promise.reject(new Error('missing'))))
+    .then(d => { _letterPack = (d && d.vorlagen) ? d : null; return _letterPack; })
+    .catch(() => { _letterPack = null; return null; });
+  return _letterPackLoad;
+}
+/* Aktives Paket nur nutzen, wenn es zur eingestellten Sprache gehört. */
+const letterPack = () => (_letterPack && _letterPackLang === curLang) ? _letterPack : null;
+
+/* Datum der Landesfassungen. Ohne Datum bleibt der Wert LEER – die Vorlagen setzen
+   {datum} durchgängig auf eine beschriftete Zeile („Termin rozwiązania umowy: {datum}"),
+   die dann als Ganzes entfällt. Ein Ersatztext wie „baldmöglichst" wäre falsch, sobald
+   das Feld ein VERGANGENES Datum meint (Abbuchung, Mietende, Austrittsdatum) – die
+   Bitte um den nächstmöglichen Termin steht ohnehin als eigener Satz im Brieftext. */
+function letterDate(d) { return d ? fd(d) : ''; }
+
+/* Ort-und-Datum-Zeile. Das deutsche „Musterstadt, den 5. August" hat je Sprache
+   eine eigene Form – Französisch setzt „le", Italienisch „lì", Polnisch nur ein Komma. */
+function letterPlaceLine(p, today) {
+  const city = (p && p.city) || '';
+  if (!city) return today;
+  return city + pickLang({
+    de: ', den ', en: ', ', fr: ', le ', es: ', a ', it: ', lì ', pl: ', '
+  }) + today;
+}
+/* Sagt offen, welchem Recht die angezeigten Vorlagen folgen. Ohne das könnte ein
+   Nutzer in Warschau einen Brief nach deutschem Recht für verbindlich halten. */
+function letterJurisdictionHTML() {
+  if (curLang === 'de') return '';
+  const pack = letterPack();
+  if (pack && pack.land && pack.land !== 'INT') {
+    return '<div class="note-box" style="margin:10px 0;font-size:12.5px">⚖️ ' + esc(agentMsg({
+      de: 'Diese Vorlagen folgen dem Recht von {l}. Keine Rechtsberatung – im Zweifel Vertrag prüfen oder rechtlichen Rat einholen.',
+      en: 'These templates follow the law of {l}. Not legal advice – check your contract or seek legal advice if in doubt.',
+      fr: 'Ces modèles suivent le droit de {l}. Ceci n\'est pas un conseil juridique – vérifie ton contrat ou consulte un professionnel en cas de doute.',
+      es: 'Estas plantillas siguen el derecho de {l}. No es asesoramiento jurídico: revisa tu contrato o consulta a un profesional en caso de duda.',
+      it: 'Questi modelli seguono il diritto di {l}. Non è consulenza legale: controlla il contratto o rivolgiti a un professionista in caso di dubbio.',
+      pl: 'Te wzory opierają się na prawie kraju {l}. To nie jest porada prawna – w razie wątpliwości sprawdź umowę lub skonsultuj się z prawnikiem.'
+    }, { l: pack.land })) + '</div>';
+  }
+  const txt = pack
+    ? pickLang({
+      de: '', en: 'These templates are written to be jurisdiction-neutral. Notice periods and the required form depend on your contract and your country.',
+      fr: 'Ces modèles sont rédigés de façon neutre sur le plan juridique. Les délais et la forme requise dépendent de ton contrat et de ton pays.',
+      es: 'Estas plantillas son neutrales en cuanto a jurisdicción. Los plazos y la forma exigida dependen de tu contrato y de tu país.',
+      it: 'Questi modelli sono neutri dal punto di vista giuridico. I termini e la forma richiesta dipendono dal contratto e dal tuo Paese.',
+      pl: 'Te wzory są neutralne prawnie. Terminy i wymagana forma zależą od Twojej umowy i kraju.'
+    })
+    : pickLang({
+      de: '', en: 'These templates are based on German law. Please check the rules that apply in your country.',
+      fr: 'Ces modèles reposent sur le droit allemand. Vérifie les règles applicables dans ton pays.',
+      es: 'Estas plantillas se basan en el derecho alemán. Comprueba las normas de tu país.',
+      it: 'Questi modelli si basano sul diritto tedesco. Verifica le regole del tuo Paese.',
+      pl: 'Te wzory opierają się na prawie niemieckim. Sprawdź przepisy obowiązujące w Twoim kraju.'
+    });
+  return '<div class="note-box" style="margin:10px 0;font-size:12.5px">⚖️ ' + esc(txt) + '</div>';
+}
+
+/* Brieftext: Landesfassung mit Platzhaltern, sonst die deutsche Vorlagenfunktion. */
+function tplBody(t, v, p) {
+  const pack = letterPack();
+  const entry = pack && pack.vorlagen && pack.vorlagen[t.id];
+  if (!entry || !entry.body) return t.body(v, p);
+  /* Generisch über ALLE Formularfelder – die Vorlagen nutzen 20 verschiedene
+     (u. a. betrag, kennzeichen, bevoll, von/bis). Eine feste Liste hätte Felder
+     stillschweigend verschluckt. Nicht befüllte Platzhalter werden wie in den
+     deutschen Vorlagen zu „____" – so sieht der Nutzer, was noch fehlt, und es
+     landen niemals rohe geschweifte Klammern im fertigen Brief. */
+  const vals = Object.assign({}, v, {
+    datum: letterDate(v.datum),
+    name: (p && p.name) || '', absAdresse: [(p && p.street) || '', (p && p.city) || ''].filter(Boolean).join(', ')
+  });
+  const optional = new Set((t.fields || []).filter(f => f.endsWith('?')).map(f => f.slice(0, -1)));
+  const leer = (k) => { const v2 = vals[k]; return v2 == null || String(v2) === ''; };
+  return String(entry.body).split('\n').map(line => {
+    const marker = [...new Set((line.match(/\{(\w+)\}/g) || []).map(x => x.slice(1, -1)))];
+    /* Beschriftete Zeile, deren einziger Platzhalter ein leeres OPTIONALES Feld ist,
+       ganz verwerfen – sonst bliebe eine nackte Überschrift wie „Gültig ab:" stehen. */
+    if (marker.length === 1 && optional.has(marker[0]) && leer(marker[0])) {
+      const rest = line.replace(/\{\w+\}/g, '').trim();
+      if (rest === '' || /[:：]\s*$/.test(rest)) return null;
+    }
+    return line.replace(/\{(\w+)\}/g, (m, k) => (leer(k) ? (optional.has(k) ? '' : '____') : vals[k]));
+  }).filter(l => l !== null).join('\n').replace(/\n{3,}/g, '\n\n');
+}
 const profileComplete = () => !!(store.profile.name && store.profile.street && store.profile.city);
 function ensureProfileName() { if (!store.profile.name && store.name) store.profile.name = store.name; }
 
@@ -7545,10 +7654,23 @@ const KUENDIGUNG_FORMEN = {
     tipp: 'Bitte prüfe Vertrag, AGB bzw. Satzung – die zulässige Form kann variieren. Im Zweifel schriftlich per Einschreiben senden.' }
 };
 const KUENDIGUNG_ARTEN = ['arbeit', 'miete', 'handy', 'strom', 'streaming', 'fitness', 'versicherung', 'verein', 'sonstiges'];
-function kuendCfg(art) { return KUENDIGUNG_FORMEN[art] || KUENDIGUNG_FORMEN.sonstiges; }
-/* Der Kündigungsform-Prüf-Assistent gilt NUR für deutsches Recht → nur bei App-Sprache Deutsch anzeigen.
-   Für die anderen 5 Sprachen bleibt der Brief-Generator wie zuvor (ohne Prüfhilfe/Pflicht-Checkbox). */
-function kuendActive(t) { return !!(t && t.kuend) && curLang === 'de'; }
+/* Formerfordernisse sind Landesrecht. Deutsch nutzt die eingebaute Tabelle,
+   die anderen Sprachen die von Landesjuristen erstellte Fassung aus dem Sprachpaket. */
+function kuendCfg(art) {
+  const pack = letterPack();
+  const f = pack && pack.formen;
+  if (f && (f[art] || f.sonstiges)) return f[art] || f.sonstiges;
+  return KUENDIGUNG_FORMEN[art] || KUENDIGUNG_FORMEN.sonstiges;
+}
+/* Der Prüf-Assistent erscheint nur, wenn für die eingestellte Sprache auch
+   Landesrecht hinterlegt ist – sonst würde er deutsches Recht als allgemeingültig
+   ausgeben. Ohne Sprachpaket bleibt es beim reinen Brief-Generator. */
+function kuendActive(t) {
+  if (!t || !t.kuend) return false;
+  if (curLang === 'de') return true;
+  const pack = letterPack();
+  return !!(pack && pack.formen);
+}
 /* Ergebnis-Box der Prüfhilfe (Formanforderung + Empfehlung + „keine Rechtsberatung"). */
 function kuendHintHTML(art) {
   const c = kuendCfg(art);
@@ -7557,7 +7679,14 @@ function kuendHintHTML(art) {
   return '<div class="kf-result ' + cls + '" role="status" aria-live="polite">' +
     '<div class="kf-form">' + ic + ' <b>' + esc(c.form) + '</b></div>' +
     '<div class="kf-tipp">' + esc(c.tipp) + '</div>' +
-    '<div class="kf-disc">' + esc(KUENDIGUNG_DISCLAIMER) + '</div></div>';
+    '<div class="kf-disc">' + esc(pickLang({
+      de: KUENDIGUNG_DISCLAIMER,
+      en: 'Not legal advice — check your contract/terms or seek legal advice if in doubt.',
+      fr: 'Ceci n\'est pas un conseil juridique — vérifie ton contrat/les CGV ou consulte un professionnel en cas de doute.',
+      es: 'No es asesoramiento jurídico: revisa tu contrato o las condiciones, o consulta a un profesional en caso de duda.',
+      it: 'Non è consulenza legale: controlla il contratto o le condizioni, oppure rivolgiti a un professionista in caso di dubbio.',
+      pl: 'To nie jest porada prawna — w razie wątpliwości sprawdź umowę lub regulamin albo skonsultuj się z prawnikiem.'
+    })) + '</div></div>';
 }
 /* Pflicht-Hinweis + Prüfhilfe + Pflicht-Bestätigung, oben im Kündigungs-Formular. */
 function kuendFormBlock(t) {
@@ -7567,7 +7696,8 @@ function kuendFormBlock(t) {
     '<div><b>Wichtig: Nicht jede Kündigung ist per E-Mail rechtswirksam.</b> Prüfe vorher, welche Form (Schrift- oder Textform) und welcher Versandweg für deinen Vertrag zulässig sind – z. B. im Vertrag, in den AGB oder beim Anbieter. Bei Arbeits- und Wohnungs-Mietverträgen ist meist eine unterschriebene Kündigung auf Papier nötig.</div></div>';
   h += '<label class="kf-label" for="dgKuendArt">Um welche Vertragsart geht es?</label>';
   h += '<select id="dgKuendArt" class="kf-select" aria-label="Vertragsart für die Formprüfung">' +
-    KUENDIGUNG_ARTEN.map(k => '<option value="' + k + '"' + (k === art ? ' selected' : '') + '>' + esc(KUENDIGUNG_FORMEN[k].label) + '</option>').join('') + '</select>';
+    /* kuendCfg statt der deutschen Tabelle – sonst mischt die Auswahl die Sprachen. */
+    KUENDIGUNG_ARTEN.map(k => '<option value="' + k + '"' + (k === art ? ' selected' : '') + '>' + esc(kuendCfg(k).label) + '</option>').join('') + '</select>';
   h += '<div id="dgKuendResult">' + kuendHintHTML(art) + '</div>';
   h += '<label class="kf-confirm"><input type="checkbox" id="dgKuendConfirm"' + (dgKuendConfirmed ? ' checked' : '') + '> <span>Ich habe geprüft, welche Kündigungsform und welcher Versandweg für diesen Vertrag zulässig sind.</span></label>';
   h += '</div>';
@@ -7593,6 +7723,10 @@ function kuendVersandHTML(t) {
 
 RENDERERS.docgen = function () {
   ensureProfileName();
+  /* Landesfassung der Musterbriefe nachladen; ist sie da, einmal neu zeichnen. */
+  if (curLang !== 'de' && _letterPackLang !== curLang) {
+    letterPackLoad().then(() => { if (currentView === 'docgen') RENDERERS.docgen(); });
+  }
   $('#dgRoot').innerHTML = dgState === 'form' ? dgFormHTML() : dgState === 'result' ? dgResultHTML() : dgBrowseHTML();
 };
 
@@ -7609,6 +7743,7 @@ function dgBrowseHTML() {
   let h = '<div class="view-head"><h1>Briefe Vorlagen</h1><p>Fertige Briefe für Kündigungen, Behörden, Umzug & mehr – in Minuten erledigt.</p></div>';
   h += '<input type="text" id="dgSearch" class="dg-search" placeholder="🔎 Vorlage suchen …" value="' + esc(dgQuery) + '">';
   h += '<button class="btn btn-sm dg-free" data-dg="free">✨ Eigenes Anliegen mit KI formulieren</button>';
+  h += letterJurisdictionHTML();
   const favs = DOC_TPL.filter(t => store.docFavs.includes(t.id) && t.cat && match(t));
   if (!q && favs.length) h += '<div class="sec-title"><h2>⭐ Favoriten</h2></div>' + tplList(favs);
   DOC_CATS.forEach(c => {
@@ -7679,10 +7814,10 @@ function letterHTML(t, v, p) {
     const rec = [v.empfName, v.empfAddr].filter(x => x && x.trim()).join('\n');
     if (rec) h += '<div class="l-recipient">' + esc(rec).replace(/\n/g, '<br>') + '</div>';
   }
-  h += '<div class="l-place">' + esc((p.city ? p.city + ', den ' : '') + today) + '</div>';
+  h += '<div class="l-place">' + esc(letterPlaceLine(p, today)) + '</div>';
   h += '<div class="l-subject">' + esc(t.betreff(v)) + '</div>';
   if (!t.noSalutation) h += '<p>' + esc(t.salutation || 'Sehr geehrte Damen und Herren,') + '</p>';
-  const body = dgOverrideBody != null ? dgOverrideBody : t.body(v, p);
+  const body = dgOverrideBody != null ? dgOverrideBody : tplBody(t, v, p);
   h += '<div class="l-body">' + body.split(/\n\n+/).map(par => '<p>' + esc(par).replace(/\n/g, '<br>') + '</p>').join('') + '</div>';
   if (t.closing !== '') h += '<p style="margin-top:18px">' + esc(t.closing || 'Mit freundlichen Grüßen') + '</p>';
   h += '<div class="l-sign">' + (dgSign ? '<span class="sig">' + esc(p.name || '') + '</span>' : '') + '<span>' + esc(p.name || '') + '</span></div>';
@@ -7696,9 +7831,9 @@ function plainLetter(t, v, p) {
   if (p.phone) sl.push(p.phone);
   let o = sl.join('\n') + '\n\n';
   if (!t.noRecipient) { const r = [v.empfName, v.empfAddr].filter(x => x && x.trim()).join('\n'); if (r) o += r + '\n\n'; }
-  o += (p.city ? p.city + ', den ' : '') + today + '\n\n' + t.betreff(v) + '\n\n';
+  o += letterPlaceLine(p, today) + '\n\n' + t.betreff(v) + '\n\n';
   if (!t.noSalutation) o += (t.salutation || 'Sehr geehrte Damen und Herren,') + '\n\n';
-  o += (dgOverrideBody != null ? dgOverrideBody : t.body(v, p)) + '\n\n';
+  o += (dgOverrideBody != null ? dgOverrideBody : tplBody(t, v, p)) + '\n\n';
   if (t.closing !== '') o += (t.closing || 'Mit freundlichen Grüßen') + '\n\n';
   return o + (p.name || '');
 }
@@ -7749,7 +7884,7 @@ function dgFristAuto() {
 }
 async function dgAI() {
   if (!requireAI()) return;
-  const t = curTpl(), cur = dgOverrideBody != null ? dgOverrideBody : t.body(dgValues, store.profile);
+  const t = curTpl(), cur = dgOverrideBody != null ? dgOverrideBody : tplBody(t, dgValues, store.profile);
   toast('Effyra verbessert den Text …');
   try {
     const out = await aiCall({
