@@ -5732,12 +5732,24 @@ scSyncToggle();
    (2) AuthorityLookup „nächstes Amt" – SCHLÜSSELFREI über OpenStreetMap (gekapselt/austauschbar)
        + Karten-Deep-Links (Route/Suche, ohne Key); (3) offizielle Servicesuche als Deep-Link.
    Standort nur mit Consent, transient (NICHT gespeichert). Orientierung, keine Rechtsauskunft. */
-let _behData = null, _behLoad = null;
+let _behData = null, _behLoad = null, _behLang = null;   // _behLang: für welche Sprache die Daten geladen wurden
 const behState = { q: '', sel: null, plz: '', offices: null, oStatus: '' };
+/* Lädt die Anliegen-Registry in der App-Sprache (behoerden.<lang>.json); Deutsch = Original.
+   Bei fehlender/kaputter Sprachdatei automatischer Rückfall auf die deutsche Fassung.
+   Sprachwechsel lädt neu (_behLang), damit die Inhalte nicht in der alten Sprache hängen bleiben. */
 function behLoad() {
-  if (_behData) return Promise.resolve(_behData);
-  if (_behLoad) return _behLoad;
-  _behLoad = fetch('behoerden.json', { cache: 'force-cache' }).then(r => r.json()).then(d => { _behData = d || { anliegen: [] }; return _behData; }).catch(() => { _behData = { anliegen: [] }; return _behData; });
+  const lang = (typeof curLang !== 'undefined' && curLang) ? curLang : 'de';
+  if (_behData && _behLang === lang) return Promise.resolve(_behData);
+  if (_behLoad && _behLang === lang) return _behLoad;
+  _behLang = lang;
+  const file = (lang === 'de') ? 'behoerden.json' : ('behoerden.' + lang + '.json');
+  const useDE = () => fetch('behoerden.json', { cache: 'force-cache' }).then(r => r.json())
+    .then(d => { _behData = d || { anliegen: [] }; return _behData; })
+    .catch(() => { _behData = { anliegen: [] }; return _behData; });
+  _behLoad = fetch(file, { cache: 'force-cache' })
+    .then(r => (r.ok ? r.json() : Promise.reject(new Error('missing'))))
+    .then(d => { _behData = (d && d.anliegen) ? d : null; return _behData || useDE(); })
+    .catch(useDE);
   return _behLoad;
 }
 const behAnliegen = () => (_behData && _behData.anliegen) || [];

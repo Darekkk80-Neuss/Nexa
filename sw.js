@@ -3,12 +3,14 @@
    (kein „hängengebliebenes" altes HTML), offline greift der Cache.
    Nur GET-Anfragen der eigenen Origin werden abgefangen – Supabase, OpenAI,
    Google Fonts usw. laufen immer direkt durch. */
-const CACHE = 'effyra-v6';
+const CACHE = 'effyra-v7';
 const SHELL = ['./', './index.html', './manifest.webmanifest', './icon.svg', './bg.jpg',
   './impressum.html', './datenschutz.html', './nutzungsbedingungen.html', './konto-loeschen.html',
   './fonts/effyra-fonts.css', './vendor/supabase.min.js',
   './selbstfuersorge.json', './selbstfuersorge.en.json', './selbstfuersorge.fr.json',
-  './selbstfuersorge.es.json', './selbstfuersorge.it.json', './selbstfuersorge.pl.json'];
+  './selbstfuersorge.es.json', './selbstfuersorge.it.json', './selbstfuersorge.pl.json',
+  './behoerden.json', './behoerden.en.json', './behoerden.fr.json',
+  './behoerden.es.json', './behoerden.it.json', './behoerden.pl.json'];
 
 self.addEventListener('install', (e) => {
   self.skipWaiting();

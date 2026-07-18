@@ -1,0 +1,464 @@
+{
+  "version": 1,
+  "sprache": "en",
+  "encoding": "UTF-8",
+  "stand": "Juli 2026",
+  "anzahl": 20,
+  "gewaehr": "Orientierung, keine rechtsverbindliche Auskunft, ohne Gewaehr. Zustaendigkeiten, Unterlagen, Fristen und Gebuehren koennen je nach Bundesland und Kommune abweichen und sich aendern. Fuer Verbindliches stets die offizielle Servicesuche bzw. die zustaendige Behoerde pruefen.",
+  "offizielleSucheBasis": "https://servicesuche.bund.de",
+  "hinweisDeepLink": "Die App sollte beim Aufruf der offiziellen Suche PLZ/Standort und Anliegen an die Basis-URL anhaengen.",
+  "anliegen": [
+    {
+      "id": "wohnsitz-anmelden",
+      "titel": "Register your address (moving in)",
+      "lebenslage": "Moving house",
+      "amtstyp": "Residents' registration office (Bürgeramt / Einwohnermeldeamt)",
+      "unterlagen": [
+        "ID card or passport for every person being registered",
+        "Completed registration form (Anmeldeformular)",
+        "Landlord's confirmation of tenancy (Wohnungsgeberbestätigung)",
+        "If applicable, marriage/birth certificates for families"
+      ],
+      "schritte": [
+        "Book an appointment at the registration office (Bürgeramt)",
+        "Ask your landlord for the confirmation of tenancy (Wohnungsgeberbestätigung)",
+        "Register within the deadline after moving in",
+        "Hand in the form and show your ID documents"
+      ],
+      "hinweise": [
+        "Usually free of charge",
+        "Deadline is normally within 2 weeks of moving in",
+        "Registering late can result in a fine"
+      ],
+      "offizielleSuche": "https://servicesuche.bund.de"
+    },
+    {
+      "id": "wohnsitz-ummelden",
+      "titel": "Change your registered address (moving within Germany)",
+      "lebenslage": "Moving house",
+      "amtstyp": "Residents' registration office (Bürgeramt / Einwohnermeldeamt)",
+      "unterlagen": [
+        "ID card or passport",
+        "Registration form (Anmeldeformular)",
+        "Confirmation of tenancy from the new landlord (Wohnungsgeberbestätigung)"
+      ],
+      "schritte": [
+        "Book an appointment at your new place of residence",
+        "Obtain the confirmation of tenancy (Wohnungsgeberbestätigung)",
+        "Register at your new address within the deadline",
+        "The address on your ID card will be updated"
+      ],
+      "hinweise": [
+        "A separate deregistration at your old address is usually not needed when moving within Germany",
+        "The deadline is normally 2 weeks",
+        "Usually free of charge"
+      ],
+      "offizielleSuche": "https://servicesuche.bund.de"
+    },
+    {
+      "id": "wohnsitz-abmelden",
+      "titel": "Deregister your address (moving abroad / secondary residence)",
+      "lebenslage": "Moving house",
+      "amtstyp": "Residents' registration office (Bürgeramt / Einwohnermeldeamt)",
+      "unterlagen": [
+        "ID card or passport",
+        "Deregistration form (Abmeldeformular)"
+      ],
+      "schritte": [
+        "You can deregister at the earliest shortly before you move out",
+        "Fill in the form",
+        "Submit it to the registration office (Bürgeramt) – often possible by post or online"
+      ],
+      "hinweise": [
+        "Required when moving abroad or giving up a secondary residence (Nebenwohnung)",
+        "No deregistration needed when moving within Germany",
+        "Usually free of charge"
+      ],
+      "offizielleSuche": "https://servicesuche.bund.de"
+    },
+    {
+      "id": "personalausweis",
+      "titel": "Apply for or renew a German ID card (Personalausweis)",
+      "lebenslage": "ID cards & documents",
+      "amtstyp": "Residents' registration office (Bürgeramt)",
+      "unterlagen": [
+        "Your current ID card (Personalausweis) or passport",
+        "Digital biometric passport photo (mandatory since May 2025)",
+        "For a first application, birth or marriage certificate if required",
+        "Fee"
+      ],
+      "schritte": [
+        "Book an appointment",
+        "Have a digital biometric photo taken (at a terminal in the office or at a connected photographer)",
+        "Attend in person – your fingerprints will be taken",
+        "Collect the ID card or have it sent to your home for a fee"
+      ],
+      "hinweise": [
+        "Since 1 May 2025 only digital biometric photos are accepted – paper photos are no longer allowed",
+        "Direct delivery to your home is possible for a fee",
+        "You must appear in person"
+      ],
+      "offizielleSuche": "https://servicesuche.bund.de"
+    },
+    {
+      "id": "reisepass",
+      "titel": "Apply for a passport (Reisepass)",
+      "lebenslage": "ID cards & documents",
+      "amtstyp": "Residents' registration office / passport authority (Bürgeramt / Passbehörde)",
+      "unterlagen": [
+        "ID card (Personalausweis) or old passport",
+        "Digital biometric passport photo (mandatory since May 2025)",
+        "Birth or marriage certificate if required",
+        "Fee"
+      ],
+      "schritte": [
+        "Book an appointment",
+        "Have a digital biometric photo taken",
+        "Attend in person",
+        "Collect the passport or have it sent to your home"
+      ],
+      "hinweise": [
+        "Digital passport photos have been mandatory since May 2025",
+        "An express passport is available for an extra charge",
+        "You must appear in person"
+      ],
+      "offizielleSuche": "https://servicesuche.bund.de"
+    },
+    {
+      "id": "kfz-anmelden",
+      "titel": "Register a car (first registration)",
+      "lebenslage": "Vehicles & mobility",
+      "amtstyp": "Vehicle registration office (KFZ-Zulassungsstelle)",
+      "unterlagen": [
+        "ID card or passport",
+        "Vehicle registration certificates Part I and Part II (Zulassungsbescheinigung Teil I und Teil II)",
+        "eVB number (electronic confirmation of insurance cover, eVB-Nummer)",
+        "SEPA direct debit mandate for the vehicle tax (Kfz-Steuer)",
+        "For a used vehicle, a valid roadworthiness/emissions test certificate (HU/AU)",
+        "Licence plates (usually stamped on site)"
+      ],
+      "schritte": [
+        "Get the eVB number from your car insurer",
+        "Book an appointment at the registration office (Zulassungsstelle)",
+        "Present your documents",
+        "Have the licence plates stamped and the car registered",
+        "Attach the inspection stickers"
+      ],
+      "hinweise": [
+        "Many registrations can be done online (i-Kfz)",
+        "Fees apply"
+      ],
+      "offizielleSuche": "https://servicesuche.bund.de"
+    },
+    {
+      "id": "kfz-ummelden",
+      "titel": "Re-register a car",
+      "lebenslage": "Vehicles & mobility",
+      "amtstyp": "Vehicle registration office (KFZ-Zulassungsstelle)",
+      "unterlagen": [
+        "ID card (Personalausweis)",
+        "Vehicle registration certificates Part I and Part II (Zulassungsbescheinigung Teil I und Teil II)",
+        "eVB number (when the owner changes)",
+        "SEPA direct debit mandate",
+        "Current licence plates",
+        "Proof of a valid roadworthiness test (HU)"
+      ],
+      "schritte": [
+        "Get an eVB number (when the owner changes)",
+        "Book an appointment",
+        "Present your documents",
+        "New licence plates if required"
+      ],
+      "hinweise": [
+        "When moving within Germany you can usually keep your licence plates",
+        "Partly possible online via i-Kfz"
+      ],
+      "offizielleSuche": "https://servicesuche.bund.de"
+    },
+    {
+      "id": "kfz-abmelden",
+      "titel": "Deregister a car (take it off the road)",
+      "lebenslage": "Vehicles & mobility",
+      "amtstyp": "Vehicle registration office (KFZ-Zulassungsstelle)",
+      "unterlagen": [
+        "ID card (Personalausweis)",
+        "Vehicle registration certificate Part I (Zulassungsbescheinigung Teil I)",
+        "Licence plates with the registration seal"
+      ],
+      "schritte": [
+        "Book an appointment or do it online via i-Kfz",
+        "Present or hand in the plates and the registration certificate",
+        "Get the deregistration confirmed"
+      ],
+      "hinweise": [
+        "Online deregistration (i-Kfz) is usually possible",
+        "Small fee"
+      ],
+      "offizielleSuche": "https://servicesuche.bund.de"
+    },
+    {
+      "id": "fuehrerschein-ersterteilung",
+      "titel": "Apply for a driving licence (first issue)",
+      "lebenslage": "Vehicles & mobility",
+      "amtstyp": "Driving licence authority (Führerscheinstelle / Fahrerlaubnisbehörde)",
+      "unterlagen": [
+        "ID card or passport",
+        "Biometric passport photo (paper photo accepted)",
+        "Eyesight test certificate (Sehtest-Bescheinigung)",
+        "Proof of a first aid course (Erste-Hilfe-Kurs)",
+        "Confirmation from the driving school",
+        "Application form"
+      ],
+      "schritte": [
+        "Take the eyesight test and the first aid course",
+        "Apply at the driving licence authority (often handled by the driving school)",
+        "Pass the theory and practical tests",
+        "Collect your driving licence"
+      ],
+      "hinweise": [
+        "Paper passport photos are still accepted for driving licences (unlike for ID cards and passports)",
+        "Apply a few weeks before your test"
+      ],
+      "offizielleSuche": "https://servicesuche.bund.de"
+    },
+    {
+      "id": "fuehrerschein-umtausch",
+      "titel": "Exchange your driving licence (mandatory exchange)",
+      "lebenslage": "Vehicles & mobility",
+      "amtstyp": "Driving licence authority (Führerscheinstelle)",
+      "unterlagen": [
+        "Your old driving licence",
+        "ID card (Personalausweis)",
+        "Biometric passport photo (paper photo accepted)",
+        "Application form"
+      ],
+      "schritte": [
+        "Check the exchange deadline for your year of birth",
+        "Apply at the driving licence authority (Führerscheinstelle)",
+        "Collect your new card-format driving licence"
+      ],
+      "hinweise": [
+        "Deadlines are staggered by year of birth or year of issue",
+        "Paper passport photos are accepted"
+      ],
+      "offizielleSuche": "https://servicesuche.bund.de"
+    },
+    {
+      "id": "gewerbe-anmelden",
+      "titel": "Register a business (Gewerbeanmeldung)",
+      "lebenslage": "Business & self-employment",
+      "amtstyp": "Trade office / public order office (Gewerbeamt / Ordnungsamt)",
+      "unterlagen": [
+        "ID card or passport",
+        "Business registration form (Gewerbeanmeldeformular GewA 1)",
+        "Any permits or licences required for your activity",
+        "Extract from the commercial register (Handelsregisterauszug) if applicable"
+      ],
+      "schritte": [
+        "Fill in the form",
+        "Register at the trade office (Gewerbeamt) – often possible online",
+        "Pay the fee",
+        "The tax office (Finanzamt) will then contact you for tax registration"
+      ],
+      "hinweise": [
+        "Registering automatically notifies the tax office (Finanzamt) and the chamber of commerce or crafts (IHK/HWK)",
+        "The fee depends on your municipality"
+      ],
+      "offizielleSuche": "https://servicesuche.bund.de"
+    },
+    {
+      "id": "gewerbe-abmelden",
+      "titel": "Deregister a business (Gewerbeabmeldung)",
+      "lebenslage": "Business & self-employment",
+      "amtstyp": "Trade office (Gewerbeamt)",
+      "unterlagen": [
+        "ID card (Personalausweis)",
+        "Business deregistration form (Gewerbeabmeldeformular GewA 3)"
+      ],
+      "schritte": [
+        "Fill in the form",
+        "Submit it to the trade office (Gewerbeamt) – often possible online"
+      ],
+      "hinweise": [
+        "Often free of charge or only a small fee",
+        "Remember to inform the tax office (Finanzamt) as well"
+      ],
+      "offizielleSuche": "https://servicesuche.bund.de"
+    },
+    {
+      "id": "eheschliessung",
+      "titel": "Give notice of marriage",
+      "lebenslage": "Family & partnership",
+      "amtstyp": "Registry office (Standesamt)",
+      "unterlagen": [
+        "ID card or passport of both partners",
+        "Recent certified copy from the register of births (beglaubigte Abschrift aus dem Geburtenregister)",
+        "Extended registration certificate (erweiterte Meldebescheinigung)",
+        "If applicable, proof regarding previous marriages (divorce decree, death certificate)"
+      ],
+      "schritte": [
+        "Book an appointment at the registry office (Standesamt) where you live to give notice",
+        "Gather all the documents",
+        "Give notice together in person",
+        "Arrange a date for the ceremony"
+      ],
+      "hinweise": [
+        "Get the documents early – processing takes time",
+        "The exact requirements can vary from case to case"
+      ],
+      "offizielleSuche": "https://servicesuche.bund.de"
+    },
+    {
+      "id": "geburtsurkunde",
+      "titel": "Apply for a birth certificate",
+      "lebenslage": "Family & partnership",
+      "amtstyp": "Registry office of the place of birth (Standesamt)",
+      "unterlagen": [
+        "ID card or passport",
+        "Personal details (name, date and place of birth)",
+        "Proof that you are entitled to the certificate, if required"
+      ],
+      "schritte": [
+        "Find the responsible registry office (the one at the place of birth)",
+        "Submit the application (often possible online or by post)",
+        "Pay the fee",
+        "Receive the certificate by post or collect it"
+      ],
+      "hinweise": [
+        "Only certain people are entitled to request the certificate",
+        "A fee applies per certificate"
+      ],
+      "offizielleSuche": "https://servicesuche.bund.de"
+    },
+    {
+      "id": "sterbeurkunde",
+      "titel": "Register a death / apply for a death certificate",
+      "lebenslage": "Bereavement",
+      "amtstyp": "Registry office of the place of death (Standesamt)",
+      "unterlagen": [
+        "ID card of the person reporting the death",
+        "Medical certificate of death (Todesbescheinigung)",
+        "Identity documents of the deceased",
+        "Birth or marriage certificate of the deceased"
+      ],
+      "schritte": [
+        "Report the death to the registry office promptly (often done by the funeral director)",
+        "Submit the documents",
+        "Request as many copies of the death certificate as you need"
+      ],
+      "hinweise": [
+        "The funeral director often takes care of the formalities",
+        "Several copies are useful for insurers and pension providers"
+      ],
+      "offizielleSuche": "https://servicesuche.bund.de"
+    },
+    {
+      "id": "kindergeld",
+      "titel": "Apply for child benefit (Kindergeld)",
+      "lebenslage": "Family & partnership",
+      "amtstyp": "Family benefits office at the Federal Employment Agency (Familienkasse, Bundesagentur für Arbeit)",
+      "unterlagen": [
+        "Tax identification number (Steuer-Identifikationsnummer) of the child and of the applicant",
+        "The child's birth certificate",
+        "Child benefit application form (Antrag auf Kindergeld)"
+      ],
+      "schritte": [
+        "Apply online or in writing to the family benefits office (Familienkasse)",
+        "Attach the birth certificate and the tax IDs",
+        "Wait for the decision"
+      ],
+      "hinweise": [
+        "Child benefit is only paid retroactively for a limited period – apply as soon as possible"
+      ],
+      "offizielleSuche": "https://servicesuche.bund.de"
+    },
+    {
+      "id": "elterngeld",
+      "titel": "Apply for parental allowance (Elterngeld)",
+      "lebenslage": "Family & partnership",
+      "amtstyp": "Parental allowance office (Elterngeldstelle)",
+      "unterlagen": [
+        "The child's birth certificate (marked for use for Elterngeld)",
+        "Proof of income",
+        "Certificate from your health insurer about maternity benefits",
+        "ID card (Personalausweis)",
+        "Application form"
+      ],
+      "schritte": [
+        "Apply to the responsible parental allowance office (Elterngeldstelle)",
+        "Attach the supporting documents",
+        "Wait for your application to be processed"
+      ],
+      "hinweise": [
+        "Payments are backdated only for the child's most recent months of life – apply as soon as possible",
+        "Which office is responsible varies from state to state"
+      ],
+      "offizielleSuche": "https://servicesuche.bund.de"
+    },
+    {
+      "id": "finanzamt-erfassung",
+      "titel": "Tax registration / tax number (tax office, Finanzamt)",
+      "lebenslage": "Business & self-employment",
+      "amtstyp": "Tax office (Finanzamt)",
+      "unterlagen": [
+        "ID card (Personalausweis)",
+        "Business registration (Gewerbeanmeldung) if applicable",
+        "Details of your activity and your expected income"
+      ],
+      "schritte": [
+        "When starting self-employed work, fill in the tax registration questionnaire (Fragebogen zur steuerlichen Erfassung) via ELSTER",
+        "Send it to the responsible tax office (Finanzamt)",
+        "Wait for your tax number"
+      ],
+      "hinweise": [
+        "The tax identification number (Steuer-Identifikationsnummer) is issued automatically and sent by post",
+        "For self-employed people: use the questionnaire in ELSTER"
+      ],
+      "offizielleSuche": "https://servicesuche.bund.de"
+    },
+    {
+      "id": "fuehrungszeugnis",
+      "titel": "Apply for a certificate of good conduct (Führungszeugnis)",
+      "lebenslage": "ID cards & documents",
+      "amtstyp": "Residents' registration office (Bürgeramt); issued by the Federal Office of Justice (Bundesamt für Justiz)",
+      "unterlagen": [
+        "ID card or passport",
+        "Statement of the intended purpose, if required",
+        "Fee"
+      ],
+      "schritte": [
+        "Apply at the registration office (Bürgeramt) or online at the Federal Office of Justice (Bundesamt für Justiz)",
+        "Pay the fee",
+        "Receive the certificate by post"
+      ],
+      "hinweise": [
+        "You can apply online using the eID function of your ID card",
+        "Delivery takes a few days"
+      ],
+      "offizielleSuche": "https://servicesuche.bund.de"
+    },
+    {
+      "id": "bewohnerparkausweis",
+      "titel": "Apply for a resident parking permit (Bewohnerparkausweis)",
+      "lebenslage": "Vehicles & mobility",
+      "amtstyp": "Residents' registration office / road traffic authority (Bürgeramt / Straßenverkehrsbehörde)",
+      "unterlagen": [
+        "ID card showing a registered address inside the parking zone",
+        "Vehicle registration certificate Part I (car registered to the applicant)",
+        "Application form",
+        "Fee"
+      ],
+      "schritte": [
+        "Check which parking zone applies to you",
+        "Submit the application (often possible online)",
+        "Pay the fee",
+        "Receive your permit"
+      ],
+      "hinweise": [
+        "Only for residents of the respective parking zone",
+        "Usually has to be renewed every year"
+      ],
+      "offizielleSuche": "https://servicesuche.bund.de"
+    }
+  ]
+}

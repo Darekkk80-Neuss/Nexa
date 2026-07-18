@@ -1,0 +1,464 @@
+{
+  "version": 1,
+  "sprache": "fr",
+  "encoding": "UTF-8",
+  "stand": "Juli 2026",
+  "anzahl": 20,
+  "gewaehr": "Orientierung, keine rechtsverbindliche Auskunft, ohne Gewaehr. Zustaendigkeiten, Unterlagen, Fristen und Gebuehren koennen je nach Bundesland und Kommune abweichen und sich aendern. Fuer Verbindliches stets die offizielle Servicesuche bzw. die zustaendige Behoerde pruefen.",
+  "offizielleSucheBasis": "https://servicesuche.bund.de",
+  "hinweisDeepLink": "Die App sollte beim Aufruf der offiziellen Suche PLZ/Standort und Anliegen an die Basis-URL anhaengen.",
+  "anliegen": [
+    {
+      "id": "wohnsitz-anmelden",
+      "titel": "Déclarer son domicile (emménagement)",
+      "lebenslage": "Déménagement",
+      "amtstyp": "Service de la population (Bürgeramt / Einwohnermeldeamt)",
+      "unterlagen": [
+        "Carte d'identité ou passeport de toutes les personnes à déclarer",
+        "Formulaire de déclaration rempli (Anmeldeformular)",
+        "Attestation du bailleur confirmant l'emménagement (Wohnungsgeberbestätigung)",
+        "Le cas échéant, actes de mariage ou de naissance pour les familles"
+      ],
+      "schritte": [
+        "Prendre rendez-vous au service de la population (Bürgeramt)",
+        "Demander au bailleur l'attestation de logement (Wohnungsgeberbestätigung)",
+        "Se déclarer dans le délai imparti après l'emménagement",
+        "Remettre le formulaire et présenter les pièces d'identité"
+      ],
+      "hinweise": [
+        "En principe gratuit",
+        "Le délai est généralement de 2 semaines après l'emménagement",
+        "Un retard peut entraîner une amende"
+      ],
+      "offizielleSuche": "https://servicesuche.bund.de"
+    },
+    {
+      "id": "wohnsitz-ummelden",
+      "titel": "Changer d'adresse déclarée (déménagement en Allemagne)",
+      "lebenslage": "Déménagement",
+      "amtstyp": "Service de la population (Bürgeramt / Einwohnermeldeamt)",
+      "unterlagen": [
+        "Carte d'identité ou passeport",
+        "Formulaire de déclaration (Anmeldeformular)",
+        "Attestation du nouveau bailleur (Wohnungsgeberbestätigung)"
+      ],
+      "schritte": [
+        "Prendre rendez-vous dans la commune du nouveau domicile",
+        "Obtenir l'attestation du bailleur (Wohnungsgeberbestätigung)",
+        "Se déclarer à la nouvelle adresse dans le délai imparti",
+        "L'adresse figurant sur la carte d'identité est mise à jour"
+      ],
+      "hinweise": [
+        "En cas de déménagement à l'intérieur de l'Allemagne, une radiation séparée à l'ancienne adresse n'est généralement pas nécessaire",
+        "Le délai est généralement de 2 semaines",
+        "En principe gratuit"
+      ],
+      "offizielleSuche": "https://servicesuche.bund.de"
+    },
+    {
+      "id": "wohnsitz-abmelden",
+      "titel": "Radier son domicile (départ à l'étranger / résidence secondaire)",
+      "lebenslage": "Déménagement",
+      "amtstyp": "Service de la population (Bürgeramt / Einwohnermeldeamt)",
+      "unterlagen": [
+        "Carte d'identité ou passeport",
+        "Formulaire de radiation (Abmeldeformular)"
+      ],
+      "schritte": [
+        "La radiation n'est possible qu'un peu avant le déménagement",
+        "Remplir le formulaire",
+        "Le déposer au service de la population (Bürgeramt) – souvent aussi par courrier ou en ligne"
+      ],
+      "hinweise": [
+        "Nécessaire en cas de départ à l'étranger ou d'abandon d'une résidence secondaire (Nebenwohnung)",
+        "Aucune radiation n'est nécessaire pour un déménagement à l'intérieur de l'Allemagne",
+        "En principe gratuit"
+      ],
+      "offizielleSuche": "https://servicesuche.bund.de"
+    },
+    {
+      "id": "personalausweis",
+      "titel": "Demander ou renouveler la carte d'identité allemande (Personalausweis)",
+      "lebenslage": "Papiers & documents",
+      "amtstyp": "Service de la population (Bürgeramt)",
+      "unterlagen": [
+        "Ancienne carte d'identité (Personalausweis) ou passeport",
+        "Photo d'identité biométrique numérique (obligatoire depuis mai 2025)",
+        "Pour une première demande, acte de naissance ou de mariage si nécessaire",
+        "Frais de dossier"
+      ],
+      "schritte": [
+        "Prendre rendez-vous",
+        "Faire réaliser une photo biométrique numérique (à la borne du service ou chez un photographe agréé)",
+        "Se présenter en personne ; les empreintes digitales sont relevées",
+        "Retirer la carte ou la faire envoyer à domicile moyennant des frais"
+      ],
+      "hinweise": [
+        "Depuis le 1er mai 2025, seules les photos biométriques numériques sont acceptées – les photos papier ne le sont plus",
+        "L'envoi direct à domicile est possible moyennant des frais",
+        "La présence en personne est obligatoire"
+      ],
+      "offizielleSuche": "https://servicesuche.bund.de"
+    },
+    {
+      "id": "reisepass",
+      "titel": "Demander un passeport (Reisepass)",
+      "lebenslage": "Papiers & documents",
+      "amtstyp": "Service de la population / service des passeports (Bürgeramt / Passbehörde)",
+      "unterlagen": [
+        "Carte d'identité (Personalausweis) ou ancien passeport",
+        "Photo d'identité biométrique numérique (obligatoire depuis mai 2025)",
+        "Le cas échéant, acte de naissance ou de mariage",
+        "Frais de dossier"
+      ],
+      "schritte": [
+        "Prendre rendez-vous",
+        "Faire réaliser une photo biométrique numérique",
+        "Se présenter en personne",
+        "Retirer le passeport ou le faire envoyer à domicile"
+      ],
+      "hinweise": [
+        "La photo numérique est obligatoire depuis mai 2025",
+        "Un passeport express est possible moyennant un supplément",
+        "La présence en personne est obligatoire"
+      ],
+      "offizielleSuche": "https://servicesuche.bund.de"
+    },
+    {
+      "id": "kfz-anmelden",
+      "titel": "Immatriculer une voiture (première immatriculation)",
+      "lebenslage": "Véhicule & mobilité",
+      "amtstyp": "Service des immatriculations (KFZ-Zulassungsstelle)",
+      "unterlagen": [
+        "Carte d'identité ou passeport",
+        "Certificats d'immatriculation partie I et partie II (Zulassungsbescheinigung Teil I und Teil II)",
+        "Numéro eVB (attestation d'assurance électronique, eVB-Nummer)",
+        "Mandat de prélèvement SEPA pour la taxe sur les véhicules (Kfz-Steuer)",
+        "Pour un véhicule d'occasion, certificat de contrôle technique valable (HU/AU)",
+        "Plaques d'immatriculation (généralement frappées sur place)"
+      ],
+      "schritte": [
+        "Obtenir le numéro eVB auprès de votre assurance auto",
+        "Prendre rendez-vous au service des immatriculations (Zulassungsstelle)",
+        "Présenter les documents",
+        "Faire frapper les plaques et immatriculer le véhicule",
+        "Apposer les vignettes"
+      ],
+      "hinweise": [
+        "De nombreuses immatriculations peuvent se faire en ligne (i-Kfz)",
+        "Des frais sont à prévoir"
+      ],
+      "offizielleSuche": "https://servicesuche.bund.de"
+    },
+    {
+      "id": "kfz-ummelden",
+      "titel": "Réimmatriculer une voiture",
+      "lebenslage": "Véhicule & mobilité",
+      "amtstyp": "Service des immatriculations (KFZ-Zulassungsstelle)",
+      "unterlagen": [
+        "Carte d'identité (Personalausweis)",
+        "Certificats d'immatriculation partie I et partie II (Zulassungsbescheinigung Teil I und Teil II)",
+        "Numéro eVB (en cas de changement de titulaire)",
+        "Mandat de prélèvement SEPA",
+        "Plaques d'immatriculation actuelles",
+        "Justificatif du contrôle technique (HU)"
+      ],
+      "schritte": [
+        "Obtenir un numéro eVB (en cas de changement de titulaire)",
+        "Prendre rendez-vous",
+        "Présenter les documents",
+        "Le cas échéant, nouvelles plaques d'immatriculation"
+      ],
+      "hinweise": [
+        "En cas de déménagement en Allemagne, vous pouvez généralement conserver vos plaques",
+        "En partie possible en ligne via i-Kfz"
+      ],
+      "offizielleSuche": "https://servicesuche.bund.de"
+    },
+    {
+      "id": "kfz-abmelden",
+      "titel": "Radier une voiture (mise hors circulation)",
+      "lebenslage": "Véhicule & mobilité",
+      "amtstyp": "Service des immatriculations (KFZ-Zulassungsstelle)",
+      "unterlagen": [
+        "Carte d'identité (Personalausweis)",
+        "Certificat d'immatriculation partie I (Zulassungsbescheinigung Teil I)",
+        "Plaques d'immatriculation avec le sceau"
+      ],
+      "schritte": [
+        "Prendre rendez-vous ou faire la démarche en ligne via i-Kfz",
+        "Présenter ou remettre les plaques et le certificat",
+        "Faire confirmer la mise hors circulation"
+      ],
+      "hinweise": [
+        "La radiation en ligne (i-Kfz) est généralement possible",
+        "Frais modiques"
+      ],
+      "offizielleSuche": "https://servicesuche.bund.de"
+    },
+    {
+      "id": "fuehrerschein-ersterteilung",
+      "titel": "Demander un permis de conduire (première délivrance)",
+      "lebenslage": "Véhicule & mobilité",
+      "amtstyp": "Service des permis de conduire (Führerscheinstelle / Fahrerlaubnisbehörde)",
+      "unterlagen": [
+        "Carte d'identité ou passeport",
+        "Photo d'identité biométrique (photo papier acceptée)",
+        "Attestation de test de la vue (Sehtest-Bescheinigung)",
+        "Justificatif du cours de premiers secours (Erste-Hilfe-Kurs)",
+        "Attestation de l'auto-école",
+        "Formulaire de demande"
+      ],
+      "schritte": [
+        "Passer le test de la vue et le cours de premiers secours",
+        "Déposer la demande au service des permis de conduire (souvent via l'auto-école)",
+        "Passer l'examen théorique et l'examen pratique",
+        "Retirer le permis de conduire"
+      ],
+      "hinweise": [
+        "Pour le permis de conduire, les photos papier restent acceptées (contrairement à la carte d'identité et au passeport)",
+        "Déposer la demande quelques semaines avant l'examen"
+      ],
+      "offizielleSuche": "https://servicesuche.bund.de"
+    },
+    {
+      "id": "fuehrerschein-umtausch",
+      "titel": "Échanger son permis de conduire (échange obligatoire)",
+      "lebenslage": "Véhicule & mobilité",
+      "amtstyp": "Service des permis de conduire (Führerscheinstelle)",
+      "unterlagen": [
+        "Ancien permis de conduire",
+        "Carte d'identité (Personalausweis)",
+        "Photo d'identité biométrique (photo papier acceptée)",
+        "Formulaire de demande"
+      ],
+      "schritte": [
+        "Vérifier le délai d'échange correspondant à votre année de naissance",
+        "Déposer la demande au service des permis de conduire (Führerscheinstelle)",
+        "Retirer le nouveau permis au format carte"
+      ],
+      "hinweise": [
+        "Les délais d'échange sont échelonnés selon l'année de naissance ou l'année de délivrance",
+        "La photo papier est acceptée"
+      ],
+      "offizielleSuche": "https://servicesuche.bund.de"
+    },
+    {
+      "id": "gewerbe-anmelden",
+      "titel": "Déclarer une activité commerciale (Gewerbeanmeldung)",
+      "lebenslage": "Entreprise & travail indépendant",
+      "amtstyp": "Service des activités économiques (Gewerbeamt / Ordnungsamt)",
+      "unterlagen": [
+        "Carte d'identité ou passeport",
+        "Formulaire de déclaration d'activité (Gewerbeanmeldeformular GewA 1)",
+        "Autorisations ou agréments requis selon l'activité exercée",
+        "Le cas échéant, extrait du registre du commerce (Handelsregisterauszug)"
+      ],
+      "schritte": [
+        "Remplir le formulaire",
+        "Déclarer l'activité au Gewerbeamt (souvent possible en ligne)",
+        "Payer les frais",
+        "Le centre des impôts (Finanzamt) vous contactera ensuite pour l'enregistrement fiscal"
+      ],
+      "hinweise": [
+        "La déclaration informe automatiquement le centre des impôts (Finanzamt) et la chambre de commerce ou des métiers (IHK/HWK)",
+        "Les frais varient selon la commune"
+      ],
+      "offizielleSuche": "https://servicesuche.bund.de"
+    },
+    {
+      "id": "gewerbe-abmelden",
+      "titel": "Cesser une activité commerciale (Gewerbeabmeldung)",
+      "lebenslage": "Entreprise & travail indépendant",
+      "amtstyp": "Service des activités économiques (Gewerbeamt)",
+      "unterlagen": [
+        "Carte d'identité (Personalausweis)",
+        "Formulaire de cessation d'activité (Gewerbeabmeldeformular GewA 3)"
+      ],
+      "schritte": [
+        "Remplir le formulaire",
+        "Le déposer au Gewerbeamt (souvent possible en ligne)"
+      ],
+      "hinweise": [
+        "Souvent gratuit ou avec des frais modiques",
+        "Pensez également à informer le centre des impôts (Finanzamt)"
+      ],
+      "offizielleSuche": "https://servicesuche.bund.de"
+    },
+    {
+      "id": "eheschliessung",
+      "titel": "Déposer un dossier de mariage",
+      "lebenslage": "Famille & couple",
+      "amtstyp": "Service de l'état civil (Standesamt)",
+      "unterlagen": [
+        "Carte d'identité ou passeport des deux partenaires",
+        "Copie certifiée récente du registre des naissances (beglaubigte Abschrift aus dem Geburtenregister)",
+        "Attestation de domicile détaillée (erweiterte Meldebescheinigung)",
+        "Le cas échéant, justificatifs concernant des mariages antérieurs (jugement de divorce, acte de décès)"
+      ],
+      "schritte": [
+        "Prendre rendez-vous au service de l'état civil (Standesamt) de votre commune pour déposer le dossier",
+        "Réunir les documents",
+        "Se présenter ensemble en personne",
+        "Fixer la date de la cérémonie"
+      ],
+      "hinweise": [
+        "Demandez les documents tôt, les délais de traitement peuvent être longs",
+        "Les exigences précises peuvent varier d'un cas à l'autre"
+      ],
+      "offizielleSuche": "https://servicesuche.bund.de"
+    },
+    {
+      "id": "geburtsurkunde",
+      "titel": "Demander un acte de naissance",
+      "lebenslage": "Famille & couple",
+      "amtstyp": "Service de l'état civil du lieu de naissance (Standesamt)",
+      "unterlagen": [
+        "Carte d'identité ou passeport",
+        "Données personnelles (nom, date et lieu de naissance)",
+        "Le cas échéant, justificatif du droit à obtenir l'acte"
+      ],
+      "schritte": [
+        "Identifier le service de l'état civil compétent (celui du lieu de naissance)",
+        "Déposer la demande (souvent possible en ligne ou par courrier)",
+        "Payer les frais",
+        "Recevoir l'acte par courrier ou le retirer sur place"
+      ],
+      "hinweise": [
+        "Seules certaines personnes sont habilitées à demander l'acte",
+        "Des frais s'appliquent par acte"
+      ],
+      "offizielleSuche": "https://servicesuche.bund.de"
+    },
+    {
+      "id": "sterbeurkunde",
+      "titel": "Déclarer un décès / demander un acte de décès",
+      "lebenslage": "Décès d'un proche",
+      "amtstyp": "Service de l'état civil du lieu du décès (Standesamt)",
+      "unterlagen": [
+        "Carte d'identité de la personne qui déclare le décès",
+        "Certificat de décès établi par le médecin (Todesbescheinigung)",
+        "Pièces d'identité de la personne décédée",
+        "Acte de naissance ou de mariage de la personne décédée"
+      ],
+      "schritte": [
+        "Déclarer rapidement le décès au service de l'état civil (souvent fait par les pompes funèbres)",
+        "Remettre les documents",
+        "Demander le nombre d'actes de décès dont vous avez besoin"
+      ],
+      "hinweise": [
+        "Les pompes funèbres se chargent souvent des formalités",
+        "Plusieurs exemplaires sont utiles pour les assurances et les caisses de retraite"
+      ],
+      "offizielleSuche": "https://servicesuche.bund.de"
+    },
+    {
+      "id": "kindergeld",
+      "titel": "Demander les allocations familiales (Kindergeld)",
+      "lebenslage": "Famille & couple",
+      "amtstyp": "Caisse d'allocations familiales de l'Agence fédérale pour l'emploi (Familienkasse, Bundesagentur für Arbeit)",
+      "unterlagen": [
+        "Numéro d'identification fiscale (Steuer-Identifikationsnummer) de l'enfant et du demandeur",
+        "Acte de naissance de l'enfant",
+        "Formulaire de demande d'allocations (Antrag auf Kindergeld)"
+      ],
+      "schritte": [
+        "Déposer la demande en ligne ou par écrit auprès de la Familienkasse",
+        "Joindre l'acte de naissance et les numéros fiscaux",
+        "Attendre la décision"
+      ],
+      "hinweise": [
+        "Les allocations ne sont versées rétroactivement que sur une période limitée – déposez la demande rapidement"
+      ],
+      "offizielleSuche": "https://servicesuche.bund.de"
+    },
+    {
+      "id": "elterngeld",
+      "titel": "Demander l'allocation parentale (Elterngeld)",
+      "lebenslage": "Famille & couple",
+      "amtstyp": "Service de l'allocation parentale (Elterngeldstelle)",
+      "unterlagen": [
+        "Acte de naissance de l'enfant (portant la mention d'usage pour l'Elterngeld)",
+        "Justificatifs de revenus",
+        "Attestation de la caisse d'assurance maladie relative aux prestations de maternité",
+        "Carte d'identité (Personalausweis)",
+        "Formulaire de demande"
+      ],
+      "schritte": [
+        "Déposer la demande auprès du service compétent (Elterngeldstelle)",
+        "Joindre les justificatifs",
+        "Attendre le traitement du dossier"
+      ],
+      "hinweise": [
+        "Le versement rétroactif ne couvre que les derniers mois de vie de l'enfant – déposez la demande rapidement",
+        "Le service compétent varie selon le Land"
+      ],
+      "offizielleSuche": "https://servicesuche.bund.de"
+    },
+    {
+      "id": "finanzamt-erfassung",
+      "titel": "Enregistrement fiscal / numéro fiscal (centre des impôts, Finanzamt)",
+      "lebenslage": "Entreprise & travail indépendant",
+      "amtstyp": "Centre des impôts (Finanzamt)",
+      "unterlagen": [
+        "Carte d'identité (Personalausweis)",
+        "Le cas échéant, déclaration d'activité (Gewerbeanmeldung)",
+        "Informations sur l'activité et les revenus prévisionnels"
+      ],
+      "schritte": [
+        "Au démarrage d'une activité indépendante, remplir le questionnaire d'enregistrement fiscal (Fragebogen zur steuerlichen Erfassung) via ELSTER",
+        "Le transmettre au centre des impôts compétent (Finanzamt)",
+        "Attendre l'attribution du numéro fiscal"
+      ],
+      "hinweise": [
+        "Le numéro d'identification fiscale (Steuer-Identifikationsnummer) est attribué automatiquement et envoyé par courrier",
+        "Pour les indépendants : questionnaire à remplir via ELSTER"
+      ],
+      "offizielleSuche": "https://servicesuche.bund.de"
+    },
+    {
+      "id": "fuehrungszeugnis",
+      "titel": "Demander un extrait de casier judiciaire (Führungszeugnis)",
+      "lebenslage": "Papiers & documents",
+      "amtstyp": "Service de la population (Bürgeramt) ; délivré par l'Office fédéral de la justice (Bundesamt für Justiz)",
+      "unterlagen": [
+        "Carte d'identité ou passeport",
+        "Le cas échéant, indication de l'usage prévu",
+        "Frais de dossier"
+      ],
+      "schritte": [
+        "Déposer la demande au Bürgeramt ou en ligne auprès de l'Office fédéral de la justice (Bundesamt für Justiz)",
+        "Payer les frais",
+        "Recevoir l'extrait par courrier"
+      ],
+      "hinweise": [
+        "La demande en ligne est possible avec la fonction d'identification électronique de la carte d'identité",
+        "L'envoi prend quelques jours"
+      ],
+      "offizielleSuche": "https://servicesuche.bund.de"
+    },
+    {
+      "id": "bewohnerparkausweis",
+      "titel": "Demander une carte de stationnement résidentiel (Bewohnerparkausweis)",
+      "lebenslage": "Véhicule & mobilité",
+      "amtstyp": "Service de la population / service de la circulation (Bürgeramt / Straßenverkehrsbehörde)",
+      "unterlagen": [
+        "Carte d'identité avec une adresse déclarée dans la zone de stationnement",
+        "Certificat d'immatriculation partie I (véhicule immatriculé au nom du demandeur)",
+        "Formulaire de demande",
+        "Frais de dossier"
+      ],
+      "schritte": [
+        "Vérifier la zone de stationnement dont vous dépendez",
+        "Déposer la demande (souvent possible en ligne)",
+        "Payer les frais",
+        "Recevoir la carte"
+      ],
+      "hinweise": [
+        "Réservée aux résidents de la zone de stationnement concernée",
+        "À renouveler généralement chaque année"
+      ],
+      "offizielleSuche": "https://servicesuche.bund.de"
+    }
+  ]
+}

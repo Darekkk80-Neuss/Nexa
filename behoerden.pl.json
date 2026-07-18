@@ -1,0 +1,464 @@
+{
+  "version": 1,
+  "sprache": "pl",
+  "encoding": "UTF-8",
+  "stand": "Juli 2026",
+  "anzahl": 20,
+  "gewaehr": "Orientierung, keine rechtsverbindliche Auskunft, ohne Gewaehr. Zustaendigkeiten, Unterlagen, Fristen und Gebuehren koennen je nach Bundesland und Kommune abweichen und sich aendern. Fuer Verbindliches stets die offizielle Servicesuche bzw. die zustaendige Behoerde pruefen.",
+  "offizielleSucheBasis": "https://servicesuche.bund.de",
+  "hinweisDeepLink": "Die App sollte beim Aufruf der offiziellen Suche PLZ/Standort und Anliegen an die Basis-URL anhaengen.",
+  "anliegen": [
+    {
+      "id": "wohnsitz-anmelden",
+      "titel": "Zameldowanie się w nowym miejscu zamieszkania",
+      "lebenslage": "Przeprowadzka",
+      "amtstyp": "Urząd meldunkowy (Bürgeramt / Einwohnermeldeamt)",
+      "unterlagen": [
+        "Dowód osobisty lub paszport wszystkich osób, które mają zostać zameldowane",
+        "Wypełniony formularz zameldowania (Anmeldeformular)",
+        "Potwierdzenie od wynajmującego, że zamieszkałeś w lokalu (Wohnungsgeberbestätigung)",
+        "W razie potrzeby akty małżeństwa lub urodzenia w przypadku rodzin"
+      ],
+      "schritte": [
+        "Umów wizytę w urzędzie meldunkowym (Bürgeramt)",
+        "Poproś wynajmującego o potwierdzenie zamieszkania (Wohnungsgeberbestätigung)",
+        "Zamelduj się w wyznaczonym terminie po wprowadzeniu się",
+        "Złóż formularz i okaż dokumenty tożsamości"
+      ],
+      "hinweise": [
+        "Zazwyczaj bezpłatne",
+        "Termin to zwykle 2 tygodnie od wprowadzenia się",
+        "Za spóźnienie może grozić kara pieniężna"
+      ],
+      "offizielleSuche": "https://servicesuche.bund.de"
+    },
+    {
+      "id": "wohnsitz-ummelden",
+      "titel": "Przemeldowanie (przeprowadzka na terenie Niemiec)",
+      "lebenslage": "Przeprowadzka",
+      "amtstyp": "Urząd meldunkowy (Bürgeramt / Einwohnermeldeamt)",
+      "unterlagen": [
+        "Dowód osobisty lub paszport",
+        "Formularz zameldowania (Anmeldeformular)",
+        "Potwierdzenie od nowego wynajmującego (Wohnungsgeberbestätigung)"
+      ],
+      "schritte": [
+        "Umów wizytę w nowym miejscu zamieszkania",
+        "Uzyskaj potwierdzenie od wynajmującego (Wohnungsgeberbestätigung)",
+        "Zamelduj się pod nowym adresem w wyznaczonym terminie",
+        "Adres w dowodzie osobistym zostanie zaktualizowany"
+      ],
+      "hinweise": [
+        "Przy przeprowadzce na terenie Niemiec osobne wymeldowanie w starym miejscu zwykle nie jest potrzebne",
+        "Termin to zazwyczaj 2 tygodnie",
+        "Zazwyczaj bezpłatne"
+      ],
+      "offizielleSuche": "https://servicesuche.bund.de"
+    },
+    {
+      "id": "wohnsitz-abmelden",
+      "titel": "Wymeldowanie (wyjazd za granicę / rezygnacja z mieszkania dodatkowego)",
+      "lebenslage": "Przeprowadzka",
+      "amtstyp": "Urząd meldunkowy (Bürgeramt / Einwohnermeldeamt)",
+      "unterlagen": [
+        "Dowód osobisty lub paszport",
+        "Formularz wymeldowania (Abmeldeformular)"
+      ],
+      "schritte": [
+        "Wymeldować można się najwcześniej krótko przed wyprowadzką",
+        "Wypełnij formularz",
+        "Złóż go w urzędzie meldunkowym (Bürgeramt) – często także listownie lub online"
+      ],
+      "hinweise": [
+        "Konieczne przy wyjeździe za granicę lub rezygnacji z mieszkania dodatkowego (Nebenwohnung)",
+        "Przy przeprowadzce na terenie Niemiec wymeldowanie nie jest potrzebne",
+        "Zazwyczaj bezpłatne"
+      ],
+      "offizielleSuche": "https://servicesuche.bund.de"
+    },
+    {
+      "id": "personalausweis",
+      "titel": "Wniosek o niemiecki dowód osobisty (Personalausweis) lub jego przedłużenie",
+      "lebenslage": "Dokumenty tożsamości",
+      "amtstyp": "Urząd do spraw obywatelskich (Bürgeramt)",
+      "unterlagen": [
+        "Dotychczasowy dowód osobisty (Personalausweis) lub paszport",
+        "Cyfrowe zdjęcie biometryczne (obowiązkowe od maja 2025)",
+        "Przy pierwszym wniosku w razie potrzeby akt urodzenia lub małżeństwa",
+        "Opłata"
+      ],
+      "schritte": [
+        "Umów wizytę",
+        "Zrób cyfrowe zdjęcie biometryczne (w terminalu w urzędzie lub u podłączonego do systemu fotografa)",
+        "Zgłoś się osobiście – pobierane są odciski palców",
+        "Odbierz dowód lub zamów wysyłkę do domu za opłatą"
+      ],
+      "hinweise": [
+        "Od 1 maja 2025 akceptowane są wyłącznie cyfrowe zdjęcia biometryczne – zdjęcia papierowe nie są już przyjmowane",
+        "Wysyłka bezpośrednio do domu jest możliwa za opłatą",
+        "Wymagane jest osobiste stawiennictwo"
+      ],
+      "offizielleSuche": "https://servicesuche.bund.de"
+    },
+    {
+      "id": "reisepass",
+      "titel": "Wniosek o paszport (Reisepass)",
+      "lebenslage": "Dokumenty tożsamości",
+      "amtstyp": "Urząd do spraw obywatelskich / urząd paszportowy (Bürgeramt / Passbehörde)",
+      "unterlagen": [
+        "Dowód osobisty (Personalausweis) lub stary paszport",
+        "Cyfrowe zdjęcie biometryczne (obowiązkowe od maja 2025)",
+        "W razie potrzeby akt urodzenia lub małżeństwa",
+        "Opłata"
+      ],
+      "schritte": [
+        "Umów wizytę",
+        "Zrób cyfrowe zdjęcie biometryczne",
+        "Zgłoś się osobiście",
+        "Odbierz paszport lub zamów wysyłkę do domu"
+      ],
+      "hinweise": [
+        "Cyfrowe zdjęcie jest obowiązkowe od maja 2025",
+        "Za dopłatą dostępny jest paszport w trybie ekspresowym",
+        "Wymagane jest osobiste stawiennictwo"
+      ],
+      "offizielleSuche": "https://servicesuche.bund.de"
+    },
+    {
+      "id": "kfz-anmelden",
+      "titel": "Rejestracja samochodu (pierwsza rejestracja)",
+      "lebenslage": "Pojazdy i mobilność",
+      "amtstyp": "Wydział rejestracji pojazdów (KFZ-Zulassungsstelle)",
+      "unterlagen": [
+        "Dowód osobisty lub paszport",
+        "Dowody rejestracyjne część I i część II (Zulassungsbescheinigung Teil I und Teil II)",
+        "Numer eVB (elektroniczne potwierdzenie ubezpieczenia, eVB-Nummer)",
+        "Zgoda na polecenie zapłaty SEPA na podatek od pojazdu (Kfz-Steuer)",
+        "Przy pojeździe używanym ważne zaświadczenie z przeglądu technicznego (HU/AU)",
+        "Tablice rejestracyjne (zwykle tłoczone na miejscu)"
+      ],
+      "schritte": [
+        "Uzyskaj numer eVB od swojego ubezpieczyciela",
+        "Umów wizytę w wydziale rejestracji (Zulassungsstelle)",
+        "Przedłóż dokumenty",
+        "Wytłocz tablice i zarejestruj pojazd",
+        "Naklej nalepki kontrolne"
+      ],
+      "hinweise": [
+        "Wiele rejestracji można załatwić online (i-Kfz)",
+        "Obowiązują opłaty"
+      ],
+      "offizielleSuche": "https://servicesuche.bund.de"
+    },
+    {
+      "id": "kfz-ummelden",
+      "titel": "Przerejestrowanie samochodu",
+      "lebenslage": "Pojazdy i mobilność",
+      "amtstyp": "Wydział rejestracji pojazdów (KFZ-Zulassungsstelle)",
+      "unterlagen": [
+        "Dowód osobisty (Personalausweis)",
+        "Dowody rejestracyjne część I i część II (Zulassungsbescheinigung Teil I und Teil II)",
+        "Numer eVB (przy zmianie właściciela)",
+        "Zgoda na polecenie zapłaty SEPA",
+        "Dotychczasowe tablice rejestracyjne",
+        "Zaświadczenie o przeglądzie technicznym (HU)"
+      ],
+      "schritte": [
+        "Uzyskaj numer eVB (przy zmianie właściciela)",
+        "Umów wizytę",
+        "Przedłóż dokumenty",
+        "W razie potrzeby nowe tablice rejestracyjne"
+      ],
+      "hinweise": [
+        "Przy przeprowadzce na terenie Niemiec zwykle można zachować dotychczasowe tablice",
+        "Częściowo możliwe online przez i-Kfz"
+      ],
+      "offizielleSuche": "https://servicesuche.bund.de"
+    },
+    {
+      "id": "kfz-abmelden",
+      "titel": "Wyrejestrowanie samochodu (czasowe wycofanie z ruchu)",
+      "lebenslage": "Pojazdy i mobilność",
+      "amtstyp": "Wydział rejestracji pojazdów (KFZ-Zulassungsstelle)",
+      "unterlagen": [
+        "Dowód osobisty (Personalausweis)",
+        "Dowód rejestracyjny część I (Zulassungsbescheinigung Teil I)",
+        "Tablice rejestracyjne z plombą"
+      ],
+      "schritte": [
+        "Umów wizytę albo załatw sprawę online przez i-Kfz",
+        "Okaż lub oddaj tablice i dowód rejestracyjny",
+        "Uzyskaj potwierdzenie wyrejestrowania"
+      ],
+      "hinweise": [
+        "Wyrejestrowanie online (i-Kfz) jest zwykle możliwe",
+        "Niewielka opłata"
+      ],
+      "offizielleSuche": "https://servicesuche.bund.de"
+    },
+    {
+      "id": "fuehrerschein-ersterteilung",
+      "titel": "Wniosek o prawo jazdy (pierwsze wydanie)",
+      "lebenslage": "Pojazdy i mobilność",
+      "amtstyp": "Wydział komunikacji / urząd wydający prawa jazdy (Führerscheinstelle / Fahrerlaubnisbehörde)",
+      "unterlagen": [
+        "Dowód osobisty lub paszport",
+        "Zdjęcie biometryczne (dopuszczalne zdjęcie papierowe)",
+        "Zaświadczenie o badaniu wzroku (Sehtest-Bescheinigung)",
+        "Zaświadczenie o kursie pierwszej pomocy (Erste-Hilfe-Kurs)",
+        "Zaświadczenie ze szkoły jazdy",
+        "Wniosek"
+      ],
+      "schritte": [
+        "Wykonaj badanie wzroku i ukończ kurs pierwszej pomocy",
+        "Złóż wniosek w wydziale komunikacji (często robi to szkoła jazdy)",
+        "Zdaj egzamin teoretyczny i praktyczny",
+        "Odbierz prawo jazdy"
+      ],
+      "hinweise": [
+        "Do prawa jazdy nadal dopuszczalne są papierowe zdjęcia (inaczej niż przy dowodzie osobistym i paszporcie)",
+        "Wniosek złóż kilka tygodni przed egzaminem"
+      ],
+      "offizielleSuche": "https://servicesuche.bund.de"
+    },
+    {
+      "id": "fuehrerschein-umtausch",
+      "titel": "Wymiana prawa jazdy (wymiana obowiązkowa)",
+      "lebenslage": "Pojazdy i mobilność",
+      "amtstyp": "Wydział komunikacji (Führerscheinstelle)",
+      "unterlagen": [
+        "Stare prawo jazdy",
+        "Dowód osobisty (Personalausweis)",
+        "Zdjęcie biometryczne (dopuszczalne zdjęcie papierowe)",
+        "Wniosek"
+      ],
+      "schritte": [
+        "Sprawdź termin wymiany dla swojego rocznika",
+        "Złóż wniosek w wydziale komunikacji (Führerscheinstelle)",
+        "Odbierz nowe prawo jazdy w formie karty"
+      ],
+      "hinweise": [
+        "Terminy wymiany są stopniowane według roku urodzenia lub roku wydania dokumentu",
+        "Zdjęcie papierowe jest dopuszczalne"
+      ],
+      "offizielleSuche": "https://servicesuche.bund.de"
+    },
+    {
+      "id": "gewerbe-anmelden",
+      "titel": "Rejestracja działalności gospodarczej (Gewerbeanmeldung)",
+      "lebenslage": "Działalność gospodarcza i samozatrudnienie",
+      "amtstyp": "Urząd do spraw działalności gospodarczej (Gewerbeamt / Ordnungsamt)",
+      "unterlagen": [
+        "Dowód osobisty lub paszport",
+        "Formularz zgłoszenia działalności (Gewerbeanmeldeformular GewA 1)",
+        "Zezwolenia lub koncesje wymagane dla danego rodzaju działalności",
+        "W razie potrzeby wyciąg z rejestru handlowego (Handelsregisterauszug)"
+      ],
+      "schritte": [
+        "Wypełnij formularz",
+        "Zgłoś działalność w urzędzie (Gewerbeamt) – często możliwe online",
+        "Uiść opłatę",
+        "Następnie urząd skarbowy (Finanzamt) skontaktuje się w sprawie rejestracji podatkowej"
+      ],
+      "hinweise": [
+        "Zgłoszenie automatycznie powiadamia urząd skarbowy (Finanzamt) oraz izbę przemysłowo-handlową lub rzemieślniczą (IHK/HWK)",
+        "Wysokość opłaty zależy od gminy"
+      ],
+      "offizielleSuche": "https://servicesuche.bund.de"
+    },
+    {
+      "id": "gewerbe-abmelden",
+      "titel": "Wyrejestrowanie działalności gospodarczej (Gewerbeabmeldung)",
+      "lebenslage": "Działalność gospodarcza i samozatrudnienie",
+      "amtstyp": "Urząd do spraw działalności gospodarczej (Gewerbeamt)",
+      "unterlagen": [
+        "Dowód osobisty (Personalausweis)",
+        "Formularz wyrejestrowania działalności (Gewerbeabmeldeformular GewA 3)"
+      ],
+      "schritte": [
+        "Wypełnij formularz",
+        "Złóż go w urzędzie (Gewerbeamt) – często możliwe online"
+      ],
+      "hinweise": [
+        "Często bezpłatne lub za niewielką opłatą",
+        "Poinformuj także urząd skarbowy (Finanzamt)"
+      ],
+      "offizielleSuche": "https://servicesuche.bund.de"
+    },
+    {
+      "id": "eheschliessung",
+      "titel": "Zgłoszenie zamiaru zawarcia małżeństwa",
+      "lebenslage": "Rodzina i związek",
+      "amtstyp": "Urząd stanu cywilnego (Standesamt)",
+      "unterlagen": [
+        "Dowód osobisty lub paszport obojga partnerów",
+        "Aktualny uwierzytelniony odpis z rejestru urodzeń (beglaubigte Abschrift aus dem Geburtenregister)",
+        "Rozszerzone zaświadczenie o zameldowaniu (erweiterte Meldebescheinigung)",
+        "W razie potrzeby dokumenty dotyczące wcześniejszych małżeństw (wyrok rozwodowy, akt zgonu)"
+      ],
+      "schritte": [
+        "Umów wizytę w urzędzie stanu cywilnego (Standesamt) właściwym dla miejsca zamieszkania",
+        "Skompletuj dokumenty",
+        "Zgłoście się wspólnie osobiście",
+        "Ustalcie termin ceremonii"
+      ],
+      "hinweise": [
+        "Załatw dokumenty odpowiednio wcześnie – czas oczekiwania bywa długi",
+        "Konkretne wymagania mogą się różnić w zależności od sytuacji"
+      ],
+      "offizielleSuche": "https://servicesuche.bund.de"
+    },
+    {
+      "id": "geburtsurkunde",
+      "titel": "Wniosek o akt urodzenia",
+      "lebenslage": "Rodzina i związek",
+      "amtstyp": "Urząd stanu cywilnego miejsca urodzenia (Standesamt)",
+      "unterlagen": [
+        "Dowód osobisty lub paszport",
+        "Dane osobowe (imię i nazwisko, data i miejsce urodzenia)",
+        "W razie potrzeby dokument potwierdzający uprawnienie do odbioru"
+      ],
+      "schritte": [
+        "Ustal właściwy urząd stanu cywilnego (ten w miejscu urodzenia)",
+        "Złóż wniosek (często możliwe online lub listownie)",
+        "Uiść opłatę",
+        "Odbierz akt pocztą lub osobiście"
+      ],
+      "hinweise": [
+        "Tylko określone osoby są uprawnione do otrzymania aktu",
+        "Opłata naliczana jest za każdy odpis"
+      ],
+      "offizielleSuche": "https://servicesuche.bund.de"
+    },
+    {
+      "id": "sterbeurkunde",
+      "titel": "Zgłoszenie zgonu / akt zgonu",
+      "lebenslage": "Żałoba",
+      "amtstyp": "Urząd stanu cywilnego miejsca zgonu (Standesamt)",
+      "unterlagen": [
+        "Dowód osobisty osoby zgłaszającej",
+        "Karta zgonu wystawiona przez lekarza (Todesbescheinigung)",
+        "Dokumenty tożsamości osoby zmarłej",
+        "Akt urodzenia lub małżeństwa osoby zmarłej"
+      ],
+      "schritte": [
+        "Zgłoś zgon w urzędzie stanu cywilnego bez zwłoki (często robi to zakład pogrzebowy)",
+        "Złóż dokumenty",
+        "Zamów potrzebną liczbę odpisów aktu zgonu"
+      ],
+      "hinweise": [
+        "Formalności często załatwia zakład pogrzebowy",
+        "Kilka odpisów przyda się do ubezpieczeń i spraw emerytalnych"
+      ],
+      "offizielleSuche": "https://servicesuche.bund.de"
+    },
+    {
+      "id": "kindergeld",
+      "titel": "Wniosek o zasiłek na dziecko (Kindergeld)",
+      "lebenslage": "Rodzina i związek",
+      "amtstyp": "Kasa świadczeń rodzinnych przy Federalnej Agencji Pracy (Familienkasse, Bundesagentur für Arbeit)",
+      "unterlagen": [
+        "Podatkowy numer identyfikacyjny (Steuer-Identifikationsnummer) dziecka i wnioskodawcy",
+        "Akt urodzenia dziecka",
+        "Wniosek o zasiłek (Antrag auf Kindergeld)"
+      ],
+      "schritte": [
+        "Złóż wniosek online lub pisemnie w kasie świadczeń rodzinnych (Familienkasse)",
+        "Dołącz akt urodzenia i numery podatkowe",
+        "Poczekaj na decyzję"
+      ],
+      "hinweise": [
+        "Zasiłek wypłacany jest wstecz tylko za ograniczony okres – złóż wniosek jak najszybciej"
+      ],
+      "offizielleSuche": "https://servicesuche.bund.de"
+    },
+    {
+      "id": "elterngeld",
+      "titel": "Wniosek o zasiłek rodzicielski (Elterngeld)",
+      "lebenslage": "Rodzina i związek",
+      "amtstyp": "Urząd do spraw zasiłku rodzicielskiego (Elterngeldstelle)",
+      "unterlagen": [
+        "Akt urodzenia dziecka (z adnotacją o przeznaczeniu na Elterngeld)",
+        "Dokumenty potwierdzające dochody",
+        "Zaświadczenie kasy chorych o świadczeniach macierzyńskich",
+        "Dowód osobisty (Personalausweis)",
+        "Wniosek"
+      ],
+      "schritte": [
+        "Złóż wniosek we właściwym urzędzie (Elterngeldstelle)",
+        "Dołącz wymagane dokumenty",
+        "Poczekaj na rozpatrzenie wniosku"
+      ],
+      "hinweise": [
+        "Wypłata wstecz obejmuje tylko ostatnie miesiące życia dziecka – złóż wniosek jak najszybciej",
+        "Właściwość urzędu różni się w zależności od kraju związkowego"
+      ],
+      "offizielleSuche": "https://servicesuche.bund.de"
+    },
+    {
+      "id": "finanzamt-erfassung",
+      "titel": "Rejestracja podatkowa / numer podatkowy (urząd skarbowy, Finanzamt)",
+      "lebenslage": "Działalność gospodarcza i samozatrudnienie",
+      "amtstyp": "Urząd skarbowy (Finanzamt)",
+      "unterlagen": [
+        "Dowód osobisty (Personalausweis)",
+        "W razie potrzeby zgłoszenie działalności gospodarczej (Gewerbeanmeldung)",
+        "Informacje o rodzaju działalności i przewidywanych dochodach"
+      ],
+      "schritte": [
+        "Rozpoczynając działalność na własny rachunek, wypełnij kwestionariusz rejestracji podatkowej (Fragebogen zur steuerlichen Erfassung) przez system ELSTER",
+        "Prześlij go do właściwego urzędu skarbowego (Finanzamt)",
+        "Poczekaj na nadanie numeru podatkowego"
+      ],
+      "hinweise": [
+        "Podatkowy numer identyfikacyjny (Steuer-Identifikationsnummer) nadawany jest automatycznie i przesyłany pocztą",
+        "Dla osób prowadzących działalność: kwestionariusz przez ELSTER"
+      ],
+      "offizielleSuche": "https://servicesuche.bund.de"
+    },
+    {
+      "id": "fuehrungszeugnis",
+      "titel": "Wniosek o zaświadczenie o niekaralności (Führungszeugnis)",
+      "lebenslage": "Dokumenty tożsamości",
+      "amtstyp": "Urząd do spraw obywatelskich (Bürgeramt); dokument wystawia Federalny Urząd Sprawiedliwości (Bundesamt für Justiz)",
+      "unterlagen": [
+        "Dowód osobisty lub paszport",
+        "W razie potrzeby wskazanie celu, w jakim dokument będzie użyty",
+        "Opłata"
+      ],
+      "schritte": [
+        "Złóż wniosek w urzędzie (Bürgeramt) lub online w Federalnym Urzędzie Sprawiedliwości (Bundesamt für Justiz)",
+        "Uiść opłatę",
+        "Odbierz zaświadczenie pocztą"
+      ],
+      "hinweise": [
+        "Wniosek online jest możliwy z użyciem funkcji elektronicznej identyfikacji w dowodzie osobistym",
+        "Doręczenie trwa kilka dni"
+      ],
+      "offizielleSuche": "https://servicesuche.bund.de"
+    },
+    {
+      "id": "bewohnerparkausweis",
+      "titel": "Wniosek o kartę parkingową dla mieszkańców (Bewohnerparkausweis)",
+      "lebenslage": "Pojazdy i mobilność",
+      "amtstyp": "Urząd do spraw obywatelskich / urząd ruchu drogowego (Bürgeramt / Straßenverkehrsbehörde)",
+      "unterlagen": [
+        "Dowód osobisty z adresem zameldowania w danej strefie parkowania",
+        "Dowód rejestracyjny część I (pojazd zarejestrowany na wnioskodawcę)",
+        "Wniosek",
+        "Opłata"
+      ],
+      "schritte": [
+        "Sprawdź, do której strefy parkowania należysz",
+        "Złóż wniosek (często możliwe online)",
+        "Uiść opłatę",
+        "Odbierz kartę"
+      ],
+      "hinweise": [
+        "Tylko dla mieszkańców danej strefy parkowania",
+        "Zwykle trzeba ją przedłużać co roku"
+      ],
+      "offizielleSuche": "https://servicesuche.bund.de"
+    }
+  ]
+}

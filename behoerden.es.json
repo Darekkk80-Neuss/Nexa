@@ -1,0 +1,464 @@
+{
+  "version": 1,
+  "sprache": "es",
+  "encoding": "UTF-8",
+  "stand": "Juli 2026",
+  "anzahl": 20,
+  "gewaehr": "Orientierung, keine rechtsverbindliche Auskunft, ohne Gewaehr. Zustaendigkeiten, Unterlagen, Fristen und Gebuehren koennen je nach Bundesland und Kommune abweichen und sich aendern. Fuer Verbindliches stets die offizielle Servicesuche bzw. die zustaendige Behoerde pruefen.",
+  "offizielleSucheBasis": "https://servicesuche.bund.de",
+  "hinweisDeepLink": "Die App sollte beim Aufruf der offiziellen Suche PLZ/Standort und Anliegen an die Basis-URL anhaengen.",
+  "anliegen": [
+    {
+      "id": "wohnsitz-anmelden",
+      "titel": "Empadronarse (llegada a una nueva vivienda)",
+      "lebenslage": "Mudanza",
+      "amtstyp": "Oficina de empadronamiento (Bürgeramt / Einwohnermeldeamt)",
+      "unterlagen": [
+        "DNI o pasaporte de todas las personas que se van a empadronar",
+        "Formulario de empadronamiento cumplimentado (Anmeldeformular)",
+        "Confirmación del arrendador de que usted vive en la vivienda (Wohnungsgeberbestätigung)",
+        "Si procede, certificados de matrimonio o de nacimiento en el caso de familias"
+      ],
+      "schritte": [
+        "Pedir cita en la oficina de empadronamiento (Bürgeramt)",
+        "Solicitar al arrendador la confirmación de la vivienda (Wohnungsgeberbestätigung)",
+        "Empadronarse dentro del plazo tras la mudanza",
+        "Entregar el formulario y presentar los documentos de identidad"
+      ],
+      "hinweise": [
+        "Por lo general es gratuito",
+        "El plazo suele ser de 2 semanas desde la mudanza",
+        "El retraso puede conllevar una multa"
+      ],
+      "offizielleSuche": "https://servicesuche.bund.de"
+    },
+    {
+      "id": "wohnsitz-ummelden",
+      "titel": "Cambiar el domicilio empadronado (mudanza dentro de Alemania)",
+      "lebenslage": "Mudanza",
+      "amtstyp": "Oficina de empadronamiento (Bürgeramt / Einwohnermeldeamt)",
+      "unterlagen": [
+        "DNI o pasaporte",
+        "Formulario de empadronamiento (Anmeldeformular)",
+        "Confirmación del nuevo arrendador (Wohnungsgeberbestätigung)"
+      ],
+      "schritte": [
+        "Pedir cita en el nuevo lugar de residencia",
+        "Obtener la confirmación del arrendador (Wohnungsgeberbestätigung)",
+        "Empadronarse en el nuevo domicilio dentro del plazo",
+        "Se actualiza la dirección en el documento de identidad"
+      ],
+      "hinweise": [
+        "En una mudanza dentro de Alemania no suele hacer falta darse de baja por separado en el domicilio anterior",
+        "El plazo suele ser de 2 semanas",
+        "Por lo general es gratuito"
+      ],
+      "offizielleSuche": "https://servicesuche.bund.de"
+    },
+    {
+      "id": "wohnsitz-abmelden",
+      "titel": "Darse de baja del padrón (traslado al extranjero / segunda residencia)",
+      "lebenslage": "Mudanza",
+      "amtstyp": "Oficina de empadronamiento (Bürgeramt / Einwohnermeldeamt)",
+      "unterlagen": [
+        "DNI o pasaporte",
+        "Formulario de baja (Abmeldeformular)"
+      ],
+      "schritte": [
+        "La baja solo es posible poco antes de la mudanza",
+        "Cumplimentar el formulario",
+        "Presentarlo en la oficina de empadronamiento (Bürgeramt); a menudo también por escrito o en línea"
+      ],
+      "hinweise": [
+        "Necesario al trasladarse al extranjero o al dejar una segunda residencia (Nebenwohnung)",
+        "En una mudanza dentro de Alemania no hace falta darse de baja",
+        "Por lo general es gratuito"
+      ],
+      "offizielleSuche": "https://servicesuche.bund.de"
+    },
+    {
+      "id": "personalausweis",
+      "titel": "Solicitar o renovar el documento de identidad alemán (Personalausweis)",
+      "lebenslage": "Documentos de identidad",
+      "amtstyp": "Oficina de atención al ciudadano (Bürgeramt)",
+      "unterlagen": [
+        "Documento de identidad anterior (Personalausweis) o pasaporte",
+        "Foto biométrica digital (obligatoria desde mayo de 2025)",
+        "En la primera solicitud, certificado de nacimiento o de matrimonio si procede",
+        "Tasa"
+      ],
+      "schritte": [
+        "Pedir cita",
+        "Hacerse la foto biométrica digital (en el terminal de la oficina o en un fotógrafo conectado al sistema)",
+        "Acudir en persona; se toman las huellas dactilares",
+        "Recoger el documento o pedir su envío a domicilio pagando una tasa"
+      ],
+      "hinweise": [
+        "Desde el 1 de mayo de 2025 solo se aceptan fotos biométricas digitales; las fotos en papel ya no valen",
+        "El envío directo a domicilio es posible pagando una tasa",
+        "Es obligatorio acudir en persona"
+      ],
+      "offizielleSuche": "https://servicesuche.bund.de"
+    },
+    {
+      "id": "reisepass",
+      "titel": "Solicitar el pasaporte (Reisepass)",
+      "lebenslage": "Documentos de identidad",
+      "amtstyp": "Oficina de atención al ciudadano / oficina de pasaportes (Bürgeramt / Passbehörde)",
+      "unterlagen": [
+        "Documento de identidad (Personalausweis) o pasaporte anterior",
+        "Foto biométrica digital (obligatoria desde mayo de 2025)",
+        "Si procede, certificado de nacimiento o de matrimonio",
+        "Tasa"
+      ],
+      "schritte": [
+        "Pedir cita",
+        "Hacerse la foto biométrica digital",
+        "Acudir en persona",
+        "Recoger el pasaporte o pedir su envío a domicilio"
+      ],
+      "hinweise": [
+        "La foto digital es obligatoria desde mayo de 2025",
+        "Existe el pasaporte exprés con un recargo",
+        "Es obligatorio acudir en persona"
+      ],
+      "offizielleSuche": "https://servicesuche.bund.de"
+    },
+    {
+      "id": "kfz-anmelden",
+      "titel": "Matricular un coche (primera matriculación)",
+      "lebenslage": "Vehículo y movilidad",
+      "amtstyp": "Oficina de matriculación de vehículos (KFZ-Zulassungsstelle)",
+      "unterlagen": [
+        "DNI o pasaporte",
+        "Permisos de circulación parte I y parte II (Zulassungsbescheinigung Teil I und Teil II)",
+        "Número eVB (confirmación electrónica del seguro, eVB-Nummer)",
+        "Mandato de domiciliación SEPA para el impuesto de circulación (Kfz-Steuer)",
+        "En vehículos de segunda mano, certificado válido de la ITV alemana (HU/AU)",
+        "Placas de matrícula (normalmente se estampan allí mismo)"
+      ],
+      "schritte": [
+        "Pedir el número eVB a su aseguradora",
+        "Pedir cita en la oficina de matriculación (Zulassungsstelle)",
+        "Presentar la documentación",
+        "Estampar las placas y matricular el vehículo",
+        "Colocar las pegatinas"
+      ],
+      "hinweise": [
+        "Muchas matriculaciones se pueden hacer en línea (i-Kfz)",
+        "Se aplican tasas"
+      ],
+      "offizielleSuche": "https://servicesuche.bund.de"
+    },
+    {
+      "id": "kfz-ummelden",
+      "titel": "Cambiar la matriculación de un coche",
+      "lebenslage": "Vehículo y movilidad",
+      "amtstyp": "Oficina de matriculación de vehículos (KFZ-Zulassungsstelle)",
+      "unterlagen": [
+        "Documento de identidad (Personalausweis)",
+        "Permisos de circulación parte I y parte II (Zulassungsbescheinigung Teil I und Teil II)",
+        "Número eVB (si cambia el titular)",
+        "Mandato de domiciliación SEPA",
+        "Placas de matrícula actuales",
+        "Justificante de la ITV alemana (HU)"
+      ],
+      "schritte": [
+        "Conseguir el número eVB (si cambia el titular)",
+        "Pedir cita",
+        "Presentar la documentación",
+        "Si procede, nuevas placas de matrícula"
+      ],
+      "hinweise": [
+        "En una mudanza dentro de Alemania se suelen poder conservar las placas",
+        "En parte se puede hacer en línea con i-Kfz"
+      ],
+      "offizielleSuche": "https://servicesuche.bund.de"
+    },
+    {
+      "id": "kfz-abmelden",
+      "titel": "Dar de baja un coche (retirarlo de la circulación)",
+      "lebenslage": "Vehículo y movilidad",
+      "amtstyp": "Oficina de matriculación de vehículos (KFZ-Zulassungsstelle)",
+      "unterlagen": [
+        "Documento de identidad (Personalausweis)",
+        "Permiso de circulación parte I (Zulassungsbescheinigung Teil I)",
+        "Placas de matrícula con el precinto"
+      ],
+      "schritte": [
+        "Pedir cita o hacerlo en línea a través de i-Kfz",
+        "Presentar o entregar las placas y el permiso",
+        "Pedir la confirmación de la baja"
+      ],
+      "hinweise": [
+        "La baja en línea (i-Kfz) suele ser posible",
+        "Tasa reducida"
+      ],
+      "offizielleSuche": "https://servicesuche.bund.de"
+    },
+    {
+      "id": "fuehrerschein-ersterteilung",
+      "titel": "Solicitar el permiso de conducir (primera expedición)",
+      "lebenslage": "Vehículo y movilidad",
+      "amtstyp": "Oficina de permisos de conducir (Führerscheinstelle / Fahrerlaubnisbehörde)",
+      "unterlagen": [
+        "DNI o pasaporte",
+        "Foto biométrica (se admite foto en papel)",
+        "Certificado del examen de la vista (Sehtest-Bescheinigung)",
+        "Justificante del curso de primeros auxilios (Erste-Hilfe-Kurs)",
+        "Certificado de la autoescuela",
+        "Solicitud"
+      ],
+      "schritte": [
+        "Hacer el examen de la vista y el curso de primeros auxilios",
+        "Presentar la solicitud en la Führerscheinstelle (a menudo lo hace la autoescuela)",
+        "Aprobar el examen teórico y el práctico",
+        "Recoger el permiso de conducir"
+      ],
+      "hinweise": [
+        "Para el permiso de conducir se siguen admitiendo fotos en papel (a diferencia del DNI alemán y el pasaporte)",
+        "Presentar la solicitud unas semanas antes del examen"
+      ],
+      "offizielleSuche": "https://servicesuche.bund.de"
+    },
+    {
+      "id": "fuehrerschein-umtausch",
+      "titel": "Canjear el permiso de conducir (canje obligatorio)",
+      "lebenslage": "Vehículo y movilidad",
+      "amtstyp": "Oficina de permisos de conducir (Führerscheinstelle)",
+      "unterlagen": [
+        "Permiso de conducir antiguo",
+        "Documento de identidad (Personalausweis)",
+        "Foto biométrica (se admite foto en papel)",
+        "Solicitud"
+      ],
+      "schritte": [
+        "Comprobar el plazo de canje que corresponde a su año de nacimiento",
+        "Presentar la solicitud en la Führerscheinstelle",
+        "Recoger el nuevo permiso en formato tarjeta"
+      ],
+      "hinweise": [
+        "Los plazos de canje son escalonados según el año de nacimiento o el año de expedición",
+        "Se admite foto en papel"
+      ],
+      "offizielleSuche": "https://servicesuche.bund.de"
+    },
+    {
+      "id": "gewerbe-anmelden",
+      "titel": "Dar de alta una actividad económica (Gewerbeanmeldung)",
+      "lebenslage": "Actividad económica y autónomos",
+      "amtstyp": "Oficina de actividades económicas (Gewerbeamt / Ordnungsamt)",
+      "unterlagen": [
+        "DNI o pasaporte",
+        "Formulario de alta de actividad (Gewerbeanmeldeformular GewA 1)",
+        "Autorizaciones o licencias necesarias según la actividad",
+        "Si procede, extracto del registro mercantil (Handelsregisterauszug)"
+      ],
+      "schritte": [
+        "Cumplimentar el formulario",
+        "Darse de alta en el Gewerbeamt (a menudo posible en línea)",
+        "Pagar la tasa",
+        "Después, la agencia tributaria (Finanzamt) se pondrá en contacto para el registro fiscal"
+      ],
+      "hinweise": [
+        "El alta genera automáticamente avisos a la agencia tributaria (Finanzamt) y a la cámara de comercio o de oficios (IHK/HWK)",
+        "La tasa depende del municipio"
+      ],
+      "offizielleSuche": "https://servicesuche.bund.de"
+    },
+    {
+      "id": "gewerbe-abmelden",
+      "titel": "Dar de baja una actividad económica (Gewerbeabmeldung)",
+      "lebenslage": "Actividad económica y autónomos",
+      "amtstyp": "Oficina de actividades económicas (Gewerbeamt)",
+      "unterlagen": [
+        "Documento de identidad (Personalausweis)",
+        "Formulario de baja de actividad (Gewerbeabmeldeformular GewA 3)"
+      ],
+      "schritte": [
+        "Cumplimentar el formulario",
+        "Presentarlo en el Gewerbeamt (a menudo posible en línea)"
+      ],
+      "hinweise": [
+        "A menudo gratuito o con una tasa reducida",
+        "Informe también a la agencia tributaria (Finanzamt)"
+      ],
+      "offizielleSuche": "https://servicesuche.bund.de"
+    },
+    {
+      "id": "eheschliessung",
+      "titel": "Iniciar el expediente matrimonial",
+      "lebenslage": "Familia y pareja",
+      "amtstyp": "Registro civil (Standesamt)",
+      "unterlagen": [
+        "DNI o pasaporte de ambos miembros de la pareja",
+        "Copia certificada actual del registro de nacimientos (beglaubigte Abschrift aus dem Geburtenregister)",
+        "Certificado de empadronamiento ampliado (erweiterte Meldebescheinigung)",
+        "Si procede, justificantes sobre matrimonios anteriores (sentencia de divorcio, certificado de defunción)"
+      ],
+      "schritte": [
+        "Pedir cita en el registro civil (Standesamt) de su lugar de residencia para iniciar el expediente",
+        "Reunir la documentación",
+        "Acudir juntos en persona",
+        "Fijar la fecha de la ceremonia"
+      ],
+      "hinweise": [
+        "Consiga los documentos con tiempo, los trámites pueden tardar",
+        "Los requisitos concretos pueden variar según el caso"
+      ],
+      "offizielleSuche": "https://servicesuche.bund.de"
+    },
+    {
+      "id": "geburtsurkunde",
+      "titel": "Solicitar un certificado de nacimiento",
+      "lebenslage": "Familia y pareja",
+      "amtstyp": "Registro civil del lugar de nacimiento (Standesamt)",
+      "unterlagen": [
+        "DNI o pasaporte",
+        "Datos personales (nombre, fecha y lugar de nacimiento)",
+        "Si procede, justificante de que tiene derecho a solicitarlo"
+      ],
+      "schritte": [
+        "Averiguar el registro civil competente (el del lugar de nacimiento)",
+        "Presentar la solicitud (a menudo posible en línea o por escrito)",
+        "Pagar la tasa",
+        "Recibir el certificado por correo o recogerlo"
+      ],
+      "hinweise": [
+        "Solo determinadas personas tienen derecho a solicitarlo",
+        "Se paga una tasa por cada certificado"
+      ],
+      "offizielleSuche": "https://servicesuche.bund.de"
+    },
+    {
+      "id": "sterbeurkunde",
+      "titel": "Inscribir un fallecimiento / certificado de defunción",
+      "lebenslage": "Fallecimiento de un familiar",
+      "amtstyp": "Registro civil del lugar del fallecimiento (Standesamt)",
+      "unterlagen": [
+        "Documento de identidad de la persona que comunica el fallecimiento",
+        "Certificado médico de defunción (Todesbescheinigung)",
+        "Documentos personales de la persona fallecida",
+        "Certificado de nacimiento o de matrimonio de la persona fallecida"
+      ],
+      "schritte": [
+        "Comunicar el fallecimiento al registro civil sin demora (a menudo lo hace la funeraria)",
+        "Presentar la documentación",
+        "Solicitar tantas copias del certificado de defunción como necesite"
+      ],
+      "hinweise": [
+        "La funeraria suele encargarse de los trámites",
+        "Conviene tener varias copias para seguros y pensiones"
+      ],
+      "offizielleSuche": "https://servicesuche.bund.de"
+    },
+    {
+      "id": "kindergeld",
+      "titel": "Solicitar la prestación por hijo (Kindergeld)",
+      "lebenslage": "Familia y pareja",
+      "amtstyp": "Caja de prestaciones familiares de la Agencia Federal de Empleo (Familienkasse, Bundesagentur für Arbeit)",
+      "unterlagen": [
+        "Número de identificación fiscal (Steuer-Identifikationsnummer) del hijo y del solicitante",
+        "Certificado de nacimiento del hijo",
+        "Solicitud de la prestación (Antrag auf Kindergeld)"
+      ],
+      "schritte": [
+        "Presentar la solicitud en línea o por escrito ante la Familienkasse",
+        "Adjuntar el certificado de nacimiento y los números fiscales",
+        "Esperar la resolución"
+      ],
+      "hinweise": [
+        "La prestación solo se abona con carácter retroactivo durante un periodo limitado: solicítela cuanto antes"
+      ],
+      "offizielleSuche": "https://servicesuche.bund.de"
+    },
+    {
+      "id": "elterngeld",
+      "titel": "Solicitar la prestación parental (Elterngeld)",
+      "lebenslage": "Familia y pareja",
+      "amtstyp": "Oficina de la prestación parental (Elterngeldstelle)",
+      "unterlagen": [
+        "Certificado de nacimiento del hijo (con la indicación de uso para el Elterngeld)",
+        "Justificantes de ingresos",
+        "Certificado de la mutua de salud sobre las prestaciones de maternidad",
+        "Documento de identidad (Personalausweis)",
+        "Solicitud"
+      ],
+      "schritte": [
+        "Presentar la solicitud en la oficina competente (Elterngeldstelle)",
+        "Adjuntar los justificantes",
+        "Esperar a que se tramite"
+      ],
+      "hinweise": [
+        "El pago retroactivo solo cubre los últimos meses de vida del bebé: solicítelo cuanto antes",
+        "La oficina competente varía según el estado federado"
+      ],
+      "offizielleSuche": "https://servicesuche.bund.de"
+    },
+    {
+      "id": "finanzamt-erfassung",
+      "titel": "Registro fiscal / número fiscal (agencia tributaria, Finanzamt)",
+      "lebenslage": "Actividad económica y autónomos",
+      "amtstyp": "Agencia tributaria (Finanzamt)",
+      "unterlagen": [
+        "Documento de identidad (Personalausweis)",
+        "Si procede, el alta de la actividad (Gewerbeanmeldung)",
+        "Datos sobre la actividad y los ingresos previstos"
+      ],
+      "schritte": [
+        "Al iniciar una actividad por cuenta propia, cumplimentar el cuestionario de registro fiscal (Fragebogen zur steuerlichen Erfassung) a través de ELSTER",
+        "Enviarlo a la agencia tributaria competente (Finanzamt)",
+        "Esperar la asignación del número fiscal"
+      ],
+      "hinweise": [
+        "El número de identificación fiscal (Steuer-Identifikationsnummer) se asigna automáticamente y se envía por correo",
+        "Para autónomos: el cuestionario se presenta por ELSTER"
+      ],
+      "offizielleSuche": "https://servicesuche.bund.de"
+    },
+    {
+      "id": "fuehrungszeugnis",
+      "titel": "Solicitar el certificado de antecedentes penales (Führungszeugnis)",
+      "lebenslage": "Documentos de identidad",
+      "amtstyp": "Oficina de atención al ciudadano (Bürgeramt); lo expide la Oficina Federal de Justicia (Bundesamt für Justiz)",
+      "unterlagen": [
+        "DNI o pasaporte",
+        "Si procede, indicación del uso previsto",
+        "Tasa"
+      ],
+      "schritte": [
+        "Solicitarlo en el Bürgeramt o en línea en la Oficina Federal de Justicia (Bundesamt für Justiz)",
+        "Pagar la tasa",
+        "Recibir el certificado por correo"
+      ],
+      "hinweise": [
+        "La solicitud en línea es posible con la función de identificación electrónica del documento de identidad",
+        "El envío tarda unos días"
+      ],
+      "offizielleSuche": "https://servicesuche.bund.de"
+    },
+    {
+      "id": "bewohnerparkausweis",
+      "titel": "Solicitar la tarjeta de aparcamiento para residentes (Bewohnerparkausweis)",
+      "lebenslage": "Vehículo y movilidad",
+      "amtstyp": "Oficina de atención al ciudadano / autoridad de tráfico (Bürgeramt / Straßenverkehrsbehörde)",
+      "unterlagen": [
+        "Documento de identidad con domicilio empadronado dentro de la zona de aparcamiento",
+        "Permiso de circulación parte I (vehículo matriculado a nombre del solicitante)",
+        "Solicitud",
+        "Tasa"
+      ],
+      "schritte": [
+        "Comprobar a qué zona de aparcamiento pertenece",
+        "Presentar la solicitud (a menudo posible en línea)",
+        "Pagar la tasa",
+        "Recibir la tarjeta"
+      ],
+      "hinweise": [
+        "Solo para residentes de la zona de aparcamiento correspondiente",
+        "Normalmente hay que renovarla cada año"
+      ],
+      "offizielleSuche": "https://servicesuche.bund.de"
+    }
+  ]
+}
