@@ -8029,7 +8029,7 @@ function pickVoiceFor(lang) {
 function bootGreetingText() {
   const name = (store.name || (account && account.name) || '').trim();
   const warm = (curLang === 'de') ? 'Schön, dass du da bist.' : (lookupTr('Schön, dass du da bist.') || 'Good to have you here.');
-  const raw = greetWord() + (name ? ', ' + name : '') + '. ' + warm;   // Komma/Punkt → natürliche Sprechpausen
+  const raw = greetWord() + (name ? ', ' + name : '') + '! ' + warm;   // „!" → lebendigere, energischere Intonation
   return (typeof cleanForTTS === 'function') ? cleanForTTS(raw) : raw;
 }
 /* Cache für die neuronale coral-Stimme: einmal erzeugt, danach gratis & offline (je Text = Tageszeit/Name/Sprache). */
@@ -8066,9 +8066,19 @@ async function speakBootGreeting() {
     const text = bootGreetingText(); if (!text) return;
     const c = bootTtsGet(text);
     if (c && c.audio) { bootPlayAudio(c.mime, c.audio); return; }
-    if (AI_VOICE && (typeof canRealAI === 'function') && canRealAI()) {
-      const r = await callAudioHosted({ op: 'tts', text, voice: TTS_VOICE });
-      if (r && r.audio) { bootTtsPut(text, r.mime, r.audio); bootPlayAudio(r.mime, r.audio); return; }
+    // Kostenfreie coral-Begrüßung (Betreiber trägt die Kosten – NIE Nutzer-Credits). Gated auf KI-Einwilligung + online.
+    const consented = (typeof consentValid !== 'function') || consentValid('ai');
+    if (AI_VOICE && CLOUD && sb && account && account.loggedIn && !(typeof isChildUser === 'function' && isChildUser()) && consented) {
+      const s = (await sb.auth.getSession()).data.session;
+      if (s) {
+        const resp = await fetch(FN_URL('claude-proxy'), {
+          method: 'POST',
+          headers: { 'content-type': 'application/json', apikey: SUPABASE_ANON_KEY, Authorization: 'Bearer ' + s.access_token },
+          body: JSON.stringify({ op: 'tts_greeting', text, voice: TTS_VOICE, lang: curLang })
+        });
+        const d = await resp.json().catch(() => ({}));
+        if (resp.ok && d && d.audio) { bootTtsPut(text, d.mime, d.audio); bootPlayAudio(d.mime, d.audio); return; }
+      }
     }
   } catch (e) { /* jeder Fehler → Gerätestimme */ }
   speakBootGreetingDevice();

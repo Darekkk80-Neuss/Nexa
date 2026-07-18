@@ -72,7 +72,7 @@ Deno.serve(async (req) => {
   // 3) Kontingent serverseitig verbrauchen (atomar) – nur wenn ENFORCE_TIERS aktiv ist. Gilt für Chat UND Audio.
   //    Im Vorstart (ENFORCE_TIERS=false) ist die KI für jede angemeldete Person freigeschaltet.
   let usage: { ai_used: number; ai_limit: number } = { ai_used: 0, ai_limit: 1000000 };
-  if (ENFORCE_TIERS) {
+  if (ENFORCE_TIERS && op !== 'tts_greeting') {   // Start-Begrüßung geht auf Betreiber-Kosten – NIE Nutzer-Credits
     const cost = OP_COST[op] || 1;   // Credits je nach Operation
     const admin = createClient(SUPABASE_URL, SERVICE);
     const { data: consumed, error: cerr } = await admin.rpc('consume_ai', { p_user: uid, p_n: cost });
@@ -127,17 +127,23 @@ Deno.serve(async (req) => {
     return json({ text: td?.text || '', ai_used: usage.ai_used, ai_limit: usage.ai_limit }, 200);
   }
 
-  // 4b) Text → Sprache (TTS, gpt-4o-mini-tts). Client schickt { op:'tts', text, voice? } → { audio:<base64 mp3>, mime }
-  if (op === 'tts') {
-    const input = String(body?.text || '').slice(0, 1500);
+  // 4b) Text → Sprache (TTS, gpt-4o-mini-tts). Client: { op:'tts', text, voice? }
+  //     Start-Begrüßung: { op:'tts_greeting', text, voice, lang } → kostenfrei (Betreiber), lebendige Ansage.
+  if (op === 'tts' || op === 'tts_greeting') {
+    const isGreeting = op === 'tts_greeting';
+    const input = String(body?.text || '').slice(0, isGreeting ? 180 : 1500);   // Begrüßung: kurz (Missbrauch/Kosten begrenzen)
     if (!input) return json({ error: 'bad_request' }, 400);
     const voice = /^(alloy|echo|fable|onyx|nova|shimmer|coral|sage|ash|ballad|verse)$/.test(String(body?.voice || '')) ? String(body.voice) : 'nova';
-    const doTts = (m: string, instr: boolean) => {
-      const b: any = { model: m, input, voice, response_format: 'mp3' };
-      if (instr) b.instructions = 'Sprich auf Deutsch, warm, freundlich und natürlich – wie eine hilfsbereite Freundin, nicht wie eine Werbestimme.';
+    const LANGN: Record<string, string> = { de: 'German', en: 'English', fr: 'French', es: 'Spanish', it: 'Italian', pl: 'Polish' };
+    const langName = LANGN[String(body?.lang || 'de')] || 'German';
+    const instr = isGreeting
+      ? `Speak in ${langName} as a warm, upbeat friend who is genuinely happy to see this person. Bright, energetic and encouraging, with natural, flowing, connected phrasing and lively, expressive intonation and a gentle smile in the voice. Keep it effortless and human — never flat, monotone, robotic, choppy, or like an advertising announcer.`
+      : 'Sprich auf Deutsch, warm, freundlich und natürlich – wie eine hilfsbereite Freundin, nicht wie eine Werbestimme.';
+    const doTts = (m: string) => {
+      const b: any = { model: m, input, voice, response_format: 'mp3', instructions: instr };
       return fetch('https://api.openai.com/v1/audio/speech', { method: 'POST', headers: { 'content-type': 'application/json', Authorization: `Bearer ${OPENAI_API_KEY}` }, body: JSON.stringify(b) });
     };
-    const sr = await doTts(TTS_MODEL, true);
+    const sr = await doTts(TTS_MODEL);
     if (!sr.ok) { const se: any = await sr.json().catch(() => ({})); return json({ error: 'ai_failed', detail: se?.error?.message || '' }, sr.status); }
     const buf = new Uint8Array(await sr.arrayBuffer());
     let bin = ''; for (let i = 0; i < buf.length; i++) bin += String.fromCharCode(buf[i]);
