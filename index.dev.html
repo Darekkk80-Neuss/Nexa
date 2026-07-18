@@ -8033,8 +8033,8 @@ function bootGreetingText() {
   return (typeof cleanForTTS === 'function') ? cleanForTTS(raw) : raw;
 }
 /* Cache für die neuronale coral-Stimme: einmal erzeugt, danach gratis & offline (je Text = Tageszeit/Name/Sprache). */
-const BOOT_VOICE = 'onyx';   // tiefe, souveräne KI-Assistenten-Stimme (Tony-Stark-/JARVIS-Anmutung)
-const BOOT_TTS_KEY = 'effyra_boot_tts_v2';   // v2: neue Stimme/Regie → alten Cache verwerfen
+const BOOT_VOICE = 'fable';   // britischer Erzähler-Einschlag – am nächsten an JARVIS (Tony Starks KI)
+const BOOT_TTS_KEY = 'effyra_boot_tts_v3';   // v3: Stimme fable → alten Cache verwerfen
 function bootTtsGet(text) { try { return (JSON.parse(localStorage.getItem(BOOT_TTS_KEY) || '{}'))[text] || null; } catch (e) { return null; } }
 function bootTtsPut(text, mime, audio) {
   try {
