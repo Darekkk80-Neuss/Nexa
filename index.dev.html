@@ -8025,24 +8025,53 @@ function pickVoiceFor(lang) {
     return vs.find(v => good(v) && female(v)) || vs.find(female) || vs.find(good) || vs[0] || null;
   } catch (e) { return null; }
 }
-/* Gesprochene Begrüßung – warm & persönlich („Guten Abend, Darius. Schön, dass du da bist."),
-   lokalisiert, ruhig gesprochen, gratis (Gerätestimme, keine KI-Credits). */
-function speakBootGreeting() {
+/* Begrüßungstext – warm & persönlich („Guten Abend, Darius. Schön, dass du da bist."), lokalisiert. */
+function bootGreetingText() {
+  const name = (store.name || (account && account.name) || '').trim();
+  const warm = (curLang === 'de') ? 'Schön, dass du da bist.' : (lookupTr('Schön, dass du da bist.') || 'Good to have you here.');
+  const raw = greetWord() + (name ? ', ' + name : '') + '. ' + warm;   // Komma/Punkt → natürliche Sprechpausen
+  return (typeof cleanForTTS === 'function') ? cleanForTTS(raw) : raw;
+}
+/* Cache für die neuronale coral-Stimme: einmal erzeugt, danach gratis & offline (je Text = Tageszeit/Name/Sprache). */
+const BOOT_TTS_KEY = 'effyra_boot_tts_v1';
+function bootTtsGet(text) { try { return (JSON.parse(localStorage.getItem(BOOT_TTS_KEY) || '{}'))[text] || null; } catch (e) { return null; } }
+function bootTtsPut(text, mime, audio) {
+  try {
+    const m = JSON.parse(localStorage.getItem(BOOT_TTS_KEY) || '{}');
+    m[text] = { mime, audio, ts: Date.now() };
+    const ks = Object.keys(m); if (ks.length > 8) { ks.sort((a, b) => m[a].ts - m[b].ts); delete m[ks[0]]; }   // ältesten verwerfen
+    localStorage.setItem(BOOT_TTS_KEY, JSON.stringify(m));
+  } catch (e) {}
+}
+function bootPlayAudio(mime, audio) {
+  try { const el = new Audio('data:' + (mime || 'audio/mpeg') + ';base64,' + audio); el.volume = 1; el.play().catch(() => speakBootGreetingDevice()); }
+  catch (e) { speakBootGreetingDevice(); }
+}
+/* Fallback: warme, empathische Gerätestimme (kostenlos, offline). */
+function speakBootGreetingDevice() {
   try {
     if (!('speechSynthesis' in window)) return;
-    const name = (store.name || (account && account.name) || '').trim();
-    const warm = (curLang === 'de') ? 'Schön, dass du da bist.' : (lookupTr('Schön, dass du da bist.') || 'Good to have you here.');
-    // Komma nach der Begrüßung + Punkt vor der zweiten Zeile → natürliche Sprechpausen (menschlicher).
-    const raw = greetWord() + (name ? ', ' + name : '') + '. ' + warm;
-    const text = (typeof cleanForTTS === 'function') ? cleanForTTS(raw) : raw;
-    if (!text) return;
+    const text = bootGreetingText(); if (!text) return;
     const u = new SpeechSynthesisUtterance(text);
-    const v = pickVoiceFor(curLang);
-    if (v) u.voice = v;
+    const v = pickVoiceFor(curLang); if (v) u.voice = v;
     u.lang = (typeof curLocale === 'string' && curLocale) ? curLocale : 'de-DE';
-    u.rate = 1.0; u.pitch = 1.06; u.volume = 1;   // natürliches Tempo + hellere, warme Tonhöhe = empathisch & freundlich
+    u.rate = 1.0; u.pitch = 1.06; u.volume = 1;
     speechSynthesis.cancel(); speechSynthesis.speak(u);
   } catch (e) {}
+}
+/* Gesprochene Begrüßung: neuronale coral-Stimme (empathisch, warm). Aus dem Cache sofort & gratis;
+   sonst einmalig erzeugen (~1 Credit, dann gecacht). Ohne Online/KI-Zugang → Gerätestimme. */
+async function speakBootGreeting() {
+  try {
+    const text = bootGreetingText(); if (!text) return;
+    const c = bootTtsGet(text);
+    if (c && c.audio) { bootPlayAudio(c.mime, c.audio); return; }
+    if (AI_VOICE && (typeof canRealAI === 'function') && canRealAI()) {
+      const r = await callAudioHosted({ op: 'tts', text, voice: TTS_VOICE });
+      if (r && r.audio) { bootTtsPut(text, r.mime, r.audio); bootPlayAudio(r.mime, r.audio); return; }
+    }
+  } catch (e) { /* jeder Fehler → Gerätestimme */ }
+  speakBootGreetingDevice();
 }
 /* Signatur + kurz danach die gesprochene Begrüßung (auf dem Hall-Ausklang). */
 function bootSoundNow() { try { playBootChime(_famAC); } catch (e) {} setTimeout(speakBootGreeting, 1300); }
