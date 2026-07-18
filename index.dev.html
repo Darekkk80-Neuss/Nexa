@@ -2210,6 +2210,9 @@ const store = Object.assign(JSON.parse(JSON.stringify(STORE_DEFAULTS)), (() => {
 })());
 /* Migration: alte Modell-Werte (claude-*, gpt-4o*) auf das freigegebene OpenAI-Modell gpt-5-mini umstellen. */
 if (store.settings && !/^gpt-5/.test(store.settings.model || '')) store.settings.model = 'gpt-5-mini';
+/* Migration 18.07.2026: Start-Begrüßung standardmäßig DEAKTIVIEREN (auch auf Geräten, wo sie schon an war).
+   Einmalig; danach entscheidet allein der Schalter in den Einstellungen (✨ Start-Erlebnis). */
+if (store.settings && !store.settings.bootFxOffMigr) { store.settings.bootFx = 'off'; store.settings.bootFxOffMigr = true; }
 
 function save() {
   if (!syncApplying) store._ts = Date.now();   // lokaler Änderungszeitpunkt (für Cloud-Sync-LWW)
@@ -8136,7 +8139,7 @@ function greetWord() {
   const g = H < 5 ? 'Gute Nacht' : H < 11 ? 'Guten Morgen' : H < 18 ? 'Guten Tag' : 'Guten Abend';
   return (curLang === 'de' ? g : (lookupTr(g) || g));
 }
-function bootFxMode() { const m = store.settings && store.settings.bootFx; return (m === 'quiet' || m === 'off') ? m : 'full'; }
+function bootFxMode() { const m = store.settings && store.settings.bootFx; return (m === 'full' || m === 'quiet') ? m : 'off'; }   // Standard: AUS (bewusste Aktivierung in den Einstellungen)
 let _bootDone = false;
 function bootExperience() {
   if (_bootDone) return; _bootDone = true;
