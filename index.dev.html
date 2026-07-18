@@ -8016,11 +8016,13 @@ function playBootChime(ctx) {
     o.start(s); o.stop(s + 1.25); oh.start(s); oh.stop(s + 1.25);
   });
 }
-/* Beste Gerätestimme für die aktuelle Sprache (Google/Neural bevorzugt). */
+/* Freundlichste Gerätestimme für die aktuelle Sprache: warme WEIBLICHE Neural-Stimme bevorzugt. */
 function pickVoiceFor(lang) {
   try {
     const vs = speechSynthesis.getVoices().filter(v => new RegExp('^' + lang, 'i').test(v.lang));
-    return vs.find(v => /google/i.test(v.name)) || vs.find(v => /(natural|neural|online|premium|enhanced)/i.test(v.name)) || vs[0] || null;
+    const good = v => /google|natural|neural|online|premium|enhanced/i.test(v.name);
+    const female = v => /female|weiblich|frau|Katja|Klara|Marlene|Petra|Vicki|Amala|Louisa|Anna|Samantha|Zira|Aria|Jenny|Sonia|Libby|Amelie|Amélie|Denise|Élise|Elsa|Léa|Audrey|Monica|Mónica|Elvira|Paloma|Lucia|Lucía|Alice|Federica|Elsa|Zosia|Agnieszka|Maja|Ewa/i.test(v.name);
+    return vs.find(v => good(v) && female(v)) || vs.find(female) || vs.find(good) || vs[0] || null;
   } catch (e) { return null; }
 }
 /* Gesprochene Begrüßung – warm & persönlich („Guten Abend, Darius. Schön, dass du da bist."),
@@ -8038,7 +8040,7 @@ function speakBootGreeting() {
     const v = pickVoiceFor(curLang);
     if (v) u.voice = v;
     u.lang = (typeof curLocale === 'string' && curLocale) ? curLocale : 'de-DE';
-    u.rate = 0.88; u.pitch = 0.96; u.volume = 0.9;   // langsamer, wärmer, sanfter = ruhiger & freundlicher
+    u.rate = 1.0; u.pitch = 1.06; u.volume = 1;   // natürliches Tempo + hellere, warme Tonhöhe = empathisch & freundlich
     speechSynthesis.cancel(); speechSynthesis.speak(u);
   } catch (e) {}
 }
