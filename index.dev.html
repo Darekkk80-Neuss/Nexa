@@ -2180,7 +2180,7 @@ const KEY_KEY = 'effyra_key';
   try { pairs.forEach(function (p) { const v = localStorage.getItem(p[0]); if (v != null && localStorage.getItem(p[1]) == null) localStorage.setItem(p[1], v); }); } catch (e) {}
 })();
 
-const store = Object.assign({
+const STORE_DEFAULTS = {
   onboarded: false,
   name: '',
   tasks: [],    // {id,title,due,prio,done,source,createdAt}
@@ -2204,7 +2204,8 @@ const store = Object.assign({
   fit: { weight: null, height: null, gender: null, goalSteps: 8000, goalKcal: null, activities: [], consent: false, lastSpruch: {}, rewardShown: {}, heroLast: -1, streak: 0, lastGoalDate: '' }, // EffyraFit (Bewegung, aktives Session-Tracking, Gamification)
   work: { settings: { weeklyHours: 40, hoursPerDay: 8, vacationDays: 30, childSickMax: 10, state: 'NW', autoBreak: true }, entries: {}, shifts: [], absences: [] }, // Arbeitszeit
   settings: { model: 'gpt-5-mini', demoIdx: 0, theme: 'light', rtSilenceMs: 700, morningPush: false }
-}, (() => {
+};
+const store = Object.assign(JSON.parse(JSON.stringify(STORE_DEFAULTS)), (() => {
   try { return JSON.parse(localStorage.getItem(DATA_KEY)) || {}; } catch (e) { return {}; }
 })());
 /* Migration: alte Modell-Werte (claude-*, gpt-4o*) auf das freigegebene OpenAI-Modell gpt-5-mini umstellen. */
@@ -4475,9 +4476,26 @@ async function cloudSession(session, fallbackName) {
     trialStart: (p && p.trial_start) ? new Date(p.trial_start).getTime() : Date.now(),
     loggedIn: true
   };
+  // Kontowechsel auf DEMSELBEN Gerät erkennen → konto-eigene (synchronisierte) Daten + Consents
+  // zurücksetzen, damit ein neues Konto weder fremde Aufgaben/Termine/Name noch fremdes Onboarding
+  // „erbt". Danach lädt statePull die Cloud-Daten DIESES Kontos (falls vorhanden); sonst bleibt der
+  // saubere Default (= neues Konto sieht sein eigenes Onboarding). Bewusst NICHT zurückgesetzt:
+  // gerätelokale, nicht synchronisierte Bereiche (Notfall/Budget/Fit/Dokumente – nicht wiederherstellbar).
+  const switched = store._acct && store._acct !== account.uid;
+  if (switched) {
+    syncApplying = true;   // _ts nicht durch save() überschreiben lassen
+    SYNC_KEYS.forEach(k => { store[k] = JSON.parse(JSON.stringify(STORE_DEFAULTS[k])); });
+    store.consents = {}; store._acct = account.uid; store._ts = 0;
+    try { localStorage.setItem(DATA_KEY, JSON.stringify(store)); } catch (e) {}
+    syncApplying = false;
+    try { await statePull(); } catch (e) {}   // Cloud-Daten DIESES Kontos laden (falls vorhanden)
+  } else {
+    store._acct = account.uid;   // Konto merken (für künftige Wechsel-Erkennung) – OHNE _ts zu ändern,
+    try { localStorage.setItem(DATA_KEY, JSON.stringify(store)); } catch (e) {}   // sonst überspringt statePull Cloud-Änderungen
+  }
   if (account.name && !store.name) { store.name = account.name; save(); }
   await pullConsents();   // Einwilligungen dieses Kontos laden (personenbezogen statt geräteweit)
-  statePull();   // Cloud-Zustand geräteübergreifend abgleichen (nicht awaiten – läuft im Hintergrund)
+  if (!switched) statePull();   // Nicht-Wechsel: Hintergrund-Abgleich wie bisher
 }
 
 async function cloudAuth(pass, err) {
