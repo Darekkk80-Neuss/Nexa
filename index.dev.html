@@ -12276,6 +12276,7 @@ function buildAgentPrompt(live) {
     'Kontext – Fahrzeuge: ' + veh + '. Familienmitglieder: ' + fam + '.',
     'Regeln:',
     '- Erfinde keine Beträge/Daten. Mehrere Aktionen pro Nachricht sind erlaubt. Wähle die passendste Kategorie.',
+    '- EINKAUFSLISTE / BESORGUNGEN: Erfinde bei Einkaufs-Artikeln NIEMALS eine Menge. Hat der Nutzer für einen Artikel KEINE Menge genannt, lege ihn NICHT sofort an – frage stattdessen freundlich nach der Menge (mehrere fehlende Mengen in EINER Rückfrage bündeln, z. B. „Wie viel Butter, Salat und Petersilie brauchst du jeweils?"). Nur Artikel mit ausdrücklich genannter Menge direkt per create_shopping_item anlegen. Sagt der Nutzer „ohne Menge" oder „egal", notiere ohne Mengenangabe.',
     '- ARBEITSZEIT: Sobald es um „gearbeitet", „Schicht", „Arbeitszeit", „im Büro" (mit Uhrzeiten von–bis) geht → IMMER log_worktime, NIEMALS create_event/Kalender.',
     '- ABWESENHEIT: „Urlaub", „krank", „kinderkrank", „frei" → IMMER log_absence, NIEMALS Kalender.',
     '- FAHRZEUG: „getankt", „Sprit", „Auto/Motorrad-Kosten" → IMMER create_vehicle_expense (das legt den Eintrag im Fahrzeug-Bereich an UND bucht die Ausgabe automatisch in die Finanzen). NICHT zusätzlich create_expense dafür verwenden.',
