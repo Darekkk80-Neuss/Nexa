@@ -5,7 +5,8 @@
       "namespace": "android_app",
       "package_name": "app.effyra.twa",
       "sha256_cert_fingerprints": [
-        "REPLACE_WITH_PLAY_APP_SIGNING_SHA256_FINGERPRINT"
+        "52:3C:BA:D6:23:82:4F:06:98:8A:9B:3C:FD:A8:31:BB:72:F4:CB:0D:3B:46:30:46:0B:B5:BD:B8:DD:45:92:DF",
+        "68:E1:B7:03:0B:B0:ED:FE:22:4A:EF:3E:B3:A1:B1:AF:82:37:A3:B7:F6:E0:7C:3F:39:C7:90:09:AD:0D:C9:5C"
       ]
     }
   }

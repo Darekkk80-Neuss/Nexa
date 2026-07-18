@@ -1472,7 +1472,7 @@ body.lang-switching main,body.lang-switching .sidebar,body.lang-switching .topba
         <ul class="tier-feats">
           <li>✅ 2 Erwachsene + bis zu 3 Kinder (unter 18)</li>
           <li>✅ Gemeinsamer Familienbereich &amp; Synchronisation</li>
-          <li>✅ 1000 KI-Credits / Monat (geteilt, nur Erwachsene)</li>
+          <li>✅ 1600 KI-Credits / Monat (geteilt, nur Erwachsene)</li>
           <li>➕ Zusatz: Erwachsener 3,99 € · Kind 0,99 € · KI-Boost 4,99 € (+1000)</li>
         </ul>
         <button class="btn btn-primary tier-cta" data-buy="family">Familie starten – 14,99 €/Mon.</button>
@@ -3447,7 +3447,7 @@ const TDICT_SRC = {
   '📅 Plan': { en: '📅 Plan', fr: '📅 Plan', es: '📅 Plan', it: '📅 Piano', pl: '📅 Plan' },
   '✅ Komplette App + echte KI': { en: '✅ Full app + real AI', fr: '✅ Appli complète + vraie IA', es: '✅ App completa + IA real', it: '✅ App completa + IA reale', pl: '✅ Pełna aplikacja + prawdziwe AI' },
   '✅ Komplette App – dauerhaft, keine Abo-Gebühr': { en: '✅ Full app – permanent, no subscription fee', fr: '✅ Appli complète – à vie, sans abonnement', es: '✅ App completa: permanente, sin cuota', it: '✅ App completa – per sempre, senza canone', pl: '✅ Pełna aplikacja – na stałe, bez abonamentu' },
-  '✅ 1000 KI-Credits / Monat (geteilt, nur Erwachsene)': { en: '✅ 1000 AI credits / month (shared, adults only)', fr: '✅ 1000 crédits IA / mois (partagés, adultes)', es: '✅ 1000 créditos de IA / mes (compartidos, solo adultos)', it: '✅ 1000 crediti IA / mese (condivisi, solo adulti)', pl: '✅ 1000 kredytów AI / miesiąc (wspólne, tylko dorośli)' },
+  '✅ 1600 KI-Credits / Monat (geteilt, nur Erwachsene)': { en: '✅ 1600 AI credits / month (shared, adults only)', fr: '✅ 1600 crédits IA / mois (partagés, adultes)', es: '✅ 1600 créditos de IA / mes (compartidos, solo adultos)', it: '✅ 1600 crediti IA / mese (condivisi, solo adulti)', pl: '✅ 1600 kredytów AI / miesiąc (wspólne, tylko dorośli)' },
   '✅ 2 Erwachsene + bis zu 3 Kinder (unter 18)': { en: '✅ 2 adults + up to 3 children (under 18)', fr: '✅ 2 adultes + jusqu’à 3 enfants (moins de 18 ans)', es: '✅ 2 adultos + hasta 3 niños (menores de 18)', it: '✅ 2 adulti + fino a 3 bambini (under 18)', pl: '✅ 2 dorosłych + do 3 dzieci (poniżej 18 lat)' },
   '➖ Ohne integrierte KI (eigener API-Schlüssel optional)': { en: '➖ Without built-in AI (own API key optional)', fr: '➖ Sans IA intégrée (clé API perso en option)', es: '➖ Sin IA integrada (clave API propia opcional)', it: '➖ Senza IA integrata (chiave API propria facoltativa)', pl: '➖ Bez wbudowanego AI (własny klucz API opcjonalnie)' },
   'Bei Bedarf jederzeit auffüllen (KI-Boost: +1000 · 4,99 €).': { en: 'Top up any time if needed (AI boost: +1000 · €4.99).', fr: 'Rechargez à tout moment si besoin (boost IA : +1000 · 4,99 €).', es: 'Recarga cuando quieras si hace falta (impulso de IA: +1000 · 4,99 €).', it: 'Ricarica quando serve (boost IA: +1000 · 4,99 €).', pl: 'W razie potrzeby doładuj w każdej chwili (AI boost: +1000 · 4,99 €).' },
@@ -4244,6 +4244,7 @@ function applyServerUsage(used, limit) {
   if (currentView === 'settings') RENDERERS.settings();
 }
 /* Aktuellen Stufen-/Kontingentstand serverseitig holen (nach Login, nach Kauf) */
+let _reverifiedOnce = false;
 async function syncEntitlements() {
   if (!BACKEND_V2 || !CLOUD || !account || !account.loggedIn) return;
   try {
@@ -4259,6 +4260,8 @@ async function syncEntitlements() {
       account.familyAiLimit = (typeof r.data.family_ai_limit === 'number') ? r.data.family_ai_limit : null;
     }
   } catch (e) { /* Backend evtl. noch nicht deployt – Phase-1-Werte behalten */ }
+  // Einmal pro Sitzung aktive Play-Abos gegen Google abgleichen (Verlängerungen greifen so auch ohne RTDN).
+  if (!_reverifiedOnce && typeof hasPlayBilling === 'function' && hasPlayBilling()) { _reverifiedOnce = true; reverifyActivePurchases(); }
 }
 /* Rückkehr von Stripe (?checkout=success|cancel) auswerten */
 async function handleCheckoutReturn() {
@@ -7678,7 +7681,7 @@ $('#fitRoot') && $('#fitRoot').addEventListener('change', e => {
 /* Rollenmodell (Client, Phase 1): owner=Administrator, adult=Erwachsen, child=Kind (<18).
    Kinder sind eingeschränkt (keine KI, kein API-Key, keine Ausgaben ohne Freigabe). Zahlung/serverseitiges Enforcement folgt in Phase 2. */
 const FAM_ROLE_META = { owner: { label: 'Administrator', icon: '👑' }, adult: { label: 'Erwachsen', icon: '🧑' }, child: { label: 'Kind', icon: '🧒' } };
-const FAMILY_AI_LIMIT = 1000;   // geteiltes Familien-KI-Kontingent/Monat (nur Erwachsene)
+const FAMILY_AI_LIMIT = 1600;   // geteiltes Familien-KI-Kontingent/Monat (nur Erwachsene) = 2 × 800/Erw. (großzügiger als Einzel-Pro 500) – muss zu ai_family_seat() in der DB passen
 const FAMILY_MAX_ADULTS = 2, FAMILY_MAX_CHILDREN = 3;   // im Familienabo enthalten (weitere = kostenpflichtige Add-ons)
 /* Zusatzmitglieder als Google-Play-Billing-Abos. Kauf läuft nur in der Android-App (TWA) über die
    Digital Goods API; im Browser gibt es einen Hinweis. Produkt-IDs müssen in der Play Console angelegt sein. */
@@ -7696,10 +7699,17 @@ async function bookAddon(kind) {
       { total: { label: p.label + ' (Effyra)', amount: { currency: 'EUR', value: '0' } } }
     );
     const resp = await req.show();
-    /* TODO(Server): resp.details.token (purchaseToken) über die Play Developer API fälschungssicher
-       verifizieren und das Add-on serverseitig gutschreiben. Bis dahin lokal provisorisch: */
+    const token = resp.details && resp.details.token;
+    try {
+      if (CLOUD && sb) {
+        const s = (await sb.auth.getSession()).data.session;
+        // Serverseitig gegen Google verifizieren → Sitzplatz (seats_adults/children) idempotent gutschreiben.
+        if (s) await fetch(FN_URL('play-verify'), { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + s.access_token }, body: JSON.stringify({ sku: p.id, token: token, type: 'subs' }) });
+      }
+    } catch (e) { /* zieht sonst per RTDN/Re-Verify nach */ }
     await resp.complete('success');
-    grantAddon(kind);
+    grantAddon(kind);                              // lokale UI (Mitglieder-Slots)
+    try { await syncEntitlements(); } catch (e) {} // Familien-Kontingent vom Server aktualisieren
     toast('✓ ' + p.label + ' hinzugebucht (' + p.price + '/Mon)');
   } catch (e) { toast('Kauf abgebrochen oder nicht möglich.'); }
 }
@@ -7710,7 +7720,7 @@ async function bookAddon(kind) {
 const PLAY_PRODUCTS = {
   premium:  { id: 'effyra_premium',  type: 'subs',       kind: 'premium',  label: 'Effyra AI Pro',    price: '4,99 €/Mon.' },
   family:   { id: 'effyra_family',   type: 'subs',       kind: 'family',   label: 'Familienabo',      price: '14,99 €/Mon.' },
-  topup:    { id: 'effyra_ai_boost', type: 'consumable', kind: 'topup',    label: 'KI-Credits +500',  price: '4,99 €' }
+  topup:    { id: 'effyra_ai_boost', type: 'consumable', kind: 'topup',    label: 'KI-Credits +1000', price: '4,99 €' }
 };
 /* Kauf über Google Play Billing (nur in der TWA verfügbar). Der purchaseToken wird
    serverseitig via Play Developer API verifiziert (supabase/functions/play-verify),
@@ -7737,6 +7747,39 @@ async function startPlayPurchase(product) {
     const pw = $('#paywall'); if (pw) pw.classList.remove('on');
     toast('✓ ' + p.label + ' aktiviert. Danke!');
   } catch (e) { toast('Kauf abgebrochen oder nicht möglich.'); }
+}
+/* Beim App-Start aktive Play-Abos neu verifizieren → Ablaufdatum idempotent auf Googles Stand setzen,
+   damit Verlängerungen greifen (auch ohne RTDN). Nur in der TWA mit Play Billing + angemeldet. */
+async function reverifyActivePurchases() {
+  if (!hasPlayBilling() || !(CLOUD && sb && account && account.loggedIn)) return;
+  const SUB_SKUS = ['effyra_premium', 'effyra_family', 'effyra_adult_addon', 'effyra_child_addon'];   // Abos + Add-ons (keine Consumables)
+  try {
+    const service = await window.getDigitalGoodsService('https://play.google.com/billing');
+    if (!service || typeof service.listPurchases !== 'function') return;
+    const purchases = await service.listPurchases();
+    if (!purchases || !purchases.length) return;
+    const ses = (await sb.auth.getSession()).data.session; if (!ses) return;
+    let did = false;
+    for (const pur of purchases) {
+      if (SUB_SKUS.indexOf(pur.itemId) < 0) continue;
+      try {
+        await fetch(FN_URL('play-verify'), {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + ses.access_token },
+          body: JSON.stringify({ sku: pur.itemId, token: pur.purchaseToken, type: 'subs', mode: 'sync' })
+        });
+        did = true;
+      } catch (e) { /* einzelnes Abo übersprungen */ }
+    }
+    if (did) { try { await syncEntitlements(); gate(); if (currentView === 'settings') RENDERERS.settings(); } catch (e) {} }
+  } catch (e) { /* Digital Goods evtl. nicht verfügbar */ }
+}
+/* Abo verwalten/kündigen: öffnet die Google-Play-Abo-Verwaltung (Kündigung läuft immer über Google Play). */
+function openManageSubscription(sku) {
+  const pkg = 'app.effyra.twa';
+  const base = 'https://play.google.com/store/account/subscriptions';
+  const url = sku ? (base + '?sku=' + encodeURIComponent(sku) + '&package=' + pkg) : (base + '?package=' + pkg);
+  try { window.open(url, '_blank'); } catch (e) { location.href = url; }
 }
 function ageFrom(iso) { if (!iso) return null; const b = parseISO(iso), n = new Date(); let a = n.getFullYear() - b.getFullYear(); const mo = n.getMonth() - b.getMonth(); if (mo < 0 || (mo === 0 && n.getDate() < b.getDate())) a--; return a; }
 function nextMonthFirstISO() { const d = new Date(); return toISO(new Date(d.getFullYear(), d.getMonth() + 1, 1)); }
@@ -8176,7 +8219,7 @@ function creditTableHtml() {
 }
 function famAiPanel() {
   const adults = store.family.members.filter(m => m.role !== 'child');
-  const perAdult = AI_MONTHLY_LIMIT;
+  const perAdult = Math.round(FAMILY_AI_LIMIT / FAMILY_MAX_ADULTS);   // 800/Erwachsener (Familie großzügiger als Einzel-Pro)
   /* GEMEINSAMER Familien-Topf (passt zum Server: families.ai_used): EIN Kontingent für alle
      Erwachsenen. Größe = enthaltene Erwachsenen-Plätze × 500 (wächst mit Add-ons). Serverwerte
      (account.familyAi*) bevorzugen, sonst lokal aus den Plätzen schätzen. */
@@ -12466,11 +12509,13 @@ function renderAccountCard() {
     html += '<div class="note-box" style="margin-bottom:12px"><b>KI-Kontingent (' + aiMonthKey() + ')</b>' +
       '<div class="quota-bar"><div class="quota-fill ' + cls + '" style="width:' + Math.min(100, pct) + '%"></div></div>' +
       '<span class="sub">' + used + ' / ' + lim + ' Credits · noch ' + aiRemaining() + ' übrig</span>' +
-      (pct >= 90 && !STORE_SAFE ? '<div style="margin-top:8px"><button class="btn btn-sm btn-primary" data-buy="topup">+500 nachbestellen · 4,99 €</button></div>' : '') +
+      (pct >= 90 && !STORE_SAFE ? '<div style="margin-top:8px"><button class="btn btn-sm btn-primary" data-buy="topup">+1000 nachbestellen · 4,99 €</button></div>' : '') +
       '<div class="sub" style="margin-top:6px">Reset am 1. des Folgemonats. Alternativ eigenen Schlüssel (unten) für unbegrenzte Nutzung.</div>' + creditTableHtml() + '</div>';
   } else if (tier === 'premium' && usingOwnKey()) {
     html += '<div class="note-box" style="margin-bottom:12px">🔑 Eigener API-Schlüssel aktiv – <b>unbegrenzte</b> KI, kein Kontingentverbrauch.</div>';
   }
+
+  if (isPaid() && !usingOwnKey() && !account.viaFamily) html += '<div style="margin-bottom:12px"><button class="btn btn-sm" id="btnManageSub">🧾 Abo verwalten / kündigen</button><div class="sub" style="margin-top:4px;font-size:11.5px;color:var(--faint)">Dein Abo verlängert sich automatisch monatlich. Kündigen jederzeit über Google Play – der Zugang bleibt bis zum Ende der bezahlten Periode.</div></div>';
 
   if (tier !== 'premium' && !STORE_SAFE) html += '<button class="btn btn-primary" id="btnUpgrade" style="width:100%;margin-bottom:12px">⭐ Plan ansehen / upgraden</button>';
 
@@ -12482,6 +12527,7 @@ function renderAccountCard() {
 
   card.innerHTML = html;
   const up = $('#btnUpgrade'); if (up) up.addEventListener('click', () => showUpgrade());
+  const ms = $('#btnManageSub'); if (ms) ms.addEventListener('click', () => openManageSubscription(currentTier() === 'premium' && account.aiScope === 'family' ? 'effyra_family' : 'effyra_premium'));
   const go = $('#setCodeGo'); if (go) go.addEventListener('click', async () => { if (await activatePremium($('#setCode').value, $('#setCodeErr'))) renderAccountCard(); });
   const tu = card.querySelector('[data-buy="topup"]'); if (tu) tu.addEventListener('click', () => startCheckout('topup'));
   $('#btnLogout').addEventListener('click', logout);

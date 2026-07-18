@@ -80,51 +80,13 @@ revoke execute on function public.get_entitlements() from public, anon;
 grant  execute on function public.get_entitlements() to authenticated;
 
 -- ------------------------------------------------------------
--- 3) consume_ai(user, n): eine (oder n) KI-Abfrage(n) verbrauchen – atomar.
---    NUR vom Claude-Proxy (service_role) aufrufbar, nie vom Client.
---    Rückgabe JSON: {ok, ai_used, ai_limit, reason?}
+-- 3) consume_ai(user, n) — HIER ENTFERNT (bewusst).
+--    ⚠️ Diese Datei definierte früher eine Premium-only-Version ohne Testphase.
+--    Die EINE gültige, zusammengeführte Definition (Trial + eigenes Premium +
+--    Familien-Pool) steht jetzt in **supabase-trial-and-play.sql** (Abschnitt 2)
+--    und muss als LETZTE Datei ausgeführt werden. `consume_ai` wird hier nicht
+--    mehr angelegt, damit ein erneuter Lauf die korrekte Version nicht überschreibt.
 -- ------------------------------------------------------------
-create or replace function public.consume_ai(p_user uuid, p_n int default 1)
-returns json
-language plpgsql
-security definer set search_path = public
-as $$
-declare
-  p public.profiles%rowtype;
-  cur_month text := to_char(now(), 'YYYY-MM');
-  lim int;
-begin
-  select * into p from public.profiles where id = p_user for update;
-  if not found then return json_build_object('ok', false, 'reason', 'no_profile'); end if;
-
-  if p.usage_month is distinct from cur_month then
-    p.usage_month := cur_month; p.ai_used := 0; p.ai_extra := 0;
-  end if;
-
-  if p.tier <> 'premium' or (p.premium_until is not null and p.premium_until < now()) then
-    update public.profiles
-       set usage_month = cur_month, ai_used = p.ai_used, ai_extra = p.ai_extra
-     where id = p_user;
-    return json_build_object('ok', false, 'reason', 'not_premium');
-  end if;
-
-  lim := public.ai_base_limit() + coalesce(p.ai_extra, 0);
-  if p.ai_used + p_n > lim then
-    update public.profiles
-       set usage_month = cur_month, ai_used = p.ai_used, ai_extra = p.ai_extra
-     where id = p_user;
-    return json_build_object('ok', false, 'reason', 'quota_exceeded', 'ai_used', p.ai_used, 'ai_limit', lim);
-  end if;
-
-  update public.profiles
-     set usage_month = cur_month, ai_used = p.ai_used + p_n, ai_extra = p.ai_extra
-   where id = p_user;
-  return json_build_object('ok', true, 'ai_used', p.ai_used + p_n, 'ai_limit', lim);
-end;
-$$;
-
-revoke execute on function public.consume_ai(uuid, int) from public, anon, authenticated;
--- service_role darf immer; explizit halten wir es fern von normalen Nutzern.
 
 -- ------------------------------------------------------------
 -- 4) apply_purchase(user, kind): nach erfolgreicher Stripe-Zahlung.

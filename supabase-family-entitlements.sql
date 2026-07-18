@@ -152,7 +152,7 @@ begin
     if fam_seats is not null then
       via_fam_ai := true;
       if fam_month is distinct from cur_month then fam_used := 0; fam_extra := 0; end if;   -- Monatswechsel: Anzeige auf 0
-      fam_limit := fam_seats * public.ai_base_limit() + coalesce(fam_extra, 0);
+      fam_limit := fam_seats * public.ai_family_seat() + coalesce(fam_extra, 0);
     end if;
   end if;
 
@@ -176,79 +176,18 @@ revoke execute on function public.get_entitlements() from public, anon;
 grant  execute on function public.get_entitlements() to authenticated;
 
 -- ------------------------------------------------------------
--- 4) consume_ai() neu: Premium-Gate über effective_tier + GEMEINSAMER Familien-Zähler.
---    Deckt eine aktive Familie den Nutzer ab -> Verbrauch läuft auf families.ai_used
---    (EIN Topf für alle Erwachsenen). Sonst (eigenes Premium ohne Familie) -> Profil-Zähler.
---    NUR vom Claude-Proxy (service_role) aufrufbar.
+-- 4) consume_ai() — HIER ENTFERNT (bewusst).
+--    ⚠️ Diese Datei definierte früher ein hartes Premium-Gate
+--    (`if effective_tier <> 'premium' then return 'not_premium'`), das JEDEN
+--    Free-/Trial-Nutzer mit 100 Credits sperrte. Da mehrere Dateien `consume_ai`
+--    per `create or replace` neu anlegten, gewann „die zuletzt ausgeführte" –
+--    was zu genau diesem Bug führte.
+--    → Es gibt jetzt EINE zusammengeführte, gültige Definition (Trial + eigenes
+--      Premium + Familien-Pool) in **supabase-trial-and-play.sql** (dort Abschnitt 2).
+--    Diese Datei legt `consume_ai` NICHT mehr an, damit ein erneutes Ausführen die
+--    korrekte Version nicht überschreiben kann. Reihenfolge: tiers → family-
+--    entitlements → **trial-and-play (zuletzt)**.
 -- ------------------------------------------------------------
-create or replace function public.consume_ai(p_user uuid, p_n int default 1)
-returns json
-language plpgsql
-security definer set search_path = public
-as $$
-declare
-  p            public.profiles%rowtype;
-  cur_month    text := to_char(now(), 'YYYY-MM');
-  lim          int;
-  v_fid        uuid;
-  v_plan       text; v_plan_until timestamptz; v_seats int; v_plan_by uuid; v_rank int;
-  via_family   boolean := false;
-  f_used       int; f_extra int; f_month text;
-begin
-  -- Premium (eigenes ODER über Familie geerbt) erforderlich
-  if public.effective_tier(p_user) <> 'premium' then
-    return json_build_object('ok', false, 'reason', 'not_premium');
-  end if;
-
-  -- Deckt eine Familie mit aktivem Family-Abo diesen Nutzer ab? -> gemeinsamer Topf
-  select family_id into v_fid from public.family_members where user_id = p_user limit 1;
-  if v_fid is not null then
-    select plan, plan_until, coalesce(seats_adults, 2), plan_by
-      into v_plan, v_plan_until, v_seats, v_plan_by
-      from public.families where id = v_fid;
-    if v_plan = 'family' and (v_plan_until is null or v_plan_until >= now()) then
-      if p_user = v_plan_by then
-        via_family := true;
-      else
-        select count(*) into v_rank from public.family_members fm
-          where fm.family_id = v_fid
-            and fm.joined_at <= (select joined_at from public.family_members
-                                  where family_id = v_fid and user_id = p_user);
-        if v_rank <= v_seats then via_family := true; end if;
-      end if;
-    end if;
-  end if;
-
-  -- ---- Fall A: GEMEINSAMER Familien-Zähler (atomar auf der families-Zeile) ----
-  if via_family then
-    select ai_used, coalesce(ai_extra, 0), ai_month into f_used, f_extra, f_month
-      from public.families where id = v_fid for update;
-    if f_month is distinct from cur_month then f_used := 0; f_extra := 0; f_month := cur_month; end if;
-    lim := v_seats * public.ai_base_limit() + f_extra;
-    if f_used + p_n > lim then
-      update public.families set ai_used = f_used, ai_extra = f_extra, ai_month = cur_month where id = v_fid;
-      return json_build_object('ok', false, 'reason', 'quota_exceeded', 'scope', 'family', 'ai_used', f_used, 'ai_limit', lim);
-    end if;
-    update public.families set ai_used = f_used + p_n, ai_extra = f_extra, ai_month = cur_month where id = v_fid;
-    return json_build_object('ok', true, 'scope', 'family', 'ai_used', f_used + p_n, 'ai_limit', lim);
-  end if;
-
-  -- ---- Fall B: persönlicher Zähler (eigenes Premium ohne Familienabo) ----
-  select * into p from public.profiles where id = p_user for update;
-  if not found then return json_build_object('ok', false, 'reason', 'no_profile'); end if;
-  if p.usage_month is distinct from cur_month then
-    p.usage_month := cur_month; p.ai_used := 0; p.ai_extra := 0;
-  end if;
-  lim := public.ai_base_limit() + coalesce(p.ai_extra, 0);
-  if p.ai_used + p_n > lim then
-    update public.profiles set usage_month = cur_month, ai_used = p.ai_used, ai_extra = p.ai_extra where id = p_user;
-    return json_build_object('ok', false, 'reason', 'quota_exceeded', 'scope', 'personal', 'ai_used', p.ai_used, 'ai_limit', lim);
-  end if;
-  update public.profiles set usage_month = cur_month, ai_used = p.ai_used + p_n, ai_extra = p.ai_extra where id = p_user;
-  return json_build_object('ok', true, 'scope', 'personal', 'ai_used', p.ai_used + p_n, 'ai_limit', lim);
-end;
-$$;
-revoke execute on function public.consume_ai(uuid, int) from public, anon, authenticated;
 
 -- ------------------------------------------------------------
 -- 5) apply_family_purchase(user, days): nach erfolgreicher Family-Abo-Zahlung.
