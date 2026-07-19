@@ -135,7 +135,10 @@ Deno.serve(async (req) => {
     // Add-ons (Zusatz-Erwachsener/Kind): Sitzplätze idempotent neu berechnen (kein grant/sync).
     if (isAddon(sku)) {
       const r = await admin.rpc('recompute_family_seats', { p_user: uid });
-      return json({ ok: true, seats: r.data });
+      const seats = r.data as { ok?: boolean; reason?: string } | null;
+      // Kein still-erfolgreiches ok:true, wenn der Nutzer (noch) in keiner Familie ist -> Client kann es erkennen.
+      if (seats && seats.ok === false) return json({ error: 'addon_no_family', detail: seats.reason }, 409);
+      return json({ ok: true, seats });
     }
 
     if (mode === 'sync') {

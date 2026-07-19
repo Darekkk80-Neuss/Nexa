@@ -5232,6 +5232,14 @@ async function syncEntitlements() {
       account.aiScope = r.data.ai_scope || 'personal';  // 'family' = KI läuft auf gemeinsamem Familien-Topf
       account.familyAiUsed = (typeof r.data.family_ai_used === 'number') ? r.data.family_ai_used : null;
       account.familyAiLimit = (typeof r.data.family_ai_limit === 'number') ? r.data.family_ai_limit : null;
+      // Zugebuchte Sitzplätze vom Server spiegeln → Kapazität stimmt geräteübergreifend / nach Reinstall
+      // (seats_adults = FAMILY_MAX_ADULTS + Erwachsenen-Add-ons; entsprechend Kinder). Nur wenn der Server sie liefert.
+      if (typeof r.data.seats_adults === 'number' || typeof r.data.seats_children === 'number') {
+        store.family = store.family || {};
+        store.family.addons = store.family.addons || { adult: 0, child: 0 };
+        if (typeof r.data.seats_adults === 'number') store.family.addons.adult = Math.max(0, r.data.seats_adults - FAMILY_MAX_ADULTS);
+        if (typeof r.data.seats_children === 'number') store.family.addons.child = Math.max(0, r.data.seats_children - FAMILY_MAX_CHILDREN);
+      }
     }
   } catch (e) { /* Backend evtl. noch nicht deployt – Phase-1-Werte behalten */ }
   // Einmal pro Sitzung aktive Play-Abos gegen Google abgleichen (Verlängerungen greifen so auch ohne RTDN).
@@ -8929,17 +8937,31 @@ async function bookAddon(kind) {
     );
     const resp = await req.show();
     const token = resp.details && resp.details.token;
+    // Server-Antwort AUSWERTEN (nicht verschlucken) – sonst 'hinzugebucht' trotz fehlgeschlagenem Sitzplatz-Grant.
+    let verifyOk = null;
     try {
       if (CLOUD && sb) {
         const s = (await sb.auth.getSession()).data.session;
-        // Serverseitig gegen Google verifizieren → Sitzplatz (seats_adults/children) idempotent gutschreiben.
-        if (s) await fetch(FN_URL('play-verify'), { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + s.access_token }, body: JSON.stringify({ sku: p.id, token: token, type: 'subs' }) });
+        if (s) {
+          const res = await fetch(FN_URL('play-verify'), { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + s.access_token }, body: JSON.stringify({ sku: p.id, token: token, type: 'subs' }) });
+          const data = await res.json().catch(() => ({}));
+          verifyOk = res.ok && !data.error;
+        }
       }
-    } catch (e) { /* zieht sonst per RTDN/Re-Verify nach */ }
+    } catch (e) { verifyOk = false; }
     await resp.complete('success');
-    grantAddon(kind);                              // lokale UI (Mitglieder-Slots)
-    try { await syncEntitlements(); } catch (e) {} // Familien-Kontingent vom Server aktualisieren
-    toast('✓ ' + p.label + ' hinzugebucht (' + p.price + '/Mon)');
+    if (verifyOk === false) {
+      // Sitzplatz-Grant hakte (oder keine Familie) → Selbstheilung + ehrliche Meldung, KEIN lokales grantAddon.
+      try { await reverifyActivePurchases(); } catch (e) {}
+      try { await syncEntitlements(); } catch (e) {}
+      try { await famDiscover(); if (currentView === 'family') RENDERERS.family(); } catch (e) {}
+      toast('✓ Kauf erhalten – der Sitzplatz wird abgeschlossen. Falls nicht sofort sichtbar, App in ~1 Min neu öffnen.');
+    } else {
+      grantAddon(kind);                              // lokale UI sofort
+      try { await syncEntitlements(); } catch (e) {} // Server-Sitzplätze spiegeln (überschreibt lokal mit Server-Wahrheit)
+      try { await famDiscover(); if (currentView === 'family') RENDERERS.family(); } catch (e) {}
+      toast('✓ ' + p.label + ' hinzugebucht (' + p.price + '/Mon)');
+    }
   } catch (e) { toast('Kauf abgebrochen oder nicht möglich.'); }
 }
 /* ---- Google Play Billing: Haupt-Produkte ----

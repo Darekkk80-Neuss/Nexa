@@ -119,7 +119,7 @@ declare
   eff       text;
   v_via     boolean := false;
   v_fam_until timestamptz;
-  fam_used  int; fam_extra int; fam_month text; fam_seats int;
+  fam_used  int; fam_extra int; fam_month text; fam_seats int; fam_seats_ch int;
   fam_limit int; via_fam_ai boolean := false;
 begin
   if uid is null then raise exception 'not authenticated'; end if;
@@ -142,8 +142,8 @@ begin
   -- Aktive Familie? -> gilt für den INHABER (plan_by) GENAUSO wie für geerbte Mitglieder.
   -- (Vorher nur für Mitglieder OHNE eigenes Premium – dadurch sah der Family-Käufer sich
   --  fälschlich als „Premium", weil apply_family_purchase ihn zusätzlich persönlich premium setzt.)
-  select f.plan_until, f.ai_used, coalesce(f.ai_extra, 0), f.ai_month, coalesce(f.seats_adults, 2)
-    into v_fam_until, fam_used, fam_extra, fam_month, fam_seats
+  select f.plan_until, f.ai_used, coalesce(f.ai_extra, 0), f.ai_month, coalesce(f.seats_adults, 2), coalesce(f.seats_children, 3)
+    into v_fam_until, fam_used, fam_extra, fam_month, fam_seats, fam_seats_ch
     from public.family_members fm
     join public.families f on f.id = fm.family_id
    where fm.user_id = uid
@@ -168,6 +168,8 @@ begin
     'ai_scope',        case when via_fam_ai then 'family'  else 'personal' end,
     'family_ai_used',  fam_used,
     'family_ai_limit', fam_limit,
+    'seats_adults',    fam_seats,      -- zugebuchte Sitzplaetze -> Client spiegelt sie (geraeteuebergreifend)
+    'seats_children',  fam_seats_ch,
     'usage_month',     cur_month,
     'premium_until',   p.premium_until
   );
