@@ -8960,12 +8960,33 @@ async function bookAddon(kind) {
   const p = ADDON_PRODUCTS[kind]; if (!p) return;
   if (!hasPlayBilling()) { toast('ℹ️ Zusatzmitglieder buchst du in der Effyra-App über Google Play (im Browser nicht möglich).'); return; }
   try {
-    // Vorabcheck: kennt Google dieses Add-on-Produkt als kaufbares Angebot? Sonst rejected show() nur mit Sammelfehler.
-    try {
-      const svc = await window.getDigitalGoodsService('https://play.google.com/billing');
-      const det = await svc.getDetails([p.id]);
-      if (!det || !det.length) { toast('„' + p.label + '" ist bei Google Play noch nicht kaufbar. Play Console: Produkt UND monatlicher Basisplan auf „Aktiv"?'); return; }
-    } catch (e) { console.warn('[Effyra addon getDetails]', p.id, e && e.name, e && e.message); }
+    let svc = null; try { svc = await window.getDigitalGoodsService('https://play.google.com/billing'); } catch (e) { console.warn('[Effyra addon DGS]', e && e.name, e && e.message); }
+    // Vorabcheck 1: kennt Google dieses Add-on-Produkt als kaufbares Angebot? Sonst rejected show() nur mit Sammelfehler.
+    if (svc && typeof svc.getDetails === 'function') {
+      try {
+        const det = await svc.getDetails([p.id]);
+        if (!det || !det.length) { toast('„' + p.label + '" ist bei Google Play noch nicht kaufbar. Play Console: Produkt UND monatlicher Basisplan auf „Aktiv"?'); return; }
+      } catch (e) { console.warn('[Effyra addon getDetails]', p.id, e && e.name, e && e.message); }
+    }
+    // Vorabcheck 2: Abo bereits im Besitz? Ein Abo lässt sich bei Google NICHT doppelt kaufen – der Dialog bricht
+    // sonst mit AbortError ab. Statt Neukauf den bestehenden Kauf verifizieren → Sitzplatz freischalten (Selbstheilung).
+    if (svc && typeof svc.listPurchases === 'function') {
+      try {
+        const owned = (await svc.listPurchases()) || [];
+        const mine = owned.find(x => x.itemId === p.id);
+        if (mine) {
+          console.warn('[Effyra addon already owned]', p.id);
+          if (CLOUD && sb) {
+            const s = (await sb.auth.getSession()).data.session;
+            if (s) await fetch(FN_URL('play-verify'), { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + s.access_token }, body: JSON.stringify({ sku: p.id, token: mine.purchaseToken, type: 'subs', mode: 'sync' }) });
+          }
+          try { await syncEntitlements(); } catch (e) {}
+          try { await famDiscover(); if (currentView === 'family') RENDERERS.family(); } catch (e) {}
+          toast('„' + p.label + '" ist bereits gebucht – Sitzplatz wird freigeschaltet.');
+          return;
+        }
+      } catch (e) { console.warn('[Effyra addon listPurchases]', p.id, e && e.name, e && e.message); }
+    }
     const req = new PaymentRequest(
       [{ supportedMethods: 'https://play.google.com/billing', data: { sku: p.id } }],
       { total: { label: p.label + ' (Effyra)', amount: { currency: 'EUR', value: '0' } } }
