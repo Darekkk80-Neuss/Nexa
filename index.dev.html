@@ -8960,6 +8960,12 @@ async function bookAddon(kind) {
   const p = ADDON_PRODUCTS[kind]; if (!p) return;
   if (!hasPlayBilling()) { toast('ℹ️ Zusatzmitglieder buchst du in der Effyra-App über Google Play (im Browser nicht möglich).'); return; }
   try {
+    // Vorabcheck: kennt Google dieses Add-on-Produkt als kaufbares Angebot? Sonst rejected show() nur mit Sammelfehler.
+    try {
+      const svc = await window.getDigitalGoodsService('https://play.google.com/billing');
+      const det = await svc.getDetails([p.id]);
+      if (!det || !det.length) { toast('„' + p.label + '" ist bei Google Play noch nicht kaufbar. Play Console: Produkt UND monatlicher Basisplan auf „Aktiv"?'); return; }
+    } catch (e) { console.warn('[Effyra addon getDetails]', p.id, e && e.name, e && e.message); }
     const req = new PaymentRequest(
       [{ supportedMethods: 'https://play.google.com/billing', data: { sku: p.id } }],
       { total: { label: p.label + ' (Effyra)', amount: { currency: 'EUR', value: '0' } } }
@@ -8991,7 +8997,12 @@ async function bookAddon(kind) {
       try { await famDiscover(); if (currentView === 'family') RENDERERS.family(); } catch (e) {}
       toast('✓ ' + p.label + ' hinzugebucht (' + p.price + '/Mon)');
     }
-  } catch (e) { toast('Kauf abgebrochen oder nicht möglich.'); }
+  } catch (e) {
+    console.error('[Effyra bookAddon]', kind, p && p.id, e && e.name, e && e.message);
+    toast(e && e.name === 'AbortError'
+      ? 'Kauf abgebrochen.'
+      : 'Kauf nicht möglich: ' + ((e && (e.name || e.message)) ? (e.name + (e.message ? ' – ' + e.message : '')) : 'unbekannter Fehler'));
+  }
 }
 /* ---- Google Play Billing: Haupt-Produkte ----
    Die IDs müssen EXAKT den in der Play Console angelegten Produkten entsprechen
@@ -9042,7 +9053,12 @@ async function startPlayPurchase(product) {
       : '✓ ' + p.label + ' aktiviert. Danke!');
     // Nach dem Family-Kauf sofort an die Hand nehmen: Erfolgs-Screen -> Einladen-Assistent.
     if (product === 'family' && verifyOk !== false) { try { showFamilyWelcome(); } catch (e) {} }
-  } catch (e) { toast('Kauf abgebrochen oder nicht möglich.'); }
+  } catch (e) {
+    console.error('[Effyra startPlayPurchase]', product, p && p.id, e && e.name, e && e.message);
+    toast(e && e.name === 'AbortError'
+      ? 'Kauf abgebrochen.'
+      : 'Kauf nicht möglich: ' + ((e && (e.name || e.message)) ? (e.name + (e.message ? ' – ' + e.message : '')) : 'unbekannter Fehler'));
+  }
 }
 /* Beim App-Start aktive Play-Abos neu verifizieren → Ablaufdatum idempotent auf Googles Stand setzen,
    damit Verlängerungen greifen (auch ohne RTDN). Nur in der TWA mit Play Billing + angemeldet. */
