@@ -5,14 +5,14 @@
 | Rolle | Zugang | Funktionen |
 |---|---|---|
 | **Gast** (nicht angemeldet) | Nur Login-/Registrierungsseite | Keine |
-| **Free** (Testphase, 3 Tage) | Voller Zugang | **Alles**: Dokument-Analysen, Aufgaben, Kalender, KI-Chat, Einstellungen |
+| **Free** (Testphase, 7 Tage) | Voller Zugang | **Alles**: Dokument-Analysen, Aufgaben, Kalender, KI-Chat, Einstellungen |
 | **Free** (Testphase abgelaufen) | Paywall-Seite | Nur Premium-Freischaltung und Abmelden; alle Daten bleiben gespeichert |
 | **Premium** | Voller Zugang, unbegrenzt | Alles, dauerhaft |
 
 ## 2. Regeln
 
 - **Registrierung** (Name, E-Mail, Passwort) startet die Testphase. Das Passwort wird gesalzen und SHA-256-gehasht gespeichert – niemals im Klartext.
-- **Testphase**: 3 Kalendertage ab Erst-Registrierung, gerätegebunden. Der Startzeitpunkt wird separat gespeichert und überlebt ein Konto-Zurücksetzen – die Testphase lässt sich nicht durch Neuregistrierung verlängern.
+- **Testphase**: 7 Kalendertage ab Erst-Registrierung, gerätegebunden. Der Startzeitpunkt wird separat gespeichert und überlebt ein Konto-Zurücksetzen – die Testphase lässt sich nicht durch Neuregistrierung verlängern.
 - **Premium-Freischaltung** über Codes im Format `NEXA-XXXX-XXXX`. Im Quelltext stehen nur die SHA-256-Hashes der gültigen Codes; die Codes selbst verwaltet der Betreiber und gibt sie z. B. nach Zahlungseingang heraus.
 - **Abmelden/Anmelden** jederzeit möglich; Daten (Aufgaben, Termine, Dokumente, Chat) bleiben lokal erhalten.
 - **„Alle Daten löschen"** entfernt auch das Konto (nicht aber den Testphasen-Zeitstempel).
@@ -55,7 +55,7 @@ Die heutige `index.html` bleibt fast unverändert – nur die `fetch`-URL zeigt 
 
 ### Stufe 3 – Optimierung: Kostensteuerung
 - Demo-/Trial-Nutzer bekommen **Haiku 4.5** (Faktor 3 günstiger), Premium **Sonnet 5**
-- Trial-Kontingent begrenzen (z. B. 10 Analysen + 50 Chat-Nachrichten in den 3 Tagen) – begrenzt dein Risiko pro Trial-Nutzer auf wenige Cent
+- Trial-Kontingent begrenzen (z. B. 10 Analysen + 50 Chat-Nachrichten in den 7 Tagen) – begrenzt dein Risiko pro Trial-Nutzer auf wenige Cent
 - BYOK als Zusatzoption behalten: Power-User mit eigenem Key kosten dich weiterhin 0 €
 
 **Empfehlung in einem Satz:** Bleib jetzt bei BYOK + Demo (kostet dich nichts, validiert die Idee), und wenn die ersten Leute zahlen wollen, bau die Stufe-2-Brücke mit Supabase + Stripe – die Zahlen zeigen, dass 8–15 €/Monat die KI-Kosten um ein Vielfaches decken.

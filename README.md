@@ -16,7 +16,7 @@ Effyra ist ein Alltagshelfer als Web-App: Briefe fotografieren und in einfachen 
 
 ## Konto & Testphase
 
-Beim ersten Start erstellst du ein Konto. Danach sind **3 Tage lang alle Funktionen kostenlos** nutzbar; ein Premium-Code (`Effyra-XXXX-XXXX`) schaltet alles dauerhaft frei. Details und Kostenmodell: [KONZEPT.md](KONZEPT.md).
+Beim ersten Start erstellst du ein Konto. Danach sind **7 Tage lang alle Funktionen kostenlos** nutzbar; ein Premium-Code (`Effyra-XXXX-XXXX`) schaltet alles dauerhaft frei. Details und Kostenmodell: [KONZEPT.md](KONZEPT.md).
 
 Standardmäßig werden Konten nur lokal auf dem Gerät gespeichert. Optional lässt sich ein **kostenloses Supabase-Backend** anbinden (zentrale Nutzerverwaltung, serverseitige Testphase, einmalige Codes, Admin-Dashboard) – Anleitung: [BACKEND.md](BACKEND.md).
 

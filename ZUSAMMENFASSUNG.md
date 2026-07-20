@@ -33,7 +33,7 @@ Beim ersten Start erscheint eine **Login-/Registrierungsseite** als erste Seite.
 | Rolle | Zugang |
 |---|---|
 | **Gast** (nicht angemeldet) | Nur Login-Seite |
-| **Free – Testphase (3 Tage)** | Voller Zugang zu allen Funktionen |
+| **Free – Testphase (7 Tage)** | Voller Zugang zu allen Funktionen |
 | **Free – abgelaufen** | Paywall-Seite; Daten bleiben erhalten |
 | **Premium** | Alles, unbegrenzt und dauerhaft |
 
