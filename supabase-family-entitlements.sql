@@ -185,7 +185,7 @@ grant  execute on function public.get_entitlements() to authenticated;
 -- 4) consume_ai() — HIER ENTFERNT (bewusst).
 --    ⚠️ Diese Datei definierte früher ein hartes Premium-Gate
 --    (`if effective_tier <> 'premium' then return 'not_premium'`), das JEDEN
---    Free-/Trial-Nutzer mit 100 Credits sperrte. Da mehrere Dateien `consume_ai`
+--    Free-/Trial-Nutzer mit 50 Credits sperrte. Da mehrere Dateien `consume_ai`
 --    per `create or replace` neu anlegten, gewann „die zuletzt ausgeführte" –
 --    was zu genau diesem Bug führte.
 --    → Es gibt jetzt EINE zusammengeführte, gültige Definition (Trial + eigenes

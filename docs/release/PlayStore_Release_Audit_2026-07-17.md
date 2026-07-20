@@ -18,7 +18,7 @@ Nach dem Erst-Audit direkt umgesetzt (Commit-Stand danach):
 | F-03 | ✅ BEHOBEN | In-App-Meldefunktion für KI-Antworten (generative-KI-Policy): „⚑ Antwort melden" je Chat-Antwort → Gründe-Dialog → Meldung an info@gonsoft-labs.de + lokale Markierung. Verifiziert. | `index.dev.html:11031 showAiReport()` |
 | F-04 | ✅ BEHOBEN | Prominenter Notruf-Disclaimer im Notfallbereich („Im echten Notfall immer 112 wählen. Effyra ersetzt keinen Notruf.") mehrsprachig. | `index.dev.html:1113` (.em-disclaimer) |
 | E-02 (Code) | ✅ BEHOBEN | Öffentliche Konto-Lösch-Seite `konto-loeschen.html` (DE/EN); im Rechtscenter verlinkt. **URL für Console:** `https://darekkk80-neuss.github.io/Effyra/konto-loeschen.html` | `konto-loeschen.html`, `index.dev.html:12418` |
-| Billing-Modell | ✅ FESTGELEGT | Option B: nur KI kostenpflichtig, Module gratis. Server `ENFORCE_TIERS=true` (Trial 100/14 Tage, Premium 500/Monat). Lifetime-Produkt entfernt (nur Premium 4,99 €/Mon. + Familie 14,99 €/Mon.). | `claude-proxy:37` + `PLAY_PRODUCTS:7709` |
+| Billing-Modell | ✅ FESTGELEGT | Option B: nur KI kostenpflichtig, Module gratis. Server `ENFORCE_TIERS=true` (Trial 50/7 Tage, Premium 500/Monat). Lifetime-Produkt entfernt (nur Premium 4,99 €/Mon. + Familie 14,99 €/Mon.). | `claude-proxy:37` + `PLAY_PRODUCTS:7709` |
 | P0-02 | ✅ ENTSCHIEDEN | TWA-Domain bleibt `darekkk80-neuss.github.io/Effyra/` (bereits lauffähig, URL in der TWA unsichtbar). Keine Code-Änderung. assetlinks → Root-Repo `darekkk80-neuss.github.io/.well-known/`. | `twa-manifest.json`, `index.dev.html:3962` |
 
 ### Re-Audit-Verdikt 2026-07-17 (nach allen Fixes)

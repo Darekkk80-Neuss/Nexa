@@ -1,5 +1,5 @@
 -- ============================================================================
--- Effyra – Trial (100 Credits / 14 Tage) serverseitig + Google-Play-Entitlements
+-- Effyra – Trial (50 Credits / 7 Tage) serverseitig + Google-Play-Entitlements
 -- ----------------------------------------------------------------------------
 -- Im Supabase SQL-Editor ausführen. MUSS als LETZTE der drei Tier-Dateien laufen
 -- (Reihenfolge: tiers → family-entitlements → DIESE). Setzt voraus, dass
@@ -25,8 +25,8 @@ alter table public.profiles add column if not exists lifetime boolean not null d
 -- Bestehende Profile: Trial ab jetzt (bzw. ab Kontoerstellung, falls vorhanden)
 update public.profiles set trial_start = coalesce(trial_start, now()) where trial_start is null;
 
-create or replace function public.ai_trial_credits() returns int language sql immutable as $$ select 100 $$;
-create or replace function public.ai_trial_days()    returns int language sql immutable as $$ select 14 $$;
+create or replace function public.ai_trial_credits() returns int language sql immutable as $$ select 50 $$;
+create or replace function public.ai_trial_days()    returns int language sql immutable as $$ select 7 $$;
 create or replace function public.ai_family_seat()   returns int language sql immutable as $$ select 500 $$;   -- DEPRECATED (nicht mehr genutzt): Familien-Limit = 1600 Basis + 500 je Zusatz-Erwachsener (siehe consume_ai / get_entitlements)
 
 -- 2) consume_ai (ZUSAMMENGEFÜHRT — EINZIGE gültige Definition) --------------
@@ -35,8 +35,8 @@ create or replace function public.ai_family_seat()   returns int language sql im
 --      • Premium (eigenes ODER über Familie geerbt) → 500/Monat je Sitz.
 --          - über aktives Family-Abo abgedeckt → GEMEINSAMER Familien-Zähler (families)
 --          - sonst → persönlicher Premium-Zähler (profiles)
---      • Free innerhalb der 14-Tage-Testphase → 100 Credits (+ nachgekaufte ai_extra)
---      • Free nach 14 Tagen → 'trial_over'   |   medium/abgelaufen → 'not_premium'
+--      • Free innerhalb der 7-Tage-Testphase → 50 Credits (+ nachgekaufte ai_extra)
+--      • Free nach 7 Tagen → 'trial_over'   |   medium/abgelaufen → 'not_premium'
 --    Stufe wird über effective_tier() bestimmt (kennt eigenes + geerbtes Premium).
 --    NUR vom Claude-Proxy (service_role) aufrufbar.
 create or replace function public.consume_ai(p_user uuid, p_n int default 1)
@@ -118,7 +118,7 @@ begin
                              'from_month', from_month, 'from_extra', p_n - from_month);
   end if;
 
-  -- ================= FREE-TESTPHASE (100 Credits / 14 Tage) + gekaufte Credits =================
+  -- ================= FREE-TESTPHASE (50 Credits / 7 Tage) + gekaufte Credits =================
   select * into p from public.profiles where id = p_user for update;
   if not found then return json_build_object('ok', false, 'reason', 'no_profile'); end if;
   if p.usage_month is distinct from cur_month then p.usage_month := cur_month; p.ai_used := 0; end if;   -- ai_extra bleibt!

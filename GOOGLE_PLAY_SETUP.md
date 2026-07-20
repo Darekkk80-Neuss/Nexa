@@ -73,7 +73,7 @@ Real-time Developer Notifications halten Abos aktuell (Verlängerung, Storno, R�
 
 Die SQL liegt bereit: **`supabase-trial-and-play.sql`** – im Supabase **SQL-Editor** ausführen.
 Sie bewirkt:
-- Free-Trial mit **50 KI-Credits / 14 Tagen** wird **serverseitig** durchgesetzt
+- Free-Trial mit **50 KI-Credits / 7 Tagen** wird **serverseitig** durchgesetzt
   (heute blockiert `consume_ai` alle Nicht-Premium komplett!).
 - `grant_play_purchase(user, sku)` setzt je Produkt das richtige Entitlement.
 
