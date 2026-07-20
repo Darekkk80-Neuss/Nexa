@@ -33,7 +33,7 @@ Deno.serve(async (req) => {
   const SERVICE = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
   const VAPID_PUBLIC = Deno.env.get('VAPID_PUBLIC');
   const VAPID_PRIVATE = Deno.env.get('VAPID_PRIVATE');
-  const VAPID_SUBJECT = Deno.env.get('VAPID_SUBJECT') || 'mailto:effyra@example.com';
+  const VAPID_SUBJECT = Deno.env.get('VAPID_SUBJECT') || 'mailto:info@gonsoft-labs.de';
   if (!VAPID_PUBLIC || !VAPID_PRIVATE) return json({ error: 'push_not_configured' }, 500);
 
   // Sender aus dem JWT

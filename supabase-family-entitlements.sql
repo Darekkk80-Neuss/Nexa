@@ -87,9 +87,14 @@ begin
       if p_user = v_plan_by then return 'premium'; end if;
       -- Sonst: gehört der Nutzer zu den ersten seats_adults Mitgliedern (nach Beitrittszeit)?
       -- (Kinder haben kein Login und stehen nicht in family_members -> hier zählen nur Erwachsene.)
+      -- Nur ERWACHSENE zaehlen. Kinder stehen sehr wohl in family_members
+      -- (join_as_child legt sie an) und verbrauchten dadurch Erwachsenensitze:
+      -- nach drei Kinder-Geraeten bekam der Partner kein Premium mehr, obwohl
+      -- "2 Erwachsene + 3 Kinder" verkauft wurde.
       select count(*) into v_rank
         from public.family_members fm
        where fm.family_id = v_fid
+         and coalesce(fm.role, 'adult') <> 'child'
          and fm.joined_at <= (select joined_at from public.family_members
                                where family_id = v_fid and user_id = p_user);
       if v_rank <= v_seats then return 'premium'; end if;

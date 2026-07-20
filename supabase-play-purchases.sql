@@ -67,6 +67,32 @@ revoke execute on function public.sync_play_expiry(uuid, text, bigint) from publ
 --    seats_adults   = 2 (Basis) + Anzahl aktiver Erwachsenen-Add-ons in der Familie
 --    seats_children = 3 (Basis) + Anzahl aktiver Kinder-Add-ons
 --    „aktiv" = expiry_ms in der Zukunft. So gibt es kein Hochzählen bei Re-Verifikation/RTDN.
+-- Variante nach FAMILIE statt nach Nutzer. Wird von leave_family gebraucht:
+-- dort ist der Austretende schon aus family_members entfernt, die alte Familie
+-- also über ihn nicht mehr auffindbar – ohne diese Funktion behielte sie die
+-- Sitzplätze eines Add-ons, das mit dem Käufer längst weitergezogen ist.
+create or replace function public.recompute_family_seats_fid(p_fid uuid)
+returns json
+language plpgsql security definer set search_path = public
+as $$
+declare v_ad int; v_ch int; v_now bigint := (extract(epoch from now()) * 1000)::bigint;
+begin
+  if p_fid is null then return json_build_object('ok', false, 'reason', 'no_family'); end if;
+  select count(*) filter (where pp.sku = 'effyra_adult'),
+         count(*) filter (where pp.sku = 'effyra_child')
+    into v_ad, v_ch
+    from public.play_purchases pp
+    join public.family_members fm on fm.user_id = pp.user_id
+   where fm.family_id = p_fid
+     and coalesce(pp.expiry_ms, 0) > v_now;
+  update public.families
+     set seats_adults   = 2 + coalesce(v_ad, 0),
+         seats_children = 3 + coalesce(v_ch, 0)
+   where id = p_fid;
+  return json_build_object('ok', true, 'seats_adults', 2 + coalesce(v_ad, 0), 'seats_children', 3 + coalesce(v_ch, 0));
+end $$;
+revoke execute on function public.recompute_family_seats_fid(uuid) from public, anon, authenticated;
+
 create or replace function public.recompute_family_seats(p_user uuid)
 returns json
 language plpgsql security definer set search_path = public

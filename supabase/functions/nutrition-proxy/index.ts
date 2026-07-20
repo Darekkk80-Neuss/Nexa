@@ -42,7 +42,7 @@ Deno.serve(async (req) => {
 
   try {
     const url = 'https://api.spoonacular.com/recipes/guessNutrition?apiKey=' + encodeURIComponent(KEY) + '&title=' + encodeURIComponent(title);
-    const r = await fetch(url);
+    const r = await fetchT(url, {}, 10000);
     if (!r.ok) return json({ error: 'spoonacular_error', status: r.status }, 502);
     const d = await r.json();
     const num = (x: any) => (x && typeof x.value === 'number') ? Math.round(x.value) : null;

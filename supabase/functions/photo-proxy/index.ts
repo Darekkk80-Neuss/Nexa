@@ -26,7 +26,7 @@ async function fetchPexels(KEY: string) {
   const qs = QUERIES.slice().sort(() => Math.random() - 0.5).slice(0, 3);
   for (const q of qs) {
     try {
-      const r = await fetch('https://api.pexels.com/v1/search?orientation=landscape&per_page=12&query=' + encodeURIComponent(q), { headers: { Authorization: KEY } });
+      const r = await fetchT('https://api.pexels.com/v1/search?orientation=landscape&per_page=12&query=' + encodeURIComponent(q), { headers: { Authorization: KEY } }, 10000);
       if (!r.ok) continue;
       const d = await r.json();
       (d.photos || []).forEach((p: any) => {

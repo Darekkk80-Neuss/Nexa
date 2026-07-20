@@ -133,10 +133,28 @@ Deno.serve(async (req) => {
     const { sku, token, type, mode } = await req.json();
     if (!sku || !token) return json({ error: 'missing_params' }, 400);
 
+    // ---- Wiedereinlösung verhindern -------------------------------------
+    // Ohne diese Prüfung war `mode` frei aus dem Client wählbar, und der
+    // Nicht-sync-Pfad rief grant_play_purchase auf – das rechnet KUMULATIV
+    // (+32 Tage je Aufruf, bzw. +1000 Credits bei effyra_ai_boost). 100 POSTs
+    // mit einem einzigen echten Token ergaben so Jahre Premium bzw. unbegrenzt
+    // Credits. Zusätzlich überschrieb der Upsert unten stillschweigend die
+    // user_id, sodass ein fremder Token auf das eigene Konto umgeschrieben
+    // werden konnte – samt aller künftigen RTDN-Verlängerungen.
+    const { data: known } = await admin
+      .from('play_purchases').select('user_id').eq('purchase_token', token).maybeSingle();
+    if (known && known.user_id !== uid) return json({ error: 'token_owned' }, 409);
+
     const v = await verifyPurchase(sku, token, type || 'subs');
     if (!v.ok) return json({ error: 'purchase_invalid' }, 402);
 
-    // Kauf↔Nutzer merken (mit Ablaufdatum – für RTDN & Add-on-Sitzplätze)
+    // Bekannter Token → NIE erneut gewähren, nur den Ablauf synchronisieren.
+    // sync_play_expiry SETZT das Datum (statt zu addieren) und ist damit idempotent.
+    const effMode = known ? 'sync' : mode;
+
+    // Kauf↔Nutzer merken (mit Ablaufdatum – für RTDN & Add-on-Sitzplätze).
+    // ignoreDuplicates greift nicht, weil expiry_ms fortgeschrieben werden muss;
+    // die Besitzerprüfung oben stellt sicher, dass user_id sich nie ändert.
     await admin.from('play_purchases').upsert(
       { purchase_token: token, user_id: uid, sku, ptype: type || 'subs', expiry_ms: v.expiryMs || null, updated_at: new Date().toISOString() },
       { onConflict: 'purchase_token' });
@@ -150,7 +168,7 @@ Deno.serve(async (req) => {
       return json({ ok: true, seats });
     }
 
-    if (mode === 'sync') {
+    if (effMode === 'sync') {
       // Re-Verifikation beim App-Start: Ablaufdatum IDEMPOTENT setzen (keine 32-Tage-Verlängerung/Runaway)
       const r = await admin.rpc('sync_play_expiry', { p_user: uid, p_sku: sku, p_expiry_ms: v.expiryMs || 0 });
       return json({ ok: true, synced: r.data });

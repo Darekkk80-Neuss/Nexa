@@ -25,12 +25,20 @@ const json = (o: unknown, s = 200) => new Response(JSON.stringify(o), { status: 
 // Amtliche Warnungen gelten kreisweit; feinere Auflösung brächte keine anderen Treffer.
 const locKey = (lat: number, lon: number) => lat.toFixed(2) + ',' + lon.toFixed(2);
 
-Deno.serve(async () => {
+Deno.serve(async (req) => {
+  // Fail-closed wie bei den anderen Cron-Functions. Vorher nahm diese Function
+  // gar keinen Request entgegen und prüfte nichts – mit --no-verify-jwt deployt
+  // war sie damit ein offener Endpunkt: jeder Aufruf las die gesamte Abo-Tabelle,
+  // feuerte Bright-Sky-Abrufe und verschickte Pushes, auf Betreiberkosten.
+  if (req.method !== 'POST') return json({ error: 'method_not_allowed' }, 405);
+  const secret = Deno.env.get('CRON_SECRET');
+  if (!secret || req.headers.get('x-cron-secret') !== secret) return json({ error: 'forbidden' }, 403);
+
   const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
   const SERVICE = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
   const VAPID_PUBLIC = Deno.env.get('VAPID_PUBLIC');
   const VAPID_PRIVATE = Deno.env.get('VAPID_PRIVATE');
-  const VAPID_SUBJECT = Deno.env.get('VAPID_SUBJECT') || 'mailto:effyra@example.com';
+  const VAPID_SUBJECT = Deno.env.get('VAPID_SUBJECT') || 'mailto:info@gonsoft-labs.de';
   if (!VAPID_PUBLIC || !VAPID_PRIVATE) return json({ error: 'push_not_configured' }, 500);
   (webpush as any).setVapidDetails(VAPID_SUBJECT, VAPID_PUBLIC, VAPID_PRIVATE);
 

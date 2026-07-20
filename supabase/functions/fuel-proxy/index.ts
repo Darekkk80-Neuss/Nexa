@@ -19,11 +19,29 @@ const cors = {
 const json = (o: unknown, s = 200) =>
   new Response(JSON.stringify(o), { status: s, headers: { ...cors, 'content-type': 'application/json' } });
 
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import { fetchT } from '../_shared/util.ts';
+
 const KEY = Deno.env.get('TANKERKOENIG_KEY') || '';
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: cors });
   if (req.method !== 'POST') return json({ ok: false, error: 'method' }, 405);
+
+  // Nur angemeldete Nutzer. Die Plattform-Prüfung (verify_jwt) reicht hier NICHT:
+  // sie akzeptiert auch den Anon-Key, und der steht öffentlich im Client. Ohne
+  // diesen Block war der Endpunkt faktisch offen und verbrannte das
+  // Tankerkönig-Kontingent. Gleiches Muster wie in nutrition-/photo-proxy.
+  const jwt = (req.headers.get('Authorization') || '').replace(/^Bearer\s+/i, '');
+  if (!jwt) return json({ ok: false, error: 'auth_required' }, 401);
+  const userClient = createClient(
+    Deno.env.get('SUPABASE_URL')!,
+    Deno.env.get('SUPABASE_ANON_KEY')!,
+    { global: { headers: { Authorization: `Bearer ${jwt}` } } },
+  );
+  const { data: ures, error: uerr } = await userClient.auth.getUser();
+  if (uerr || !ures?.user) return json({ ok: false, error: 'auth_invalid' }, 401);
+
   if (!KEY) return json({ ok: false, error: 'not_configured' }, 200);   // Widget zeigt dann „einrichten"
 
   try {
@@ -32,7 +50,7 @@ Deno.serve(async (req) => {
     const r = Math.min(Math.max(Number(rad) || 5, 1), 25);
     const url = 'https://creativecommons.tankerkoenig.de/json/list.php?lat=' + lat + '&lng=' + lng +
       '&rad=' + r + '&sort=dist&type=all&apikey=' + KEY;
-    const res = await fetch(url);
+    const res = await fetchT(url, {}, 10000);
     const j = await res.json().catch(() => ({}));
     if (!j || !j.ok || !Array.isArray(j.stations)) return json({ ok: false, error: 'upstream' }, 200);
 

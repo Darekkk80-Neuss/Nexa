@@ -70,8 +70,11 @@ begin
         if p_user = v_plan_by then
           via_family := true;
         else
+          -- Nur ERWACHSENE zaehlen (siehe effective_tier): Kinder stehen in
+          -- family_members und verbrauchten sonst Erwachsenensitze.
           select count(*) into v_rank from public.family_members fm
             where fm.family_id = v_fid
+              and coalesce(fm.role, 'adult') <> 'child'
               and fm.joined_at <= (select joined_at from public.family_members
                                     where family_id = v_fid and user_id = p_user);
           if v_rank <= v_seats then via_family := true; end if;

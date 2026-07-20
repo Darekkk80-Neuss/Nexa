@@ -26,6 +26,29 @@ create table if not exists public.family_members (
   primary key (family_id, user_id)
 );
 
+-- „Ein Nutzer, genau eine Familie" strukturell erzwingen.
+-- Der Primärschlüssel (family_id, user_id) lässt zwei Familien FÜR DENSELBEN
+-- Nutzer zu. Genau das passiert bei einem Doppelklick auf „Familie erstellen"
+-- oder auf zwei Geräten gleichzeitig: beide Transaktionen sehen my_family_id()
+-- als leer und legen je eine Familie an. Danach raten acht Funktionen per
+-- `limit 1` OHNE `order by`, welche gemeint ist – get_family liest aus der
+-- einen, save_family schreibt in die andere, der Kauf landet in der dritten.
+do $$
+declare v_dupes int;
+begin
+  select count(*) into v_dupes from (
+    select user_id from public.family_members group by user_id having count(*) > 1
+  ) d;
+  if v_dupes > 0 then
+    raise warning 'family_members: % Nutzer sind in mehreren Familien. Unique-Constraint NICHT gesetzt – bitte zuerst bereinigen: select user_id, count(*) from public.family_members group by 1 having count(*) > 1;', v_dupes;
+  else
+    begin
+      alter table public.family_members add constraint family_members_user_uniq unique (user_id);
+    exception when duplicate_table or duplicate_object then null;   -- schon vorhanden
+    end;
+  end if;
+end $$;
+
 -- Direktzugriff komplett sperren – alles läuft über die Funktionen unten
 alter table public.families enable row level security;
 alter table public.family_members enable row level security;
@@ -71,13 +94,29 @@ end; $$;
 -- ------------------------------------------------------------
 create or replace function public.join_family(p_code text)
 returns json language plpgsql security definer set search_path = public as $$
-declare v_id uuid; v_data jsonb; v_upd timestamptz;
+declare v_id uuid; v_data jsonb; v_upd timestamptz; v_role text;
 begin
   if auth.uid() is null then raise exception 'not authenticated'; end if;
+
+  -- Kindergeräte melden sich anonym an und treten AUSSCHLIESSLICH über
+  -- join_as_child bei. Ohne diese Sperre konnte ein Kind mit einem einzigen
+  -- RPC-Aufruf zum Erwachsenen werden: der delete/insert unten verlor die
+  -- Rolle, die Spalte fiel auf ihren Default 'adult' zurück, und damit waren
+  -- save_family, das Familien-KI-Kontingent und Premium entsperrt.
+  if coalesce((auth.jwt() ->> 'is_anonymous')::boolean, false) then
+    raise exception 'not allowed for anonymous sessions';
+  end if;
+
   select id, data, updated_at into v_id, v_data, v_upd from public.families where code = upper(trim(p_code));
   if v_id is null then return null; end if;
+
+  -- Bestehende Rolle bewahren – ein Wechsel der Familie darf niemanden befördern.
+  select role into v_role from public.family_members where user_id = auth.uid() limit 1;
   delete from public.family_members where user_id = auth.uid();
-  insert into public.family_members (family_id, user_id) values (v_id, auth.uid()) on conflict do nothing;
+  insert into public.family_members (family_id, user_id, role)
+  values (v_id, auth.uid(), coalesce(v_role, 'adult'))
+  on conflict (family_id, user_id) do nothing;
+
   return json_build_object('code', upper(trim(p_code)), 'data', v_data, 'updated_at', v_upd);
 end; $$;
 
@@ -95,24 +134,43 @@ begin
 end; $$;
 
 -- ------------------------------------------------------------
--- Gemeinsame Familiendaten speichern
+-- save_family — HIER ENTFERNT (bewusst)
 -- ------------------------------------------------------------
-create or replace function public.save_family(p_data jsonb)
-returns json language plpgsql security definer set search_path = public as $$
-declare v_id uuid;
-begin
-  v_id := public.my_family_id();
-  if v_id is null then raise exception 'no family'; end if;
-  update public.families set data = p_data, updated_at = now() where id = v_id;
-  return json_build_object('updated_at', now());
-end; $$;
+-- ⚠️ Diese Datei definierte früher eine Version OHNE die Kinder-Sperre. Da sie
+--    nach supabase-kids.sql laufen MUSS (Zeile 64 schreibt die Spalte `role`,
+--    die dort erst entsteht), überschrieb sie zuverlässig die abgesicherte
+--    Fassung – der Kinderschutz war je nach Einspielreihenfolge gar nicht aktiv.
+--    Die EINE gültige Definition steht jetzt in supabase-kids.sql.
+--    Gleiche Bereinigung wie zuvor bei consume_ai und get_entitlements.
+-- ------------------------------------------------------------
 
 -- ------------------------------------------------------------
 -- Familie verlassen
 -- ------------------------------------------------------------
 create or replace function public.leave_family()
 returns void language plpgsql security definer set search_path = public as $$
-begin delete from public.family_members where user_id = auth.uid(); end; $$;
+declare v_fid uuid;
+begin
+  select family_id into v_fid from public.family_members where user_id = auth.uid() limit 1;
+  delete from public.family_members where user_id = auth.uid();
+  if v_fid is null then return; end if;
+
+  -- Verlässt der ZAHLER die Familie, muss der Plan mit ihm gehen. Vorher blieb
+  -- er bis plan_until stehen, während sync_play_expiry denselben Kauf beim
+  -- nächsten App-Start in die neue Familie schrieb: ein Abo schaltete so
+  -- nacheinander beliebig viele fremde Familien für je 32 Tage frei.
+  update public.families
+     set plan = null, plan_until = null, plan_by = null
+   where id = v_fid and plan_by = auth.uid();
+
+  -- Sitzplätze der verlassenen Familie neu rechnen – Add-ons hängen am Käufer
+  -- und wandern mit ihm. Fehlt die Funktion (ältere Einspielreihenfolge),
+  -- bleibt der Austritt trotzdem gültig.
+  begin
+    perform public.recompute_family_seats_fid(v_fid);
+  exception when others then null;
+  end;
+end; $$;
 
 -- Ausführungsrechte: nur angemeldete Nutzer
 revoke execute on function public.create_family(), public.join_family(text), public.get_family(),
