@@ -218,12 +218,30 @@ Deno.serve(async (req) => {
         if (!pp) return json({ ok: true, note: 'rtdn_unknown_token' });
         const useSku = String(sn.subscriptionId || pp.sku);
         const v = await verifyPurchase(useSku, token, 'subs');                 // Googles aktueller Stand
+        // NICHTS schreiben, wenn Google gerade nicht antwortet. Vorher lief ein
+        // 5xx bei Google in expiryMs=0 und damit ueber to_timestamp(0) auf 1970 –
+        // ALLE Abonnenten haetten in dem Moment ihren Zugang verloren. Pub/Sub
+        // stellt bei 500 erneut zu, also ist Abbrechen hier das Richtige.
+        if (!v.ok && !v.expiryMs) return json({ error: 'upstream_unavailable' }, 500);
         await admin.from('play_purchases').update({ expiry_ms: v.expiryMs || null, updated_at: new Date().toISOString() }).eq('purchase_token', token);
         if (isAddon(useSku)) await admin.rpc('recompute_family_seats', { p_user: pp.user_id });   // Add-on: Sitzplätze neu
         else await admin.rpc('sync_play_expiry', { p_user: pp.user_id, p_sku: useSku, p_expiry_ms: v.expiryMs || 0 });
         return json({ ok: true, note: 'rtdn_synced', until: v.expiryMs });
       }
-      return json({ ok: true, note: 'rtdn_ignored' });                          // Test-/Einmalprodukt-Notifications
+      // Erstattung/Ruecklastschrift. Ohne diesen Zweig blieben gekaufte Credits
+      // nach einer Rueckerstattung bestehen: kaufen, erstatten lassen, 1000
+      // Credits behalten – beliebig oft wiederholbar.
+      const vd = msg?.voidedPurchaseNotification;
+      if (vd && vd.purchaseToken) {
+        const vtok = String(vd.purchaseToken);
+        const { data: vpp } = await admin.from('play_purchases').select('user_id,sku').eq('purchase_token', vtok).maybeSingle();
+        if (!vpp) return json({ ok: true, note: 'void_unknown_token' });
+        const { error: rerr } = await admin.rpc('revoke_play_purchase', { p_user: vpp.user_id, p_sku: vpp.sku });
+        if (rerr) { console.error('void_failed', JSON.stringify({ sku: vpp.sku, msg: rerr.message })); return json({ error: 'revoke_failed' }, 500); }
+        await admin.from('play_purchases').update({ expiry_ms: 0, updated_at: new Date().toISOString() }).eq('purchase_token', vtok);
+        return json({ ok: true, note: 'void_revoked', sku: vpp.sku });
+      }
+      return json({ ok: true, note: 'rtdn_ignored' });                          // Test-Notifications
     }
 
     // ---- A) Client-Verifikation (Erstkauf: mode≠'sync' → gewähren; Re-Verifikation: mode='sync' → Ablauf setzen)

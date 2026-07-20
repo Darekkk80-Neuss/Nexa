@@ -69,6 +69,16 @@ Deno.serve(async (req) => {
       }
     } catch (e) { console.error('scrub_threw', JSON.stringify({ msg: safeErr(e) })); }
 
+    /* Plan raeumen, BEVOR die Mitgliedschaft faellt: war der Loeschende der
+       Zahler, blieben plan/plan_until/plan_by sonst stehen – die Familie waere
+       bis zum Ablauf weiter Premium, und derselbe Kauf koennte ueber
+       sync_play_expiry die naechste Familie freischalten. Gleiche Bereinigung
+       wie bei leave_family und join_family. */
+    try {
+      const { data: mine2 } = await admin.from('family_members').select('family_id').eq('user_id', uid);
+      for (const m of mine2 || []) await admin.rpc('release_family', { p_fid: m.family_id, p_user: uid });
+    } catch (e) { console.error('release_threw', JSON.stringify({ msg: safeErr(e) })); }
+
     await admin.from('family_members').delete().eq('user_id', uid);
 
     // Vom Nutzer erstellte Familien: nur löschen, wenn NIEMAND sonst mehr drin
@@ -77,7 +87,8 @@ Deno.serve(async (req) => {
     const { data: fams } = await admin.from('families').select('id').eq('created_by', uid);
     for (const f of fams || []) {
       const { count, error: cntErr } = await admin
-        .from('family_members').select('user_id', { count: 'exact', head: true }).eq('family_id', f.id);
+        .from('family_members').select('user_id', { count: 'exact', head: true })
+        .eq('family_id', f.id).neq('role', 'child');   // Kinder allein halten keine Familie am Leben
       // Bei einem Fehler ist count null. Das als "leer" zu werten wuerde die
       // Familie samt aller Partner- und Kinderdaten loeschen – im Zweifel behalten.
       if (cntErr || count == null || count > 0) {

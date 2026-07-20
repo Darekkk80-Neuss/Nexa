@@ -51,7 +51,12 @@ begin
       insert into public.family_members (family_id, user_id) values (v_fid, p_user) on conflict do nothing;
     end if;
     -- Familien-Abo IDEMPOTENT auf Googles echtes Ablaufdatum setzen (SET, keine kumulative Verlängerung)
-    update public.families set plan = 'family', plan_by = p_user, plan_until = v_exp where id = v_fid;
+    -- NUR schreiben, wenn die Familie keinen Zahler hat oder es derselbe ist.
+    -- Vorher kippte ein beitretendes Mitglied mit einem alten Token das laufende
+    -- Abo der ganzen Familie auf sein eigenes (moeglicherweise abgelaufenes)
+    -- Datum – alle verloren den Zugang.
+    update public.families set plan = 'family', plan_by = p_user, plan_until = v_exp
+     where id = v_fid and (plan_by is null or plan_by = p_user);
     -- … und den Käufer persönlich ebenfalls (er ist selbst Premium).
     update public.profiles
        set tier = 'premium', plan = 'premium',
@@ -115,5 +120,57 @@ begin
   return json_build_object('ok', true, 'seats_adults', 2 + coalesce(v_ad, 0), 'seats_children', 3 + coalesce(v_ch, 0));
 end $$;
 revoke execute on function public.recompute_family_seats(uuid) from public, anon, authenticated;
+
+notify pgrst, 'reload schema';
+
+-- ------------------------------------------------------------
+-- 4) Erstattung/Ruecklastschrift: Leistung wieder entziehen
+-- ------------------------------------------------------------
+-- Google meldet Erstattungen als voidedPurchaseNotification. Ohne diesen Weg
+-- blieb die Leistung bestehen: kaufen, erstatten lassen, Credits behalten -
+-- beliebig oft wiederholbar. Besonders teuer beim KI-Boost, weil gekaufte
+-- Credits ueberrollen und nicht verfallen.
+--
+-- Bewusst ohne Negativ-Guthaben: verbrauchte Credits werden nicht
+-- zurueckgefordert, nur der noch offene Rest entzogen. Alles andere waere
+-- gegenueber Nutzern unfair, die in gutem Glauben verbraucht haben.
+create or replace function public.revoke_play_purchase(p_user uuid, p_sku text)
+returns json
+language plpgsql security definer set search_path = public
+as $$
+declare v_fid uuid;
+begin
+  if p_sku = 'effyra_ai_boost' then
+    -- Nur den noch vorhandenen Rest, nie unter null.
+    select family_id into v_fid from public.family_members where user_id = p_user limit 1;
+    if v_fid is not null and exists (select 1 from public.families where id = v_fid and plan = 'family') then
+      update public.families set ai_extra = greatest(0, coalesce(ai_extra, 0) - 1000) where id = v_fid;
+    else
+      update public.profiles set ai_extra = greatest(0, coalesce(ai_extra, 0) - 1000) where id = p_user;
+    end if;
+
+  elsif p_sku = 'effyra_premium' then
+    update public.profiles
+       set premium_until = least(coalesce(premium_until, now()), now()), tier = 'medium'
+     where id = p_user;
+
+  elsif p_sku = 'effyra_family' then
+    -- Nur die Familie treffen, deren Zahler die erstattende Person IST.
+    update public.families
+       set plan = 'free', plan_until = null, plan_by = null
+     where plan_by = p_user;
+    update public.profiles
+       set premium_until = least(coalesce(premium_until, now()), now()), tier = 'medium'
+     where id = p_user;
+
+  elsif p_sku in ('effyra_adult', 'effyra_child') then
+    -- Sitzplaetze rechnet recompute aus den noch AKTIVEN Kaeufen neu; der
+    -- erstattete Kauf steht zu diesem Zeitpunkt bereits auf expiry_ms = 0.
+    perform public.recompute_family_seats(p_user);
+  end if;
+
+  return json_build_object('ok', true, 'sku', p_sku);
+end $$;
+revoke execute on function public.revoke_play_purchase(uuid, text) from public, anon, authenticated;
 
 notify pgrst, 'reload schema';

@@ -104,6 +104,20 @@ returns json language plpgsql security definer set search_path = public as $$
 declare v_rec public.family_child_codes%rowtype; v_data jsonb; v_fcode text;
 begin
   if auth.uid() is null then raise exception 'not authenticated'; end if;
+
+  -- Nur ANONYME Sessions duerfen als Kind beitreten. Ohne diese Sperre reicht
+  -- ein Fehltipp: ein Erwachsener gibt einen Kindercode ein, das delete/insert
+  -- unten setzt seine Rolle auf 'child' – und danach ist er dauerhaft
+  -- ausgesperrt, denn save_family, leave_family und join_family lehnen
+  -- role='child' alle ab. Der Zahler kaeme nicht mehr in seine eigene
+  -- bezahlte Familie. Gegenstueck zur Sperre in join_family.
+  if not coalesce((auth.jwt() ->> 'is_anonymous')::boolean, false) then
+    raise exception 'only anonymous sessions can join as child';
+  end if;
+  if exists (select 1 from public.family_members where user_id = auth.uid() and coalesce(role, 'adult') <> 'child') then
+    raise exception 'adults cannot join as child';
+  end if;
+
   -- Beitrittsversuche begrenzen (siehe supabase-codes.sql): der Kindercode ist
   -- genauso lang wie der Familiencode und öffnet ebenfalls den Familien-Blob.
   if not public.join_rate_ok() then raise exception 'too many attempts'; end if;

@@ -10049,6 +10049,7 @@ function famAdopt(d) {
   famWrite(d.data || {});
   famBase = JSON.parse(JSON.stringify(famPayload()));   // exakt der vom Server bestätigte Stand
   famLastTs = d.updated_at || null;
+  famBaseSave();   // ueberlebt den naechsten Kaltstart
   if (pend) famWrite(famMergeOps(famPayload(), pend));
   save();
   return !!pend;
@@ -10060,6 +10061,7 @@ async function famPush() {
      eine Woche aus war, würde sonst seinen kompletten Altbestand als Neuanlage
      zurückschreiben und alle inzwischen von anderen gelöschten Einträge wieder
      auferstehen lassen. Erst holen, dann senden. */
+  if (!famBase) famBase = famBaseLoad();   // aus dem letzten Lauf, falls vorhanden
   if (!famBase) { await famPull(); return; }
   /* Aufräumen NACH dem famBase-Guard: davor holte famPull die gerade lokal
      entfernten Einträge sofort wieder herein, und das Aufräumen liefe bei jedem
@@ -10141,6 +10143,26 @@ let famLastTs = null;
    famOps. Ebenfalls bewusst nicht persistiert: siehe die Begründung in famPush.
    Beim Familienwechsel MUSS er zurückgesetzt werden (famJoin/famLeave), sonst
    wandert der Inhalt der alten Familie in die neue. */
+/* An den Familiencode gebunden in localStorage: sonst schiebt jeder Kaltstart
+   den lokalen Altbestand als Neuanlagen zurueck und macht Loeschungen anderer
+   Geraete rueckgaengig. Groessenschranke, weil der Blob 2 MB gross sein darf,
+   das Speicherkontingent aber bei etwa 5 MB liegt. */
+const FAM_BASE_KEY = 'effyra_fam_base';
+function famBaseLoad() {
+  try {
+    const o = JSON.parse(localStorage.getItem(FAM_BASE_KEY) || 'null');
+    if (o && o.code && store.family && o.code === store.family.code) { famLastTs = o.ts || null; return o.base; }
+  } catch (e) {}
+  return null;
+}
+function famBaseSave() {
+  try {
+    if (!famBase || !store.family || !store.family.code) { localStorage.removeItem(FAM_BASE_KEY); return; }
+    const s = JSON.stringify({ code: store.family.code, ts: famLastTs, base: famBase });
+    if (s.length > 3 * 1024 * 1024) { localStorage.removeItem(FAM_BASE_KEY); return; }   // lieber keine Basis als ein volles Kontingent
+    localStorage.setItem(FAM_BASE_KEY, s);
+  } catch (e) { /* Kontingent voll o. Ae.: ohne Persistenz weiter */ }
+}
 let famBase = null;
 /* Ist supabase-optimierung.sql noch nicht eingespielt, fehlt get_family_since.
    Dann einmal fehlschlagen, merken und dauerhaft get_family nutzen – sonst
@@ -14948,7 +14970,18 @@ async function exportAllData() {
       mein_mitgliedseintrag: meMem,
       meine_aufgaben: (store.family.tasks || []).filter(t => t && (t.by === meAuth || (meId && t.assignee === meId))),
       meine_medikamente: meId ? (store.family.meds || []).filter(m => m && m.memberId === meId) : [],
-      meine_einnahmen: meId ? (store.family.medTaken || []).filter(x => x && (x.memberId === meId || String(x.id || '').indexOf(meId) === 0)) : [],
+      /* medTaken ist ein OBJEKT {'medId|HH:MM|YYYY-MM-DD': ts}, kein Array –
+         also ueber die Schluessel filtern. Zugeordnet wird ueber die eigenen
+         Medikamenten-Ids, denn der Schluessel traegt keine memberId. */
+      meine_einnahmen: (function () {
+        if (!meId) return {};
+        const meineMedIds = {};
+        (store.family.meds || []).forEach(m => { if (m && m.memberId === meId && m.id) meineMedIds[m.id] = 1; });
+        const raus = {};
+        const alle = store.family.medTaken || {};
+        Object.keys(alle).forEach(k => { if (meineMedIds[String(k).split('|')[0]]) raus[k] = alle[k]; });
+        return raus;
+      })(),
       hinweis: 'Gemeinsame Listen (Einkauf, Anlaesse, Termine der Familie) und die Eintraege anderer Mitglieder sind bewusst nicht enthalten.',
     };
   }
@@ -15031,7 +15064,24 @@ async function performAccountDeletion() {
   try {
     if (CLOUD && typeof sb !== 'undefined' && sb) {
       const s = (await sb.auth.getSession()).data.session;
-      if (s) { try { await fetch(FN_URL('delete-account'), { method: 'POST', headers: { 'content-type': 'application/json', apikey: SUPABASE_ANON_KEY, Authorization: 'Bearer ' + s.access_token } }); } catch (e) {} }
+      if (s) {
+        /* Antwort AUSWERTEN. Vorher lag der Aufruf in einem leeren catch und die
+           App meldete anschliessend unbedingt "Konto und Daten geloescht" – auch
+           wenn serverseitig nichts passiert war. Der lokale Speicher war dann weg,
+           das Konto samt aller Daten aber noch da, und die Nutzerin hatte keinen
+           Anhaltspunkt. Bei einer Loeschung nach Art. 17 ist das die schlechteste
+           aller Rueckmeldungen. */
+        let ok = false;
+        try {
+          const r = await fetch(FN_URL('delete-account'), { method: 'POST', headers: { 'content-type': 'application/json', apikey: SUPABASE_ANON_KEY, Authorization: 'Bearer ' + s.access_token } });
+          const j = await r.json().catch(() => ({}));
+          ok = !!(r.ok && j && j.ok === true);
+        } catch (e) { ok = false; }
+        if (!ok) {
+          toast('⚠️ Die Löschung konnte nicht bestätigt werden. Deine Daten sind noch da – bitte später erneut versuchen oder uns schreiben.', 8000);
+          return;
+        }
+      }
       try { await sb.auth.signOut(); } catch (e) {}
     }
   } catch (e) {}
