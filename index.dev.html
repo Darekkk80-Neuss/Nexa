@@ -10105,7 +10105,7 @@ async function famPush() {
   try {
     const r = await sb.rpc('save_family', { p_data: famPayload() });
     if (r && r.error) { await famSaveFailed(r.error); return; }
-    if (r && r.data && r.data.updated_at) { famLastTs = r.data.updated_at; famBase = JSON.parse(JSON.stringify(famPayload())); }
+    if (r && r.data && r.data.updated_at) { famLastTs = r.data.updated_at; famBase = JSON.parse(JSON.stringify(famPayload())); famBaseSave(); }
     if (r && r.data && r.data.bytes) famWarnSize(r.data.bytes);
   } catch (e) { await famSaveFailed(e); }
 }
@@ -10136,7 +10136,7 @@ async function famSaveFailed(err) {
       /* famAdopt statt Handarbeit: apply_family_ops liefert den zusammengefuehrten
          Stand mit, und nur der darf neue Vergleichsgrundlage werden. */
       if (r2.data && r2.data.data) famAdopt(r2.data);
-      else if (r2.data && r2.data.updated_at) { famLastTs = r2.data.updated_at; famBase = JSON.parse(JSON.stringify(famPayload())); }
+      else if (r2.data && r2.data.updated_at) { famLastTs = r2.data.updated_at; famBase = JSON.parse(JSON.stringify(famPayload())); famBaseSave(); }
       toast('🧹 Alte erledigte Einträge entfernt – die Familie ist wieder synchron.', 5000);
     } else toast('⚠️ Familiendaten zu gross. Einstellungen → Aufräumen → „Jetzt aufräumen".', 7000);
   } catch (e) { toast('⚠️ Familiendaten zu gross. Einstellungen → Aufräumen.', 7000); }
@@ -10245,7 +10245,8 @@ async function famCreate() {
        ist damit nachweislich leer, und der gesamte lokale Familienbestand geht
        als Neuanlage hoch. Ohne diese Zeile fiele famPush mangels famBase auf
        famPull zurück und räumte die eben erst eingetragenen Personen wieder weg. */
-    famBase = { members: [], occasions: [], tasks: [], shopping: [], shopAssign: null, events: [] };
+    famBase = { members: [], occasions: [], tasks: [], shopping: [], shopAssign: null, events: [], tidy: null };
+    famBaseSave();   // tidy mitfuehren, sonst gilt eine Schalteraenderung als Delta
     await famPush();
     RENDERERS.family();
     askFamNotify();
@@ -10277,7 +10278,7 @@ async function famJoin(code) {
     /* Bestätigten Stand der ALTEN Familie verwerfen. Bliebe er stehen, würde der
        erste Push den kompletten Inhalt der alten Familie als Neuanlage in die
        neue schreiben – und deren Einträge nebenbei als "gelöscht" melden. */
-    store.family.code = r.data.code; famBase = null; famLastTs = null; save();
+    store.family.code = r.data.code; famBase = null; famLastTs = null; famBaseSave(); save();
     await famPull();
     RENDERERS.family();
     askFamNotify();
@@ -10288,7 +10289,7 @@ async function famLeave() {
   if (!confirm(pickLang({ de: 'Verbindung zur Familie wirklich trennen?', en: 'Really disconnect from the family?', fr: 'Vraiment quitter la famille ?', es: '¿Desconectar realmente de la familia?', it: 'Scollegarsi davvero dalla famiglia?', pl: 'Na pewno rozłączyć się z rodziną?' }))) return;
   await famAuth();
   try { await sb.rpc('leave_family'); } catch (e) {}
-  store.family.code = null; famBase = null; famLastTs = null;   // bestätigter Stand gilt nur für DIESE Familie
+  store.family.code = null; famBase = null; famLastTs = null; famBaseSave();   // bestätigter Stand gilt nur für DIESE Familie
   save();
   RENDERERS.family();
   toast('Verbindung getrennt');
@@ -14959,6 +14960,7 @@ function renderLegalCard() {
 async function exportAllData() {
   const btn = $('#dataExport'), origText = btn ? btn.textContent : '';
   if (btn) { btn.disabled = true; btn.textContent = '⏳ …'; }
+  try {
   let server = null, serverFehler = null;
   if (CLOUD && sb && account && account.loggedIn) {
     try {
@@ -15020,8 +15022,18 @@ async function exportAllData() {
   const u = URL.createObjectURL(blob), a = document.createElement('a');
   a.href = u; a.download = 'effyra-datenexport-' + new Date().toISOString().slice(0, 10) + '.json';
   document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(u), 3000);
-  if (btn) { btn.disabled = false; btn.textContent = origText; }
   toast(serverFehler ? '📦 Export erstellt – Serverdaten fehlen' : '📦 Export erstellt ✓');
+  } catch (e) {
+    /* Sichtbar scheitern statt still haengen. Ein Auskunftsersuchen nach
+       Art. 20, das ohne Rueckmeldung ins Leere laeuft, ist schlimmer als eines,
+       das ehrlich sagt, dass es gerade nicht geht. */
+    console.error('export_failed', String((e && e.message) || e));
+    toast('⚠️ Der Export konnte nicht erstellt werden. Bitte erneut versuchen oder uns schreiben.', 7000);
+  } finally {
+    /* IMMER zuruecksetzen – sonst bleibt der Knopf nach einem Fehler dauerhaft
+       gesperrt und ein zweiter Versuch ist gar nicht mehr moeglich. */
+    if (btn) { btn.disabled = false; btn.textContent = origText; }
+  }
 }
 function renderAccountCard() {
   const card = $('#accountCard');
