@@ -52,7 +52,11 @@ function cleanText(v: unknown, max: number): string {
     // Trenner, mit denen sich Wortfilter umgehen lassen.
     .replace(/[\u0000-\u001F\u007F\u200B-\u200F\u2028\u2029\u202A-\u202E\u2066-\u2069]/g, ' ')
     .replace(/(?:https?:\/\/|www\.)\S*/gi, '')
-    .replace(/\b[a-z0-9-]+\.(?:com|net|org|de|io|app|xyz|top|ru|cn|tk|link)\b\S*/gi, '')
+    // Generisch statt Aufzaehlung: die alte Liste deckte weder .fr noch .es,
+    // .it, .pl oder .info ab – also ausgerechnet die fuenf Zielsprachraeume nicht.
+    // Preis bleibt derselbe wie zuvor: eine Aufgabe "Rechnung an anbieter.de"
+    // verliert die Domain. Bewusst in Kauf genommen.
+    .replace(/\b[a-z0-9-]{2,}\.[a-z]{2,6}\b\S*/gi, '')
     .replace(/\s+/g, ' ')
     .trim()
     .slice(0, max);
@@ -140,7 +144,10 @@ Deno.serve(async (req) => {
   // Namen ohnehin schon traegt ("Anna hat Einkaufen erledigt") -- sonst stuende
   // er doppelt da. Die Kennzeichnung ist der eigentliche Schutz: der Empfaenger
   // sieht, dass die Zeile von einem Menschen kommt und nicht von der App.
-  const msg = (kind === 'test' || !senderName || raw.toLowerCase().includes(senderName.toLowerCase()))
+  // startsWith statt includes: mit includes unterdrueckte jeder, der seinen
+  // eigenen Namen irgendwo im Text unterbrachte, die Kennzeichnung – und konnte
+  // damit einen fremden Absender vortaeuschen.
+  const msg = (kind === 'test' || !senderName || raw.toLowerCase().startsWith(senderName.toLowerCase()))
     ? raw
     : senderName + ': ' + raw;
   const tag = 'effyra-' + kind;   // fester tag: ein selbst gewaehlter konnte die Morgen-Push ueberschreiben

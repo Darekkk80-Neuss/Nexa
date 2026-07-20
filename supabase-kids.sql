@@ -152,7 +152,11 @@ begin
     raise exception 'family data must be an object';
   end if;
 
-  update public.families set data = p_data, updated_at = now() where id = v_id;
+  -- clock_timestamp() statt now(): now() ist fuer die ganze Transaktion konstant.
+  -- apply_family_ops schreibt bereits mit clock_timestamp(); bliebe save_family
+  -- bei now(), koennte updated_at ZURUECKfallen – und get_family_since (Vergleich
+  -- mit <=) meldete allen Geraeten dauerhaft "unchanged". Die Aenderung kaeme nie an.
+  update public.families set data = p_data, updated_at = clock_timestamp() where id = v_id;
   -- Grösse mitgeben: der Client warnt ab ~80 % der Schranke, statt die Nutzerin
   -- erst beim harten Abbruch zu überraschen – da ist die Änderung schon weg.
   return json_build_object('updated_at', now(), 'bytes', v_size);
@@ -187,7 +191,9 @@ begin
     end if;
   end loop;
   if not v_found then raise exception 'task not found'; end if;
-  update public.families set data = jsonb_set(v_data, '{tasks}', v_tasks), updated_at = now() where id = v_fid;
+  -- clock_timestamp(): siehe save_family. Sonst verschwindet ausgerechnet das
+  -- Haekchen des Kindes still, weil die anderen Geraete "unchanged" bekommen.
+  update public.families set data = jsonb_set(v_data, '{tasks}', v_tasks), updated_at = clock_timestamp() where id = v_fid;
   return json_build_object('ok', true);
 end; $$;
 revoke execute on function public.child_task_done(text, boolean) from public, anon;

@@ -34,6 +34,8 @@ Funktionen; die zuletzt ausgeführte gewinnt.
 | 1 | `supabase-setup.sql` | profiles, Registrierungs-Trigger |
 | 2 | `supabase-sync.sql` | user_state (Geräte-Sync) |
 | 3 | `supabase-push.sql` | push_subscriptions |
+| 3a | `supabase-consents.sql` | `consents` – **`export_my_data()` liest sie**, ohne sie stirbt der ganze Export |
+| 3b | `supabase-photo.sql` | `photo_cache` (Hintergrundbilder) |
 | 4 | `supabase-codes.sql` | `gen_family_code`, Beitritts-Rate-Limit |
 | 5 | `supabase-family.sql` | Familien, Beitritt/Austritt, Tabellen + Spalte `role` |
 | 6 | `supabase-kids.sql` | Kinderprofile, **kanonische `save_family`** (nach family.sql) |
@@ -182,10 +184,25 @@ Zusätzlich in den Function-Logs nach diesen Zeichenketten suchen:
 | `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `STRIPE_PRICE_*`, `APP_URL` | stripe-* | **Käufe werden nicht gutgeschrieben, nur im Stripe-Dashboard sichtbar** |
 | `PEXELS_KEY`, `SPOONACULAR_KEY`, `TANKERKOENIG_KEY` | jeweiliger Proxy | Widget zeigt „nicht eingerichtet" |
 
-**CRON_SECRET rotieren:** Secret setzen **und** alle fünf Cron-Jobs neu
-schreiben (`supabase-due-reminder.sql`, `-morning.sql`, `-overdue.sql`,
-`-weather.sql` erneut ausführen). Zwischen beiden Schritten fallen alle Pushes
-aus.
+**CRON_SECRET rotieren — Achtung, die Automatik hilft hier NICHT.**
+Die vier Cron-Dateien lesen das Secret aus einem *bestehenden* Job ab. Nach
+einer Rotation lesen sie also das **alte** — erneutes Ausführen ändert nichts,
+und alle Pushes fallen still mit 403 aus. Richtige Reihenfolge:
+
+```sql
+-- 1. Alle vier Jobs entfernen (sonst wird das alte Secret weiter abgelesen)
+select cron.unschedule('effyra-due');
+select cron.unschedule('effyra-morning');
+select cron.unschedule('effyra-overdue');
+select cron.unschedule('effyra-weather');
+```
+
+2. `supabase secrets set CRON_SECRET=<neu>`
+3. **Einen** Job von Hand anlegen — in `supabase-due-reminder.sql` das
+   `format(...)` vorübergehend durch das neue Secret im Klartext ersetzen und
+   ausführen. Danach die Datei wieder zurücksetzen (nicht mit echtem Wert committen).
+4. Die übrigen drei Dateien normal ausführen — sie lesen jetzt das neue Secret.
+5. `select * from public.cron_http_health();` — muss `ok (200)` zeigen.
 
 **RTDN-Umstellung (läuft):** play-verify akzeptiert übergangsweise beide
 Auth-Wege — das OIDC-Token im `authorization`-Header (neu) und `?key=` im

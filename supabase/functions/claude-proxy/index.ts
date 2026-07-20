@@ -60,7 +60,12 @@ const RT_COST_PER_MIN = Math.max(1, Number(Deno.env.get('RT_COST_PER_MIN') || '1
 // manipulierten Client: OpenAI beendet eine aufgebaute Realtime-Sitzung erst an
 // der eigenen Obergrenze, und wer die Nachbuchung weglässt, telefoniert bis
 // dahin weiter. Schadensdeckel je Konto/Tag = dieser Wert × OpenAI-Höchstdauer.
-const RT_SESSIONS_PER_DAY = Math.max(1, Number(Deno.env.get('RT_SESSIONS_PER_DAY') || '6'));
+// BEWUSST NIEDRIG: die Nachbuchung (realtime_tick) laeuft im CLIENT. Wer sie
+// abschaltet (clearInterval in der Konsole), telefoniert fuer den Preis EINER
+// Minute weiter, bis OpenAI die Sitzung beendet. Bis eine serverseitige
+// Sitzungstabelle existiert, ist die Zahl der Sitzungen je Tag die einzige
+// wirksame Bremse – deshalb 2 statt 6.
+const RT_SESSIONS_PER_DAY = Math.max(1, Number(Deno.env.get('RT_SESSIONS_PER_DAY') || '2'));
 // Minuten je Konto und Tag – bremst den ehrlichen Vielnutzer, damit ein
 // Familien-Topf (1600 Credits) nicht an einem Nachmittag im Live-Modus liegt.
 const RT_MIN_PER_DAY = Math.max(1, Number(Deno.env.get('RT_MIN_PER_DAY') || '20'));
@@ -355,7 +360,9 @@ async function handleRequest(req: Request, box: RefundBox, rid: string): Promise
       // die Sitzungsdauer – die Realtime-API kennt dafür keinen Parameter. Ohne
       // die Angabe gilt der Default von 600 s: zehn Minuten, in denen ein
       // abgefangenes Token eine fremde Sitzung starten könnte.
-      body: JSON.stringify({ expires_after: { anchor: 'created_at', seconds: RT_TOKEN_TTL_S }, session: { type: 'realtime', model: 'gpt-realtime' } }),
+      // instructions SERVERSEITIG setzen: im Live-Modus verhandelt der Client
+      // sonst allein mit OpenAI, und GUARD_PROMPT (Chat) griffe hier gar nicht.
+      body: JSON.stringify({ expires_after: { anchor: 'created_at', seconds: RT_TOKEN_TTL_S }, session: { type: 'realtime', model: 'gpt-realtime', instructions: GUARD_PROMPT } }),
     }, 10000);
     let d: any = await r.json().catch(() => ({}));
     if (!r.ok) {   // Fallback: ältere Sessions-Endpoint-Form
