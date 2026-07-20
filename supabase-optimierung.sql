@@ -203,20 +203,39 @@ create table if not exists public.ai_usage_daily (
   prompt_tokens     bigint not null default 0,
   completion_tokens bigint not null default 0,
   reasoning_tokens  bigint not null default 0,   -- Teilmenge von completion_tokens
+  cached_tokens     bigint not null default 0,   -- Teilmenge von prompt_tokens, günstiger abgerechnet
   failures          int    not null default 0,
   primary key (day, op, model)
 );
+-- In bestehenden Projekten steht die Tabelle bereits; create table if not exists
+-- ergänzt dort KEINE Spalte, und ai_usage_track liefe beim nächsten Aufruf in
+-- "column does not exist" – lautlos, weil claude-proxy Telemetriefehler
+-- verschluckt (Promise.catch in track()).
+alter table public.ai_usage_daily add column if not exists cached_tokens bigint not null default 0;
 alter table public.ai_usage_daily enable row level security;
 revoke all on public.ai_usage_daily from anon, authenticated;
 
+-- Die alte 7-Argument-Fassung MUSS weg, bevor die neue entsteht: create or replace
+-- ersetzt nur bei identischer Argumentliste, sonst stünden beide nebeneinander.
+-- PostgREST könnte einen Aufruf mit den alten sieben Schlüsseln dann keiner von
+-- beiden eindeutig zuordnen (der neue Parameter hat einen Default) und antwortete
+-- mit PGRST203. Nach dem Drop löst genau dieser Aufruf – also die noch laufende
+-- alte claude-proxy – sauber auf die neue Funktion auf; deshalb gibt es kein
+-- Deployment-Fenster, in dem Zahlen verloren gehen.
+drop function if exists public.ai_usage_track(text, text, int, bigint, bigint, bigint, boolean);
+
+-- p_cached steht hinten, weil Postgres verlangt, dass Parameter mit Default nach
+-- allen Parametern ohne Default stehen (p_ok hat keinen).
 create or replace function public.ai_usage_track(
   p_op text, p_model text, p_credits int,
-  p_in bigint, p_out bigint, p_reason bigint, p_ok boolean)
-returns void language sql security definer set search_path = public as $$
+  p_in bigint, p_out bigint, p_reason bigint, p_ok boolean,
+  p_cached bigint default 0)
+returns void language sql security definer set search_path = public as $
   insert into public.ai_usage_daily as u
-    (day, op, model, calls, credits, prompt_tokens, completion_tokens, reasoning_tokens, failures)
+    (day, op, model, calls, credits, prompt_tokens, completion_tokens, reasoning_tokens, cached_tokens, failures)
   values ((now() at time zone 'utc')::date, coalesce(p_op, '?'), coalesce(p_model, '?'), 1,
           coalesce(p_credits, 0), coalesce(p_in, 0), coalesce(p_out, 0), coalesce(p_reason, 0),
+          least(coalesce(p_cached, 0), coalesce(p_in, 0)),
           case when p_ok then 0 else 1 end)
   on conflict (day, op, model) do update set
     calls             = u.calls + 1,
@@ -224,30 +243,60 @@ returns void language sql security definer set search_path = public as $$
     prompt_tokens     = u.prompt_tokens + coalesce(p_in, 0),
     completion_tokens = u.completion_tokens + coalesce(p_out, 0),
     reasoning_tokens  = u.reasoning_tokens + coalesce(p_reason, 0),
+    -- least(...) deckelt den gecachten Anteil auf den gemeldeten Input. Meldet
+    -- OpenAI die beiden Werte einmal inkonsistent, würde die Differenz in
+    -- ai_kosten sonst negativ und die Kosten kleiner als null.
+    cached_tokens     = u.cached_tokens + least(coalesce(p_cached, 0), coalesce(p_in, 0)),
     failures          = u.failures + case when p_ok then 0 else 1 end;
-$$;
+$;
 
-revoke execute on function public.ai_usage_track(text, text, int, bigint, bigint, bigint, boolean)
+revoke execute on function public.ai_usage_track(text, text, int, bigint, bigint, bigint, boolean, bigint)
   from public, anon, authenticated;
 
 -- Auswertung: Kosten je Credit je Operation. Preise als Parameter, damit die
 -- Abfrage bei Preisänderungen nicht angefasst werden muss.
---   select * from public.ai_kosten(0.75, 4.50);   -- $/Mio. Token in/out
-create or replace function public.ai_kosten(p_in_preis numeric, p_out_preis numeric)
-returns table (op text, calls bigint, credits bigint, kosten numeric, kosten_je_credit numeric)
-language sql security definer set search_path = public as $$
-  select u.op,
-         sum(u.calls)::bigint,
-         sum(u.credits)::bigint,
-         round(sum(u.prompt_tokens) / 1e6 * p_in_preis + sum(u.completion_tokens) / 1e6 * p_out_preis, 4),
-         round((sum(u.prompt_tokens) / 1e6 * p_in_preis + sum(u.completion_tokens) / 1e6 * p_out_preis)
-               / nullif(sum(u.credits), 0), 6)
-    from public.ai_usage_daily u
-   group by u.op
-   order by 4 desc;
-$$;
+--   select * from public.ai_kosten(0.75, 4.50, 0.075);   -- $/Mio. Token in/out/gecacht
+--
+-- Der dritte Preis ist NEU. Bisher ging der gesamte prompt_tokens-Wert zum vollen
+-- Input-Preis in die Rechnung ein, obwohl OpenAI den gecachten Anteil erheblich
+-- günstiger abrechnet – die ausgewiesenen Kosten je Credit lagen dadurch dauerhaft
+-- zu hoch. Bewusst ein eigener Parameter und kein fester Faktor: das Verhältnis
+-- ist modellabhängig (GPT-5-Reihe grob ein Zehntel des Input-Preises, gpt-4o-mini
+-- grob die Hälfte – vor Gebrauch an der aktuellen OpenAI-Preisliste prüfen), und
+-- ein verdrahteter Faktor wäre nach dem nächsten Wechsel von OPENAI_MODEL_CHAIN
+-- wieder falsch, ohne dass es jemandem auffällt.
+--
+-- Zeilen mit 0 Tokens sind KEIN Fehler: Sprachausgabe, Transkription und der
+-- Live-Modus werden nach Minuten bzw. Zeichen abgerechnet, nicht nach Tokens.
+-- Für diese Operationen sind calls und failures aussagekräftig, kosten ist es
+-- nicht – der Betrag steht dort nur in der Anbieterrechnung.
+
+-- Zwei- und Drei-Parameter-Fassung dürfen nicht nebeneinander stehen, sonst ist
+-- der bisherige Aufruf ai_kosten(0.75, 4.50) mehrdeutig.
+drop function if exists public.ai_kosten(numeric, numeric);
+
+create or replace function public.ai_kosten(p_in_preis numeric, p_out_preis numeric, p_cache_preis numeric default 0)
+returns table (op text, calls bigint, credits bigint, fehler bigint, kosten numeric, kosten_je_credit numeric)
+language sql security definer set search_path = public as $
+  with k as (
+    select u.op,
+           sum(u.calls)::bigint                                   as calls,
+           sum(u.credits)::bigint                                 as credits,
+           sum(u.failures)::bigint                                as fehler,
+           (sum(u.prompt_tokens) - sum(u.cached_tokens)) / 1e6 * p_in_preis
+         + sum(u.cached_tokens)     / 1e6 * coalesce(p_cache_preis, 0)
+         + sum(u.completion_tokens) / 1e6 * p_out_preis           as kosten
+      from public.ai_usage_daily u
+     group by u.op
+  )
+  select k.op, k.calls, k.credits, k.fehler,
+         round(k.kosten, 4),
+         round(k.kosten / nullif(k.credits, 0), 6)
+    from k
+   order by k.kosten desc;
+$;
 -- Auch angemeldeten Nutzern entziehen: das sind Betriebszahlen, keine Nutzerdaten.
-revoke execute on function public.ai_kosten(numeric, numeric) from public, anon, authenticated;
+revoke execute on function public.ai_kosten(numeric, numeric, numeric) from public, anon, authenticated;
 
 -- ------------------------------------------------------------
 -- 6) Fehlende Indizes

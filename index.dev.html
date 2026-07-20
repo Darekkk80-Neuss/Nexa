@@ -8801,7 +8801,7 @@ if ($('#mealWidget')) $('#mealWidget').addEventListener('click', e => {
     if (mid) {
       const mem = (typeof famMember === 'function') ? famMember(mid) : null;
       store.family.shopAssign = { assignee: mid, by: (typeof famSelfId === 'function' ? famSelfId() : ''), due: '', createdAt: Date.now() };
-      if (mem && mem.authId && typeof pushNotifyMember === 'function') pushNotifyMember(mem.authId, '🛒 ' + pickLang({ de: 'Einkaufsliste für dich', en: 'Shopping list for you', fr: 'Liste de courses pour toi', es: 'Lista de la compra para ti', it: 'Lista della spesa per te', pl: 'Lista zakupów dla Ciebie' }), pickLang({ de: 'Zutaten für', en: 'Ingredients for', fr: 'Ingrédients pour', es: 'Ingredientes para', it: 'Ingredienti per', pl: 'Składniki na' }) + ' „' + (M.today ? mealLocalize(M.today).title : '…') + '"');
+      if (mem && mem.authId && typeof pushNotifyMember === 'function') pushNotifyMember(mem.authId, '🛒 ' + pickLang({ de: 'Einkaufsliste für dich', en: 'Shopping list for you', fr: 'Liste de courses pour toi', es: 'Lista de la compra para ti', it: 'Lista della spesa per te', pl: 'Lista zakupów dla Ciebie' }), pickLang({ de: 'Zutaten für', en: 'Ingredients for', fr: 'Ingrédients pour', es: 'Ingredientes para', it: 'Ingredienti per', pl: 'Składniki na' }) + ' „' + (M.today ? mealLocalize(M.today).title : '…') + '"', 'shopping');
     }
     shopChanged();
     toast(mid ? ('🛒 Liste zugewiesen ✓') : ('🛒 Zutaten auf der Liste ✓'));
@@ -9686,13 +9686,20 @@ async function setMorningPush(on) {
   else toast(on ? '☀️ Morgen-Briefing aktiviert.' : 'Morgen-Briefing aus.');
   RENDERERS.family();
 }
-async function pushNotifyMember(toUserId, title, bodyText) {
+/* Titel, Absenderkennzeichnung und tag setzt push-send serverseitig aus einem
+   festen Katalog (Parameter `kind`). Ein frei formulierter Titel aus dem Client
+   liess jedes Familienmitglied eine Push bauen, die auf dem Sperrbildschirm des
+   anderen wie eine Meldung von Effyra selbst aussah.
+   `title` bleibt nur als Parameter stehen, damit die fuenf sehr langen
+   Aufrufstellen nicht angefasst werden muessen -- der Wert wird nicht mehr
+   uebertragen und kann bei naechster Gelegenheit ganz entfallen. */
+async function pushNotifyMember(toUserId, title, bodyText, kind) {
   try {
     if (!CLOUD || !toUserId || toUserId === famSelfId()) return;
     await famAuth();
     const { data } = await sb.auth.getSession();
     const tok = data && data.session && data.session.access_token; if (!tok) return;
-    await fetch(FN_URL('push-send'), { method: 'POST', headers: { 'content-type': 'application/json', apikey: SUPABASE_ANON_KEY, Authorization: 'Bearer ' + tok }, body: JSON.stringify({ toUserId, title, body: bodyText }) });
+    await fetch(FN_URL('push-send'), { method: 'POST', headers: { 'content-type': 'application/json', apikey: SUPABASE_ANON_KEY, Authorization: 'Bearer ' + tok }, body: JSON.stringify({ toUserId, kind: kind || 'task', body: bodyText }) });
   } catch (e) {}
 }
 function askFamNotify() {
@@ -11460,7 +11467,7 @@ function shopAssignNow() {
     const openN = (store.family.shopping || []).filter(i => !i.done).length;
     const meMem = (store.family.members || []).find(x => x.authId === famSelfId());
     const meName = (meMem && meMem.name) || store.name || '';
-    pushNotifyMember(m.authId, '🛒 ' + pickLang({ de: 'Einkaufsliste für dich', en: 'Shopping list for you', fr: 'Liste de courses pour toi', es: 'Lista de la compra para ti', it: 'Lista della spesa per te', pl: 'Lista zakupów dla Ciebie' }), (meName ? pickLang({ de: 'von', en: 'from', fr: 'de', es: 'de', it: 'da', pl: 'od' }) + ' ' + meName + ' · ' : '') + openN + ' ' + pickLang({ de: 'Artikel', en: 'items', fr: 'articles', es: 'artículos', it: 'articoli', pl: 'pozycji' }) + (store.family.shopAssign.due ? ' · ' + pickLang({ de: 'fällig', en: 'due', fr: 'pour le', es: 'para el', it: 'entro', pl: 'termin' }) + ' ' + store.family.shopAssign.due : ''));
+    pushNotifyMember(m.authId, '🛒 ' + pickLang({ de: 'Einkaufsliste für dich', en: 'Shopping list for you', fr: 'Liste de courses pour toi', es: 'Lista de la compra para ti', it: 'Lista della spesa per te', pl: 'Lista zakupów dla Ciebie' }), (meName ? pickLang({ de: 'von', en: 'from', fr: 'de', es: 'de', it: 'da', pl: 'od' }) + ' ' + meName + ' · ' : '') + openN + ' ' + pickLang({ de: 'Artikel', en: 'items', fr: 'articles', es: 'artículos', it: 'articoli', pl: 'pozycji' }) + (store.family.shopAssign.due ? ' · ' + pickLang({ de: 'fällig', en: 'due', fr: 'pour le', es: 'para el', it: 'entro', pl: 'termin' }) + ' ' + store.family.shopAssign.due : ''), 'shopping');
   }
   toast('🛒 ' + (m ? m.name : '') + ' zugewiesen ✓');
 }
@@ -11475,7 +11482,7 @@ function shopCelebrate() {
   a.doneAt = Date.now(); a.doneBy = famSelfId() || ''; a.doneName = meName;   // synct über famPayload
   save(); if (typeof famPush === 'function') { try { famPush(); } catch (e) {} }
   if (a.by && a.by !== famSelfId() && typeof pushNotifyMember === 'function') {
-    pushNotifyMember(a.by, '🎉 ' + pickLang({ de: 'Gute Nachricht', en: 'Good news', fr: 'Bonne nouvelle', es: 'Buenas noticias', it: 'Buone notizie', pl: 'Dobra wiadomość' }), meName + ' ' + pickLang({ de: 'hat „Einkaufen" erledigt.', en: 'finished the shopping.', fr: 'a fini les courses.', es: 'ha terminado la compra.', it: 'ha completato la spesa.', pl: 'zrobił(a) zakupy.' }));
+    pushNotifyMember(a.by, '🎉 ' + pickLang({ de: 'Gute Nachricht', en: 'Good news', fr: 'Bonne nouvelle', es: 'Buenas noticias', it: 'Buone notizie', pl: 'Dobra wiadomość' }), meName + ' ' + pickLang({ de: 'hat „Einkaufen" erledigt.', en: 'finished the shopping.', fr: 'a fini les courses.', es: 'ha terminado la compra.', it: 'ha completato la spesa.', pl: 'zrobił(a) zakupy.' }), 'done');
   }
 }
 /* Beim Zuweisenden: hat die zuständige Person die Liste erledigt → einmaliges freundliches Popup. */
@@ -13310,10 +13317,34 @@ function rtToolSchemas() {
 }
 function rtSilenceMs() { const v = Number(store.settings && store.settings.rtSilenceMs); return v >= 200 && v <= 3000 ? v : 700; }   // Live-Reaktionszeit (Server-VAD)
 function rtSetStatus(txt, cls) { const st = $('#vaStatus'); if (st) { st.textContent = txt; st.className = 'va-status on live-on va-' + (cls || 'listening'); } }
+/* Minutenuhr des Live-Modus. Der Server bucht je angefangene Minute im Voraus;
+   der Start hat die erste bereits bezahlt, hier wird vor jeder weiteren
+   nachgebucht. Scheitert die Buchung (Credits leer, Tageskontingent erreicht),
+   endet die Sitzung SOFORT – ein weiterlaufendes WebRTC-Gespräch erzeugt sonst
+   Kosten beim teuersten Modell, für die niemand bezahlt hat. */
+const RT_MINUTE_MS = 60000;
+/* Zusätzlicher harter Deckel. OpenAI beendet eine Realtime-Sitzung ohnehin an
+   der eigenen Obergrenze, aber unangekündigt und erst nach 15–30 Minuten. Ein
+   sichtbares Ende nach 15 Minuten verhindert das vergessene Gespräch in der
+   Hosentasche, das minutenweise weiterbucht. */
+const RT_MAX_MIN = 15;
+function rtStartClock() {
+  if (!RT) return;
+  RT.tick = setInterval(async () => {
+    if (!RT || !RT.active) return;
+    try { await callAudioHosted({ op: 'realtime_tick' }); }
+    catch (e) { rtStop('Live-Modus beendet: ' + (e.message || 'Kontingent erreicht.')); }
+  }, RT_MINUTE_MS);
+  RT.maxStop = setTimeout(() => rtStop('Live-Gespräch nach ' + RT_MAX_MIN + ' Minuten automatisch beendet.'), RT_MAX_MIN * RT_MINUTE_MS);
+}
 async function rtToggle() { if (RT && RT.active) { rtStop('Live-Gespräch beendet.'); return; } await rtStart(); }
 async function rtStart() {
   if (!isChildUser() && typeof consentValid === 'function' && !consentValid('ai')) { showAiConsent(); return; }   // KI-Einwilligung sichtbar einholen
   if (!canRealAI()) { toast('Bitte melde dich an, um den Live-Modus zu nutzen.'); return; }
+  // Live läuft auf gpt-realtime, dem mit Abstand teuersten Modell im System, und
+  // ist serverseitig auf Premium beschränkt (RT_PREMIUM_ONLY). Ohne diese Zeile
+  // sähe die Nutzerin statt der Upgrade-Karte nur „nicht verfügbar (not_premium)".
+  if (ENFORCE_TIERS && !isPremium()) { toast('🎙️ Der Live-Modus ist Teil von Premium.'); showUpgrade(); return; }
   if (!window.RTCPeerConnection) { toast('Live-Modus braucht Chrome, Edge oder Safari.'); return; }
   if (vaListening) vaStopMic();
   const liveBtn = $('#vaLive'); if (liveBtn) liveBtn.classList.add('on');
@@ -13327,9 +13358,13 @@ async function rtStart() {
   const pc = new RTCPeerConnection();
   const audioEl = new Audio(); audioEl.autoplay = true;
   pc.ontrack = e => { try { audioEl.srcObject = e.streams[0]; audioEl.play().catch(() => {}); } catch (er) {} };
+  // Bricht die Verbindung ab – OpenAI beendet die Sitzung an der eigenen
+  // Höchstdauer, Netz weg, Gerät schläft ein –, muss die Minutenuhr sofort
+  // stehen. Sonst bucht sie Minuten für ein Gespräch, das es nicht mehr gibt.
+  pc.onconnectionstatechange = () => { if (RT && RT.active && /failed|disconnected|closed/.test(pc.connectionState)) rtStop('Live-Verbindung beendet.'); };
   try { pc.addTrack(stream.getAudioTracks()[0], stream); } catch (e) {}
   const dc = pc.createDataChannel('oai-events');
-  RT = { pc, dc, stream, audioEl, active: true, responding: false };
+  RT = { pc, dc, stream, audioEl, active: true, responding: false, tick: 0, maxStop: 0 };
   dc.onopen = () => {
     rtSetStatus('🟢 Live – sprich einfach …', 'listening');
     rtSend({ type: 'session.update', session: {
@@ -13348,12 +13383,17 @@ async function rtStart() {
   }
   if (ans == null) { rtStop(); toast('Live-Verbindung fehlgeschlagen. (Konsole für Details)'); return; }
   try { await pc.setRemoteDescription({ type: 'answer', sdp: ans }); }
-  catch (e) { rtStop(); toast('Live-Verbindung fehlgeschlagen.'); }
+  catch (e) { rtStop(); toast('Live-Verbindung fehlgeschlagen.'); return; }   // return neu: sonst startet unten die Minutenuhr für eine Sitzung, die nie zustande kam
+  rtStartClock();   // erst NACH dem Verbindungsaufbau – die erste Minute ist mit dem Token schon bezahlt
 }
 function rtSend(obj) { try { if (RT && RT.dc && RT.dc.readyState === 'open') RT.dc.send(JSON.stringify(obj)); } catch (e) {} }
 function rtStop(msg) {
   const liveBtn = $('#vaLive'); if (liveBtn) liveBtn.classList.remove('on');
   if (RT) {
+    // Uhren ZUERST anhalten: rtStop wird auch aus dem Nachbuch-Fehlerpfad heraus
+    // gerufen, und ein weiterlaufendes Intervall bucht sonst in eine längst
+    // geschlossene Sitzung hinein – jede Minute ein Credit für nichts.
+    try { clearInterval(RT.tick); clearTimeout(RT.maxStop); } catch (e) {}
     try { RT.dc && RT.dc.close(); } catch (e) {}
     try { RT.pc && RT.pc.close(); } catch (e) {}
     try { RT.stream && RT.stream.getTracks().forEach(t => t.stop()); } catch (e) {}
@@ -14377,6 +14417,12 @@ $('#chatSend').addEventListener('click', () => { const i = $('#chatInput'); cons
 $('#chatInput').addEventListener('keydown', e => { if (e.key === 'Enter') $('#chatSend').click(); });
 $('#vaMic').addEventListener('click', vaToggleMic);
 { const lv = $('#vaLive'); if (lv) lv.addEventListener('click', rtToggle); }
+/* Wechselt die App in den Hintergrund, wird der Live-Modus beendet. Nicht nur
+   der Höflichkeit wegen: Browser drosseln setInterval in Hintergrund-Tabs, die
+   minütliche Nachbuchung würde dort unzuverlässig – das Gespräch liefe also
+   ausgerechnet dann weiter, wenn es niemand mehr bezahlt und niemand mehr
+   zuhört. Mikrofon und Verbindung bleiben sonst obendrein offen. */
+document.addEventListener('visibilitychange', () => { if (document.hidden && RT && RT.active) rtStop('Live-Gespräch beendet – die App war im Hintergrund.'); });
 $('#chatMsgs').addEventListener('click', e => {
   const sg = e.target.closest('[data-sg]');
   if (sg) { sendChat(sg.dataset.sg); return; }

@@ -96,3 +96,50 @@ export async function pageAll<T = any>(
   }
   return rows;
 }
+
+/** Gehoert die Push-Adresse zu einem bekannten Push-Dienst?
+ *  Zweite Linie hinter der CHECK-Constraint push_endpoint_known aus
+ *  supabase-push.sql. Die ist NOT VALID gesetzt, Zeilen aus der Zeit davor sind
+ *  also ungeprueft -- und ohne diese Pruefung POSTet die Function mit
+ *  Service-Role-Rechten an jede Adresse, die in der Zeile steht (blinde SSRF).
+ *  Nimmt sowohl das sub-JSONB als auch die Tabellenzeile: beide tragen das Feld
+ *  `endpoint`, und beide muessen passen. */
+export function pushEndpointOk(row: any): boolean {
+  return /^https:\/\/([a-z0-9-]+\.)*(googleapis\.com|push\.services\.mozilla\.com|push\.apple\.com|notify\.windows\.com)\//
+    .test(String(row?.endpoint || ''));
+}
+
+/** Kurzkennung fürs Protokoll. Aus der uid wird ein gepfefferter SHA-256
+ *  gebildet und auf 12 Hex-Zeichen gekürzt. Gleiche Person = gleiches Kürzel,
+ *  also fällt weiter auf, wenn ein Konto immer wieder in denselben Fehler läuft;
+ *  aus dem Log allein ist die Person aber nicht mehr bestimmbar. Der Weg zurück
+ *  bleibt genau dort offen, wo er gebraucht wird: wer eine konkrete uid im
+ *  Verdacht hat (Beschwerde, Support), hasht sie erneut und vergleicht.
+ *  Der Pfeffer ist NICHT optional: ohne ihn liesse sich das Kürzel gegen eine
+ *  bekannte Nutzerliste durchprobieren, und dann wäre es wieder personenbezogen.
+ *  Fehlt LOG_PEPPER, dient der Service-Key als Pfeffer – unschön, aber immer
+ *  vorhanden; ein ungepfefferter Hash wäre hier wertlos. */
+export async function logId(uid: string): Promise<string> {
+  const pepper = Deno.env.get('LOG_PEPPER') || Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || '';
+  const b = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(pepper + '|' + uid));
+  return Array.from(new Uint8Array(b)).slice(0, 6).map((x) => x.toString(16).padStart(2, '0')).join('');
+}
+
+/** Zufällige Kennung je Aufruf, die in jeder Protokollzeile dieses Aufrufs
+ *  steht. Sie leistet das, was die uid im Log nie geleistet hat: sie zeigt den
+ *  betroffenen VORGANG, nicht nur das Konto. Bei mehreren Anfragen pro Minute
+ *  war "welcher Aufruf war das?" mit der uid allein nicht zu beantworten. */
+export function reqId(): string {
+  return crypto.randomUUID().slice(0, 8);
+}
+
+/** Fremde Fehlertexte fürs Protokoll entschärfen. Postgres zitiert bei
+ *  Constraint-Verletzungen den auslösenden Datensatz mit – und rk besteht in
+ *  supabase-due-check.sql aus Titel oder Notiz, sobald ein Eintrag keine id hat.
+ *  Ein ungekappter Fehlertext kann so fremde Termintitel ins Log tragen.
+ *  Deshalb hart kürzen und alles, was wie eine UUID aussieht, ersetzen. */
+export function safeErr(e: unknown, max = 200): string {
+  return String((e as any)?.message || e)
+    .replace(/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/gi, '<uid>')
+    .slice(0, max);
+}

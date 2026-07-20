@@ -10,6 +10,7 @@
 // (SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY sind automatisch vorhanden.)
 // ----------------------------------------------------------------------------
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import { safeErr } from '../_shared/util.ts';
 
 const cors = {
   'Access-Control-Allow-Origin': '*',
@@ -53,9 +54,20 @@ Deno.serve(async (req) => {
         const { data: fam } = await admin
           .from('families').select('id').eq('id', m.family_id).maybeSingle();
         if (!fam) continue;
-        await admin.rpc('scrub_member_from_family', { p_fid: m.family_id, p_user: uid });
+        const { error: scrubErr } = await admin.rpc('scrub_member_from_family', { p_fid: m.family_id, p_user: uid });
+        // .rpc() wirft bei Postgres-Fehlern NICHT. Bisher wurde der Rückgabewert
+        // verworfen, ein Fehlschlag blieb damit voellig unsichtbar – und die
+        // naechste Zeile loescht danach die Mitgliedschaft, sodass Name und
+        // Geburtsdatum unauffindbar in families.data zurueckbleiben. Genau der
+        // Schaden, den der Kommentar weiter oben als behoben beschreibt.
+        // Protokolliert wird die family_id, NICHT die uid: die uid ist das Datum,
+        // das dieser Loeschauftrag gerade beseitigen soll, und ueberlebte im
+        // Protokoll ausgerechnet die Loeschung. Die family_id bleibt ohnehin in
+        // der Datenbank und ist die einzige Angabe, mit der sich der Rest von
+        // Hand entfernen laesst.
+        if (scrubErr) console.error('scrub_failed', JSON.stringify({ fid: m.family_id, msg: safeErr(scrubErr) }));
       }
-    } catch (e) { console.error('scrub_failed', String(e)); }
+    } catch (e) { console.error('scrub_threw', JSON.stringify({ msg: safeErr(e) })); }
 
     await admin.from('family_members').delete().eq('user_id', uid);
 

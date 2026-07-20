@@ -21,7 +21,7 @@
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 import webpush from 'npm:web-push@3.6.7';
-import { chunk, pageAll, pMap } from '../_shared/util.ts';
+import { chunk, pageAll, pMap, reqId, safeErr } from '../_shared/util.ts';
 
 function json(o: unknown, s = 200) {
   return new Response(JSON.stringify(o), { status: s, headers: { 'content-type': 'application/json' } });
@@ -68,6 +68,12 @@ Deno.serve(async (req) => {
   const secret = Deno.env.get('CRON_SECRET');
   if (!secret || req.headers.get('x-cron-secret') !== secret) return json({ error: 'forbidden' }, 403);
 
+  // Kennung dieses Laufs. Der Cron feuert im Minutentakt; ohne sie lässt sich
+  // eine Fehlerzeile keinem Lauf zuordnen – und genau das braucht man, um
+  // "heute früh kam keine Erinnerung an" nachzuvollziehen, ohne dafür
+  // Empfänger-IDs zu protokollieren.
+  const rid = reqId();
+
   const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
   const SERVICE = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
   const VAPID_PUBLIC = Deno.env.get('VAPID_PUBLIC');
@@ -86,7 +92,11 @@ Deno.serve(async (req) => {
   const { data, error } = await admin.rpc('due_reminders');
   if (error) {
     // Häufigster Fall: supabase-due-check.sql wurde noch nicht eingespielt.
-    console.error('due_reminders_failed', error.message);
+    // safeErr kappt und maskiert: Postgres zitiert bei einem Constraint-Fehler
+    // den auslösenden Datensatz mit, und rk besteht laut supabase-due-check.sql
+    // aus Titel oder Notiz, sobald ein Eintrag keine id hat – hier landeten sonst
+    // fremde Termintitel im Protokoll.
+    console.error('due_reminders_failed', JSON.stringify({ rid, msg: safeErr(error) }));
     return json({ error: 'rpc_failed', detail: error.message, hint: 'supabase-due-check.sql im SQL-Editor ausfuehren' }, 500);
   }
   const rows = (data || []) as Row[];
@@ -98,11 +108,20 @@ Deno.serve(async (req) => {
   const undo = async (list: Row[]) => {
     if (!list.length) return;
     try {
-      await admin.rpc('due_reminders_undo', {
+      const { error: undoErr } = await admin.rpc('due_reminders_undo', {
         p_user: list.map((r) => r.user_id),
         p_rk: list.map((r) => r.rk),
       });
-    } catch (e) { console.error('undo_failed', String(e)); }
+      // .rpc() wirft bei Postgres-Fehlern NICHT, es liefert error zurück (dieselbe
+      // Falle wie in claude-proxy). Bisher wurde der Rückgabewert verworfen, das
+      // catch griff praktisch nie – und ausgerechnet dieser Fehlschlag ist der
+      // teuerste: die Vormerkung in reminder_log bleibt stehen, der nächste Lauf
+      // überspringt die Erinnerungen für immer, und niemand erfuhr davon.
+      // Protokolliert wird die ANZAHL, nicht die Liste: user_id ist personen-
+      // beziehbar und rk enthält bei Einträgen ohne id den Titel. Für die Frage
+      // "ist etwas verloren gegangen und wie viel" genügt die Zahl.
+      if (undoErr) console.error('undo_failed', JSON.stringify({ rid, lost: list.length, msg: safeErr(undoErr) }));
+    } catch (e) { console.error('undo_threw', JSON.stringify({ rid, lost: list.length, msg: safeErr(e) })); }
   };
 
   // 2) Push-Abos NUR für die betroffenen Nutzer laden (nicht mehr alle).

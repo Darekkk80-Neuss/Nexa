@@ -9,12 +9,15 @@
 // Automatisch vorhanden: SUPABASE_URL, SUPABASE_ANON_KEY, SUPABASE_SERVICE_ROLE_KEY
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
-import { fetchT } from '../_shared/util.ts';
+import { fetchT, logId, reqId, safeErr } from '../_shared/util.ts';
 
 const CORS = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  // Ohne Expose-Headers ist x-effyra-ref im Browser nicht lesbar – die Kennung
+  // käme zwar an, stünde aber in keiner Fehlermeldung, die jemand melden kann.
+  'Access-Control-Expose-Headers': 'x-effyra-ref',
 };
 // Modell-Kette in Reihenfolge der Bevorzugung. Wird ein Modell abgeschaltet oder
 // ist es im Projekt nicht freigegeben, rückt automatisch das nächste nach.
@@ -40,8 +43,37 @@ const OP_MODEL: Record<string, string> = {
   scan: DEFAULT_MODEL,       // Dokument analysieren (multimodal)
   invoice: DEFAULT_MODEL,    // Rechnung/Bild analysieren (multimodal)
 };
+// --- Live-Modus (gpt-realtime, WebRTC) --------------------------------------
+// Einzige Operation, bei der der Client NACH dem Aufruf direkt mit OpenAI
+// spricht: Dauer und Tokenverbrauch laufen an dieser Function vorbei. Bisher
+// kostete ein Token pauschal 1 Credit (OP_COST kannte die Operation nicht →
+// Default 1) und war beliebig oft wiederholbar – bei dem mit ~32/64 $ je Mio.
+// Audio-Token teuersten Modell des Systems.
+// Abgerechnet wird deshalb je ANGEFANGENE Minute im Voraus: der Start bucht die
+// erste Minute, danach bucht der Client vor jeder weiteren per op='realtime_tick'
+// nach. Bleibt die Buchung aus, beendet der Client die Sitzung.
+// 10 Credits/Minute ≈ 50 Live-Minuten im Premium-Monat (500 Credits) – bewusst
+// konservativ, per Secret ohne Deployment änderbar:
+//   supabase secrets set RT_COST_PER_MIN=6
+const RT_COST_PER_MIN = Math.max(1, Number(Deno.env.get('RT_COST_PER_MIN') || '10'));
+// Sitzungen je Konto und Tag. Das ist die EINZIGE harte Schranke gegen einen
+// manipulierten Client: OpenAI beendet eine aufgebaute Realtime-Sitzung erst an
+// der eigenen Obergrenze, und wer die Nachbuchung weglässt, telefoniert bis
+// dahin weiter. Schadensdeckel je Konto/Tag = dieser Wert × OpenAI-Höchstdauer.
+const RT_SESSIONS_PER_DAY = Math.max(1, Number(Deno.env.get('RT_SESSIONS_PER_DAY') || '6'));
+// Minuten je Konto und Tag – bremst den ehrlichen Vielnutzer, damit ein
+// Familien-Topf (1600 Credits) nicht an einem Nachmittag im Live-Modus liegt.
+const RT_MIN_PER_DAY = Math.max(1, Number(Deno.env.get('RT_MIN_PER_DAY') || '20'));
+// Gültigkeit des ephemeren Tokens (OpenAI erlaubt 10–7200 s, Default 600).
+// WICHTIG: begrenzt NUR das Fenster für den Verbindungsaufbau, NICHT die
+// Sitzungsdauer – einen Parameter dafür gibt es in der Realtime-API nicht.
+// 60 s reichen für den SDP-Austausch und machen ein abgefangenes Token wertlos.
+const RT_TOKEN_TTL_S = 60;
+// Nur Premium (eigenes oder über die Familie geerbt). Free/Trial bekommen 50
+// Credits geschenkt – die reichten für mehrere Live-Minuten auf Betreiberkosten.
+const RT_PREMIUM_ONLY = true;
 // Credit-Kosten je Operation (serverseitig = fälschungssicher, Client kann sie nicht drücken)
-const OP_COST: Record<string, number> = { question: 1, text: 2, voice: 2, scan: 5, invoice: 10, weekplan: 5, transcribe: 2, tts: 1 };
+const OP_COST: Record<string, number> = { question: 1, text: 2, voice: 2, scan: 5, invoice: 10, weekplan: 5, transcribe: 2, tts: 1, realtime_token: RT_COST_PER_MIN, realtime_tick: RT_COST_PER_MIN };
 // Live: serverseitige KI-Abrechnung aktiv → Free/Trial 50 Credits/7 Tage, Premium 500/Monat (consume_ai).
 // Voraussetzung erfüllt: supabase-trial-and-play.sql + supabase-tiers.sql sind deployt (consume_ai vorhanden).
 // Nach Änderung claude-proxy neu deployen: `supabase functions deploy claude-proxy`.
@@ -110,16 +142,30 @@ type RefundBox = { refund: null | (() => Promise<void>) };
 
 Deno.serve(async (req) => {
   const box: RefundBox = { refund: null };
+  // Kennung dieses EINEN Aufrufs. Sie steht in jeder Protokollzeile und geht als
+  // Header zurück. Vorher stand stattdessen die uid im Log: ein personen-
+  // beziehbares Merkmal ohne Löschfrist, das trotzdem nur das Konto zeigte und
+  // bei mehreren Anfragen pro Minute nicht den betroffenen Vorgang.
+  const rid = reqId();
   try {
-    return await handleRequest(req, box);
+    const res = await handleRequest(req, box, rid);
+    // Auf JEDER Antwort, nicht nur im Fehlerfall: sonst nennt eine Beschwerde
+    // kein Merkmal, mit dem sich die Invocation wiederfinden liesse.
+    try { res.headers.set('x-effyra-ref', rid); } catch (_e) { /* unkritisch */ }
+    return res;
   } catch (e) {
-    console.error('unhandled', String(e));
+    // `owed` ist hier die entscheidende Angabe: nur wenn noch eine Erstattung
+    // offen war, kann jemand Credits verloren haben. Wie sie ausging, steht
+    // gegebenenfalls als refund_failed/refund_threw mit derselben rid daneben.
+    // Reihenfolge bewusst so: erst protokollieren, dann erstatten – stirbt der
+    // Isolate währenddessen, existiert die Zeile wenigstens.
+    console.error('unhandled', JSON.stringify({ rid, owed: !!box.refund, msg: safeErr(e) }));
     try { if (box.refund) await box.refund(); } catch (_e) { /* mehr ist nicht zu retten */ }
-    return json({ error: 'server_error' }, 500);
+    return json({ error: 'server_error', ref: rid }, 500);
   }
 });
 
-async function handleRequest(req: Request, box: RefundBox): Promise<Response> {
+async function handleRequest(req: Request, box: RefundBox, rid: string): Promise<Response> {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: CORS });
   if (req.method !== 'POST') return json({ error: 'method_not_allowed' }, 405);
 
@@ -157,6 +203,33 @@ async function handleRequest(req: Request, box: RefundBox): Promise<Response> {
   let _admin: any = null;
   const adminC = () => (_admin ||= createClient(SUPABASE_URL, SERVICE));
 
+  // Live-Modus: Stufe und Tageskontingent PRÜFEN, BEVOR consume_ai bucht. Erst
+  // buchen und dann ablehnen hiesse, für jede Ablehnung den Erstattungspfad zu
+  // brauchen – und genau der ist die Stelle, an der Credits verloren gehen.
+  if (op === 'realtime_token' || op === 'realtime_tick') {
+    const admin = adminC();
+    if (ENFORCE_TIERS && RT_PREMIUM_ONLY) {
+      const { data: eff, error: eerr } = await admin.rpc('effective_tier', { p_user: uid });
+      // Im Fehlerfall bewusst ZU. Bei tts_greeting bleibt eine unbeantwortbare
+      // Frage offen, weil dort Betreiberkosten in Cent-Höhe stehen; hier steht
+      // das teuerste Modell des Systems dahinter.
+      if (eerr) { console.error('rt_tier_failed', JSON.stringify({ uid, op, msg: eerr.message })); return json({ error: 'quota_error' }, 500); }
+      if (eff !== 'premium') return json({ error: 'not_premium' }, 402);
+    }
+    // Zwei getrennte Zähler mit verschiedenen Aufgaben: Minuten bremsen den
+    // ehrlichen Vielnutzer, Sitzungen den manipulierten Client (je Token kann er
+    // höchstens eine Sitzung aufbauen). rate_take zählt jeden VERSUCH – auch
+    // einen, der gleich danach an consume_ai scheitert; das ist gewollt.
+    const { data: okMin, error: mrr } = await admin.rpc('rate_take', { p_user: uid, p_op: 'realtime_min', p_max: RT_MIN_PER_DAY });
+    if (mrr) { console.error('rt_rate_failed', JSON.stringify({ uid, op, msg: mrr.message })); return json({ error: 'quota_error' }, 500); }
+    if (okMin === false) return json({ error: 'rate_limited' }, 429);
+    if (op === 'realtime_token') {
+      const { data: okSess, error: srr } = await admin.rpc('rate_take', { p_user: uid, p_op: 'realtime_sess', p_max: RT_SESSIONS_PER_DAY });
+      if (srr) { console.error('rt_rate_failed', JSON.stringify({ uid, op, msg: srr.message })); return json({ error: 'quota_error' }, 500); }
+      if (okSess === false) return json({ error: 'rate_limited' }, 429);
+    }
+  }
+
   // Was abgebucht wurde – wird bei einem Fehlschlag wieder gutgeschrieben.
   // Die AUFTEILUNG ist entscheidend: Monatstopf und gekaufte Credits müssen
   // getrennt zurück, sonst wandelt jede Erstattung das eine ins andere um.
@@ -170,12 +243,19 @@ async function handleRequest(req: Request, box: RefundBox): Promise<Response> {
     if (!refundMonth && !refundExtra) return;
     const m = refundMonth, x = refundExtra;
     refundMonth = 0; refundExtra = 0;   // nur einmal erstatten
+    // Statt der rohen uid steht ein gepfeffertes Kürzel im Protokoll. Es bleibt
+    // je Konto stabil, sodass ein Muster ("immer dasselbe Konto") weiter
+    // auffällt, ist aus dem Log heraus aber nicht mehr auflösbar. Umgekehrt geht
+    // es: eine uid aus einer Beschwerde erneut hashen und vergleichen.
+    // .catch() ist Pflicht, kein Schmuck: die Kennung darf unter KEINEN Umständen
+    // die Erstattung selbst verhindern – ein Protokolleintrag ist nie ein Credit wert.
+    const usr = await logId(uid).catch(() => '?');
     try {
       const { error } = await adminC().rpc('refund_ai', { p_user: uid, p_month: m, p_extra: x, p_scope: consumedScope });
       // .rpc() wirft bei Postgres-Fehlern NICHT, es liefert error zurück. Ohne
       // diese Prüfung würde eine fehlende refund_ai-Funktion lautlos scheitern.
-      if (error) console.error('refund_failed', JSON.stringify({ op, uid, m, x, scope: consumedScope, msg: error.message }));
-    } catch (e) { console.error('refund_threw', JSON.stringify({ op, uid, m, x, msg: String(e) })); }
+      if (error) console.error('refund_failed', JSON.stringify({ rid, op, usr, m, x, scope: consumedScope, msg: safeErr(error) }));
+    } catch (e) { console.error('refund_threw', JSON.stringify({ rid, op, usr, m, x, msg: safeErr(e) })); }
   };
 
   /** Verbrauchszahlen mitschreiben. Best effort und bewusst NICHT abgewartet:
@@ -189,11 +269,20 @@ async function handleRequest(req: Request, box: RefundBox): Promise<Response> {
    // Erstattung aus, obwohl die Antwort erzeugt und bezahlt wurde.
    try {
     const d = u?.completion_tokens_details || {};
+    // Gecachte Input-Tokens sind eine TEILMENGE von prompt_tokens und werden von
+    // OpenAI deutlich günstiger abgerechnet. Ohne sie verrechnete ai_kosten den
+    // gesamten Input zum vollen Preis. Da vor jeder Anfrage derselbe GUARD_PROMPT
+    // plus derselbe Client-System-Prompt steht, ist der Cache-Anteil dauerhaft
+    // hoch – die Überschätzung war also systematisch, nicht zufällig.
+    // Chat Completions meldet sie unter prompt_tokens_details, die Responses- und
+    // Audio-Endpunkte unter input_tokens_details bzw. input_token_details.
+    const pd = u?.prompt_tokens_details || u?.input_tokens_details || u?.input_token_details || {};
     const p = adminC().rpc('ai_usage_track', {
       p_op: op || '?', p_model: model || '?', p_credits: ok ? creditsCharged : 0,
       p_in: Number(u?.prompt_tokens || u?.input_tokens || 0),
       p_out: Number(u?.completion_tokens || u?.output_tokens || 0),
       p_reason: Number(d?.reasoning_tokens || 0),
+      p_cached: Number(pd?.cached_tokens || 0),
       p_ok: ok,
     });
     // Fehler SOFORT abfangen, bevor die Promise irgendwohin weitergereicht wird.
@@ -233,7 +322,12 @@ async function handleRequest(req: Request, box: RefundBox): Promise<Response> {
       // konservative Richtung ist die einzig vertretbare – aber sie darf kein
       // stiller Dauerzustand werden, deshalb laut ins Log.
       refundMonth = cost; refundExtra = 0;
-      console.error('consume_ai_outdated', JSON.stringify({ op, cost, hint: 'supabase-trial-and-play.sql erneut einspielen' }));
+      // Bewusst OHNE Kontokennung: das ist kein Einzelfall-, sondern ein
+      // Deployment-Problem – es trifft jeden Aufruf, bis die SQL-Datei
+      // eingespielt ist. Ein Kürzel je Betroffenem wäre hier eine Sammlung
+      // personenbeziehbarer Merkmale ohne jeden Erkenntnisgewinn. Die rid genügt:
+      // sie führt zur refund_failed-Zeile desselben Aufrufs, falls es eine gibt.
+      console.error('consume_ai_outdated', JSON.stringify({ rid, op, cost, hint: 'supabase-trial-and-play.sql erneut einspielen' }));
     }
     box.refund = refund;                          // Sicherheitsnetz scharfstellen
   } else if (ENFORCE_TIERS && op === 'tts_greeting') {
@@ -247,12 +341,17 @@ async function handleRequest(req: Request, box: RefundBox): Promise<Response> {
 
   // 4z) Realtime-Live-Modus: kurzlebiges Session-Token (ephemeral) für gpt-realtime.
   //     Der echte Key bleibt hier; der Client verbindet sich per WebRTC mit diesem Token direkt zu OpenAI.
+  //     Die erste Minute ist an dieser Stelle bereits gebucht (OP_COST.realtime_token).
   if (op === 'realtime_token') {
    try {
     let r = await fetchT('https://api.openai.com/v1/realtime/client_secrets', {
       method: 'POST',
       headers: { 'content-type': 'application/json', Authorization: `Bearer ${OPENAI_API_KEY}` },
-      body: JSON.stringify({ session: { type: 'realtime', model: 'gpt-realtime' } }),
+      // expires_after begrenzt NUR das Fenster für den Verbindungsaufbau, nicht
+      // die Sitzungsdauer – die Realtime-API kennt dafür keinen Parameter. Ohne
+      // die Angabe gilt der Default von 600 s: zehn Minuten, in denen ein
+      // abgefangenes Token eine fremde Sitzung starten könnte.
+      body: JSON.stringify({ expires_after: { anchor: 'created_at', seconds: RT_TOKEN_TTL_S }, session: { type: 'realtime', model: 'gpt-realtime' } }),
     }, 10000);
     let d: any = await r.json().catch(() => ({}));
     if (!r.ok) {   // Fallback: ältere Sessions-Endpoint-Form
@@ -263,13 +362,38 @@ async function handleRequest(req: Request, box: RefundBox): Promise<Response> {
       }, 10000);
       d = await r.json().catch(() => ({}));
     }
-    if (!r.ok) { await refund(); return json({ error: 'ai_failed', detail: d?.error?.message || JSON.stringify(d).slice(0, 200) }, r.status); }
+    // Der Live-Modus buchte bisher 1 Credit ab und tauchte in ai_usage_daily an
+    // KEINER Stelle auf – weder als Aufruf noch als Fehlschlag. Die Tokenzahlen
+    // bleiben zwangsläufig 0: die eigentliche Sitzung läuft danach per WebRTC
+    // direkt zwischen Client und OpenAI, dieser Proxy sieht davon nichts mehr.
+    // Gezählt werden hier also Aufrufe, Fehlschläge und Credits – die Kosten der
+    // Sitzung selbst stehen nur in der OpenAI-Abrechnung (siehe ai_kosten).
+    if (!r.ok) { track('gpt-realtime', null, false); await refund(); return json({ error: 'ai_failed', detail: d?.error?.message || JSON.stringify(d).slice(0, 200) }, r.status); }
     const token = d?.value || d?.client_secret?.value || null;
     // 200 ohne Token (Formataenderung bei OpenAI) ist fuer die Nutzerin ein
     // Fehlschlag – nicht 1 Credit fuer eine unbrauchbare Antwort behalten.
-    if (!token) { await refund(); return json({ error: 'ai_empty' }, 502); }
-    return json({ token, expires_at: d?.expires_at || d?.client_secret?.expires_at || null }, 200);
-   } catch (_e) { await refund(); return json({ error: 'ai_timeout' }, 504); }
+    if (!token) { track('gpt-realtime', null, false); await refund(); return json({ error: 'ai_empty' }, 502); }
+    track('gpt-realtime', null, true);
+    // minute_ms/cost_per_min sagen dem Client, wann und wofuer er nachbucht –
+    // Hinweis, keine Zusicherung: verbindlich sind die Zaehler oben.
+    // ai_used/ai_limit fehlten hier bisher, deshalb sah die Nutzerin den
+    // Live-Verbrauch im Credit-Stand erst beim naechsten anderen KI-Aufruf.
+    return json({ token, expires_at: d?.expires_at || d?.client_secret?.expires_at || null,
+                  minute_ms: 60000, cost_per_min: RT_COST_PER_MIN,
+                  ai_used: usage.ai_used, ai_limit: usage.ai_limit }, 200);
+   } catch (_e) { track('gpt-realtime', null, false); await refund(); return json({ error: 'ai_timeout' }, 504); }
+  }
+
+  // 4z2) Nachbuchung waehrend einer laufenden Live-Sitzung. Der Client ruft das
+  //      VOR jeder weiteren angefangenen Minute; gebucht ist an dieser Stelle
+  //      bereits (OP_COST.realtime_tick), geprueft ebenfalls (Tageszaehler oben).
+  //      Antwortet der Server nicht mit 200, beendet der Client die Sitzung.
+  //      Kein OpenAI-Aufruf – die Sitzung laeuft am Server vorbei weiter.
+  if (op === 'realtime_tick') {
+    // track hier NICHT vergessen: der Tick bucht Credits ab. Ohne diese Zeile
+    // taeuchte die teuerste Operation im System in ai_usage_daily nie auf.
+    track('gpt-realtime', null, true);
+    return json({ ok: true, minute_ms: 60000, cost_per_min: RT_COST_PER_MIN, ai_used: usage.ai_used, ai_limit: usage.ai_limit }, 200);
   }
 
   // 4a) Sprache → Text (Transkription, gpt-4o-mini-transcribe). Client schickt { op:'transcribe', audio:<base64>, mime }
@@ -294,9 +418,12 @@ async function handleRequest(req: Request, box: RefundBox): Promise<Response> {
       return fetchT('https://api.openai.com/v1/audio/transcriptions', { method: 'POST', headers: { Authorization: `Bearer ${OPENAI_API_KEY}` }, body: form }, 30000);
     };
     let tr: Response, td: any;
+    // Gezählt wurde bisher nur der Pfad, der bis Z301 durchkam. Zeitüberschreitung
+    // und Anbieterfehler fielen aus der Statistik heraus – ausgerechnet die beiden
+    // Fälle, für die die Spalte failures da ist.
     try { tr = await doStt(TRANSCRIBE_MODEL); td = await tr.json().catch(() => ({})); }
-    catch (_e) { await refund(); return json({ error: 'ai_timeout' }, 504); }
-    if (!tr.ok) { await refund(); return json({ error: 'ai_failed', detail: td?.error?.message || '' }, tr.status); }
+    catch (_e) { track(TRANSCRIBE_MODEL, null, false); await refund(); return json({ error: 'ai_timeout' }, 504); }
+    if (!tr.ok) { track(TRANSCRIBE_MODEL, td?.usage, false); await refund(); return json({ error: 'ai_failed', detail: td?.error?.message || '' }, tr.status); }
     const sttText = String(td?.text || '');
     track(TRANSCRIBE_MODEL, td?.usage, !!sttText);
     if (!sttText) { await refund(); return json({ error: 'ai_empty' }, 502); }
@@ -330,6 +457,11 @@ async function handleRequest(req: Request, box: RefundBox): Promise<Response> {
           if (!hit.last_used || Date.parse(hit.last_used) < Date.now() - 864e5) {
             try { await cacheClient.from('tts_cache').update({ last_used: new Date().toISOString() }).eq('key', cacheKey); } catch (_e) { /* unkritisch */ }
           }
+          // Ein Treffer kostet beim Anbieter nichts, ist aber ein Aufruf. Ohne
+          // diese Zeile steht in der Statistik nur, was der Cache NICHT abgefangen
+          // hat – die Trefferquote, also der einzige Grund für die Tabelle, liesse
+          // sich nicht belegen.
+          track('cache', null, true);
           return json({ audio: hit.audio, mime: hit.mime || 'audio/mpeg', engine: 'cache', ai_used: usage.ai_used, ai_limit: usage.ai_limit }, 200);
         }
       } catch (_e) { /* Tabelle fehlt o. Ä. → ohne Cache weiter, nur teurer */ }
@@ -368,10 +500,17 @@ async function handleRequest(req: Request, box: RefundBox): Promise<Response> {
           const gd: any = await gr.json().catch(() => ({}));
           if (gr.ok && gd.audioContent) {
             await cacheStore(gd.audioContent, 'audio/mpeg', 'google');
+            track('google-tts', null, true);
             return json({ audio: gd.audioContent, mime: 'audio/mpeg', engine: 'google', ai_used: usage.ai_used, ai_limit: usage.ai_limit }, 200);
           }
+          // Ein Fehlschlag hier bleibt für die Nutzerin unsichtbar – unten übernimmt
+          // ElevenLabs oder OpenAI. Genau deshalb muss er gezählt werden: fällt
+          // Google dauerhaft aus (abgelaufener Key, Kontingent voll), läuft die
+          // Begrüßung still auf einem KOSTENPFLICHTIGEN Backend weiter, und der
+          // einzige Hinweis darauf wäre bisher die OpenAI-Rechnung gewesen.
+          track('google-tts', null, false);
           // sonst: weiter zu ElevenLabs/OpenAI
-        } catch (_e) { /* Fallback */ }
+        } catch (_e) { track('google-tts', null, false); /* Fallback */ }
       }
     }
 
@@ -392,10 +531,16 @@ async function handleRequest(req: Request, box: RefundBox): Promise<Response> {
             let ebin = ''; for (let i = 0; i < eb.length; i++) ebin += String.fromCharCode(eb[i]);
             const eb64 = btoa(ebin);
             await cacheStore(eb64, 'audio/mpeg', 'elevenlabs');
+            track('elevenlabs', null, true);
             return json({ audio: eb64, mime: 'audio/mpeg', engine: 'elevenlabs', ai_used: usage.ai_used, ai_limit: usage.ai_limit }, 200);
           }
+          // ElevenLabs ist der einzige Zweig, der pro Zeichen kommerziell abgerechnet
+          // wird. Wie oft er überhaupt greift, stand bisher nirgends – die Kosten
+          // liessen sich nur an der ElevenLabs-Rechnung ablesen, ohne Bezug zur
+          // Operation.
+          track('elevenlabs', null, false);
           // nicht ok → unten auf OpenAI zurückfallen
-        } catch (_e) { /* Fallback OpenAI */ }
+        } catch (_e) { track('elevenlabs', null, false); /* Fallback OpenAI */ }
       }
     }
 
@@ -410,8 +555,11 @@ async function handleRequest(req: Request, box: RefundBox): Promise<Response> {
       return fetchT('https://api.openai.com/v1/audio/speech', { method: 'POST', headers: { 'content-type': 'application/json', Authorization: `Bearer ${OPENAI_API_KEY}` }, body: JSON.stringify(b) }, 20000);
     };
     let sr: Response;
-    try { sr = await doTts(TTS_MODEL); } catch (_e) { await refund(); return json({ error: 'ai_timeout' }, 504); }
-    if (!sr.ok) { const se: any = await sr.json().catch(() => ({})); await refund(); return json({ error: 'ai_failed', detail: se?.error?.message || '' }, sr.status); }
+    // Erfolg und leere Antwort wurden bereits gezählt (Z418/Z420), Zeitüberschreitung
+    // und Anbieterfehler nicht – dadurch stand in failures für op='tts' dauerhaft 0,
+    // egal wie oft die Sprachausgabe tatsächlich scheiterte.
+    try { sr = await doTts(TTS_MODEL); } catch (_e) { track(TTS_MODEL, null, false); await refund(); return json({ error: 'ai_timeout' }, 504); }
+    if (!sr.ok) { const se: any = await sr.json().catch(() => ({})); track(TTS_MODEL, null, false); await refund(); return json({ error: 'ai_failed', detail: se?.error?.message || '' }, sr.status); }
     const buf = new Uint8Array(await sr.arrayBuffer());
     let bin = ''; for (let i = 0; i < buf.length; i++) bin += String.fromCharCode(buf[i]);
     const b64 = btoa(bin);
@@ -465,6 +613,13 @@ async function handleRequest(req: Request, box: RefundBox): Promise<Response> {
       ar = r; data = d; used = m;
       if (r.ok) break;
       if (!isAccessErr(d)) break;                 // echter Fehler → nicht weiterprobieren
+      // Gleich rückt die Schleife weiter, und der gescheiterte Versuch wäre danach
+      // nirgends mehr sichtbar: unten zählt nur `used`, also das zuletzt probierte
+      // Modell. Damit blieb der wichtigste Betriebsfall stumm – ein Kettenmodell
+      // ist nicht mehr freigegeben, und die App läuft unbemerkt auf dem Zweitmodell.
+      // Das LETZTE Kettenglied wird bewusst ausgenommen, es zählt der Block bei
+      // `if (!ar.ok)` weiter unten – sonst stünde es doppelt in failures.
+      if (m !== order[order.length - 1]) track(m, d?.usage, false);
     } catch (_e) {
       // Zeitüberschreitung: NICHT weiterrücken. Der Abbruch wirkt nur hier –
       // OpenAI erzeugt und berechnet die Antwort trotzdem. Ein Durchlauf durch
