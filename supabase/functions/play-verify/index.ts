@@ -43,7 +43,7 @@ function pemToDer(pem: string) {
   return Uint8Array.from(atob(body), (c) => c.charCodeAt(0));
 }
 // Zugriffstoken je Instanz zwischenspeichern. Es gilt eine Stunde; vorher wurde
-// bei JEDER Kaufprüfung neu RS256-signiert und ein Token-Call an Google gemacht –
+// bei JEDER Kaufpruefung neu RS256-signiert und ein Token-Call an Google gemacht –
 // also zwei Google-Roundtrips statt einem.
 let tokenCache: { value: string; expMs: number } | null = null;
 
