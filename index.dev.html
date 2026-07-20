@@ -6,6 +6,15 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#7c3aed">
 <meta name="description" content="Effyra – Dein persönlicher KI-Alltagsmanager. Briefe verstehen, Fristen erkennen, Aufgaben und Termine automatisch organisieren.">
+<!-- Bau-Kennung. build.mjs ersetzt "dev" bei jedem Lauf durch YYYYMMDD-HHMM (UTC).
+     Bewusst ein Meta-Tag und keine JS-Konstante: build.mjs minifiziert die Skriptblöcke
+     mit minifyIdentifiers:true, und laut BUILD.md trägt das nur, solange alles in IIFEs
+     gekapselt bleibt. Ein Meta-Tag entzieht sich der Frage. -->
+<meta name="effyra-build" content="dev">
+  <!-- Fingerabdruck von index.dev.html. build.mjs traegt ihn ein; check-build.mjs
+       stellt damit ohne Neubau fest, ob index.html zur aktuellen Quelle gehoert.
+       Deterministisch, im Gegensatz zur zeitbasierten Bau-Kennung darueber. -->
+  <meta name="effyra-src" content="dev">
 <title>Effyra – gewinnt dir Zeit zurück</title>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -1450,6 +1459,23 @@ body.lang-switching main,body.lang-switching .sidebar,body.lang-switching .topba
 @keyframes toastIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
 .toast.out{animation:toastOut .3s ease both}
 @keyframes toastOut{to{opacity:0;transform:translateY(8px)}}
+/* Versionshinweis. Sitzt oben unter der Topbar und nicht unten bei den Toasts:
+   bei offener Tastatur schiebt Android die untere Kante hoch, dort läge der Hinweis
+   genau über dem Eingabefeld. Alle Farben über Tokens, damit das Hell-Thema
+   (:root[data-theme="light"], Zeile 228) ohne Extraregel mitkommt. */
+#updBar{position:fixed;top:calc(var(--topbar-h) + 8px);left:50%;transform:translateX(-50%);
+  z-index:150;display:flex;align-items:center;gap:10px;max-width:min(92vw,460px);
+  padding:9px 10px 9px 16px;border-radius:var(--r-pill);background:var(--card2);
+  border:1px solid var(--border2);box-shadow:var(--shadow-2);color:var(--text);
+  font-size:13.5px;font-weight:600;animation:updIn .28s var(--ease-spring) both}
+/* Muss sein: display:flex oben würde das hidden-Attribut sonst aushebeln. */
+#updBar[hidden]{display:none}
+#updBarTx{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#updBar button{flex:none;border:0;cursor:pointer;font:inherit}
+#updBarGo{padding:6px 14px;border-radius:var(--r-pill);background:var(--grad);color:#fff}
+#updBarX{width:28px;height:28px;border-radius:50%;background:transparent;color:var(--faint);font-size:15px}
+@keyframes updIn{from{opacity:0;transform:translate(-50%,-10px)}to{opacity:1;transform:translate(-50%,0)}}
+@media (prefers-reduced-motion:reduce){#updBar{animation:none}}
 </style>
 </head>
 <body>
@@ -2032,6 +2058,21 @@ body.lang-switching main,body.lang-switching .sidebar,body.lang-switching .topba
       </div>
 
       <div class="card set-card">
+        <h3>🧹 Aufräumen</h3>
+        <p class="sub">Längst Erledigtes verschwindet nach einer Weile von selbst. Das hält eure Familiendaten klein – sie werden bei jeder Änderung komplett an alle Geräte übertragen.</p>
+        <div class="set-row" style="align-items:center">
+          <span style="flex:1;font-weight:600" id="tidyStatusLbl">Automatisch aufräumen</span>
+          <button class="btn" id="tidyToggle" role="switch" aria-checked="true">An&nbsp;✓</button>
+        </div>
+        <div class="sub" id="tidyInfo" style="margin-top:8px;font-size:12px"></div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
+          <button class="btn btn-sm" id="tidyExport">📤 Verlauf sichern</button>
+          <button class="btn btn-sm" id="tidyNow">🧹 Jetzt aufräumen</button>
+        </div>
+        <div class="note-box">Geburtstage &amp; Anlässe, Serientermine, Arbeitszeiten und Tankvorgänge bleiben <b>immer</b> erhalten. Der Schalter gilt für die ganze Familie – ihr habt eine gemeinsame Liste.</div>
+      </div>
+
+      <div class="card set-card">
         <h3>Hilfe &amp; Einführung</h3>
         <p class="sub">Tipps, Coach-Hinweise und die „Erste Schritte"-Liste wieder anzeigen – nützlich, wenn du die App neu kennenlernen oder jemandem zeigen möchtest.</p>
         <div style="display:flex;gap:8px;flex-wrap:wrap">
@@ -2079,6 +2120,15 @@ body.lang-switching main,body.lang-switching .sidebar,body.lang-switching .topba
 </div>
 
 <div id="printRoot"></div>
+
+<!-- Versionshinweis. data-noi18n, weil der i18n-Sweep (SKIP_SEL, Zeile 4526) sonst
+     versuchen würde, diese Texte über das statische Wörterbuch zu übersetzen —
+     sie stehen unten im Skript bereits in allen sechs Sprachen. -->
+<div id="updBar" data-noi18n role="status" aria-live="polite" hidden>
+  <span id="updBarTx"></span>
+  <button type="button" id="updBarGo"></button>
+  <button type="button" id="updBarX">✕</button>
+</div>
 
 <div id="toasts"></div>
 
@@ -2271,7 +2321,12 @@ async function statePush() {
   if (!CLOUD || !sb || !(account && account.loggedIn)) return;
   try {
     const sess = (await sb.auth.getSession()).data.session; if (!sess) return; const u = sess.user;
-    await sb.from('user_state').upsert({ user_id: u.id, data: stateSnapshot(), updated_at: new Date().toISOString() });
+    const r = await sb.from('user_state').upsert({ user_id: u.id, data: stateSnapshot(), updated_at: new Date().toISOString() });
+    /* Bisher wurde JEDER Fehler verschluckt, begründet mit „Tabelle evtl. noch
+       nicht angelegt". Seit user_state eine Grössenschranke hat, verbirgt sich
+       dahinter auch ein abgelehnter Upload – das Gerät stünde dann still ohne
+       Backup da. 23514 = check_violation. */
+    if (r && r.error && r.error.code === '23514') toast('⚠️ Dein Cloud-Backup ist voll. Einstellungen → Aufräumen.', 7000);
   } catch (e) { /* Tabelle evtl. noch nicht angelegt – App läuft lokal weiter */ }
 }
 async function statePull() {
@@ -3802,6 +3857,10 @@ const TDICT_SRC = {
   '📄 Impressum': { en: '📄 Legal notice', fr: '📄 Mentions légales', es: '📄 Aviso legal', it: '📄 Note legali', pl: '📄 Nota prawna' },
   '🗑️ Konto & Daten löschen': { en: '🗑️ Delete account & data', fr: '🗑️ Supprimer le compte & les données', es: '🗑️ Eliminar cuenta y datos', it: '🗑️ Elimina account e dati', pl: '🗑️ Usuń konto i dane' },
   '📤 Einwilligungen exportieren': { en: '📤 Export consents', fr: '📤 Exporter les consentements', es: '📤 Exportar consentimientos', it: '📤 Esporta consensi', pl: '📤 Eksportuj zgody' },
+  '📦 Alle meine Daten exportieren': { en: '📦 Export all my data', fr: '📦 Exporter toutes mes données', es: '📦 Exportar todos mis datos', it: '📦 Esporta tutti i miei dati', pl: '📦 Eksportuj wszystkie moje dane' },
+  'Vollständiger, maschinenlesbarer Export nach Art. 20 DSGVO – einschließlich der nur lokal gespeicherten Bereiche (Notfalldaten, Medikamentenplan, Budget, Tresor).': { en: 'Complete, machine-readable export under Art. 20 GDPR – including the areas stored only on this device (emergency data, medication plan, budget, vault).', fr: 'Export complet et lisible par machine selon l’art. 20 du RGPD – y compris les données stockées uniquement sur cet appareil (urgence, plan de médication, budget, coffre-fort).', es: 'Exportación completa y legible por máquina conforme al art. 20 del RGPD, incluidas las áreas guardadas solo en este dispositivo (datos de emergencia, plan de medicación, presupuesto, caja fuerte).', it: 'Esportazione completa e leggibile da macchina ai sensi dell’art. 20 GDPR – comprese le aree salvate solo su questo dispositivo (dati di emergenza, piano terapeutico, budget, cassaforte).', pl: 'Pełny, maszynowo czytelny eksport zgodnie z art. 20 RODO – wraz z obszarami zapisanymi tylko na tym urządzeniu (dane ratunkowe, plan leków, budżet, sejf).' },
+  '📦 Export erstellt ✓': { en: '📦 Export created ✓', fr: '📦 Export créé ✓', es: '📦 Exportación creada ✓', it: '📦 Esportazione creata ✓', pl: '📦 Utworzono eksport ✓' },
+  '📦 Export erstellt – Serverdaten fehlen': { en: '📦 Export created – server data missing', fr: '📦 Export créé – données serveur manquantes', es: '📦 Exportación creada: faltan datos del servidor', it: '📦 Esportazione creata – dati server mancanti', pl: '📦 Utworzono eksport – brak danych z serwera' },
   'An': { en: 'On', fr: 'Activé', es: 'Activado', it: 'Attivo', pl: 'Wł.' },
   'Aus': { en: 'Off', fr: 'Désactivé', es: 'Desactivado', it: 'Disattivo', pl: 'Wył.' },
   'An ✓': { en: 'On ✓', fr: 'Activé ✓', es: 'Activado ✓', it: 'Attivo ✓', pl: 'Wł. ✓' },
@@ -9781,10 +9840,108 @@ function nextOccur(iso) {
 }
 const ageOn = (iso) => parseISO(nextOccur(iso)).getFullYear() - parseISO(iso).getFullYear();
 
+/* --- Aufräumen: erledigte Aufgaben/Einkäufe und vergangene Termine ausdünnen ---
+   families.data ist EIN Blob, der bei jeder Änderung komplett an jedes Gerät der
+   Familie geht, und save_family lehnt seit dem 20.07.2026 alles über 2 MB ab –
+   wer die Grenze erreicht, kann gar nichts mehr speichern. Bis hierher wuchs
+   Erledigtes ewig mit; aufgeräumt wurde nur medTaken (pruneMedTaken).
+   ZWEI Schranken, weil eine allein nicht reicht: das Alter begrenzt die Historie
+   zeitlich, die Stückzahl auch bei einer Familie, die 50 Aufgaben am Tag abhakt.
+   Erst beide zusammen machen die 2-MB-Wand unerreichbar.
+   Der Schalter sitzt IM Blob (store.family.tidy), nicht in store.settings: die
+   Liste ist gemeinsam. Gerätelokal hätte er nur bedeutet, dass das Gerät mit „an"
+   die Historie für alle löscht, ohne dass die anderen das gewählt haben. */
+const TIDY_DEFAULTS = { on: true, taskDays: 365, taskKeep: 500, shopDays: 30, shopKeep: 200, evDays: 730, noticed: 0 };
+function famTidyPrefs() {
+  ensureFamily();
+  if (!store.family.tidy) store.family.tidy = Object.assign({}, TIDY_DEFAULTS);
+  Object.keys(TIDY_DEFAULTS).forEach(k => { if (store.family.tidy[k] === undefined) store.family.tidy[k] = TIDY_DEFAULTS[k]; });
+  return store.family.tidy;
+}
+/* Erledigt-Zeitpunkt nachstempeln statt ihn zu raten. Alteinträge und alles, was
+   ein Kind über child_task_done abgehakt hat, haben kein doneAt – child_task_done
+   setzt serverseitig nur `done`. Gestempelt wird mit JETZT, nicht mit createdAt:
+   sonst verschwände eine vor zwei Jahren angelegte, gestern erledigte Aufgabe im
+   selben Lauf. Der Preis ist eine einmalig verlängerte Frist für Altdaten.
+   (doneAt an einem LISTENEINTRAG; shopAssign.doneAt in Zeile 11444 meint etwas
+   anderes – dieselbe Bezeichnung, anderes Objekt, keine Berührung.) */
+function tidyStamp(list) {
+  let changed = false;
+  (list || []).forEach(x => { if (x && x.done && !x.doneAt) { x.doneAt = Date.now(); changed = true; } });
+  return changed;
+}
+/* Offene Einträge bleiben IMMER. Erledigte werden nach Alter UND Stückzahl
+   begrenzt, neueste zuerst. Die Reihenfolge ändert sich dabei (offen vorn) –
+   unkritisch: famTasks() sortiert auf einer Kopie, RENDERERS.shopping trennt
+   offen/erledigt selbst, child_task_done sucht über die id. */
+function tidyPrune(list, days, keep) {
+  const cutoff = Date.now() - days * 864e5, done = [], out = [];
+  (list || []).forEach(x => { if (x && x.done) done.push(x); else if (x) out.push(x); });
+  done.sort((a, b) => (b.doneAt || 0) - (a.doneAt || 0));
+  const kept = done.filter((x, i) => i < keep && (x.doneAt || 0) >= cutoff);
+  return { list: out.concat(kept), removed: done.length - kept.length };
+}
+/* Serientermine (rrule) haben kein Ende in der Vergangenheit und werden nie
+   entfernt; mehrtägige Termine zählen nach endDate. Geburtstage/Anlässe liegen
+   in store.family.occasions und werden hier gar nicht erst angefasst. */
+function tidyEvents(evs, days, keepIf) {
+  const cutoff = addDays(todayISO(), -days);
+  let removed = 0;
+  const out = (evs || []).filter(e => {
+    if (!e) return false;
+    if (keepIf && keepIf(e)) return true;
+    if (e.rrule) return true;
+    const end = e.endDate || e.date;
+    if (!end || end >= cutoff) return true;
+    removed++; return false;
+  });
+  return { list: out, removed };
+}
+/* force=true ignoriert den Schalter – gebraucht beim manuellen Knopf und wenn der
+   Server bereits ablehnt (dann ist Nicht-Aufräumen keine Option mehr). */
+function famTidy(force) {
+  if (!store.family) return 0;
+  const p = famTidyPrefs();
+  if (!p.on && !force) return 0;
+  let changed = false, removed = 0;
+  if (tidyStamp(store.family.tasks)) changed = true;
+  if (tidyStamp(store.family.shopping)) changed = true;
+  const rt = tidyPrune(store.family.tasks, p.taskDays, p.taskKeep);
+  if (rt.removed) { store.family.tasks = rt.list; removed += rt.removed; changed = true; }
+  const rs = tidyPrune(store.family.shopping, p.shopDays, p.shopKeep);
+  if (rs.removed) { store.family.shopping = rs.list; removed += rs.removed; changed = true; }
+  const re = tidyEvents(store.events, p.evDays, e => e.source !== 'family');
+  if (re.removed) { store.events = re.list; removed += re.removed; changed = true; }
+  /* Genau EINMAL erklären, was passiert – sonst verschwindet die Historie
+     wortlos und die Nutzerin hält es für einen Datenverlust. */
+  if (removed && !p.noticed) {
+    p.noticed = 1;
+    toast('🧹 Effyra hält euren Verlauf schlank: Erledigtes wird nach ' + p.taskDays + ' Tagen entfernt. Abschalten oder sichern: Einstellungen → Aufräumen.', 7000);
+  }
+  if (changed) save();
+  return removed;
+}
+/* Persönliche Daten (user_state) wachsen ebenfalls, aber langsamer und mit einem
+   anderen Risiko. Die grössten Posten sind BEWUSSTE Archive: work.entries ist ein
+   Arbeitszeitnachweis, und fuelStats() rechnet den Verbrauchsschnitt über die
+   gesamte Tankhistorie – ein Kürzen verfälscht ihn dauerhaft. Beides wird nie
+   automatisch angefasst; hier laufen nur eigene Aufgaben und Termine, und das
+   ausschliesslich auf Knopfdruck. */
+function myTidy() {
+  let removed = 0;
+  tidyStamp(store.tasks);
+  const rt = tidyPrune(store.tasks, 365, 500);
+  if (rt.removed) { store.tasks = rt.list; removed += rt.removed; }
+  const re = tidyEvents(store.events, 730, e => e.source === 'family');   // Familientermine macht famTidy
+  if (re.removed) { store.events = re.list; removed += re.removed; }
+  if (removed) save();
+  return removed;
+}
+
 /* --- Partner-Sync über Supabase (RPCs aus supabase-family.sql) --- */
 /* Medikamente (meds/medTaken) sind Gesundheitsdaten (Art. 9 DSGVO) und werden BEWUSST NICHT
    synchronisiert – wie Notfall- und Budgetdaten bleiben sie ausschließlich lokal auf dem Gerät. */
-function famPayload() { return { members: store.family.members, occasions: store.family.occasions, tasks: store.family.tasks || [], shopping: store.family.shopping || [], shopAssign: (store.family.shopAssign && store.family.shopAssign.assignee) ? store.family.shopAssign : null, events: store.events.filter(e => e.source === 'family') }; }
+function famPayload() { return { members: store.family.members, occasions: store.family.occasions, tasks: store.family.tasks || [], shopping: store.family.shopping || [], shopAssign: (store.family.shopAssign && store.family.shopAssign.assignee) ? store.family.shopAssign : null, events: store.events.filter(e => e.source === 'family'), tidy: store.family.tidy || null }; }
 /* Frisches Auth-Token vor Familien-RPCs erzwingen – sonst wirft die RPC serverseitig
    „not authenticated" (auth.uid() null), sobald das Access-Token abgelaufen ist. */
 async function famAuth() {
@@ -9799,22 +9956,184 @@ async function famAuth() {
     return !!s;
   } catch (e) { return false; }
 }
+/* ===== Nebenläufigkeit: nur die Änderung schicken, nicht den ganzen Blob =====
+   families.data ist EIN Dokument. save_family schrieb es komplett neu, ohne zu
+   prüfen, ob inzwischen jemand anderes geschrieben hat. Der Poll unten läuft mit
+   45–240 s Backoff; das Überschreib-Fenster war damit bis zu vier Minuten breit:
+   zwei Erwachsene tragen je eine Aufgabe ein, die zweite Speicherung löscht die
+   erste – wortlos, auf beiden Geräten. Jetzt wird gegen den zuletzt vom Server
+   BESTÄTIGTEN Stand (famBase) verglichen und nur das Delta je Eintrag geschickt;
+   apply_family_ops führt es unter Zeilensperre in den aktuellen Stand ein. */
+const FAM_LISTS = ['members', 'occasions', 'tasks', 'shopping', 'events'];
+/* Vergleich über kanonisch sortierte Schlüssel. Postgres gibt jsonb in EIGENER
+   Schlüsselreihenfolge zurück; ein schlichtes JSON.stringify hielte nach jedem
+   Pull jeden Eintrag für geändert – die Überschreiberei wäre nur verlagert, und
+   der Poll-Backoff weiter unten hätte nie gegriffen (famPollMs blieb bei 45 s). */
+function famCanon(v) {
+  if (v === null || typeof v !== 'object') return JSON.stringify(v === undefined ? null : v);
+  if (Array.isArray(v)) return '[' + v.map(famCanon).join(',') + ']';
+  return '{' + Object.keys(v).sort().filter(k => v[k] !== undefined).map(k => JSON.stringify(k) + ':' + famCanon(v[k])).join(',') + '}';
+}
+/* Was hat sich seit dem bestätigten Stand geändert? Je Liste die geschriebenen
+   Einträge und die gelöschten Ids. Der Vergleich MUSS clientseitig passieren:
+   ohne ihn könnte der Server ein Löschen nicht von "kennt den Eintrag noch
+   nicht" unterscheiden und liesse gelöschte Aufgaben wieder auferstehen. */
+function famOps(base, cur) {
+  const ops = {}; let any = false;
+  FAM_LISTS.forEach(k => {
+    const was = {}; (base[k] || []).forEach(x => { if (x && x.id) was[x.id] = famCanon(x); });
+    const seen = {}, upsert = [], del = [];
+    (cur[k] || []).forEach(x => {
+      if (!x || !x.id) return;
+      seen[x.id] = 1;
+      if (was[x.id] !== famCanon(x)) upsert.push(x);
+    });
+    Object.keys(was).forEach(id => { if (!seen[id]) del.push(id); });
+    if (upsert.length || del.length) { ops[k] = { upsert: upsert, delete: del }; any = true; }
+  });
+  if (famCanon((base && base.shopAssign) || null) !== famCanon((cur && cur.shopAssign) || null)) { ops.shopAssign = cur.shopAssign || null; any = true; }
+  // tidy ebenfalls als Einzelwert: sonst erschiene eine geaenderte Aufraeum-Regel
+  // nie im Delta und bliebe geraetelokal.
+  if (famCanon((base && base.tidy) || null) !== famCanon((cur && cur.tidy) || null)) { ops.tidy = cur.tidy || null; any = true; }
+  return any ? ops : null;
+}
+/* Dieselbe Einfüge-Regel wie apply_family_ops, nur lokal: Bestehendes an seiner
+   Stelle ersetzen, Gelöschtes entfernen, wirklich Neues anhängen. Beide Seiten
+   müssen gleich zusammenführen, sonst weichen die Reihenfolgen auseinander. */
+function famMergeOps(p, ops) {
+  if (!ops) return p;
+  if (Object.prototype.hasOwnProperty.call(ops, 'tidy')) p.tidy = ops.tidy;
+  FAM_LISTS.forEach(k => {
+    const o = ops[k]; if (!o) return;
+    const up = {}; (o.upsert || []).forEach(x => { if (x && x.id) up[x.id] = x; });
+    const del = {}; (o.delete || []).forEach(id => { del[id] = 1; });
+    const out = [];
+    (p[k] || []).forEach(x => {
+      const id = x && x.id;
+      if (id && del[id]) return;
+      if (id && up[id]) { out.push(up[id]); delete up[id]; return; }
+      out.push(x);
+    });
+    Object.keys(up).forEach(id => out.push(up[id]));
+    p[k] = out;
+  });
+  if (Object.prototype.hasOwnProperty.call(ops, 'shopAssign')) p.shopAssign = ops.shopAssign;
+  return p;
+}
+/* Gegenstück zu famPayload: einen Familien-Stand in den lokalen Speicher schreiben.
+   Medikamente (Gesundheitsdaten, Art. 9 DSGVO) bleiben rein lokal – niemals aus dem Sync-Blob übernehmen. */
+function famWrite(p) {
+  store.family.members = p.members || [];
+  store.family.occasions = p.occasions || [];
+  store.family.tasks = p.tasks || [];
+  store.family.shopping = p.shopping || [];
+  store.family.shopAssign = p.shopAssign || null;   // Zuständige:r + Fälligkeit der geteilten Einkaufsliste
+  // Nur bei vorhandenem tidy übernehmen: Familien, in denen noch niemand die
+  // neue Fassung hat, behalten so ihre lokale Vorgabe, statt sie auf null
+  // zurückgesetzt zu bekommen. Die Aufräum-Regel gilt für die ganze Familie,
+  // nicht je Gerät – sonst löscht ein Gerät unabgesprochen für alle.
+  if (p.tidy) store.family.tidy = p.tidy;
+  store.events = store.events.filter(e => e.source !== 'family').concat(p.events || []);
+}
+/* Server-Antwort übernehmen. Was der Nutzer WÄHREND des Roundtrips eingetippt
+   hat, wird vorher gesichert und danach wieder aufgesetzt: famPull überschrieb
+   bisher genau diese Eingaben wortlos – und ebenso jede Änderung, deren Push
+   offline fehlgeschlagen war (der Fehler wurde verschluckt).
+   Rückgabe: true, wenn noch Ungesendetes offen ist. */
+function famAdopt(d) {
+  const pend = famBase ? famOps(famBase, famPayload()) : null;
+  famWrite(d.data || {});
+  famBase = JSON.parse(JSON.stringify(famPayload()));   // exakt der vom Server bestätigte Stand
+  famLastTs = d.updated_at || null;
+  if (pend) famWrite(famMergeOps(famPayload(), pend));
+  save();
+  return !!pend;
+}
 async function famPush() {
   if (isKidMode() || !store.family.code || !CLOUD) return;
   await famAuth();
-  /* Den von save_family gemeldeten Stand übernehmen: sonst hielte der nächste
-     Poll die eigene Änderung für fremd und lüde den Blob unnötig komplett neu. */
-  try { const r = await sb.rpc('save_family', { p_data: famPayload() }); if (r && r.data && r.data.updated_at) famLastTs = r.data.updated_at; } catch (e) {}
+  /* Ohne bestätigten Ausgangsstand darf NICHT gesendet werden. Ein Gerät, das
+     eine Woche aus war, würde sonst seinen kompletten Altbestand als Neuanlage
+     zurückschreiben und alle inzwischen von anderen gelöschten Einträge wieder
+     auferstehen lassen. Erst holen, dann senden. */
+  if (!famBase) { await famPull(); return; }
+  /* Aufräumen NACH dem famBase-Guard: davor holte famPull die gerade lokal
+     entfernten Einträge sofort wieder herein, und das Aufräumen liefe bei jedem
+     Sync erneut ins Leere. */
+  famTidy();
+  const ops = famOps(famBase, famPayload());
+  if (!ops) return;
+  if (famOpsOk) {
+    try {
+      const r = await sb.rpc('apply_family_ops', { p_ops: ops });
+      if (!r.error && r.data) {
+        if (r.data.bytes) famWarnSize(r.data.bytes);
+        if (famAdopt(r.data)) await famPush();
+        return;
+      }
+      /* Fehlt die Funktion (supabase-family-merge.sql nicht eingespielt), einmal
+         merken und dauerhaft auf save_family zurückfallen – sonst kostet jede
+         Änderung dauerhaft einen fehlschlagenden Roundtrip extra. */
+      if (r.error && /PGRST202|could not find the function|does not exist/i.test(String((r.error && (r.error.message || r.error.code)) || ''))) famOpsOk = false;
+      else { await famSaveFailed(r.error); return; }   // Netz-/Größenfehler sichtbar machen statt verschlucken
+    } catch (e) { await famSaveFailed(e); return; }
+  }
+  /* Rückfallebene: Verhalten wie bisher (Voll-Blob, letzter Schreiber gewinnt). */
+  try {
+    const r = await sb.rpc('save_family', { p_data: famPayload() });
+    if (r && r.error) { await famSaveFailed(r.error); return; }
+    if (r && r.data && r.data.updated_at) { famLastTs = r.data.updated_at; famBase = JSON.parse(JSON.stringify(famPayload())); }
+    if (r && r.data && r.data.bytes) famWarnSize(r.data.bytes);
+  } catch (e) { await famSaveFailed(e); }
+}
+/* Abgelehnter Speicherversuch. Bei „zu gross" (SQLSTATE 54000 aus save_family
+   bzw. apply_family_ops) genau EINMAL hart aufräumen und erneut senden – auch
+   bei abgeschaltetem Automatik-Schalter, denn sonst bliebe die Familie dauerhaft
+   schreibunfähig, ohne dass jemand weiss warum. famRetrying verhindert die
+   Endlosschleife.
+   Vorher verschluckte famPush jeden Fehler mit catch (e) {} – die Nutzerin sah
+   nicht, dass ihre Änderung nie ankam. */
+let famRetrying = false;
+async function famSaveFailed(err) {
+  const big = err && (err.code === '54000' || /too large/i.test(err.message || ''));
+  if (!big) { toast('⚠️ Familien-Sync fehlgeschlagen – deine Änderung liegt lokal bereit.', 4000); return; }
+  if (famRetrying) { toast('⚠️ Familiendaten zu gross. Einstellungen → Aufräumen → „Jetzt aufräumen".', 7000); return; }
+  famRetrying = true;
+  try {
+    famTidy(true);
+    const r2 = await sb.rpc('save_family', { p_data: famPayload() });
+    if (r2 && !r2.error) {
+      if (r2.data && r2.data.updated_at) { famLastTs = r2.data.updated_at; famBase = JSON.parse(JSON.stringify(famPayload())); }
+      toast('🧹 Alte erledigte Einträge entfernt – die Familie ist wieder synchron.', 5000);
+    } else toast('⚠️ Familiendaten zu gross. Einstellungen → Aufräumen → „Jetzt aufräumen".', 7000);
+  } catch (e) { toast('⚠️ Familiendaten zu gross. Einstellungen → Aufräumen.', 7000); }
+  famRetrying = false;
+}
+/* Frühwarnung ab ~80 % der Serverschranke, höchstens einmal am Tag. Ohne sie
+   erführe die Nutzerin erst beim harten Abbruch davon – und dann ist bereits
+   eine Änderung nicht angekommen. */
+let famSizeWarned = 0;
+function famWarnSize(bytes) {
+  if (bytes < 1.6 * 1024 * 1024 || Date.now() - famSizeWarned < 864e5) return;
+  famSizeWarned = Date.now();
+  toast('⚠️ Eure Familiendaten sind fast voll (' + Math.round(bytes / 1024) + ' von 2048 KB). Einstellungen → Aufräumen.', 7000);
 }
 /* Stand der zuletzt geladenen Familie (updated_at). Erlaubt dem Server, beim
    Hintergrund-Poll nur "unverändert" zu antworten, statt jedes Mal den
    kompletten Familien-Blob zu schicken. Absichtlich nicht persistiert: nach
    einem Neustart wird einmal voll geladen, das ist gewollt. */
 let famLastTs = null;
+/* Der zuletzt vom Server bestätigte Familien-Stand – Vergleichsgrundlage für
+   famOps. Ebenfalls bewusst nicht persistiert: siehe die Begründung in famPush.
+   Beim Familienwechsel MUSS er zurückgesetzt werden (famJoin/famLeave), sonst
+   wandert der Inhalt der alten Familie in die neue. */
+let famBase = null;
 /* Ist supabase-optimierung.sql noch nicht eingespielt, fehlt get_family_since.
    Dann einmal fehlschlagen, merken und dauerhaft get_family nutzen – sonst
    kostete jeder Poll zwei Roundtrips statt einem. */
 let famSinceOk = true;
+/* Dasselbe für supabase-family-merge.sql / apply_family_ops. */
+let famOpsOk = true;
 async function famPull() {
   if (!store.family.code || !CLOUD) return false;
   await famAuth();
@@ -9824,22 +10143,16 @@ async function famPull() {
     if (!r) r = await sb.rpc('get_family');
     if (r.error || !r.data) return false;
     if (r.data.unchanged) { famLastTs = r.data.updated_at || famLastTs; return false; }
-    famLastTs = r.data.updated_at || null;
-    const d = r.data.data || {};
-    const before = JSON.stringify(famPayload());
-    store.family.members = d.members || [];
-    store.family.occasions = d.occasions || [];
-    store.family.tasks = d.tasks || [];
-    store.family.shopping = d.shopping || [];
-    store.family.shopAssign = d.shopAssign || null;   // Zuständige:r + Fälligkeit der geteilten Einkaufsliste
-    // Medikamente (Gesundheitsdaten, Art. 9 DSGVO) bleiben rein lokal – niemals aus dem Sync-Blob übernehmen.
-    store.events = store.events.filter(e => e.source !== 'family').concat(d.events || []);
-    save();
+    const before = famCanon(famPayload());
+    const hadPending = famAdopt(r.data);
     const selfAdded = famEnsureSelfMember();   // beide Konten automatisch als Mitglied führen
-    if (selfAdded) { try { await sb.rpc('save_family', { p_data: famPayload() }); } catch (e) {} }
+    /* Eigenes als Delta nachreichen, NICHT als Voll-Blob: der frühere
+       save_family an dieser Stelle machte jede fremde Änderung zunichte, die
+       zwischen dem Lesen und diesem Schreiben eingetroffen war. */
+    if (hadPending || selfAdded) famPush().catch(() => {});
     checkFamilyTaskAlerts();                    // neue, mir zugewiesene Aufgaben → Pop-up + Signal
     checkShopDoneAlert();                        // erledigte zugewiesene Einkaufsliste → Popup beim Zuweiser
-    return JSON.stringify(famPayload()) !== before || selfAdded;
+    return famCanon(famPayload()) !== before || selfAdded;
   } catch (e) { return false; }
 }
 /* Serverseitig angelegte Familie übernehmen, wenn der Client (noch) keinen Code kennt –
@@ -9875,6 +10188,11 @@ async function famCreate() {
       toast('Mit deiner Familie verbunden 👪'); return;
     }
     ensureFamily(); famEnsureSelfMember();   // Ersteller mit stabiler authId als Mitglied, bevor gepusht wird
+    /* Frisch angelegte Familie: der Server hat noch nichts. Der bestätigte Stand
+       ist damit nachweislich leer, und der gesamte lokale Familienbestand geht
+       als Neuanlage hoch. Ohne diese Zeile fiele famPush mangels famBase auf
+       famPull zurück und räumte die eben erst eingetragenen Personen wieder weg. */
+    famBase = { members: [], occasions: [], tasks: [], shopping: [], shopAssign: null, events: [] };
     await famPush();
     RENDERERS.family();
     askFamNotify();
@@ -9903,7 +10221,10 @@ async function famJoin(code) {
       toast('Verbindung fehlgeschlagen.'); if (btn) btn.disabled = false; return;
     }
     if (!r.data) { joinStatus('Kein Familiencode gefunden. Bitte prüfen (Groß-/Kleinschreibung egal).', 'err'); toast('Code nicht gefunden'); if (btn) btn.disabled = false; return; }
-    store.family.code = r.data.code; save();
+    /* Bestätigten Stand der ALTEN Familie verwerfen. Bliebe er stehen, würde der
+       erste Push den kompletten Inhalt der alten Familie als Neuanlage in die
+       neue schreiben – und deren Einträge nebenbei als "gelöscht" melden. */
+    store.family.code = r.data.code; famBase = null; famLastTs = null; save();
     await famPull();
     RENDERERS.family();
     askFamNotify();
@@ -9914,7 +10235,8 @@ async function famLeave() {
   if (!confirm(pickLang({ de: 'Verbindung zur Familie wirklich trennen?', en: 'Really disconnect from the family?', fr: 'Vraiment quitter la famille ?', es: '¿Desconectar realmente de la familia?', it: 'Scollegarsi davvero dalla famiglia?', pl: 'Na pewno rozłączyć się z rodziną?' }))) return;
   await famAuth();
   try { await sb.rpc('leave_family'); } catch (e) {}
-  store.family.code = null; save();
+  store.family.code = null; famBase = null; famLastTs = null;   // bestätigter Stand gilt nur für DIESE Familie
+  save();
   RENDERERS.family();
   toast('Verbindung getrennt');
 }
@@ -10419,7 +10741,7 @@ $('#famRoot').addEventListener('click', e => {
     if (ftM && ftM.authId) pushNotifyMember(ftM.authId, '👪 ' + trStr('Neue Aufgabe für dich'), title + (ftTime ? ' – ' + ftTime : ''));
     toast('Aufgabe zugewiesen ✓'); return;
   }
-  if (a === 'toggleFTask') { const t = (store.family.tasks || []).find(x => x.id === b.dataset.id); if (isKidMode()) { childTaskDone(b.dataset.id, !(t && t.done)); return; } ensureFamily(); if (t) { t.done = !t.done; famChanged(); } return; }
+  if (a === 'toggleFTask') { const t = (store.family.tasks || []).find(x => x.id === b.dataset.id); if (isKidMode()) { childTaskDone(b.dataset.id, !(t && t.done)); return; } ensureFamily(); if (t) { t.done = !t.done; t.doneAt = t.done ? Date.now() : 0; famChanged(); } return; }
   if (a === 'readFTask') { if (markFamTaskRead(b.dataset.id)) toast('👁 Als gelesen bestätigt'); RENDERERS.family(); return; }
   if (a === 'delFTask') { ensureFamily(); store.family.tasks = store.family.tasks.filter(x => x.id !== b.dataset.id); famChanged(); return; }
   if (a === 'create') { famCreate(); return; }
@@ -11584,6 +11906,7 @@ if ($('#shoppingRoot')) $('#shoppingRoot').addEventListener('click', e => {
   if (act === 'toggle') {
     const arr = store.family.shopping, wasAll = arr.length && arr.every(x => x.done);
     i.done = !i.done;
+    i.doneAt = i.done ? Date.now() : 0;   // Frist fürs Aufräumen (siehe famTidy)
     if (!wasAll && arr.length && arr.every(x => x.done)) shopCelebrate();   // gerade vollständig erledigt
     shopChanged(); return;
   }
@@ -14459,7 +14782,8 @@ RENDERERS.settings = function () {
   renderLegalCard();
   $$('#themeSeg button').forEach(b => b.classList.toggle('active', b.dataset.themeSet === themePref()));
   $$('#rtSilSeg button').forEach(b => b.classList.toggle('active', Number(b.dataset.rtsil) === rtSilenceMs()));
-  $$('#bootFxSeg button').forEach(b => b.classList.toggle('active', b.dataset.bootfx === bootFxMode()));
+  $('#bootFxSeg button').forEach(b => b.classList.toggle('active', b.dataset.bootfx === bootFxMode()));
+  tidySyncCard();
   syncEntitlements().then(() => { if (currentView === 'settings') renderAccountCard(); });
 };
 
@@ -14483,8 +14807,48 @@ $('#rtSilSeg').addEventListener('click', e => {
 $('#bootFxSeg').addEventListener('click', e => {
   const b = e.target.closest('[data-bootfx]'); if (!b) return;
   store.settings.bootFx = b.dataset.bootfx; save();
-  $$('#bootFxSeg button').forEach(x => x.classList.toggle('active', x === b));
+  $('#bootFxSeg button').forEach(x => x.classList.toggle('active', x === b));
   if (b.dataset.bootfx !== 'off') { _bootDone = false; bootExperience(); }   // Vorschau (Ton spielt, da Nutzer gerade getippt hat)
+});
+
+/* Aufräum-Karte. Bewusst NICHT beim Laden des Skripts aufgerufen, sondern erst
+   aus RENDERERS.settings: famTidyPrefs() ruft ensureFamily(), und das legt beim
+   allerersten Start ein Mitglied an – das darf nicht passieren, bevor die
+   Anmeldung durch ist und famSelfId() eine echte authId liefert. */
+function tidySyncCard() {
+  const p = famTidyPrefs(), b = $('#tidyToggle'), i = $('#tidyInfo');
+  if (b) { b.textContent = p.on ? 'An ✓' : 'Aus'; b.classList.toggle('btn-primary', p.on); b.setAttribute('aria-checked', p.on ? 'true' : 'false'); }
+  if (i) i.textContent = p.on
+    ? 'Erledigte Familienaufgaben: ' + p.taskDays + ' Tage (höchstens ' + p.taskKeep + ') · abgehakte Einkäufe: ' + p.shopDays + ' Tage · vergangene Familientermine: ' + p.evDays + ' Tage.'
+    : 'Es wird nichts automatisch entfernt. Ab 2 MB nimmt der Server keine Änderung mehr an – dann räumt Effyra einmalig selbst auf, damit ihr weiter speichern könnt.';
+}
+if ($('#tidyToggle')) $('#tidyToggle').addEventListener('click', () => {
+  const p = famTidyPrefs(); p.on = !p.on; save();
+  if (typeof famPush === 'function') { try { famPush(); } catch (e) {} }   // Regel gilt für alle → sofort verteilen
+  tidySyncCard();
+  toast(p.on ? '🧹 Automatisches Aufräumen aktiviert' : 'Automatisches Aufräumen aus – euer Verlauf bleibt vollständig', 4000);
+});
+if ($('#tidyNow')) $('#tidyNow').addEventListener('click', () => {
+  const n = famTidy(true) + myTidy();
+  if (typeof famPush === 'function') { try { famPush(); } catch (e) {} }
+  tidySyncCard();
+  toast(n ? '🧹 ' + n + ' alte Einträge entfernt' : 'Nichts aufzuräumen – alles aktuell ✓');
+});
+/* Sichern vor dem Löschen. Gleiches Muster wie der Einwilligungs-Export in
+   renderLegalCard(): Blob → objectURL → Klick → URL freigeben. */
+if ($('#tidyExport')) $('#tidyExport').addEventListener('click', () => {
+  const blob = new Blob([JSON.stringify({
+    exportedAt: new Date().toISOString(),
+    familienaufgaben: (store.family && store.family.tasks) || [],
+    einkaeufe: (store.family && store.family.shopping) || [],
+    anlaesse: (store.family && store.family.occasions) || [],
+    termine: store.events || [],
+    eigene_aufgaben: store.tasks || []
+  }, null, 2)], { type: 'application/json' });
+  const u = URL.createObjectURL(blob), a = document.createElement('a');
+  a.href = u; a.download = 'effyra-verlauf.json'; document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(u), 3000);
+  toast('📤 Verlauf gesichert');
 });
 
 /* Rechtliches & Datenschutz: Einwilligungen (Status/Widerruf), Export, Impressum. */
@@ -14506,7 +14870,10 @@ function renderLegalCard() {
     row('fit', '💪 EffyraFit-Sensoren (Art. 9 · nur lokal)') +
     '</div>' +
     '<div class="sub" style="font-size:11px;line-height:1.45;margin:-2px 0 8px">🔒 Notfalldaten (Blutgruppe, Medikamente …) sind besondere Daten nach Art. 9 und bleiben ausschließlich lokal auf deinem Gerät – keine Übertragung, daher keine Einwilligung nötig.</div>' +
-    '<div style="margin:10px 0"><button class="btn btn-sm" id="consentExport">📤 Einwilligungen exportieren</button></div>' +
+    '<div style="margin:10px 0;display:flex;flex-direction:column;gap:8px">' +
+    '<button class="btn btn-sm btn-primary" id="dataExport">📦 Alle meine Daten exportieren</button>' +
+    '<div class="sub" style="font-size:11px;line-height:1.45;margin-top:-2px">Vollständiger, maschinenlesbarer Export nach Art. 20 DSGVO – einschließlich der nur lokal gespeicherten Bereiche (Notfalldaten, Medikamentenplan, Budget, Tresor).</div>' +
+    '<button class="btn btn-sm" id="consentExport">📤 Einwilligungen exportieren</button></div>' +
     '<div style="display:flex;flex-direction:column;gap:8px;margin-top:6px"><b style="font-size:13.5px">Dokumente</b>' +
     '<button class="btn btn-sm" data-legal="datenschutz" style="text-align:left;justify-content:flex-start">📄 Datenschutzerklärung</button>' +
     '<button class="btn btn-sm" data-legal="nutzungsbedingungen" style="text-align:left;justify-content:flex-start">📄 Nutzungsbedingungen</button>' +
@@ -14519,6 +14886,57 @@ function renderLegalCard() {
     const blob = new Blob([JSON.stringify({ verantwortlicher: 'Gonsoft labs – Darius Gonschior', consents: store.consents || {}, exportedAt: new Date().toISOString() }, null, 2)], { type: 'application/json' });
     const u = URL.createObjectURL(blob), a = document.createElement('a'); a.href = u; a.download = 'effyra-einwilligungen.json'; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(u), 3000);
   };
+  const dx = $('#dataExport'); if (dx) dx.onclick = exportAllData;
+}
+/* Datenexport Art. 20 DSGVO – vollständig und maschinenlesbar.
+   BEWUSST clientseitig zusammengesetzt: die sensibelsten Bereiche (emergency,
+   family.meds/medTaken, budget, vault, docs) stehen nicht in SYNC_KEYS und
+   werden auch von famPayload() nicht mitgeschickt – serverseitig existieren sie
+   also gar nicht. Ein reiner Server-Export hätte ausgerechnet den
+   Medikamentenplan und die Notfalldaten ausgelassen.
+   Der Server steuert nur bei, was der Client nicht lesen DARF: play_purchases,
+   families und family_members sind für `authenticated` per `revoke all`
+   gesperrt (supabase-play-purchases.sql, supabase-family.sql). Dafür gibt es
+   export_my_data() in supabase-export.sql, die den Familien-Blob zugleich auf
+   den eigenen Anteil filtert – der Rohblob mit den Daten der übrigen
+   Mitglieder darf den Browser nicht erreichen (Art. 20 Abs. 4 DSGVO).
+   Schlägt die RPC fehl (offline, SQL noch nicht eingespielt), wird der lokale
+   Teil trotzdem ausgeliefert und der Fehler in die Datei geschrieben. Ein als
+   unvollständig gekennzeichneter Export ist besser als ein Button ohne Wirkung. */
+async function exportAllData() {
+  const btn = $('#dataExport'), origText = btn ? btn.textContent : '';
+  if (btn) { btn.disabled = true; btn.textContent = '⏳ …'; }
+  let server = null, serverFehler = null;
+  if (CLOUD && sb && account && account.loggedIn) {
+    try {
+      await famAuth();   // abgelaufenes Access-Token erneuern, sonst wirft die RPC 'not authenticated'
+      const r = await sb.rpc('export_my_data');
+      if (r.error) serverFehler = r.error.message; else server = r.data;
+    } catch (e) { serverFehler = String(e); }
+  } else {
+    serverFehler = 'nicht angemeldet – nur lokale Daten enthalten';
+  }
+  const lokal = JSON.parse(JSON.stringify(store));
+  delete lokal._ts;   // interner Sync-Zeitstempel, kein Nutzdatum
+  const daten = {
+    format: 'effyra-datenexport',
+    version: 1,
+    erstelltAm: new Date().toISOString(),
+    verantwortlicher: 'Gonsoft labs – Darius Gonschior',
+    hinweis: 'Export nach Art. 20 DSGVO. "lokal" liegt ausschließlich auf diesem Gerät, "server" stammt aus der Datenbank. Daten anderer Familienmitglieder sind bewusst nicht enthalten (Art. 20 Abs. 4 DSGVO). Der eigene API-Schlüssel ist als Zugangsgeheimnis ausgenommen.',
+    konto: account ? { email: account.email || '', name: account.name || '', uid: account.uid || null } : null,
+    lokal: lokal,
+    nurAufDiesemGeraet: ['emergency', 'budget', 'docs', 'vault', 'contracts', 'waste', 'checkups', 'fit', 'chat', 'family.meds', 'family.medTaken'],
+    inDieCloudGespiegelt: SYNC_KEYS,
+    server: server,
+    serverFehler: serverFehler
+  };
+  const blob = new Blob([JSON.stringify(daten, null, 2)], { type: 'application/json' });
+  const u = URL.createObjectURL(blob), a = document.createElement('a');
+  a.href = u; a.download = 'effyra-datenexport-' + new Date().toISOString().slice(0, 10) + '.json';
+  document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(u), 3000);
+  if (btn) { btn.disabled = false; btn.textContent = origText; }
+  toast(serverFehler ? '📦 Export erstellt – Serverdaten fehlen' : '📦 Export erstellt ✓');
 }
 function renderAccountCard() {
   const card = $('#accountCard');
@@ -14744,10 +15162,130 @@ document.addEventListener('visibilitychange', () => { if (document.visibilitySta
 })();
 </script>
 <script>
-/* PWA: Service Worker registrieren (installierbar + offline). Netzwerk-zuerst, damit Updates sofort ankommen. */
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', function () { navigator.serviceWorker.register('sw.js').catch(function () {}); });
-}
+/* PWA: Service Worker registrieren (installierbar + offline). Netzwerk-zuerst, damit Updates sofort ankommen.
+   Dazu das Update-Handling, das bisher komplett fehlte: ein laufender Tab behielt den alten
+   Programmcode bis zum manuellen Neuladen. Als TWA lebt die App wochenlang im Hintergrund —
+   "irgendwann lädt die Nutzerin schon mal neu" ist dort keine Annahme, auf die man bauen kann.
+   Eigene IIFE und eigene Texte: pickLang(), toast() und $ liegen in der grossen IIFE,
+   die eine Zeile darüber mit })(); schliesst, und sind hier nicht sichtbar. */
+(function () {
+  var metaEl = document.querySelector('meta[name="effyra-build"]');
+  var BUILD = (metaEl && metaEl.content) || 'dev';
+  var CHECK_MS = 1800000;      // 30 Min, nur im Vordergrund
+  var pending = false;         // neue Fassung liegt bereit
+  var forced = false;          // Server verlangt Neuladen (Mindestversion)
+  var painted = '';            // '' | 'soft' | 'hard' – was gerade sichtbar ist
+  var snoozeUntil = 0;
+
+  var TX = {
+    de: { t: 'Neue Version verfügbar', b: 'Neu laden', f: 'Update nötig – bitte neu laden', l: 'Später' },
+    en: { t: 'New version available', b: 'Reload', f: 'Update required – please reload', l: 'Later' },
+    fr: { t: 'Nouvelle version disponible', b: 'Recharger', f: 'Mise à jour requise – recharge la page', l: 'Plus tard' },
+    es: { t: 'Nueva versión disponible', b: 'Recargar', f: 'Actualización necesaria – recarga', l: 'Más tarde' },
+    it: { t: 'Nuova versione disponibile', b: 'Ricarica', f: 'Aggiornamento necessario – ricarica', l: 'Più tardi' },
+    pl: { t: 'Dostępna nowa wersja', b: 'Odśwież', f: 'Wymagana aktualizacja – odśwież', l: 'Później' }
+  };
+  function tx() { return TX[document.documentElement.lang] || TX.de; }
+
+  /* Nicht stören: applyLang() setzt document.documentElement.lang, und ein offener
+     Dialog oder ein Eingabefeld mit Fokus hat Vorrang. Der Hinweis geht dabei nicht
+     verloren – maybeShow() wird nach focusout und alle 20 s erneut versucht. */
+  function busy() {
+    var a = document.activeElement;
+    if (a && (a.tagName === 'INPUT' || a.tagName === 'TEXTAREA' || a.tagName === 'SELECT' || a.isContentEditable)) return true;
+    return !!document.querySelector('.fam-alert-ov.on, .gate.on, #moreSheet.on, #langPicker.on');
+  }
+
+  function maybeShow() {
+    var want = forced ? 'hard' : (pending ? 'soft' : '');
+    if (!want || want === painted) return;
+    if (busy()) return;
+    if (want === 'soft' && Date.now() < snoozeUntil) return;
+    var bar = document.getElementById('updBar');
+    if (!bar) return;
+    var T = tx();
+    document.getElementById('updBarTx').textContent = (want === 'hard') ? T.f : T.t;
+    document.getElementById('updBarGo').textContent = T.b;
+    var x = document.getElementById('updBarX');
+    x.hidden = (want === 'hard');          // erzwungenes Update lässt sich nicht wegklicken
+    x.setAttribute('aria-label', T.l);
+    bar.hidden = false;
+    painted = want;
+  }
+
+  var goEl = document.getElementById('updBarGo');
+  var xEl = document.getElementById('updBarX');
+  if (goEl) goEl.addEventListener('click', function () {
+    /* Merken, dass für genau diese Fassung schon neu geladen wurde. Kommt danach
+       wegen einer klemmenden Zwischenschicht wieder dieselbe Fassung zurück,
+       nervt die Leiste sonst bei jedem Start erneut. */
+    try { sessionStorage.setItem('effyra_upd_tried', BUILD); } catch (e) {}
+    location.reload();
+  });
+  if (xEl) xEl.addEventListener('click', function () {
+    var bar = document.getElementById('updBar');
+    if (bar) bar.hidden = true;
+    painted = '';
+    snoozeUntil = Date.now() + 3600000;    // eine Stunde Ruhe, dann erneut anbieten
+  });
+  try { if (sessionStorage.getItem('effyra_upd_tried') === BUILD) snoozeUntil = Date.now() + 600000; } catch (e) {}
+
+  /* Abgleich mit dem Server. version.json wird von build.mjs geschrieben; sw.js
+     lässt sie bewusst durch (kein Cache), sonst würde eine zwischengespeicherte
+     Antwort dem Client seine eigene alte Fassung als aktuell bestätigen. */
+  function check() {
+    fetch('version.json', { cache: 'no-store' })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (j) {
+        if (!j || !j.build || BUILD === 'dev') return;   // 'dev' = ungebaute Quelle, nie melden
+        if (String(j.build) > BUILD) pending = true;
+        if (j.min && BUILD < String(j.min)) forced = true;
+        maybeShow();
+      })
+      .catch(function () {});    // offline: kein Hinweis, kein Fehler
+  }
+
+  if ('serviceWorker' in navigator) {
+    /* War beim Laden kein Controller da, ist die erste Übernahme eine Erstinstallation
+       und kein Update – ohne diese Unterscheidung sähe jede Neuinstallation wie ein
+       Versionswechsel aus. */
+    var hadController = !!navigator.serviceWorker.controller;
+
+    window.addEventListener('load', function () {
+      navigator.serviceWorker.register('sw.js').then(function (reg) {
+        reg.addEventListener('updatefound', function () {
+          var w = reg.installing;
+          if (!w) return;
+          w.addEventListener('statechange', function () {
+            if (w.state === 'installed' && hadController) { pending = true; maybeShow(); }
+          });
+        });
+        /* Der Browser prüft sw.js von sich aus nur bei Navigationen und grob einmal
+           am Tag. Eine TWA, die wochenlang nur pausiert und fortgesetzt wird,
+           navigiert nie – deshalb von Hand anstossen. */
+        var poke = function () { if (document.visibilityState === 'visible') { try { reg.update(); } catch (e) {} } };
+        setInterval(poke, CHECK_MS);
+        document.addEventListener('visibilitychange', poke);
+      }).catch(function () {});
+    });
+
+    /* skipWaiting + clients.claim in sw.js heisst: der neue Worker übernimmt den
+       laufenden Tab sofort, während dort noch der alte Programmcode läuft. Genau
+       dieser Moment ist der verlässlichste Auslöser für den Hinweis. */
+    navigator.serviceWorker.addEventListener('controllerchange', function () {
+      if (!hadController) { hadController = true; return; }
+      pending = true; maybeShow();
+    });
+  }
+
+  check();
+  setInterval(function () { if (document.visibilityState === 'visible') check(); }, CHECK_MS);
+  document.addEventListener('visibilitychange', function () {
+    if (document.visibilityState === 'visible') { check(); maybeShow(); }
+  });
+  document.addEventListener('focusout', function () { setTimeout(maybeShow, 400); });
+  setInterval(maybeShow, 20000);
+})();
 </script>
 </body>
 </html>

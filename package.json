@@ -4,7 +4,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "node build.mjs"
+    "build": "node build.mjs",
+    "check-build": "node check-build.mjs",
+    "hooks": "git config core.hooksPath .githooks"
   },
   "devDependencies": {
     "esbuild": "^0.28.1"

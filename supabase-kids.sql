@@ -139,7 +139,11 @@ begin
   -- Termine); wer darüber liegt, hat ein Aufräumproblem, kein Speicherproblem.
   v_size := octet_length(p_data::text);
   if v_size > 2 * 1024 * 1024 then
-    raise exception 'family data too large: % bytes (max 2 MB)', v_size;
+    -- Eigener SQLSTATE statt der Sammelnummer P0001: der Client muss GENAU diesen
+    -- Fall erkennen, um einmal aufzuräumen und erneut zu senden. Am Meldungstext
+    -- zu erkennen war zu brüchig – der Text ist nicht Teil der Schnittstelle.
+    raise exception 'family data too large: % bytes (max 2 MB)', v_size
+      using errcode = '54000', hint = 'family_too_large';
   end if;
 
   -- Plausibilität: der Client schickt immer ein Objekt. Ein Skalar oder Array
@@ -149,7 +153,9 @@ begin
   end if;
 
   update public.families set data = p_data, updated_at = now() where id = v_id;
-  return json_build_object('updated_at', now());
+  -- Grösse mitgeben: der Client warnt ab ~80 % der Schranke, statt die Nutzerin
+  -- erst beim harten Abbruch zu überraschen – da ist die Änderung schon weg.
+  return json_build_object('updated_at', now(), 'bytes', v_size);
 end; $$;
 
 -- Ausführungsrechte

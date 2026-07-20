@@ -1,0 +1,20 @@
+#!/bin/sh
+# Effyra – verhindert Commits, in denen index.html nicht zur index.dev.html passt.
+#
+# WARUM: index.html ist ein Build-Artefakt. Wer die Quelle aendert und
+# `node build.mjs` vergisst, veroeffentlicht die ALTE Fassung – ohne Fehler,
+# ohne Hinweis, sichtbar erst im Feld. Bei mehreren parallel arbeitenden
+# Sitzungen ist das eine Frage der Zeit.
+#
+# Aktivieren:  git config core.hooksPath .githooks
+# Notausstieg: git commit --no-verify   (laut RUNBOOK nur mit Begruendung)
+
+# Nur pruefen, wenn eine der beiden Dateien ueberhaupt im Commit ist.
+if git diff --cached --name-only | grep -qE '^(index\.dev\.html|index\.html)$'; then
+  node check-build.mjs || {
+    echo ""
+    echo "Commit abgebrochen. Erst bauen, dann erneut committen:"
+    echo "    node build.mjs && git add index.html"
+    exit 1
+  }
+fi

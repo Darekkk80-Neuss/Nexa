@@ -49,7 +49,9 @@ Funktionen; die zuletzt ausgeführte gewinnt.
 | 16 | `supabase-overdue.sql` | Cron überfällige Aufgaben |
 | 17 | `supabase-weather.sql` | Warn-Spalten + Cron Unwetter |
 | 18 | `supabase-monitoring.sql` | `cron_health()`, `cron_http_health()` |
-| 19 | — | entfällt: `supabase/migrations/20260719_*.sql` enthält nur noch einen Hinweis, die Rollenprüfung steht jetzt in Schritt 6 (`supabase-kids.sql`) |
+| 19 | `supabase-family-merge.sql` | `apply_family_ops` – Familiendaten als Delta statt Voll-Blob (nach 5+6) |
+| 20 | `supabase-export.sql` | Datenexport Art. 20 DSGVO – als LETZTE, liest u. a. `families.plan` |
+| 21 | — | entfällt: `supabase/migrations/20260719_*.sql` enthält nur noch einen Hinweis, die Rollenprüfung steht jetzt in Schritt 6 (`supabase-kids.sql`) |
 
 ### Doppelt definierte Funktionen — bewusst bereinigt
 
@@ -108,11 +110,35 @@ node build.mjs        # index.dev.html -> index.html  (NIE index.html direkt bea
 git add -A && git commit && git push
 ```
 
-GitHub Pages zieht nach dem Push automatisch nach. `build.mjs` wird **nicht**
-erzwungen — wer `index.dev.html` ändert und den Build vergisst, deployt die alte
-Fassung, ohne Fehler und ohne Hinweis.
+GitHub Pages zieht nach dem Push automatisch nach.
 
-Bei Änderungen am Service Worker zusätzlich `sw.js` → `CACHE`-Namen hochzählen.
+**Der Build wird jetzt erzwungen.** `build.mjs` stempelt einen Fingerabdruck der
+Quelldatei in `index.html`; `check-build.mjs` rechnet ihn nach. Die Hooks in
+`.githooks/` lösen das bei `commit`, `merge` und `push` aus.
+
+Einmalig je Arbeitskopie aktivieren:
+
+```bash
+git config core.hooksPath .githooks     # oder: npm run hooks
+```
+
+Bewusst ein Fingerabdruck statt „neu bauen und vergleichen": die Bau-Kennung ist
+zeitbasiert, zwei Läufe erzeugen nie dieselbe Datei — eine Vergleichsprüfung
+würde **jeden** Commit ablehnen, auch den frisch gebauten, und wäre binnen eines
+Tages per `--no-verify` tot.
+
+`--no-verify` ist damit die Ausnahme, nicht der Alltag. Wer es braucht, schreibt
+den Grund in die Commit-Nachricht.
+
+`build.mjs` stempelt die Bau-Kennung `YYYYMMDD-HHMM` in `index.html`, `sw.js` und
+`version.json`. Der `CACHE`-Name in `sw.js` muss **nicht mehr** von Hand hochgezählt
+werden — er folgt der Kennung. `sw.js` und `version.json` gehören damit in jeden
+Commit (`git add -A` deckt das ab).
+
+**Eine Fassung aus dem Feld holen:** in `version.json` das Feld `min` auf die
+älteste noch zulässige Kennung setzen, committen, pushen. Clients mit älterer
+Kennung zeigen dann einen Hinweis, der sich nicht wegklicken lässt. `build.mjs`
+übernimmt ein vorhandenes `min` unverändert; zum Aufheben das Feld leeren (`""`).
 
 ---
 
@@ -195,6 +221,8 @@ Zu tun:
 | Grenze | Ab wann | Was dann |
 |---|---|---|
 | `due_reminders()` liest jeden Blob mit Push-Abo | ~50.000 Nutzer | Spalte `user_state.next_due_at` mit Index |
-| `families.data` als ein Blob, Last-Writer-Wins | wächst mit Familiengrösse | optimistisches Sperren oder feldweise RPCs |
+| `families.data`: zwei Geräte ändern DENSELBEN Eintrag | jetzt | letzter Schreiber gewinnt – aber nur für diesen einen Eintrag (`apply_family_ops`). Verschiedene Einträge kollidieren nicht mehr |
+| Ungesendete Änderungen überleben keinen App-Neustart | jetzt | `famBase` wird bewusst nicht persistiert (sonst Auferstehung fremd gelöschter Einträge). Persistieren nur mit Grössenschranke, der Blob darf 2 MB gross sein |
 | `morning-push` Laufzeit | ~100.000 Geräte | nach Shards aufteilen (mehrere Cron-Einträge) |
+| `families.data` wächst unbegrenzt | harte Grenze bei 2 MB | automatisches Aufräumen nach 1 Jahr (Einstellungen → Aufräumen), Frühwarnung ab 80 % |
 | Kein Alerting | jetzt | `cron_health()` regelmässig ansehen |

@@ -3,7 +3,13 @@
    (kein „hängengebliebenes" altes HTML), offline greift der Cache.
    Nur GET-Anfragen der eigenen Origin werden abgefangen – Supabase, OpenAI,
    Google Fonts usw. laufen immer direkt durch. */
-const CACHE = 'effyra-v10';
+/* BUILD setzt build.mjs bei jedem Lauf neu (YYYYMMDD-HHMM, UTC).
+   Dass der Cache-Name bisher von Hand hochgezählt werden musste (RUNBOOK Abschnitt 3),
+   hiess in der Praxis: wer nur index.dev.html änderte, liess sw.js byte-gleich. Der
+   Browser sieht dann keine neue Datei, installiert keinen neuen Worker – und im
+   laufenden Tab feuert nie 'updatefound'. Der Zeitstempel erzwingt beides. */
+const BUILD = '20260720-1137';
+const CACHE = 'effyra-' + BUILD;
 const SHELL = ['./', './index.html', './manifest.webmanifest', './icon.svg', './bg.jpg',
   './impressum.html', './datenschutz.html', './nutzungsbedingungen.html', './konto-loeschen.html',
   './fonts/effyra-fonts.css', './vendor/supabase.min.js',
@@ -32,6 +38,10 @@ self.addEventListener('fetch', (e) => {
   if (req.method !== 'GET') return;
   const url = new URL(req.url);
   if (url.origin !== self.location.origin) return;   // externe Hosts nicht anfassen
+  /* version.json muss echt vom Netz kommen. Aus dem Cache beantwortet würde sie dem
+     Client seine eigene alte Fassung als aktuell bestätigen – der Abgleich wäre still
+     wirkungslos. Offline schlägt der fetch fehl, der Client fängt das ab. */
+  if (url.pathname.endsWith('/version.json')) return;
   e.respondWith(
     fetch(req)
       .then((res) => {

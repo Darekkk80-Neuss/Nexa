@@ -1,0 +1,9 @@
+#!/bin/sh
+# Letzte Bremse vor der Veroeffentlichung: GitHub Pages liefert index.html
+# unmittelbar nach dem Push aus. Ein veralteter Build ist ab hier live.
+node check-build.mjs || {
+  echo ""
+  echo "Push abgebrochen: index.html ist nicht aus der aktuellen Quelle gebaut."
+  echo "    node build.mjs && git add index.html && git commit --amend --no-edit"
+  exit 1
+}

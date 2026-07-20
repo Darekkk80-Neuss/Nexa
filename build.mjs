@@ -14,12 +14,20 @@
  * Einmalig vorher:  npm install
  */
 import { readFileSync, writeFileSync, statSync } from 'node:fs';
+import { createHash } from 'node:crypto';
 import { gzipSync } from 'node:zlib';
 import { transform } from 'esbuild';
 
 const SRC = 'index.dev.html';
 const OUT = 'index.html';
+const SW  = 'sw.js';
+const VER = 'version.json';
 const JS_TYPES = /^(?:text\/javascript|application\/javascript|module)$/;
+
+/* Bau-Kennung YYYYMMDD-HHMM (UTC). Bewusst lexikografisch sortierbar: der Vergleich
+   im Client ist ein reiner String-Vergleich. Ein anderes Format – etwa ohne führende
+   Null oder mit lokaler Zeitzone – würde ihn still falsch machen. */
+const BUILD = new Date().toISOString().slice(0, 16).replace(/[-:]/g, '').replace('T', '-');
 
 let html = readFileSync(SRC, 'utf8');
 let styleCount = 0, scriptCount = 0, skipped = 0;
@@ -56,7 +64,37 @@ for (const m of scriptBlocks) {
   scriptCount++;
 }
 
+/* ---- Bau-Kennung stempeln ----
+   Harte Fehler statt stiller Nicht-Ersetzung: fällt einer der drei Stempel aus,
+   melden Clients entweder nie ein Update oder dauerhaft eines. Beides fiele erst
+   im Feld auf. */
+const srcHash = createHash('sha256').update(readFileSync(SRC)).digest('hex').slice(0, 16);
+ const srcRe = /(<meta name="effyra-src" content=")[^"]*(">)/;
+if (!srcRe.test(html)) throw new Error(`Meta-Tag effyra-src fehlt in ${SRC} - check-build.mjs koennte veraltete Builds nicht erkennen.`);
+html = html.replace(srcRe, (m, a, b) => a + srcHash + b);
+
+const metaRe = /(<meta name="effyra-build" content=")[^"]*(">)/;
+if (!metaRe.test(html)) throw new Error(`Meta-Tag effyra-build fehlt in ${SRC} – Versionsabgleich waere still wirkungslos.`);
+html = html.replace(metaRe, (m, a, b) => a + BUILD + b);
+
 writeFileSync(OUT, html);
+
+/* sw.js mitstempeln: bleibt die Datei byte-gleich, installiert der Browser keinen
+   neuen Service Worker und im laufenden Tab feuert nie 'updatefound'. Ersetzt das
+   Hochzaehlen des Cache-Namens von Hand (RUNBOOK Abschnitt 3). */
+const swRe = /const BUILD = '[^']*';/;
+const swSrc = readFileSync(SW, 'utf8');
+if (!swRe.test(swSrc)) throw new Error(`Zeile "const BUILD = '...';" fehlt in ${SW}.`);
+writeFileSync(SW, swSrc.replace(swRe, () => `const BUILD = '${BUILD}';`));
+
+/* version.json: einzige Quelle fuer "welcher Build ist aktuell" und fuer eine
+   erzwungene Mindestversion. min wird von Hand gepflegt und hier bewusst aus der
+   vorhandenen Datei uebernommen – wuerde der Build es zuruecksetzen, loeste jeder
+   Deploy die Sperre stillschweigend wieder auf. */
+let min = '';
+try { min = String(JSON.parse(readFileSync(VER, 'utf8')).min || ''); } catch (e) {}
+writeFileSync(VER, JSON.stringify({ build: BUILD, min }, null, 2) + '\n');
+console.log(`\nBau-Kennung ${BUILD} gestempelt in ${OUT}, ${SW}, ${VER}` + (min ? ` (Mindestversion ${min})` : ''));
 
 const kb = n => (n / 1024).toFixed(0);
 const srcSize = statSync(SRC).size, outSize = statSync(OUT).size;

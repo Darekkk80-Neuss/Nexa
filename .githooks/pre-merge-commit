@@ -1,0 +1,9 @@
+#!/bin/sh
+# Nach einem Merge kann index.html aus zwei Zweigen zusammengesetzt worden sein
+# und passt dann zu keiner der beiden Quellen. Gleiche Pruefung wie pre-commit.
+node check-build.mjs || {
+  echo ""
+  echo "Merge-Commit abgebrochen: index.html passt nicht zur index.dev.html."
+  echo "    node build.mjs && git add index.html"
+  exit 1
+}
