@@ -126,9 +126,10 @@ begin
   select * into p from public.profiles where id = uid;
   if not found then raise exception 'no profile'; end if;
 
-  -- Monatswechsel -> Verbrauch & Nachbestellung zurücksetzen
+  -- Monatswechsel -> NUR das Monatskontingent zurücksetzen.
+  -- ai_extra (gekaufte Credits) bleibt: es rollt über und verfällt nicht.
   if p.usage_month is distinct from cur_month then
-    update public.profiles set usage_month = cur_month, ai_used = 0, ai_extra = 0
+    update public.profiles set usage_month = cur_month, ai_used = 0
       where id = uid returning * into p;
   end if;
 
@@ -153,7 +154,8 @@ begin
   if fam_seats is not null then
     v_via := true;
     via_fam_ai := true;
-    if fam_month is distinct from cur_month then fam_used := 0; fam_extra := 0; end if;   -- Monatswechsel: Anzeige auf 0
+    -- Monatswechsel: nur der Verbrauch startet neu; fam_extra (gekaufte Credits) bleibt stehen.
+    if fam_month is distinct from cur_month then fam_used := 0; end if;
     -- Familien-Topf: Basis 1600 (enthaltene 2 Erwachsene) + 500 je ZUSAETZLICHEM Erwachsenen (Add-on) + Nachbestellung.
     fam_limit := 1600 + greatest(fam_seats - 2, 0) * 500 + coalesce(fam_extra, 0);
   end if;
@@ -276,8 +278,10 @@ declare v_fid uuid; cur_month text := to_char(now(), 'YYYY-MM');
 begin
   select family_id into v_fid from public.family_members where user_id = p_user limit 1;
   if v_fid is null then raise exception 'no family'; end if;
+  -- ai_extra wird NUR erhöht: gekaufte Credits rollen über und verfallen nicht.
+  -- Nur ai_used startet beim Monatswechsel neu.
   update public.families
-     set ai_extra = case when ai_month is distinct from cur_month then 0 else coalesce(ai_extra, 0) end + p_n,
+     set ai_extra = coalesce(ai_extra, 0) + p_n,
          ai_used  = case when ai_month is distinct from cur_month then 0 else ai_used end,
          ai_month = cur_month
    where id = v_fid;

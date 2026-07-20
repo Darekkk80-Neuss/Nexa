@@ -53,10 +53,12 @@ begin
   select * into p from public.profiles where id = uid;
   if not found then raise exception 'no profile'; end if;
 
-  -- Monatswechsel -> Verbrauch & Nachbestellung zurücksetzen (Reset am 1.)
+  -- Monatswechsel -> NUR das Monatskontingent zurücksetzen.
+  -- ai_extra (gekaufte Credits) bleibt: es rollt über und verfällt nicht –
+  -- so, wie es consume_ai durchgängig behandelt und die Paywall es zusagt.
   if p.usage_month is distinct from cur_month then
     update public.profiles
-       set usage_month = cur_month, ai_used = 0, ai_extra = 0
+       set usage_month = cur_month, ai_used = 0
      where id = uid
      returning * into p;
   end if;
