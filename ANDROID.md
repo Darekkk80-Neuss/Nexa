@@ -92,7 +92,7 @@ Digitale Abos/Käufe **müssen** in Play‑Apps über **Play Billing** laufen
 1. In der Play Console die Produkte anlegen, passend zu Effyra:
    - Abo `effyra_premium` – 4,99 €/Monat
    - Abo `effyra_family` – 14,99 €/Monat
-   - Abo `effyra_adult_addon` – 3,99 €/Monat · `effyra_child_addon` – 0,99 €/Monat
+   - Abo `effyra_adult` – 3,99 €/Monat · `effyra_child` – 0,99 €/Monat
    - Einmalkauf `effyra_lifetime` – **12,99 €** (ohne KI) · Verbrauchskauf `effyra_ai_boost` – 4,99 €
 
    > 📋 Vollständige Schritt-für-Schritt-Anleitung für den Anmeldetag inkl. exakter

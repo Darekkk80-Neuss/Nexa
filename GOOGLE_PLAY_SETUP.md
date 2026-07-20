@@ -29,8 +29,8 @@ Produkt-IDs, der Kauf-Weg und die Entitlement-Logik warten nur auf die echten Pl
 | `effyra_family`       | **Abo** (subs)     | 14,99 €/Monat| Familie: gemeinsames KI-Kontingent |
 | `effyra_lifetime`     | **Einmalkauf** (in-app) | **12,99 €** | Komplette App dauerhaft, **ohne** KI |
 | `effyra_ai_boost`     | **Verbrauchbar** (consumable) | 4,99 € | +500 KI-Credits (Nachbuchung) |
-| `effyra_adult_addon`  | **Abo** (subs)     | 3,99 €/Monat | +1 Erwachsener im Familienabo |
-| `effyra_child_addon`  | **Abo** (subs)     | 0,99 €/Monat | +1 Kind im Familienabo |
+| `effyra_adult`  | **Abo** (subs)     | 3,99 €/Monat | +1 Erwachsener im Familienabo |
+| `effyra_child`  | **Abo** (subs)     | 0,99 €/Monat | +1 Kind im Familienabo |
 
 - [ ] Alle 6 Produkte angelegt, **IDs exakt** wie oben, Status **aktiv**.
 - [ ] Für die Abos je ein **Basisplan** (monatlich) + Preis in EUR (weitere Länder optional).

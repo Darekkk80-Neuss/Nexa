@@ -8951,7 +8951,7 @@ const FAMILY_AI_LIMIT = 1600;   // geteiltes Familien-KI-Kontingent/Monat (nur E
 const FAMILY_MAX_ADULTS = 2, FAMILY_MAX_CHILDREN = 3;   // im Familienabo enthalten (weitere = kostenpflichtige Add-ons)
 /* Zusatzmitglieder als Google-Play-Billing-Abos. Kauf läuft nur in der Android-App (TWA) über die
    Digital Goods API; im Browser gibt es einen Hinweis. Produkt-IDs müssen in der Play Console angelegt sein. */
-const ADDON_PRODUCTS = { adult: { id: 'effyra_adult_addon', label: 'Erwachsener', price: '3,99 €' }, child: { id: 'effyra_child_addon', label: 'Kind', price: '0,99 €' } };
+const ADDON_PRODUCTS = { adult: { id: 'effyra_adult', label: 'Erwachsener', price: '3,99 €' }, child: { id: 'effyra_child', label: 'Kind', price: '0,99 €' } };
 const hasPlayBilling = () => (typeof window !== 'undefined' && 'getDigitalGoodsService' in window);
 const familyMaxAdults = () => FAMILY_MAX_ADULTS + ((store.family && store.family.addons && store.family.addons.adult) || 0);
 const familyMaxChildren = () => FAMILY_MAX_CHILDREN + ((store.family && store.family.addons && store.family.addons.child) || 0);
@@ -9044,7 +9044,7 @@ async function dgsRetry(fn, tries) {
 }
 async function billingDiag() {
   if (!hasPlayBilling()) { alert('Kein Google Play Billing verfügbar (nur in der installierten Effyra-App).'); return; }
-  const ids = ['effyra_premium', 'effyra_family', 'effyra_adult_addon', 'effyra_child_addon'];
+  const ids = ['effyra_premium', 'effyra_family', 'effyra_adult', 'effyra_child'];
   const out = [];
   // Lauf-Kontext: echte Play-App (TWA) oder Browser/PWA? clientAppUnavailable = kein Play-Billing-Client (kein TWA).
   const standalone = !!(window.matchMedia && window.matchMedia('(display-mode: standalone)').matches);
@@ -9131,7 +9131,7 @@ async function startPlayPurchase(product) {
    damit Verlängerungen greifen (auch ohne RTDN). Nur in der TWA mit Play Billing + angemeldet. */
 async function reverifyActivePurchases() {
   if (!hasPlayBilling() || !(CLOUD && sb && account && account.loggedIn)) return;
-  const SUB_SKUS = ['effyra_premium', 'effyra_family', 'effyra_adult_addon', 'effyra_child_addon'];   // Abos + Add-ons (keine Consumables)
+  const SUB_SKUS = ['effyra_premium', 'effyra_family', 'effyra_adult', 'effyra_child'];   // Abos + Add-ons (keine Consumables)
   try {
     const service = await window.getDigitalGoodsService('https://play.google.com/billing');
     if (!service || typeof service.listPurchases !== 'function') return;

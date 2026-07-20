@@ -75,8 +75,8 @@ declare v_fid uuid; v_ad int; v_ch int; v_now bigint := (extract(epoch from now(
 begin
   select family_id into v_fid from public.family_members where user_id = p_user limit 1;
   if v_fid is null then return json_build_object('ok', false, 'reason', 'no_family'); end if;
-  select count(*) filter (where pp.sku = 'effyra_adult_addon'),
-         count(*) filter (where pp.sku = 'effyra_child_addon')
+  select count(*) filter (where pp.sku = 'effyra_adult'),
+         count(*) filter (where pp.sku = 'effyra_child')
     into v_ad, v_ch
     from public.play_purchases pp
     join public.family_members fm on fm.user_id = pp.user_id

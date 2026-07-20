@@ -29,7 +29,7 @@ const PACKAGE = Deno.env.get('PLAY_PACKAGE_NAME') || '';
 const SA_JSON = Deno.env.get('PLAY_SERVICE_ACCOUNT_JSON') || '';
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
 const SERVICE = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-const ADDON_SKUS = ['effyra_adult_addon', 'effyra_child_addon'];
+const ADDON_SKUS = ['effyra_adult', 'effyra_child'];
 const isAddon = (s: string) => ADDON_SKUS.indexOf(s) >= 0;
 
 // ---- Google OAuth-Token aus dem Service-Account (signierter JWT, RS256) ----

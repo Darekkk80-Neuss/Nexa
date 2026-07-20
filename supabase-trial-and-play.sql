@@ -182,7 +182,7 @@ begin
     end if;
     v_res := json_build_object('ok', true, 'kind', 'topup');
   else
-    -- Add-ons (effyra_adult_addon / effyra_child_addon) → über die Family-Seat-Funktion
+    -- Add-ons (effyra_adult / effyra_child) → über die Family-Seat-Funktion
     v_res := json_build_object('ok', false, 'reason', 'sku_not_handled_here', 'sku', p_sku);
   end if;
   return v_res;
