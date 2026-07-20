@@ -3,7 +3,7 @@
 -- ----------------------------------------------------------------------------
 -- Schliesst zwei Luecken:
 --   A) Konto loeschen und mit DERSELBEN Adresse neu anmelden gab bisher einen
---      frischen 14-Tage-Trial. delete-account kennt "trial" bislang null Mal.
+--      frischen 7-Tage-Trial. delete-account kennt "trial" bislang null Mal.
 --   B) Trial gab es fuer jede beliebige, unbestaetigte E-Mail-Adresse.
 --
 -- Ansatz bewusst OHNE Geraete-Fingerprinting: das faellt unter § 25 TDDDG /
@@ -61,7 +61,7 @@ returns boolean language sql immutable as $$ select true $$;
 -- 4) Registrierungs-Trigger ersetzen -----------------------------------------
 --    Ergaenzt das bisherige Verhalten (Profil anlegen), setzt zusaetzlich trial_start:
 --      • Adresse schon einmal dagewesen  -> trial_start = damaliger Erstkontakt
---                                            (die 14 Tage sind damit schon abgelaufen)
+--                                            (die 7 Tage sind damit schon abgelaufen)
 --      • Identitaet nicht verifiziert     -> trial_start weit in der Vergangenheit
 --      • sonst                            -> now(), also voller Trial
 alter table public.profiles add column if not exists auth_provider text;
