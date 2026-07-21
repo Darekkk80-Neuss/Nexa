@@ -9128,6 +9128,10 @@ async function fitStart(type) {
   window.addEventListener('devicemotion', fitSession.motion);
   fitSession.timer = setInterval(() => { if (currentView === 'fit' && fitTab === 'session') { const box = $('#fitRoot .fit-live'); if (box) box.outerHTML = fitLiveHTML(); } }, 1000);
   fitTab = 'session'; RENDERERS.fit();
+  /* Ehrlich ansagen, was die Technik hergibt: im Web laeuft die Messung nur,
+     solange die App vorne ist. Lieber vorher sagen als hinterher eine zu kurze
+     Strecke erklaeren. */
+  toast('📍 App bitte offen lassen – im Hintergrund kann nicht gemessen werden.', 6000);
 }
 function fitSessionSteps() { return fitSession ? (fitSession.motionOk && fitSession.steps > 0 ? fitSession.steps : Math.round(fitSession.distM / fitStepLen())) : 0; }
 function fitStop(commit) {
@@ -9148,6 +9152,30 @@ function fitStop(commit) {
   }
   fitTab = 'overview'; if (currentView === 'fit') RENDERERS.fit();
 }
+/* Laufende Einheit und Hintergrund.
+   Echtes Hintergrund-Tracking ist im Web NICHT moeglich – ein Service Worker
+   hat keine Geolocation-API, und watchPosition friert mit der Seite ein. Was
+   bisher fehlte, war der ehrliche Umgang damit; zwei konkrete Fehler steckten
+   darin:
+   1. Den Wake Lock gibt der Browser beim Wegschalten AUTOMATISCH frei. Er wurde
+      nie neu angefordert – nach einmal Wegschalten ging der Bildschirm aus und
+      die Messung starb still weiter, ohne dass es jemand merkte.
+   2. lastPos blieb ueber die Pause stehen. Die erste Position nach der Rueckkehr
+      rechnete damit die gesamte Luftlinie als gelaufene Strecke drauf. */
+document.addEventListener('visibilitychange', async () => {
+  if (!fitSession) return;
+  if (document.hidden) {
+    fitSession.gaps = (fitSession.gaps || 0) + 1;   // Luecke merken -> wird im Live-Feld gezeigt
+    fitSession.lastPos = null;                      // keine Luftlinie ueber die Pause hinweg
+    return;
+  }
+  fitSession.lastPos = null;   // erst wieder sauber einmessen, dann weiterzaehlen
+  try {
+    if (navigator.wakeLock && (!fitSession.wakeLock || fitSession.wakeLock.released)) {
+      fitSession.wakeLock = await navigator.wakeLock.request('screen');
+    }
+  } catch (e) {}
+});
 
 /* ===== Views ===== */
 let fitTab = 'overview', fitHeroPick = null;
@@ -9197,7 +9225,12 @@ function fitLiveHTML() {
   const steps = fitSessionSteps(), km = (s.distM / 1000).toFixed(2), kcal = fitKcal(fitActMeta(s.type).met, sec / 60);
   return '<div class="fit-live"><div class="big">' + mm + ':' + ss + '</div><div class="sub" style="color:var(--muted)">' + fitActMeta(s.type).l + '</div>' +
     '<div class="fit-live-grid"><div class="fit-stat"><b>' + steps + '</b><span>Schritte*</span></div><div class="fit-stat"><b>' + km + '</b><span>km (GPS)</span></div><div class="fit-stat"><b>' + (kcal != null ? kcal : '–') + '</b><span>kcal*</span></div></div>' +
-    '<div class="fit-note" style="text-align:center">' + (s.gps ? '📍 GPS aktiv' : '📍 GPS …') + ' · ' + (s.motionOk ? '📈 Bewegungssensor aktiv' : '📈 Sensor: aus GPS geschätzt') + (s.wakeLock ? ' · 🔆 Bildschirm bleibt an' : '') + '<br>*Schätzung.</div></div>';
+    '<div class="fit-note" style="text-align:center">' + (s.gps ? '📍 GPS aktiv' : '📍 GPS …') + ' · ' + (s.motionOk ? '📈 Bewegungssensor aktiv' : '📈 Sensor: aus GPS geschätzt') + (s.wakeLock ? ' · 🔆 Bildschirm bleibt an' : '')
+      /* Luecken NICHT verschweigen: war die App zwischendurch im Hintergrund,
+         fehlt dieser Teil der Strecke – das gehoert sichtbar, sonst wundert sich
+         der Nutzer nur ueber zu wenige Kilometer. */
+      + (s.gaps ? '<br>⚠️ ' + s.gaps + '× unterbrochen (App war im Hintergrund) – in dieser Zeit wurde nicht gemessen.' : '')
+      + '<br>*Schätzung.</div></div>';
 }
 function fitSessionViewHTML() {
   if (fitSession) return fitLiveHTML() + '<button class="fit-stopbtn" data-fit="stop">⏹️ Einheit beenden &amp; speichern</button>';
