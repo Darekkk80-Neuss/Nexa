@@ -11802,6 +11802,32 @@ async function shareBruecken() {
   toast(ok ? pickLang({ de: 'Brückentage kopiert – jetzt einfügen ✓', en: 'Bridge days copied – paste them ✓', fr: 'Ponts copiés – colle-les ✓', es: 'Puentes copiados: pégalos ✓', it: 'Ponti copiati – incollali ✓', pl: 'Skopiowano – wklej ✓' })
             : pickLang({ de: 'Teilen nicht möglich', en: 'Sharing not possible', fr: 'Partage impossible', es: 'No se puede compartir', it: 'Condivisione non possibile', pl: 'Udostępnianie niemożliwe' }));
 }
+/* Saisonaler Hinweis auf die Brueckentage der kommenden Saison.
+   Zum Jahreswechsel planen die meisten ihren Urlaub – dann ist die Rechnung
+   wirklich wertvoll. Derselbe Hinweis im Mai waere blosse Werbung, deshalb ein
+   enges Fenster (1. Dezember bis 15. Januar) und genau EINMAL je Saison.
+   Bewusst nur ein Toast und kein Dialog: die App soll ruhig bleiben, und der
+   Teilen-Knopf steht im Widget ohnehin direkt darunter. Der Merker liegt
+   absichtlich NICHT in SYNC_KEYS – pro Geraet einmal ist voellig genug. */
+function brueckenHinweis() {
+  const heute = todayISO(), monat = +heute.slice(5, 7), tag = +heute.slice(8, 10), jahr = +heute.slice(0, 4);
+  if (!(monat === 12 || (monat === 1 && tag <= 15))) return;
+  const saison = (monat === 12) ? jahr + 1 : jahr;
+  if (store.brueckenHint === saison) return;                 // in dieser Saison schon gezeigt
+  let liste = [];
+  try { liste = brueckenKommend(saison).slice(0, 8); } catch (e) { return; }
+  if (!liste.length) return;                                 // nichts zu melden -> schweigen
+  const sum = brueckenSumme(liste);
+  store.brueckenHint = saison; save();
+  toast(pickLang({
+    de: '🎯 Brückentage ' + saison + ' stehen fest: mit ' + sum.urlaubstage + ' Urlaubstagen ' + sum.freieTage + ' Tage frei. Im Dashboard ansehen und teilen.',
+    en: '🎯 Bridge days ' + saison + ' are set: ' + sum.urlaubstage + ' days of leave give you ' + sum.freieTage + ' days off. See and share on your dashboard.',
+    fr: '🎯 Les ponts ' + saison + ' sont connus : ' + sum.urlaubstage + ' jours de congé donnent ' + sum.freieTage + ' jours libres. À voir et partager sur le tableau de bord.',
+    es: '🎯 Los puentes de ' + saison + ' ya están: con ' + sum.urlaubstage + ' días de vacaciones tienes ' + sum.freieTage + ' días libres. Míralo y compártelo en el panel.',
+    it: '🎯 I ponti ' + saison + ' sono definiti: con ' + sum.urlaubstage + ' giorni di ferie ottieni ' + sum.freieTage + ' giorni liberi. Guarda e condividi dalla dashboard.',
+    pl: '🎯 Długie weekendy ' + saison + ' są już znane: ' + sum.urlaubstage + ' dni urlopu daje ' + sum.freieTage + ' dni wolnego. Zobacz i udostępnij na pulpicie.'
+  }), 9000);
+}
 function renderHolidays() {
   const box = $('#holidaysWidget'); if (!box) return;
   const country = holidayCountry();
@@ -15822,6 +15848,9 @@ try { if (new URLSearchParams(location.search).get('fam')) { famTab = 'ftasks'; 
 
 /* Selbstfürsorge-Impuls: nach dem Boot prüfen + beim Zurückkehren in den Vordergrund erneut. */
 setTimeout(() => { try { selfcareCheck(); } catch (e) {} }, 1200);
+/* Erst nach dem Start, damit die Feiertagsdaten geladen sind (Nicht-DE holt sie
+   per API nach) und der Hinweis nicht mit anderen Meldungen kollidiert. */
+setTimeout(() => { try { brueckenHinweis(); } catch (e) {} }, 4200);
 document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') { try { selfcareCheck(); } catch (e) {} } });
 
 })();
