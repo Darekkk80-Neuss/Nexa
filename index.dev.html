@@ -283,7 +283,19 @@ input:focus-visible,select:focus-visible,textarea:focus-visible{outline:none}
 :root[data-theme="light"] .trial-pill b{color:#b45309}
 :root[data-theme="light"] .chip.done,:root[data-theme="light"] .task.done .tcheck{color:#047857}
 /* Login/Paywall/Sprachwähler bleiben fotobasiert-dunkel: dunkle Tokens im .gate re-assertieren */
-:root[data-theme="light"] .gate{--text:#f5f7fb;--muted:#c6cddb;--faint:#9aa6ba;--card:#161b27;--card2:#1f2636;--border:rgba(255,255,255,.10);--border2:rgba(255,255,255,.17)}
+/* --faint war mit #9aa6ba gemessene 4,48 : 1 gegen den Kartengrund – knapp
+   unter den 4,5, die lesbarer Fliesstext braucht. Betroffen: der Umschalter,
+   der Einladungscode-Link und der Datenschutzhinweis. Angehoben, ohne die
+   Abstufung zu --muted aufzugeben. */
+:root[data-theme="light"] .gate{--text:#f5f7fb;--muted:#c6cddb;--faint:#b3bccd;--card:#161b27;--card2:#1f2636;--border:rgba(255,255,255,.10);--border2:rgba(255,255,255,.17)}
+/* Die Anmeldekarte liegt IMMER auf dunklem Grund (Foto plus rgba(9,11,18,.62)),
+   auch im hellen Thema – darum die hellen Variablen darueber. Das allein
+   genuegte aber nicht: Wer keine eigene Farbregel hat, erbt `color` von body,
+   und das wurde mit dem DUNKLEN Wurzelwert berechnet, bevor die Karte ihre
+   Variablen setzt. Ueberschrift und Markenzeile standen deshalb fast schwarz
+   auf fast schwarz. Die Farbe hier zu setzen richtet das an der Wurzel und
+   deckt auch alles ab, was spaeter dazukommt. */
+.gate{color:var(--text)}
 /* Restliche dunkle Inset-Flächen → hell */
 :root[data-theme="light"] .note-box,:root[data-theme="light"] .lesson{background:#f4f6fa}
 /* Restliche Akzent-Texte lesbar auf Hell */
@@ -5799,9 +5811,16 @@ async function cloudAuth(pass, err) {
   $('#authGo').disabled = true;
   try {
     if (cloudAuthMode === 'reset') {
+      /* Der Aufruf dauert spuerbar (gemessen rund eine halbe Sekunde, bei
+         schlechter Verbindung laenger). Ohne Rueckmeldung sieht der Knopf
+         unbeteiligt aus und wird ein zweites Mal gedrueckt – disabled allein
+         genuegt nicht, man muss es auch SEHEN. */
+      const knopf = $('#authGo'), vorher = knopf.textContent;
+      knopf.textContent = pickLang({ de: 'Wird gesendet …', en: 'Sending …', fr: 'Envoi …', es: 'Enviando …', it: 'Invio …', pl: 'Wysyłanie …' });
       /* Ergebnis bewusst unabhaengig davon, ob es das Konto gibt – sonst
          waere das Formular eine Auskunftsstelle darueber, wer registriert ist. */
       try { await sb.auth.resetPasswordForEmail(email, { redirectTo: location.origin + location.pathname }); } catch (e) {}
+      knopf.textContent = vorher;
       showMailHinweis('passwort', email);
       cloudAuthMode = 'login';
       setupAuthForm();
