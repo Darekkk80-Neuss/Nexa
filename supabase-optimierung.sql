@@ -107,6 +107,30 @@ $$;
 revoke execute on function public.tts_cache_prune() from public, anon, authenticated;
 
 -- ------------------------------------------------------------
+-- Rezept-Übersetzungen („Gericht des Tages")
+-- ------------------------------------------------------------
+-- Die Zubereitung ist Fließtext und lässt sich nicht über die eingebaute
+-- Wortliste übersetzen (anders als Titel und Zutaten). Vorher lief das über die
+-- KI DES NUTZERS (2 Credits je Rezept) und hing an KI-Einwilligung + Guthaben –
+-- wer beides nicht hatte, sah die Zubereitung dauerhaft auf Englisch.
+--
+-- Jetzt übersetzt die Edge Function `meal-translate` serverseitig und legt das
+-- Ergebnis hier ab: einmal je Rezept+Sprache, danach für ALLE Nutzer sofort und
+-- kostenlos. TheMealDB hat einen endlichen Rezeptbestand, die Tabelle bleibt
+-- also klein (Rezepte × 5 Sprachen).
+create table if not exists public.meal_tr_cache (
+  meal_id    text not null,               -- TheMealDB idMeal
+  lang       text not null,               -- de | fr | es | it | pl  ('en' = Original, wird nie gespeichert)
+  title      text,
+  names      jsonb,                       -- Zutatennamen in der Reihenfolge des Originals
+  instr      text,
+  updated_at timestamptz not null default now(),
+  primary key (meal_id, lang)
+);
+alter table public.meal_tr_cache enable row level security;
+revoke all on public.meal_tr_cache from anon, authenticated;   -- nur service_role (Edge Function)
+
+-- ------------------------------------------------------------
 -- 4) Credit-Erstattung bei fehlgeschlagenen KI-Aufrufen
 -- ------------------------------------------------------------
 -- consume_ai bucht ab, BEVOR OpenAI gefragt wird. Schlägt der Aufruf fehl –

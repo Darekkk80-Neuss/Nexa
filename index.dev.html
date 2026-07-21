@@ -5583,6 +5583,13 @@ async function cloudSession(session, fallbackName) {
   if (account.name && !store.name) { store.name = account.name; save(); }
   await pullConsents();   // Einwilligungen dieses Kontos laden (personenbezogen statt geräteweit)
   if (!switched) statePull();   // Nicht-Wechsel: Hintergrund-Abgleich wie bisher
+  /* Ab hier steht die Sitzung. Das Push-Abo hier NACHHOLEN, weil die beiden
+     Auslöser (Boot-Timer nach 2,5 s, startWeatherWatch) vor genau diesem Punkt
+     laufen können – bei der Registrierung sicher. Ohne die Sitzung schreiben
+     sie inzwischen gar nicht mehr (siehe pushAuthUid), das Gerät stünde sonst
+     bis zum nächsten Start ohne Abo da. Nur wenn die Erlaubnis schon vorliegt:
+     ein OS-Prompt gehört hier nicht hin. */
+  try { if (typeof Notification !== 'undefined' && Notification.permission === 'granted') setTimeout(() => { try { ensurePushSub(); } catch (e) {} }, 0); } catch (e) {}
 }
 
 /* ---------------------------------------------------------------------------
@@ -8806,29 +8813,48 @@ function mealLocalize(m) {
   if (lang === 'en') return { ready: true, title: m.name_en, names: m.ingredients.map(i => i.en), instr: m.instr_en };
   if (m.tr && m.tr[lang]) { const c = m.tr[lang]; return { ready: true, title: c.title, names: c.names, instr: c.instr }; }
   // Wird gerade übersetzt? Nur wenn KI verfügbar und noch nicht fehlgeschlagen → sonst ist der Platzhalter das Endergebnis.
-  const willTr = (typeof canRealAI === 'function' && canRealAI()) && _mealTr[m.id + '|' + lang] !== 'fail';
+  const willTr = mealCanTranslate() && _mealTr[m.id + '|' + lang] !== 'fail';
   if (willTr) mealAutoTranslate(m, lang);
   if (lang === 'de') return { ready: !willTr, title: m.name_de || m.name_en, names: m.ingredients.map(i => i.de || i.en), instr: m.instr_en };
   return { ready: !willTr, title: m.name_en, names: m.ingredients.map(i => i.en), instr: m.instr_en };
+}
+/* Uebersetzt ueber die Server-Function meal-translate: einmal je Rezept+Sprache,
+   serverseitig gecacht und danach fuer ALLE Nutzer sofort da. Kostet KEINE
+   KI-Credits und braucht KEINE KI-Einwilligung – es geht ausschliesslich das
+   oeffentliche Rezept raus, keine Nutzerdaten. Vorher lief das ueber
+   aiCall(op:'text') = 2 Credits und haing an canRealAI(); wer keine KI hatte
+   (keine Einwilligung oder kein Guthaben), sah die Zubereitung dauerhaft auf
+   Englisch – genau der gemeldete Fehler. */
+function mealCanTranslate() {
+  return !!(typeof CLOUD !== 'undefined' && CLOUD && typeof sb !== 'undefined' && sb);
 }
 async function mealAutoTranslate(m, lang) {
   if (lang === 'en' || (m.tr && m.tr[lang])) return;
   const key = m.id + '|' + lang;
   if (_mealTr[key]) return;                                     // läuft/schon versucht
-  if (typeof canRealAI !== 'function' || !canRealAI()) return;  // ohne KI: Platzhalter bleibt
+  if (!mealCanTranslate()) return;                              // ohne Cloud: Platzhalter bleibt
   _mealTr[key] = 'busy';
-  const LNAME = { de: 'German', fr: 'French', es: 'Spanish', it: 'Italian', pl: 'Polish' }[lang] || lang;
-  const names = m.ingredients.map(i => i.en);
   try {
-    const out = await aiCall({
-      op: 'text', model: (store.settings && store.settings.model) || 'gpt-5-mini', max_tokens: 900,
-      messages: [{ role: 'user', content: 'Translate this recipe into ' + LNAME + '. Reply with STRICT JSON only, no extra text: {"title":"...","ingredients":["...","..."],"instructions":"..."}. Keep EXACTLY the same number and order of ingredients; translate only the ingredient NAME (no quantities). Keep the instructions readable.\n\nTitle: ' + m.name_en + '\n\nIngredients:\n' + names.map((n, i) => (i + 1) + '. ' + n).join('\n') + '\n\nInstructions:\n' + m.instr_en }]
+    const { data: sd } = await sb.auth.getSession();
+    const s = sd && sd.session;
+    if (!s) { _mealTr[key] = 'fail'; return; }
+    /* Nur die Rezept-Id geht raus – den Text holt sich der Server selbst bei
+       TheMealDB. Wuerde der Client ihn mitschicken, koennte er den gemeinsamen
+       Cache mit beliebigem Inhalt fuellen. */
+    const r = await fetch(FN_URL('meal-translate'), {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', apikey: SUPABASE_ANON_KEY, Authorization: 'Bearer ' + s.access_token },
+      body: JSON.stringify({ id: m.id, lang })
     });
-    const j = extractJSON(out || '');
-    if (j && j.title) {
-      const on = Array.isArray(j.ingredients) ? j.ingredients : [];
+    const j = await r.json().catch(() => ({}));
+    if (j && j.ok && j.title) {
+      const on = Array.isArray(j.names) ? j.names : [];
       m.tr = m.tr || {};
-      m.tr[lang] = { title: String(j.title), names: names.map((n, i) => on[i] ? String(on[i]) : (lang === 'de' ? mealTranslate(n) : n)), instr: String(j.instructions || m.instr_en) };
+      m.tr[lang] = {
+        title: String(j.title),
+        names: m.ingredients.map((ing, i) => on[i] ? String(on[i]) : (lang === 'de' ? (ing.de || ing.en) : ing.en)),
+        instr: String(j.instr || m.instr_en)
+      };
       _mealTr[key] = 'done'; save();
       if (currentView === 'dashboard') renderMeal();
     } else { _mealTr[key] = 'fail'; }
@@ -9723,31 +9749,57 @@ function urlB64ToUint8(b64) {
   for (let i = 0; i < raw.length; i++) arr[i] = raw.charCodeAt(i);
   return arr;
 }
+/* ===== Wer schreibt das Abo? Ausschliesslich die BELEGTE Sitzung. =====
+   push_subscriptions ist RLS-geschuetzt mit `with check (auth.uid() = user_id)`.
+   Beide Schreibwege nahmen die Kennung bisher aus famSelfId() -- und die liest
+   notfalls den rohen `sb-*-auth-token` aus dem localStorage. Dieser Eintrag
+   ueberlebt ein abgelaufenes oder verworfenes Token: famSelfId() lieferte also
+   eine uid, waehrend sb gar keine Sitzung mehr hatte. Der Upsert ging dann ohne
+   JWT als Rolle `anon` hinaus, auth.uid() war NULL und Postgres wies ihn mit
+   „new row violates row-level security policy" (SQLSTATE 42501) ab -- PostgREST
+   meldet das bei fehlendem JWT als 401, nicht als 403. Genau dieses Paar stand
+   im API-Log direkt nach einer Registrierung.
+   Der Rueckgabewert von famAuth() wurde zudem an beiden Stellen weggeworfen,
+   obwohl famJoin() ihn seit jeher korrekt auswertet.
+   Ergebnis: erst Sitzung nachweisen, dann die user_id AUS dieser Sitzung nehmen. */
+async function pushAuthUid() {
+  if (!CLOUD || !sb) return null;
+  if (!await famAuth()) return null;              // keine/abgelaufene Sitzung → gar nicht erst schreiben
+  try {
+    const { data } = await sb.auth.getSession();
+    const u = data && data.session && data.session.user;
+    return (u && u.id) || null;
+  } catch (e) { return null; }
+}
 async function subscribeFamilyPush() {
   try {
     if (!CLOUD || !('serviceWorker' in navigator) || !('PushManager' in window)) return;
     if (typeof Notification === 'undefined' || Notification.permission !== 'granted') return;
     if (!store.family || !store.family.code) return;
-    const uid = famSelfId(); if (!uid) return;
+    if (!famSelfId()) return;                     // billige Vorpruefung: offensichtlich abgemeldet
     const reg = await navigator.serviceWorker.ready;
     let sub = await reg.pushManager.getSubscription();
     if (!sub) sub = await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: urlB64ToUint8(VAPID_PUBLIC) });
     const j = sub.toJSON();
-    await famAuth();
-    await sb.from('push_subscriptions').upsert({ user_id: uid, endpoint: j.endpoint, sub: j, updated_at: new Date().toISOString() }, { onConflict: 'user_id,endpoint' });
+    /* Erst hier holen: zwischen der Vorpruefung und diesem Punkt liegen
+       serviceWorker.ready und subscribe() -- beide koennen Sekunden dauern. */
+    const uid = await pushAuthUid(); if (!uid) return;
+    const { error } = await sb.from('push_subscriptions').upsert({ user_id: uid, endpoint: j.endpoint, sub: j, updated_at: new Date().toISOString() }, { onConflict: 'user_id,endpoint' });
+    if (error) console.warn('[Effyra push] Abo nicht gespeichert:', error.message || error);
   } catch (e) {}
 }
 /* Push-Abo sicherstellen – auch ohne Familie; optionale Zusatzfelder (z. B. { morning:true }). */
 async function ensurePushSub(extra) {
   if (!CLOUD || !('serviceWorker' in navigator) || !('PushManager' in window)) return null;
   if (typeof Notification === 'undefined' || Notification.permission !== 'granted') return null;
-  const uid = famSelfId(); if (!uid) return null;
+  if (!famSelfId()) return null;
   const reg = await navigator.serviceWorker.ready;
   let sub = await reg.pushManager.getSubscription();
   if (!sub) sub = await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: urlB64ToUint8(VAPID_PUBLIC) });
   const j = sub.toJSON();
-  await famAuth();
-  await sb.from('push_subscriptions').upsert(Object.assign({ user_id: uid, endpoint: j.endpoint, sub: j, updated_at: new Date().toISOString() }, extra || {}), { onConflict: 'user_id,endpoint' });
+  const uid = await pushAuthUid(); if (!uid) return null;
+  const { error } = await sb.from('push_subscriptions').upsert(Object.assign({ user_id: uid, endpoint: j.endpoint, sub: j, updated_at: new Date().toISOString() }, extra || {}), { onConflict: 'user_id,endpoint' });
+  if (error) { console.warn('[Effyra push] Abo nicht gespeichert:', error.message || error); return null; }
   return j;
 }
 /* Typ-C Vorschaltdialog: erklärt Push VOR dem OS-Prompt (§25 TDDDG/Transparenz). Löst mit 'granted'|'denied'|'default'|'unsupported'. */

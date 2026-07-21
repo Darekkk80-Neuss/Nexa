@@ -8,6 +8,9 @@
 // Deploy:  supabase functions deploy nutrition-proxy --project-ref ocnlrxmosbbtsczjyvxb --no-verify-jwt
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+// fetchT fehlte hier: der Aufruf unten lief in einen ReferenceError, den das
+// catch verschluckt hat – die Naehrwerte luden dadurch NIE (stiller Ausfall).
+import { fetchT } from '../_shared/util.ts';
 
 const CORS = {
   'Access-Control-Allow-Origin': '*',

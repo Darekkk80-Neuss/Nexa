@@ -55,6 +55,23 @@ Funktionen; die zuletzt ausgeführte gewinnt.
 | 20 | `supabase-export.sql` | Datenexport Art. 20 DSGVO – als LETZTE, liest u. a. `families.plan` |
 | 21 | — | entfällt: `supabase/migrations/20260719_*.sql` enthält nur noch einen Hinweis, die Rollenprüfung steht jetzt in Schritt 6 (`supabase-kids.sql`) |
 
+### Rezept-Übersetzung („Gericht des Tages")
+
+Die **Zubereitung** ist Fließtext und lässt sich nicht über die eingebaute Wortliste
+übersetzen (anders als Titel und Zutaten). Vorher lief sie über die **KI des
+Nutzers** (`aiCall op:'text'` = 2 Credits) und hing damit an KI-Einwilligung **und**
+Guthaben — wer beides nicht hatte, sah die Zubereitung dauerhaft auf Englisch.
+
+Jetzt übernimmt das die Edge Function **`meal-translate`**: sie holt das Rezept
+**selbst** bei TheMealDB (vom Client kommt nur die `id` — sonst könnte ein
+angemeldeter Nutzer den gemeinsamen Cache mit beliebigem Inhalt füllen), übersetzt
+serverseitig und legt das Ergebnis in **`public.meal_tr_cache`** ab (Schlüssel
+`meal_id` + `lang`). Danach ist jede Sprache für **alle** Nutzer sofort und
+**kostenlos** da — keine Credits, keine KI-Einwilligung nötig (es gehen keine
+Nutzerdaten an OpenAI, nur das öffentliche Rezept).
+
+Braucht `OPENAI_API_KEY` und die Tabelle aus `supabase-optimierung.sql`.
+
 ### Erstattungen (voidedPurchaseNotification)
 
 `play-verify` ruft **`void_play_purchase(p_token)`** — eine einzige Transaktion, die
@@ -150,6 +167,7 @@ fallen dann mit 401 aus, still.
 # Eigene Auth im Code (JWT aus dem Client) → OHNE Flag
 supabase functions deploy claude-proxy
 supabase functions deploy nutrition-proxy
+supabase functions deploy meal-translate     # Rezept-Übersetzung, serverseitig gecacht
 supabase functions deploy photo-proxy
 supabase functions deploy fuel-proxy
 supabase functions deploy push-send

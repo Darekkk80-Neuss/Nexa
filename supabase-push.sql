@@ -88,10 +88,43 @@ end $$;
 
 alter table public.push_subscriptions enable row level security;
 
+-- ------------------------------------------------------------
+-- Rechte und Policies
+-- ------------------------------------------------------------
+-- Bisher stand hier EINE Policy `for all` ohne Rollenangabe. Ohne `to` gilt sie
+-- fuer PUBLIC, also auch fuer `anon` -- und `anon` hat ueber die Supabase-
+-- Standardrechte Tabellenrechte auf allem in `public`. Eine Anfrage OHNE
+-- gueltiges JWT kam damit bis zur Policy durch, wo auth.uid() NULL ist, und
+-- scheiterte an der RLS-Bedingung. Im Log liest sich das als
+-- „new row violates row-level security policy" -- ein Satz, der nach einem
+-- Policy-Fehler klingt, obwohl in Wahrheit schlicht die Anmeldung fehlte.
+-- (PostgREST macht daraus 401 statt 403, genau weil kein JWT dabei war; das
+-- ist der verlaessliche Unterschied zwischen „nicht angemeldet" und „angemeldet,
+-- aber fremde Zeile".)
+-- Deshalb jetzt: `anon` hat hier gar nichts zu suchen, und die Policies nennen
+-- ihre Rolle und ihr Kommando ausdruecklich.
+-- Kinder sind davon NICHT betroffen: eine anonyme Supabase-Anmeldung hat
+-- ebenfalls die Rolle `authenticated` (nur mit is_anonymous = true).
+revoke all on public.push_subscriptions from anon;
+grant select, insert, update, delete on public.push_subscriptions to authenticated;
+
 -- Nutzer verwalten ausschließlich ihre eigenen Abos.
 -- (Die Edge Function push-send liest fremde Abos über den Service-Role-Key = RLS umgangen.)
-drop policy if exists "push own subs" on public.push_subscriptions;
-create policy "push own subs" on public.push_subscriptions
-  for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
+-- Der Client schreibt per Upsert (on conflict user_id,endpoint); Postgres prueft
+-- dabei die INSERT-Policy und im Konfliktfall zusaetzlich USING und WITH CHECK
+-- der UPDATE-Policy. Alle drei muessen daher vorhanden sein.
+drop policy if exists "push own subs"    on public.push_subscriptions;
+drop policy if exists "push select own"  on public.push_subscriptions;
+drop policy if exists "push insert own"  on public.push_subscriptions;
+drop policy if exists "push update own"  on public.push_subscriptions;
+drop policy if exists "push delete own"  on public.push_subscriptions;
+create policy "push select own" on public.push_subscriptions
+  for select to authenticated using (auth.uid() = user_id);
+create policy "push insert own" on public.push_subscriptions
+  for insert to authenticated with check (auth.uid() = user_id);
+create policy "push update own" on public.push_subscriptions
+  for update to authenticated using (auth.uid() = user_id) with check (auth.uid() = user_id);
+create policy "push delete own" on public.push_subscriptions
+  for delete to authenticated using (auth.uid() = user_id);
 
 notify pgrst, 'reload schema';
