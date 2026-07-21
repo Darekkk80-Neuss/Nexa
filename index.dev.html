@@ -5188,6 +5188,20 @@ function canRealAI() {
   if (!ENFORCE_AI_CREDITS) return true;             // Trial-Enforcement aus → frei
   return !aiTrialOver() && aiRemaining() > 0;       // Testphase: 50 Credits & 7 Tage
 }
+/* Ist das KONTINGENT der Grund, warum keine echte KI laeuft? Nur dann ist die
+   Demo der richtige (End-)Zustand: Testphase abgelaufen oder Credits leer.
+   Alles andere – fehlende KI-Einwilligung, nicht angemeldet – ist ein
+   KLAERBARER Zustand und gehoert nachgefragt, nicht stillschweigend durch eine
+   Beispiel-Analyse ersetzt. Genau daran lag es, dass freie Konten trotz
+   vorhandener Credits dauerhaft nur die Demo sahen. */
+function aiQuotaAufgebraucht() {
+  if (isChildUser()) return true;                  // Kinder bekommen nie KI -> Demo ist Endzustand
+  if (usingOwnKey()) return false;                 // eigener Schluessel: unbegrenzt
+  if (!(BACKEND_V2 && account && account.loggedIn)) return false;   // nicht angemeldet = klaerbar
+  if (!ENFORCE_AI_CREDITS) return false;
+  if (isPaid()) return aiRemaining() <= 0;
+  return aiTrialOver() || aiRemaining() <= 0;
+}
 let _aiWarned90 = false;   // Verbrauch ist server-autoritativ (applyServerUsage via consume_ai); kein client-seitiger Zähler mehr.
 /* Zentrale Prüfung vor echten KI-Aktionen. Gibt true zurück, wenn ausführbar. */
 /* ============================== RECHTLICHES & EINWILLIGUNGEN (DSGVO) ============================== */
@@ -13139,6 +13153,15 @@ const ANALYZE_STEPS = ['Lese Dokument …', 'Erkenne Absender und Betreff …', 
 
 async function handleDocFile(file) {
   if (!file || !file.type.startsWith('image/')) { toast('Bitte ein Foto auswählen 📷'); return; }
+  /* Die Demo ist NUR der richtige Rueckfall, wenn das Kontingent erschoepft ist
+     (Testphase vorbei oder Credits leer). Fehlt dagegen bloss die
+     KI-Einwilligung oder die Anmeldung, wird das jetzt nachgefragt statt
+     stillschweigend eine Beispiel-Analyse zu zeigen: requireAI() erklaert den
+     Grund und oeffnet bei fehlender Einwilligung den Zustimmungsdialog.
+     Vorher pruefte diese Funktion nur canRealAI() – ein freies Konto ohne
+     erteilte Einwilligung landete damit dauerhaft in der Demo, obwohl Frist
+     und Credits reichten. */
+  if (!canRealAI() && !aiQuotaAufgebraucht()) { requireAI(); return; }
   const box = $('#analyzing');
   box.classList.add('on');
   let step = 0;
@@ -13315,10 +13338,21 @@ function chatWithDoc(d) {
 
 RENDERERS.docs = function () {
   const _hero = $('#docHero'); if (_hero) _hero.style.display = store.settings.docHeroHidden ? 'none' : '';
-  $('#demoHintDocs').innerHTML = canRealAI() ? '' :
-    '<div class="demo-hint">🧪 <b>Demo-Modus:</b> Der Upload zeigt eine Beispiel-Analyse. Mit einem eigenen API-Schlüssel analysiert die KI deine echten Briefe – <a data-go-settings>jetzt in den Einstellungen aktivieren</a>.</div>';
+  /* Den Grund NENNEN statt pauschal auf den eigenen API-Schluessel zu verweisen:
+     fuer ein freies Konto mit Credits ist dieser Hinweis schlicht falsch. */
+  $('#demoHintDocs').innerHTML = canRealAI() ? '' : (
+    !consentValid('ai')
+      ? '<div class="demo-hint">🤖 <b>KI noch nicht freigegeben:</b> Für die Analyse deiner echten Briefe brauchen wir einmal deine ausdrückliche Einwilligung – <a data-ai-consent>jetzt erteilen</a>.</div>'
+      : aiQuotaAufgebraucht()
+        ? '<div class="demo-hint">🧪 <b>Demo-Modus:</b> ' + (aiTrialOver() ? 'Deine Testphase ist abgelaufen.' : 'Deine KI-Credits sind aufgebraucht.') + ' Der Upload zeigt eine Beispiel-Analyse – <a data-go-upgrade>Abo ansehen</a>.</div>'
+        : '<div class="demo-hint">🧪 <b>Demo-Modus:</b> Der Upload zeigt eine Beispiel-Analyse. Mit einem eigenen API-Schlüssel analysiert die KI deine echten Briefe – <a data-go-settings>jetzt in den Einstellungen aktivieren</a>.</div>'
+  );
   const link = $('#demoHintDocs [data-go-settings]');
   if (link) link.addEventListener('click', () => showView('settings'));
+  const lnkConsent = $('#demoHintDocs [data-ai-consent]');
+  if (lnkConsent) lnkConsent.addEventListener('click', () => { try { showAiConsent(); } catch (e) {} });
+  const lnkUp = $('#demoHintDocs [data-go-upgrade]');
+  if (lnkUp) lnkUp.addEventListener('click', () => { try { showUpgrade(); } catch (e) {} });
 
   const docs = store.docs.slice().reverse();
   $('#docList').innerHTML = !docs.length
