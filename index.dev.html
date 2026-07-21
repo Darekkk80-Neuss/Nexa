@@ -8973,12 +8973,16 @@ function mealAddToList() {
    Bewusst NUR Text und Link, kein Bild: das Foto liegt bei TheMealDB, eine
    mitgeschickte Bilddatei wuerfe Lizenzfragen auf, die reiner Text nicht hat –
    und navigator.share mit Dateien wird laengst nicht ueberall unterstuetzt. */
-function mealShareUrl() {
-  /* ?ref=rezept: so laesst sich spaeter in der Statistik ablesen, ob das Teilen
-     tatsaechlich Nutzer bringt – sonst raet man. */
-  try { return location.origin + location.pathname.replace(/index\.html$/i, '') + '?ref=rezept'; }
-  catch (e) { return ''; }
-}
+/* Ziel des geteilten Links – BEWUSST nicht die App-Adresse:
+   - Wer per WhatsApp ein Rezept bekommt, ist ein moeglicher NEUER Nutzer. Der
+     gehoert auf eine richtige Produktseite, nicht in die rohe Web-App.
+   - Die GitHub-Standarddomain verraet den Benutzernamen und wirkt in einer
+     weitergeleiteten Nachricht wie ein Bastelprojekt.
+   #effyra springt direkt zur Produktsektion. ?ref=rezept macht in der Statistik
+   sichtbar, ob das Teilen tatsaechlich Nutzer bringt – sonst raet man.
+   Zum Umstellen (etwa spaeter auf den Play-Store-Eintrag) genuegt DIESE Zeile. */
+const SHARE_TARGET_URL = 'https://gonsoft-labs.de/?ref=rezept#effyra';
+function mealShareUrl() { return SHARE_TARGET_URL; }
 function buildMealShareMessage(m) {
   const L = mealLocalize(m);
   /* Portionen des Nutzers mitrechnen – sonst verschickt er Mengen, die zu
