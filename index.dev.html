@@ -5222,7 +5222,12 @@ let _aiWarned90 = false;   // Verbrauch ist server-autoritativ (applyServerUsage
 /* Zentrale Prüfung vor echten KI-Aktionen. Gibt true zurück, wenn ausführbar. */
 /* ============================== RECHTLICHES & EINWILLIGUNGEN (DSGVO) ============================== */
 /* Versionsstände der einwilligungspflichtigen Zwecke – bei Änderung hochzählen → Re-Consent. */
-const LEGAL_VERSIONS = { ai: '2026-07-17', push: '2026-07-17', terms: '2026-07-17', privacy: '2026-07-17', fit: '2026-07-17', emergency: '2026-07-17', kids: '2026-07-17' };
+/* Aendert sich der Text einer Einwilligung inhaltlich, MUSS die Version hoch:
+   consentValid() vergleicht sie, alte Zustimmungen werden dadurch ungueltig und
+   neu eingeholt. 21.07.2026: ai – Google als Empfaenger der Sprachausgabe
+   aufgenommen (vorher nur OpenAI genannt); terms – Haftungs- und
+   Aenderungsklausel neu gefasst. */
+const LEGAL_VERSIONS = { ai: '2026-07-21', push: '2026-07-17', terms: '2026-07-21', privacy: '2026-07-17', fit: '2026-07-17', emergency: '2026-07-17', kids: '2026-07-17' };
 function getConsent(id) { return (store.consents && store.consents[id]) || null; }
 function consentValid(id) { const c = getConsent(id); return !!(c && c.status === 'granted' && c.version === LEGAL_VERSIONS[id]); }
 function setConsent(id, status) {
@@ -5274,12 +5279,20 @@ function showAiConsent(onGrant) {
   const T = {
     head: pickLang({ de: '🤖 KI-Funktionen – deine ausdrückliche Einwilligung', en: '🤖 AI features – your explicit consent', fr: '🤖 Fonctions IA – ton consentement explicite', es: '🤖 Funciones de IA – tu consentimiento explícito', it: '🤖 Funzioni IA – il tuo consenso esplicito', pl: '🤖 Funkcje AI – Twoja wyraźna zgoda' }),
     intro: pickLang({
-      de: 'Wenn du die KI nutzt (Dokument-/Bildanalyse, Chat, Sprache), werden deine Eingaben – <b>einschließlich fotografierter Dokumente, die Gesundheits- oder Behördendaten enthalten können</b> – an unseren Dienstleister <b>OpenAI (USA)</b> übermittelt und dort verarbeitet.',
-      en: 'When you use the AI (document/image analysis, chat, voice), your input – <b>including photographed documents that may contain health or official data</b> – is transmitted to our processor <b>OpenAI (USA)</b> and processed there.',
-      fr: 'Lorsque tu utilises l’IA (analyse de documents/images, chat, voix), tes saisies – <b>y compris des documents photographiés pouvant contenir des données de santé ou administratives</b> – sont transmises à notre sous-traitant <b>OpenAI (États-Unis)</b> et y sont traitées.',
-      es: 'Cuando usas la IA (análisis de documentos/imágenes, chat, voz), tus datos —<b>incluidos documentos fotografiados que pueden contener datos de salud u oficiales</b>— se transmiten a nuestro proveedor <b>OpenAI (EE. UU.)</b> y se procesan allí.',
-      it: 'Quando usi l’IA (analisi documenti/immagini, chat, voce), i tuoi input – <b>compresi documenti fotografati che possono contenere dati sanitari o amministrativi</b> – vengono trasmessi al nostro responsabile <b>OpenAI (USA)</b> ed elaborati lì.',
-      pl: 'Gdy korzystasz z AI (analiza dokumentów/obrazów, czat, głos), Twoje dane – <b>w tym sfotografowane dokumenty, które mogą zawierać dane zdrowotne lub urzędowe</b> – są przekazywane do naszego podmiotu przetwarzającego <b>OpenAI (USA)</b> i tam przetwarzane.'
+      de: 'Wenn du die KI nutzt (Dokument-/Bildanalyse, Chat, Sprache), werden deine Eingaben – <b>einschließlich fotografierter Dokumente, die Gesundheits- oder Behördendaten enthalten können</b> – an unsere Dienstleister <b>OpenAI</b> und <b>Google</b> (beide USA) übermittelt und dort verarbeitet.',
+      en: 'When you use the AI (document/image analysis, chat, voice), your input – <b>including photographed documents that may contain health or official data</b> – is transmitted to our processors <b>OpenAI</b> and <b>Google</b> (both USA) and processed there.',
+      fr: 'Lorsque tu utilises l’IA (analyse de documents/images, chat, voix), tes saisies – <b>y compris des documents photographiés pouvant contenir des données de santé ou administratives</b> – sont transmises à nos sous-traitants <b>OpenAI</b> et <b>Google</b> (tous deux aux États-Unis) et y sont traitées.',
+      es: 'Cuando usas la IA (análisis de documentos/imágenes, chat, voz), tus datos —<b>incluidos documentos fotografiados que pueden contener datos de salud u oficiales</b>— se transmiten a nuestros proveedores <b>OpenAI</b> y <b>Google</b> (ambos EE. UU.) y se procesan allí.',
+      it: 'Quando usi l’IA (analisi documenti/immagini, chat, voce), i tuoi input – <b>compresi documenti fotografati che possono contenere dati sanitari o amministrativi</b> – vengono trasmessi ai nostri responsabili <b>OpenAI</b> e <b>Google</b> (entrambi USA) ed elaborati lì.',
+      pl: 'Gdy korzystasz z AI (analiza dokumentów/obrazów, czat, głos), Twoje dane – <b>w tym sfotografowane dokumenty, które mogą zawierać dane zdrowotne lub urzędowe</b> – są przekazywane do naszych podmiotów przetwarzających <b>OpenAI</b> i <b>Google</b> (oba USA) i tam przetwarzane.'
+    }),
+    btts: pickLang({
+      de: 'Die <b>gesprochene Begrüßung</b> erzeugt <b>Google (USA)</b>. Übermittelt wird dabei der Begrüßungssatz – dieser <b>enthält deinen Vornamen</b>, sofern du einen hinterlegt hast.',
+      en: 'The <b>spoken greeting</b> is generated by <b>Google (USA)</b>. The greeting sentence is transmitted – it <b>contains your first name</b> if you have provided one.',
+      fr: 'Le <b>message d’accueil parlé</b> est généré par <b>Google (États-Unis)</b>. La phrase d’accueil est transmise – elle <b>contient ton prénom</b> si tu en as renseigné un.',
+      es: 'El <b>saludo hablado</b> lo genera <b>Google (EE. UU.)</b>. Se transmite la frase de saludo, que <b>contiene tu nombre</b> si lo has indicado.',
+      it: 'Il <b>saluto vocale</b> è generato da <b>Google (USA)</b>. Viene trasmessa la frase di saluto, che <b>contiene il tuo nome</b> se ne hai indicato uno.',
+      pl: '<b>Mówione powitanie</b> generuje <b>Google (USA)</b>. Przekazywane jest zdanie powitalne – <b>zawiera Twoje imię</b>, jeśli je podałeś.'
     }),
     b1: pickLang({ de: 'Übermittlung in ein <b>Drittland (USA)</b> auf Basis geeigneter Garantien (Standardvertragsklauseln).', en: 'Transfer to a <b>third country (USA)</b> based on appropriate safeguards (standard contractual clauses).', fr: 'Transfert vers un <b>pays tiers (États-Unis)</b> sur la base de garanties appropriées (clauses contractuelles types).', es: 'Transferencia a un <b>tercer país (EE. UU.)</b> con garantías adecuadas (cláusulas contractuales tipo).', it: 'Trasferimento in un <b>Paese terzo (USA)</b> in base a garanzie adeguate (clausole contrattuali standard).', pl: 'Przekazanie do <b>państwa trzeciego (USA)</b> na podstawie odpowiednich zabezpieczeń (standardowe klauzule umowne).' }),
     b2: pickLang({ de: 'OpenAI nutzt API-Daten <b>nicht zum Training</b> und löscht sie nach spätestens 30 Tagen.', en: 'OpenAI does <b>not use API data for training</b> and deletes it after 30 days at the latest.', fr: 'OpenAI <b>n’utilise pas les données d’API pour l’entraînement</b> et les supprime après 30 jours au plus tard.', es: 'OpenAI <b>no usa los datos de la API para entrenar</b> y los elimina en un máximo de 30 días.', it: 'OpenAI <b>non usa i dati API per l’addestramento</b> e li elimina entro 30 giorni al massimo.', pl: 'OpenAI <b>nie wykorzystuje danych API do trenowania</b> i usuwa je najpóźniej po 30 dniach.' }),
@@ -5293,7 +5306,7 @@ function showAiConsent(onGrant) {
     '<h3 style="margin-bottom:8px">' + T.head + '</h3>' +
     '<p style="color:var(--muted);font-size:13px;line-height:1.5;margin-bottom:10px">' + T.intro + '</p>' +
     '<ul style="color:var(--muted);font-size:12.5px;line-height:1.5;margin:0 0 14px 18px">' +
-    '<li>' + T.b1 + '</li><li>' + T.b2 + '</li><li>' + T.b3 + '</li><li>' + T.b4 + '</li><li>' + T.b5 + '</li></ul>' +
+    '<li>' + T.b1 + '</li><li>' + T.btts + '</li><li>' + T.b2 + '</li><li>' + T.b3 + '</li><li>' + T.b4 + '</li><li>' + T.b5 + '</li></ul>' +
     '<div class="fam-alert-btns"><button class="btn btn-sm" id="aiConsentDeny">' + T.deny + '</button><button class="btn btn-sm" id="aiConsentGrant" style="border-color:rgba(167,139,250,.5)">' + T.grant + '</button></div></div>';
   ov.classList.add('on');
   ov.querySelector('#aiConsentDeny').onclick = () => { setConsent('ai', 'denied'); ov.classList.remove('on'); toast('KI bleibt deaktiviert – die App ist ohne KI voll nutzbar.'); };
@@ -5645,6 +5658,13 @@ async function cloudSession(session, fallbackName) {
   }
   if (account.name && !store.name) { store.name = account.name; save(); }
   await pullConsents();   // Einwilligungen dieses Kontos laden (personenbezogen statt geräteweit)
+  /* Aktivität melden. Nach 24 Monaten ohne Aktivität wird das Konto gelöscht
+     (Art. 5 Abs. 1 lit. e) – dafür muss Nutzung überhaupt sichtbar sein.
+     last_sign_in_at taugt dafür nicht: mit langlebigen Refresh-Token meldet
+     sich ein täglicher Nutzer womöglich monatelang nicht neu an und geriete
+     in die Löschfrist. Die Funktion schreibt höchstens einmal pro Tag und
+     darf ruhig fehlschlagen – dann eben beim nächsten Start. */
+  try { if (sb) sb.rpc('touch_activity'); } catch (e) {}
   if (!switched) statePull();   // Nicht-Wechsel: Hintergrund-Abgleich wie bisher
   /* Ab hier steht die Sitzung. Das Push-Abo hier NACHHOLEN, weil die beiden
      Auslöser (Boot-Timer nach 2,5 s, startWeatherWatch) vor genau diesem Punkt

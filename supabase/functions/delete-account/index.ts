@@ -14,7 +14,7 @@ import { safeErr } from '../_shared/util.ts';
 
 const cors = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, content-type, apikey',
+  'Access-Control-Allow-Headers': 'authorization, content-type, apikey, x-cron-secret',
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
 };
 const json = (o: unknown, s = 200) =>
@@ -28,12 +28,28 @@ Deno.serve(async (req) => {
   const SERVICE = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
   const admin = createClient(SUPABASE_URL, SERVICE);
 
-  // Aufrufer aus dem JWT bestimmen
-  const jwt = (req.headers.get('authorization') || '').replace('Bearer ', '');
-  if (!jwt) return json({ error: 'no_auth' }, 401);
-  const { data: u } = await admin.auth.getUser(jwt);
-  const uid = u?.user?.id;
-  if (!uid) return json({ error: 'invalid_user' }, 401);
+  // Zwei Wege hierher:
+  //  1. Der Nutzer selbst, per JWT (Einstellungen → "Konto endgültig löschen").
+  //  2. Die Aufräumung inaktiver Konten (account-cleanup), die sich mit dem
+  //     CRON_SECRET ausweist und die betroffene Kennung im Rumpf mitschickt.
+  // Der zweite Weg existiert, damit die Löschfrist nach Art. 5 Abs. 1 lit. e
+  // exakt dieselbe geprüfte Abbaureihenfolge nutzt wie die Löschung auf
+  // Wunsch – zwei Kopien derselben Logik wären die sichere Quelle für
+  // Abweichungen.
+  let uid: string | undefined;
+  const cronSecret = Deno.env.get('CRON_SECRET') || '';
+  const mitgebracht = req.headers.get('x-cron-secret') || '';
+  if (cronSecret && mitgebracht && mitgebracht === cronSecret) {
+    const body = await req.json().catch(() => ({}));
+    uid = typeof body?.user_id === 'string' ? body.user_id : undefined;
+    if (!uid) return json({ error: 'no_user_id' }, 400);
+  } else {
+    const jwt = (req.headers.get('authorization') || '').replace('Bearer ', '');
+    if (!jwt) return json({ error: 'no_auth' }, 401);
+    const { data: u } = await admin.auth.getUser(jwt);
+    uid = u?.user?.id;
+    if (!uid) return json({ error: 'invalid_user' }, 401);
+  }
 
   try {
     // 1) Personenbezogene Zeilen des Nutzers entfernen (service_role umgeht RLS)
