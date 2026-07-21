@@ -14,7 +14,13 @@
 // damit auch jede Löschung. Der Fehlerfall heißt "nichts passiert".
 //
 // Aufruf: ausschließlich per Cron mit x-cron-secret.
-// Deploy: supabase functions deploy account-cleanup
+//
+// Deploy: supabase functions deploy account-cleanup --no-verify-jwt
+//   Das Flag ist NICHT optional. pg_cron ruft ohne Authorization-Header auf;
+//   mit verify_jwt = true wiese die Plattform den Aufruf mit 401 ab, bevor
+//   dieser Code läuft. Die Berechtigung prüft stattdessen das x-cron-secret.
+//   Ebenso deployt: overdue-reminder, due-reminder, morning-push, weather-push.
+//
 // Nötiges Secret: BREVO_API_KEY (Brevo → SMTP & API → API-Schlüssel)
 // ----------------------------------------------------------------------------
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
@@ -95,9 +101,20 @@ Deno.serve(async (req) => {
     if (dErr) throw dErr;
     for (const k of (zuLoeschen || [])) {
       try {
+        // delete-account ist mit verify_jwt = true deployt: die Plattform weist
+        // Aufrufe ohne gueltiges JWT ab, BEVOR der Funktionscode laeuft. Das
+        // x-cron-secret allein reichte also nicht – der Aufruf endete mit 401.
+        // Der Service-Role-Key IST ein gueltiges JWT und kommt damit durch; die
+        // eigentliche Berechtigung prueft danach weiterhin das x-cron-secret.
+        // So bleibt delete-account fuer den Nutzerweg unveraendert abgesichert.
         const r = await fetch(`${SUPABASE_URL}/functions/v1/delete-account`, {
           method: 'POST',
-          headers: { 'content-type': 'application/json', 'x-cron-secret': erwartet },
+          headers: {
+            'content-type': 'application/json',
+            'x-cron-secret': erwartet,
+            authorization: `Bearer ${SERVICE}`,
+            apikey: SERVICE,
+          },
           body: JSON.stringify({ user_id: k.user_id }),
         });
         if (r.ok) bericht.geloescht++; else bericht.loeschungFehlgeschlagen++;
