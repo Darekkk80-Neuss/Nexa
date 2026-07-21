@@ -5249,7 +5249,10 @@ function pickLang(m) { const l = (typeof curLang !== 'undefined') ? curLang : 'd
    (native Notifications, Push-Titel, dynamische Strings). Fallback: deutscher Originaltext. */
 function trStr(s) { try { return (curLang === 'de') ? s : (lookupTr(String(s).trim()) || s); } catch (e) { return s; } }
 /* Ausdrückliche KI-Einwilligung (Typ D, Art. 9 Abs. 2 lit. a + Art. 49) – vor der ersten KI-Nutzung. */
-function showAiConsent() {
+/* onGrant: wird NACH erteilter Einwilligung aufgerufen. Damit kann der Aufrufer
+   genau dort weitermachen, wo er unterbrochen wurde – etwa mit dem bereits
+   aufgenommenen Foto. Gleiches Muster wie showKidsConsent(). */
+function showAiConsent(onGrant) {
   let ov = document.getElementById('aiConsentOv');
   if (!ov) { ov = document.createElement('div'); ov.id = 'aiConsentOv'; ov.className = 'fam-alert-ov'; document.body.appendChild(ov); }
   const T = {
@@ -5278,7 +5281,7 @@ function showAiConsent() {
     '<div class="fam-alert-btns"><button class="btn btn-sm" id="aiConsentDeny">' + T.deny + '</button><button class="btn btn-sm" id="aiConsentGrant" style="border-color:rgba(167,139,250,.5)">' + T.grant + '</button></div></div>';
   ov.classList.add('on');
   ov.querySelector('#aiConsentDeny').onclick = () => { setConsent('ai', 'denied'); ov.classList.remove('on'); toast('KI bleibt deaktiviert – die App ist ohne KI voll nutzbar.'); };
-  ov.querySelector('#aiConsentGrant').onclick = () => { setConsent('ai', 'granted'); ov.classList.remove('on'); toast('✓ Danke. Du kannst die KI-Funktionen jetzt nutzen.'); };
+  ov.querySelector('#aiConsentGrant').onclick = () => { setConsent('ai', 'granted'); ov.classList.remove('on'); toast('✓ Danke. Du kannst die KI-Funktionen jetzt nutzen.'); try { onGrant && onGrant(); } catch (e) {} };
 }
 /* Elterliche Einwilligung für den Kinderbereich (Typ D, Art. 8; Termine „Arzt/Impfung" = Art. 9). Kinderdaten werden verschlüsselt mit dem Konto synchronisiert. */
 function showKidsConsent(onGrant) {
@@ -13161,7 +13164,14 @@ async function handleDocFile(file) {
      Vorher pruefte diese Funktion nur canRealAI() – ein freies Konto ohne
      erteilte Einwilligung landete damit dauerhaft in der Demo, obwohl Frist
      und Credits reichten. */
-  if (!canRealAI() && !aiQuotaAufgebraucht()) { requireAI(); return; }
+  if (!canRealAI() && !aiQuotaAufgebraucht()) {
+    /* Das bereits aufgenommene Foto NICHT wegwerfen. Vorher brach der Scan hier
+       ab, und nach dem Zustimmen musste dasselbe Dokument noch einmal
+       fotografiert werden – unnoetig und aergerlich. Jetzt wird nach erteilter
+       Einwilligung direkt mit derselben Datei weitergemacht. */
+    if (!consentValid('ai')) { showAiConsent(() => { handleDocFile(file); }); return; }
+    requireAI(); return;
+  }
   const box = $('#analyzing');
   box.classList.add('on');
   let step = 0;
