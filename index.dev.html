@@ -348,6 +348,12 @@ label.fld{display:block;font-size:12.5px;font-weight:600;color:var(--muted);marg
 .di-ic{font-size:19px;flex:none}
 .di-head b{font-size:15px;font-weight:700;flex:1;min-width:0}
 .di-go{border:none;background:none;color:#7c3aed;font-size:12.5px;font-weight:600;cursor:pointer;flex:none;padding:0}
+/* Teilen-Symbol in der Kopfzeile. Bewusst im Stil von .di-go statt des dunklen
+   Kreises aus der Rezeptkarte – der funktioniert nur ueber einem Foto. */
+/* padding statt Groesse: das Symbol bleibt optisch klein, das TIPPZIEL waechst
+   auf ~29 px. 21 px waeren auf dem Handy zu wenig zum sicheren Treffen. */
+.di-share{border:none;background:none;color:#7c3aed;cursor:pointer;flex:none;padding:6px;margin:-6px -2px;display:grid;place-items:center;line-height:0}
+.di-share svg{width:17px;height:17px}
 .di-country{flex:none;max-width:52%;font-size:12.5px;padding:4px 8px;border-radius:9px;border:1px solid var(--border2,rgba(127,127,127,.28));background:var(--card,transparent);color:inherit;cursor:pointer}
 .di-loc{font-size:12px;color:var(--faint);flex:none}
 .di-main{display:flex;flex-direction:column;gap:2px;margin-bottom:2px}
@@ -11841,11 +11847,22 @@ function renderHolidays() {
   const box = $('#holidaysWidget'); if (!box) return;
   const country = holidayCountry();
   const list = nextHolidays(4);
+  /* Frueh berechnen: die Kopfzeile zeigt das Teilen-Symbol nur, wenn es auch
+     Bruecken gibt – ein Knopf, der "keine gefunden" meldet, ist eine Sackgasse. */
+  let bJahr = 0, bListe = [], bSum = null;
+  try {
+    bJahr = brueckenJahr(); bListe = brueckenKommend(bJahr).slice(0, 8);
+    if (bListe.length) bSum = brueckenSumme(bListe);
+  } catch (e) { console.error('[Effyra brueckentage]', e && e.message); }
   /* Länderauswahl nur, wenn die App NICHT auf Deutsch läuft (Deutsch = deutsche Feiertage als Standard). */
   const picker = (curLang !== 'de')
     ? '<select class="di-country" data-holcountry data-noi18n aria-label="Land">' + HOLIDAY_COUNTRIES.map(c => '<option value="' + c.code + '"' + (c.code === country ? ' selected' : '') + '>' + c.name + '</option>').join('') + '</select>'
     : '<button class="di-go" data-go="work">Arbeitszeit ›</button>';
-  let h = '<section class="card dash-info-card"><div class="di-head"><span class="di-ic">🎉</span><b>Feiertage &amp; Brückentage</b>' + picker + '</div>';
+  const teilenIc = bListe.length
+    ? '<button class="di-share" data-hol="share" title="' + esc(pickLang({ de: 'Brückentage teilen', en: 'Share bridge days', fr: 'Partager les ponts', es: 'Compartir puentes', it: 'Condividi i ponti', pl: 'Udostępnij' })) + '" aria-label="' + esc(pickLang({ de: 'Brückentage teilen', en: 'Share bridge days', fr: 'Partager les ponts', es: 'Compartir puentes', it: 'Condividi i ponti', pl: 'Udostępnij' })) + '">'
+      + '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v7a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-7"/><path d="M12 3v13M8 7l4-4 4 4"/></svg></button>'
+    : '';
+  let h = '<section class="card dash-info-card"><div class="di-head"><span class="di-ic">🎉</span><b>Feiertage &amp; Brückentage</b>' + teilenIc + picker + '</div>';
   if (!list.length) {
     // Nicht-DE: Daten werden noch geladen; DE hat immer Feiertage → Widget bliebe leer
     if (country === 'DE') { box.innerHTML = ''; return; }
@@ -11861,9 +11878,7 @@ function renderHolidays() {
   if (country === 'DE' && !(store.work && store.work.settings && store.work.settings.state)) h += '<div class="di-note">Tipp: Bundesland in der Arbeitszeit-Einstellung wählen → exakte regionale Feiertage.</div>';
   /* Die Jahresrechnung – der eigentliche Mehrwert gegenueber einer Feiertagsliste. */
   try {
-    const bJahr = brueckenJahr(), bListe = brueckenKommend(bJahr).slice(0, 8);
-    if (bListe.length) {
-      const bSum = brueckenSumme(bListe);
+    if (bListe.length && bSum) {
       h += '<div class="di-tip">' + esc(pickLang({
         de: '🎯 ' + bJahr + ': Mit ' + bSum.urlaubstage + ' Urlaubstagen ' + bSum.freieTage + ' Tage frei – ' + brueckenRegion(),
         en: '🎯 ' + bJahr + ': ' + bSum.urlaubstage + ' days of leave → ' + bSum.freieTage + ' days off – ' + brueckenRegion(),
@@ -11876,7 +11891,7 @@ function renderHolidays() {
         '<span>🎯 ' + esc(fmtDate(b.von) + (b.von === b.bis ? '' : '–' + fmtDate(b.bis))) + ' · ' + b.kosten + ' → ' + b.ertrag + ' ' + esc(pickLang({ de: 'Tage frei', en: 'days off', fr: 'jours libres', es: 'días libres', it: 'giorni liberi', pl: 'dni wolnego' })) + '</span>').join('') + '</div>';
       h += '<div style="margin-top:10px"><button class="btn btn-sm" data-hol="share">📤 ' + esc(pickLang({ de: 'Brückentage teilen', en: 'Share bridge days', fr: 'Partager les ponts', es: 'Compartir puentes', it: 'Condividi i ponti', pl: 'Udostępnij' })) + '</button></div>';
     }
-  } catch (e) { console.error('[Effyra brueckentage]', e && e.message); }
+  } catch (e) { console.error('[Effyra brueckentage-anzeige]', e && e.message); }
   h += '</section>';
   box.innerHTML = h;
 }
