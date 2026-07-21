@@ -128,11 +128,39 @@ create extension if not exists pg_net;
 do $$
 declare v_secret text;
 begin
+  -- Erste Quelle: der Vault.
   select decrypted_secret into v_secret
     from vault.decrypted_secrets where name = 'CRON_SECRET' limit 1;
+
+  -- Zweite Quelle: die bereits laufenden Cron-Jobs. Dort steckt der Schluessel
+  -- im Klartext im Kommando, weil er beim Einrichten per format() eingesetzt
+  -- wurde. Am 21.07.2026 war der Vault-Eintrag verschwunden, waehrend die
+  -- vier bestehenden Jobs weiterliefen – ohne diesen Rueckgriff muesste der
+  -- Betreiber den Schluessel heraussuchen und abtippen.
   if v_secret is null then
-    raise notice 'CRON_SECRET nicht im Vault – Job NICHT geplant. Bitte Secret anlegen und erneut ausfuehren.';
-    return;
+    select (regexp_match(command, 'x-cron-secret''\s*,\s*''([^'']+)'''))[1]
+      into v_secret
+      from cron.job
+     where command like '%x-cron-secret%'
+       and jobname <> 'effyra-konten-aufraeumen'
+     limit 1;
+
+    -- Gefundenen Schluessel in den Vault legen, damit die naechste Ausfuehrung
+    -- ihn regulaer findet.
+    if v_secret is not null
+       and not exists (select 1 from vault.decrypted_secrets where name = 'CRON_SECRET') then
+      perform vault.create_secret(v_secret, 'CRON_SECRET',
+        'Gemeinsames Geheimnis fuer die Cron-Aufrufe der Edge Functions');
+      raise notice 'CRON_SECRET fehlte im Vault und wurde aus einem bestehenden Job uebernommen.';
+    end if;
+  end if;
+
+  -- Kein stiller Rueckzug: Ein fehlgeschlagener Einrichtungsschritt, der nur
+  -- eine Notiz hinterlaesst, geht in der Ausgabe unter. Genau so blieb der Job
+  -- am 21.07.2026 unbemerkt ungeplant – der Fehler waere erst in 23 Monaten
+  -- aufgefallen, wenn die erste Vorwarnung ausbleibt.
+  if v_secret is null then
+    raise exception 'CRON_SECRET weder im Vault noch in einem bestehenden Cron-Job gefunden. Job NICHT geplant. Secret im Vault anlegen und erneut ausfuehren.';
   end if;
 
   perform cron.unschedule('effyra-konten-aufraeumen')
