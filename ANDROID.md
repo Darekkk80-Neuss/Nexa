@@ -35,6 +35,36 @@ Fragen: **packageId** z. B. `app.effyra.twa`, App‑Name `Effyra`, Start‑URL `
 (Die mitgelieferte `twa-manifest.json` ist eine Referenz – Bubblewrap legt seine
 eigene an.)
 
+## 2a. Pflichtfristen von Google Play
+
+> **Stand 21.07.2026 – beide Fristen enden am 31.08.2026.** Play meldet sie in
+> der Console. Verlängerung auf den 01.11.2026 ist auf Antrag möglich.
+
+| Anforderung | Ab 31.08.2026 nötig | Wo geregelt |
+|---|---|---|
+| **Ziel-API-Level** | **API 36** (Android 16) für neue Updates. Bestandsapps brauchen mindestens API 35, sonst erreichen sie keine neuen Nutzer auf neueren Geräten | `targetSdkVersion` im TWA-Projekt |
+| **Play Billing Library** | **Version 8 oder höher**, sonst werden Updates abgelehnt | kommt über `android-browser-helper`, das Bubblewrap mitbringt |
+
+Beides steckt in der Android-Hülle, **nicht** in der Web-App – ein Push ins
+Web-Repo ändert daran nichts. Der Weg ist für beide derselbe:
+
+```bash
+npm install -g @bubblewrap/cli@latest   # bringt neueres android-browser-helper
+cd <dein TWA-Ordner>                     # der von "bubblewrap init", nicht dieses Repo
+bubblewrap update                        # zieht Wrapper und Abhängigkeiten nach
+bubblewrap build
+```
+
+Danach in der erzeugten `twa-manifest.json` prüfen, dass `targetSdkVersion` auf
+**36** steht, und `appVersionCode` **erhöhen** – Play weist ein AAB mit gleicher
+oder niedrigerer Nummer ab.
+
+> ⚠️ **Mit demselben Schlüssel signieren** (`android.keystore`, Alias `effyra`).
+> Ein anderer Schlüssel bedeutet: Play lehnt das Update ab, und die
+> Digital Asset Links stimmen nicht mehr – die App öffnete sich dann mit
+> Browser-Adressleiste. Nach dem Bauen mit `bubblewrap fingerprint` gegenprüfen,
+> dass der SHA-256 unverändert ist (siehe Abschnitt 4).
+
 ## 3. Bauen & signieren
 ```bash
 bubblewrap build
@@ -93,7 +123,11 @@ Digitale Abos/Käufe **müssen** in Play‑Apps über **Play Billing** laufen
    - Abo `effyra_premium` – 4,99 €/Monat
    - Abo `effyra_family` – 14,99 €/Monat
    - Abo `effyra_adult` – 3,99 €/Monat · `effyra_child` – 0,99 €/Monat
-   - Einmalkauf `effyra_lifetime` – **12,99 €** (ohne KI) · Verbrauchskauf `effyra_ai_boost` – 4,99 €
+   - Verbrauchskauf `effyra_ai_boost` (KI-Credits)
+   > **Kein Lifetime-Produkt.** Die SKU `effyra_lifetime` wird serverseitig zwar
+   > behandelt, aber **nicht verkauft** – im Client gibt es nur `effyra_premium`,
+   > `effyra_family` und `effyra_ai_boost` (geprüft 21.07.2026). Die Module sind
+   > dauerhaft kostenlos, kostenpflichtig ist allein die KI.
 
    > 📋 Vollständige Schritt-für-Schritt-Anleitung für den Anmeldetag inkl. exakter
    > Produkt-IDs, Server-Verifikation (Play Developer API), RTDN und Trial-Durchsetzung:
