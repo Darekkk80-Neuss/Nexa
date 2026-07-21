@@ -203,6 +203,18 @@ begin
                                             and now() < coalesce(p.trial_start, now()) + (public.ai_trial_days() || ' days')::interval
                                             then public.ai_trial_credits()
                                        else 0 end) + coalesce(p.ai_extra, 0) end,
+    /* ai_limit ist die SUMME aus Monatsbasis und gekauften Credits. Beide auch
+       einzeln liefern: nur so kann die App zeigen, dass gekaufte Credits ein
+       eigener, nicht verfallender Topf sind. Ohne diese Trennung sieht es fuer
+       den Nutzer aus, als schrumpfe sein Guthaben grundlos – denn eine Buchung
+       aus dem gekauften Topf senkt die Gesamtzahl, statt den Verbrauch zu erhoehen. */
+    'ai_extra',        case when via_fam_ai then coalesce(fam_extra, 0) else coalesce(p.ai_extra, 0) end,
+    'ai_base',         case when via_fam_ai then greatest(0, fam_limit - coalesce(fam_extra, 0))
+                            else (case when eff = 'premium' then public.ai_base_limit()
+                                       when p.tier = 'free'
+                                            and now() < coalesce(p.trial_start, now()) + (public.ai_trial_days() || ' days')::interval
+                                            then public.ai_trial_credits()
+                                       else 0 end) end,
     'ai_scope',        case when via_fam_ai then 'family'  else 'personal' end,
     'family_ai_used',  fam_used,
     'family_ai_limit', fam_limit,

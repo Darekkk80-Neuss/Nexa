@@ -5174,6 +5174,11 @@ const aiTrialOver = () => ENFORCE_AI_CREDITS && !isPaid() && !!account &&
   !(aiServerLimit() !== null && aiServerLimit() > aiUsed());
 function aiUsed() { ensureAIQuota(); return account.ai.used || 0; }
 const aiRemaining = () => Math.max(0, aiLimit() - aiUsed());
+/* Die beiden Toepfe einzeln. Monatsbasis verfaellt zum Monatswechsel, gekaufte
+   Credits NICHT – deshalb gehoeren sie getrennt angezeigt. Ohne Serverwert wird
+   geschaetzt (aiBase), damit die Anzeige vor dem ersten Abgleich nicht leer ist. */
+function aiMonthBase() { ensureAIQuota(); const b = account.ai.base; return (typeof b === 'number') ? b : aiBase(); }
+function aiExtraCredits() { ensureAIQuota(); return Math.max(0, account.ai.extra || 0); }
 function aiPct() { const l = aiLimit(); return l ? Math.min(100, Math.round(aiUsed() / l * 100)) : 0; }
 const usingOwnKey = () => hasKey();                 // eigener Schlüssel = unbegrenzt, zählt nicht aufs Kontingent
 /* Kinderkonto? (Rolle child) – Sicherheitsanforderung: Kinder dürfen NIE KI nutzen / keinen API-Key hinterlegen.
@@ -5396,7 +5401,13 @@ async function syncEntitlements() {
       /* Limit unverändert übernehmen (Begründung siehe applyServerUsage). Fehlt es, lieber null
          als raten – dann greift die Schätzung in aiLimit(). account.tier ist eine Zeile vorher
          bereits gesetzt, limitTier bezieht sich also schon auf die neue Stufe. */
-      account.ai = { month: r.data.usage_month, used: r.data.ai_used || 0, extra: 0,
+      /* extra/base kommen jetzt getrennt vom Server (vorher stand extra fest auf
+         0, weil get_entitlements sie nicht lieferte). Damit laesst sich der
+         gekaufte, nicht verfallende Topf getrennt ausweisen – und die Schaetzung
+         in aiLimit() wird nebenbei genauer. */
+      account.ai = { month: r.data.usage_month, used: r.data.ai_used || 0,
+        extra: (typeof r.data.ai_extra === 'number' && isFinite(r.data.ai_extra)) ? Math.max(0, r.data.ai_extra) : 0,
+        base: (typeof r.data.ai_base === 'number' && isFinite(r.data.ai_base)) ? Math.max(0, r.data.ai_base) : null,
         limit: (typeof r.data.ai_limit === 'number' && isFinite(r.data.ai_limit)) ? Math.max(0, r.data.ai_limit) : null,
         limitTier: currentTier() };
       account.premiumUntil = r.data.premium_until || null;
@@ -15316,13 +15327,27 @@ function renderAccountCard() {
     '<p class="sub">' + (account.name ? esc(account.name) + ' · ' : '') + esc(account.email) + '</p>' +
     '<div style="margin-bottom:14px">' + planHtml + '</div>';
 
-  if (tier === 'premium' && !usingOwnKey()) {
-    const used = aiUsed(), lim = aiLimit(), pct = aiPct(), cls = pct >= 100 ? 'full' : pct >= 90 ? 'warn' : '';
-    html += '<div class="note-box" style="margin-bottom:12px"><b>KI-Kontingent (' + aiMonthKey() + ')</b>' +
-      '<div class="quota-bar"><div class="quota-fill ' + cls + '" style="width:' + Math.min(100, pct) + '%"></div></div>' +
-      '<span class="sub">' + used + ' / ' + lim + ' Credits · noch ' + aiRemaining() + ' übrig</span>' +
-      (pct >= 90 && !STORE_SAFE ? '<div style="margin-top:8px"><button class="btn btn-sm btn-primary" data-buy="topup">+1000 nachbestellen · 4,99 €</button></div>' : '') +
-      '<div class="sub" style="margin-top:6px">Reset am 1. des Folgemonats. Alternativ eigenen Schlüssel (unten) für unbegrenzte Nutzung.</div>' + creditTableHtml() + '</div>';
+  /* Beide Toepfe GETRENNT ausweisen. Vorher stand hier eine einzige Zahl
+     (verbraucht / Gesamt). Weil eine Buchung aus dem GEKAUFTEN Topf die
+     Gesamtzahl senkt statt den Verbrauch zu erhoehen, sah es aus, als loese sich
+     bezahltes Guthaben auf – bei "dafuer habe ich bezahlt" das denkbar
+     unguenstigste Missverstaendnis.
+     Ausserdem galt der Kasten nur fuer Premium: wer in der Testphase Credits
+     dazugekauft hatte, sah seinen Stand ueberhaupt nicht. */
+  if (!usingOwnKey() && (aiMonthBase() > 0 || aiExtraCredits() > 0)) {
+    const used = aiUsed(), basis = aiMonthBase(), extra = aiExtraCredits();
+    const monatOffen = Math.max(0, basis - used);
+    const pct = basis ? Math.min(100, Math.round(used / basis * 100)) : 100;
+    const cls = pct >= 100 ? 'full' : pct >= 90 ? 'warn' : '';
+    html += '<div class="note-box" style="margin-bottom:12px"><b>KI-Guthaben</b>' +
+      (basis > 0
+        ? '<div class="quota-bar"><div class="quota-fill ' + cls + '" style="width:' + Math.min(100, pct) + '%"></div></div>' +
+          '<span class="sub">Monat (' + aiMonthKey() + '): ' + used + ' / ' + basis + ' verbraucht · noch ' + monatOffen + '</span>'
+        : '<span class="sub">Kein monatliches Kontingent aktiv.</span>') +
+      (extra > 0 ? '<div class="sub" style="margin-top:6px">💳 Gekauft: <b>' + extra + '</b> Credits – <b>verfallen nicht</b> und rollen in den nächsten Monat.</div>' : '') +
+      '<div class="sub" style="margin-top:6px">Insgesamt verfügbar: <b>' + aiRemaining() + '</b> Credits.</div>' +
+      ((aiRemaining() <= Math.max(10, Math.round((basis + extra) * 0.1)) && !STORE_SAFE) ? '<div style="margin-top:8px"><button class="btn btn-sm btn-primary" data-buy="topup">+1000 nachbestellen · 4,99 €</button></div>' : '') +
+      '<div class="sub" style="margin-top:6px">Das Monatskontingent wird am 1. des Folgemonats zurückgesetzt; gekaufte Credits bleiben. Alternativ eigenen Schlüssel (unten) für unbegrenzte Nutzung.</div>' + creditTableHtml() + '</div>';
   } else if (tier === 'premium' && usingOwnKey()) {
     html += '<div class="note-box" style="margin-bottom:12px">🔑 Eigener API-Schlüssel aktiv – <b>unbegrenzte</b> KI, kein Kontingentverbrauch.</div>';
   }
