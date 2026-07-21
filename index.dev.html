@@ -8863,7 +8863,7 @@ function renderMeal() {
   const box = $('#mealWidget'); if (!box) return;
   store.meal = store.meal || {}; const M = store.meal, today = todayISO();
   if (M.hiddenDate === today) { box.innerHTML = ''; return; }         // heute ausgeblendet
-  if (M.today && M.today.date === today) { box.innerHTML = mealCardHTML(M.today); if (M.open) mealFetchNutrition(M.today); return; }
+  if (M.today && M.today.date === today) { box.innerHTML = mealCardHTML(M.today); if (curLang !== 'de' && typeof sweepNow === 'function') sweepNow(box); if (M.open) mealFetchNutrition(M.today); return; }
   box.innerHTML = mealLoadingHTML();
   if (M._loading) return;
   M._loading = true;
