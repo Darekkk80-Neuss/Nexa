@@ -11675,7 +11675,14 @@ const HOLIDAY_COUNTRIES = [
 function holidayCountry() {
   const lang = (typeof curLang !== 'undefined') ? curLang : 'de';
   if (lang === 'de') return 'DE';   // Deutsch: immer deutsche Feiertage (Standard, kein Länder-Picker)
-  return store.holidayCountry || LANG_DEFAULT_COUNTRY[lang] || 'DE';
+  if (store.holidayCountry) return store.holidayCountry;   // eigene Wahl schlaegt alles
+  /* Sonst das Land des Wetter-Standorts – die App-Sprache ist ein schlechter
+     Anhaltspunkt: wer die App auf Englisch stellt und in Deutschland wohnt,
+     bekam bisher britische Feiertage. Nur fuer die unterstuetzten Laender;
+     alles andere faellt auf die Sprache zurueck. */
+  const ausOrt = String((store.weatherLoc && store.weatherLoc.land) || '').toUpperCase();
+  if (ausOrt && HOLIDAY_COUNTRIES.some(c => c.code === ausOrt)) return ausOrt;
+  return LANG_DEFAULT_COUNTRY[lang] || 'DE';
 }
 let holApiCache = (function () { try { return JSON.parse(localStorage.getItem('effyra_hol_api')) || {}; } catch (e) { return {}; } })();
 function saveHolApi() { try { localStorage.setItem('effyra_hol_api', JSON.stringify(holApiCache)); } catch (e) {} }
@@ -11817,8 +11824,14 @@ function brueckenRegion() {
     const st = (store.work && store.work.settings && store.work.settings.state) || '';
     return st && DE_STATES[st] ? DE_STATES[st] : pickLang({ de: 'Deutschland (bundesweite Feiertage)', en: 'Germany (nationwide holidays)', fr: 'Allemagne (jours fériés nationaux)', es: 'Alemania (festivos nacionales)', it: 'Germania (festività nazionali)', pl: 'Niemcy (święta ogólnokrajowe)' });
   }
+  /* Fuer die uebrigen Laender liegen nur LANDESWEITE Feiertage vor (die
+     Nager-Daten werden mit h.global !== false gefiltert). Regionales fehlt also –
+     etwa der 2. Januar in Schottland oder die Feiertage der spanischen
+     autonomen Gemeinschaften. Das gehoert dazugesagt, gerade in einer Nachricht,
+     die weitergeleitet wird und nach der jemand seinen Urlaub plant. */
   const land = HOLIDAY_COUNTRIES.filter(x => x.code === c)[0];
-  return land ? land.name.replace(/^[^ ]+ /, '') : c;
+  const name = land ? land.name.replace(/^[^ ]+ /, '') : c;
+  return name + ' (' + pickLang({ de: 'landesweite Feiertage', en: 'nationwide holidays', fr: 'jours fériés nationaux', es: 'festivos nacionales', it: 'festività nazionali', pl: 'święta ogólnokrajowe' }) + ')';
 }
 function brueckenShareMessage(jahr) {
   const liste = brueckenKommend(jahr).slice(0, 8);
@@ -11924,14 +11937,16 @@ function renderHolidays() {
   /* Die Jahresrechnung – der eigentliche Mehrwert gegenueber einer Feiertagsliste. */
   try {
     if (bListe.length && bSum) {
+      /* Region auf EIGENE Zeile: am Ende eines langen Satzes ging sie unter –
+         und sie ist die Angabe, von der die Richtigkeit aller Zahlen abhaengt. */
       h += '<div class="di-tip">' + esc(pickLang({
-        de: '🎯 ' + bJahr + ': Mit ' + bSum.urlaubstage + ' Urlaubstagen ' + bSum.freieTage + ' Tage frei – ' + brueckenRegion(),
-        en: '🎯 ' + bJahr + ': ' + bSum.urlaubstage + ' days of leave → ' + bSum.freieTage + ' days off – ' + brueckenRegion(),
-        fr: '🎯 ' + bJahr + ' : ' + bSum.urlaubstage + ' jours de congé → ' + bSum.freieTage + ' jours libres – ' + brueckenRegion(),
-        es: '🎯 ' + bJahr + ': ' + bSum.urlaubstage + ' días de vacaciones → ' + bSum.freieTage + ' días libres – ' + brueckenRegion(),
-        it: '🎯 ' + bJahr + ': ' + bSum.urlaubstage + ' giorni di ferie → ' + bSum.freieTage + ' giorni liberi – ' + brueckenRegion(),
-        pl: '🎯 ' + bJahr + ': ' + bSum.urlaubstage + ' dni urlopu → ' + bSum.freieTage + ' dni wolnego – ' + brueckenRegion()
-      })) + '</div>';
+        de: '🎯 ' + bJahr + ': Mit ' + bSum.urlaubstage + ' Urlaubstagen ' + bSum.freieTage + ' Tage frei',
+        en: '🎯 ' + bJahr + ': ' + bSum.urlaubstage + ' days of leave → ' + bSum.freieTage + ' days off',
+        fr: '🎯 ' + bJahr + ' : ' + bSum.urlaubstage + ' jours de congé → ' + bSum.freieTage + ' jours libres',
+        es: '🎯 ' + bJahr + ': ' + bSum.urlaubstage + ' días de vacaciones → ' + bSum.freieTage + ' días libres',
+        it: '🎯 ' + bJahr + ': ' + bSum.urlaubstage + ' giorni di ferie → ' + bSum.freieTage + ' giorni liberi',
+        pl: '🎯 ' + bJahr + ': ' + bSum.urlaubstage + ' dni urlopu → ' + bSum.freieTage + ' dni wolnego'
+      })) + '<br><span style="opacity:.85">📍 ' + esc(brueckenRegion()) + '</span></div>';
       h += '<div class="di-list">' + bListe.slice().sort((a, b) => a.von.localeCompare(b.von)).slice(0, 4).map(b =>
         '<span>🎯 ' + esc(fmtDate(b.von) + (b.von === b.bis ? '' : '–' + fmtDate(b.bis))) + ' · ' + b.kosten + ' → ' + b.ertrag + ' ' + esc(pickLang({ de: 'Tage frei', en: 'days off', fr: 'jours libres', es: 'días libres', it: 'giorni liberi', pl: 'dni wolnego' })) + '</span>').join('') + '</div>';
       h += '<div style="margin-top:10px"><button class="btn btn-sm" data-hol="share">📤 ' + esc(pickLang({ de: 'Brückentage teilen', en: 'Share bridge days', fr: 'Partager les ponts', es: 'Compartir puentes', it: 'Condividi i ponti', pl: 'Udostępnij' })) + '</button></div>';
