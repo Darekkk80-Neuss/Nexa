@@ -11761,7 +11761,15 @@ function curHolMap(y) {
 function holMap(iso) { return curHolMap(iso.slice(0, 4)); }
 const isHoliday = (iso) => !!holMap(iso)[iso];
 const holidayName = (iso) => holMap(iso)[iso] || '';
-function ensureHolidayData() { const y = +todayISO().slice(0, 4), c = holidayCountry(); if (c !== 'DE') { fetchHolidayYear(c, y); fetchHolidayYear(c, y + 1); } }
+function ensureHolidayData() {
+  const y = +todayISO().slice(0, 4), c = holidayCountry();
+  if (c === 'DE') return;   // offline berechnet, jedes Jahr sofort verfuegbar
+  /* y-1 bis y+2: brueckenPlan(jahr) tastet von Dezember (jahr-1) bis Januar
+     (jahr+1), und gegen Jahresende rechnet brueckenJahr() bereits mit dem
+     Folgejahr. Mit nur y und y+1 fehlten an den Jahresraendern Bruecken – und
+     zwar lautlos. Die Antworten sind klein und werden dauerhaft gespeichert. */
+  [y - 1, y, y + 1, y + 2].forEach(j => fetchHolidayYear(c, j));
+}
 /* ============================== DASHBOARD-WIDGET: FEIERTAGE & BRÜCKENTAGE ============================== */
 /* Nutzt die bereits vorhandene Offline-Feiertagsberechnung (holidaysDE) – kein API nötig, Bundesland aus store.work.settings.state. */
 function nextHolidays(n) {
@@ -12014,6 +12022,19 @@ function renderHolidays() {
       h += '<div class="di-list">' + bListe.slice().sort((a, b) => a.von.localeCompare(b.von)).slice(0, 4).map(b =>
         '<span>🎯 ' + esc(fmtDate(b.von) + (b.von === b.bis ? '' : '–' + fmtDate(b.bis))) + ' · ' + b.kosten + ' → ' + b.ertrag + ' ' + esc(pickLang({ de: 'Tage frei', en: 'days off', fr: 'jours libres', es: 'días libres', it: 'giorni liberi', pl: 'dni wolnego' })) + '</span>').join('') + '</div>';
       h += '<div style="margin-top:10px"><button class="btn btn-sm" data-hol="share">📤 ' + esc(pickLang({ de: 'Brückentage teilen', en: 'Share bridge days', fr: 'Partager les ponts', es: 'Compartir puentes', it: 'Condividi i ponti', pl: 'Udostępnij' })) + '</button></div>';
+    } else if (Object.keys(curHolMap('' + (bJahr || (+todayISO().slice(0, 4)))) || {}).length) {
+      /* Feiertage sind da, aber es gibt nichts zu bruecken – das gibt es
+         wirklich: britische Bank Holidays liegen bewusst auf Montagen, in
+         England ergibt das null Brueckentage. Ohne diesen Hinweis waere ein
+         leeres Feld von einem Fehler nicht zu unterscheiden. */
+      h += '<div class="di-note">' + esc(pickLang({
+        de: 'Für ' + brueckenRegion() + ' gibt es ' + bJahr + ' keine Brückentage – die Feiertage fallen auf Wochenenden oder liegen ohnehin am Montag.',
+        en: 'No bridge days in ' + bJahr + ' for ' + brueckenRegion() + ' – the holidays fall on weekends or already sit on Mondays.',
+        fr: 'Aucun pont en ' + bJahr + ' pour ' + brueckenRegion() + ' – les jours fériés tombent le week-end ou déjà un lundi.',
+        es: 'No hay puentes en ' + bJahr + ' para ' + brueckenRegion() + ': los festivos caen en fin de semana o ya en lunes.',
+        it: 'Nessun ponte nel ' + bJahr + ' per ' + brueckenRegion() + ' – le festività cadono nel weekend o già di lunedì.',
+        pl: 'Brak długich weekendów w ' + bJahr + ' dla ' + brueckenRegion() + ' – święta wypadają w weekend lub już w poniedziałek.'
+      })) + '</div>';
     }
   } catch (e) { console.error('[Effyra brueckentage-anzeige]', e && e.message); }
   h += '</section>';
