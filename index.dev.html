@@ -406,27 +406,33 @@ label.fld{display:block;font-size:12.5px;font-weight:600;color:var(--muted);marg
 .empty .big{font-size:30px;display:block;margin-bottom:8px}
 
 /* ============================== WETTER-WIDGET ============================== */
-.wx-card{position:relative;border-radius:16px;padding:18px 18px 16px;margin-bottom:22px;color:#fff;overflow:hidden;
+.wx-card{position:relative;border-radius:16px;padding:var(--pad-card);margin-bottom:var(--gap-card);color:#fff;overflow:hidden;
   box-shadow:0 14px 34px rgba(0,0,0,.4);text-shadow:0 1px 3px rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.14);
   animation:fadeUp .5s ease both}
 .wx-card::after{content:'';position:absolute;top:-45%;right:-8%;width:230px;height:230px;border-radius:50%;
   background:radial-gradient(circle,rgba(255,255,255,.28),transparent 70%);pointer-events:none}
-.wx-clear-day{background:linear-gradient(135deg,#4D7CFF,#8FB0FF 55%,#FFB547)}
-.wx-clear-night{background:linear-gradient(135deg,#3355C9,#3355C9)}
-.wx-clouds{background:linear-gradient(135deg,#475569,#64748b)}
-.wx-rain{background:linear-gradient(135deg,#3355C9,#4D7CFF 60%,#1C2745)}
-.wx-snow{background:linear-gradient(135deg,#3b82f6,#93c5fd)}
-.wx-thunder{background:linear-gradient(135deg,#3355C9,#10182D)}
-.wx-fog{background:linear-gradient(135deg,#64748b,#94a3b8)}
-.wx-top{display:flex;align-items:center;gap:10px}
+/* Wetterverlaeufe in der Markenfamilie: Blau, Violett, Cyan. Jede Lage
+   bekommt ihre eigene Mischung, damit man das Wetter an der Farbe erkennt,
+   ohne zu lesen – aber alle bleiben erkennbar dieselbe App. */
+.wx-clear-day{background:linear-gradient(140deg,#4D7CFF,#3EC9FF 60%,#7ADCFF)}
+.wx-clear-night{background:linear-gradient(140deg,#2F4FBF,#7A5CFF 70%,#3B2E7A)}
+.wx-clouds{background:linear-gradient(140deg,#3F5A8F,#6E7FA8 70%,#8FA0C4)}
+.wx-rain{background:linear-gradient(140deg,#2F4FBF,#4D7CFF 55%,#1C2745)}
+.wx-snow{background:linear-gradient(140deg,#5A8FE0,#9ED4FF 60%,#D6ECFF)}
+.wx-thunder{background:linear-gradient(140deg,#3B2E7A,#7A5CFF 55%,#10182D)}
+.wx-fog{background:linear-gradient(140deg,#5C6B8C,#93A2BF 70%,#B9C4D8)}
+.wx-top{display:flex;align-items:center;gap:14px}
 .wx-main{flex:1;min-width:0}
-.wx-temp{font-family:var(--font-head);font-size:46px;font-weight:700;line-height:1}
-.wx-cond{font-size:15px;font-weight:600;margin-top:2px}
-.wx-loc{font-size:12.5px;opacity:.92;margin-top:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.wx-icon{font-size:56px;line-height:1;filter:drop-shadow(0 3px 6px rgba(0,0,0,.3))}
-.wx-pills{display:flex;gap:8px;margin-top:14px}
-.wx-pill{flex:1;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.2);border-radius:16px;
-  padding:9px 5px;text-align:center;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);min-width:0}
+/* Groessensprung als Hierarchie: Die Temperatur ist die eine Zahl, auf die
+   man schaut – alles andere ordnet sich ihr unter. */
+.wx-temp{font-family:var(--font-head);font-size:62px;font-weight:700;line-height:.95;letter-spacing:-2px}
+.wx-cond{font-size:16px;font-weight:600;margin-top:4px}
+.wx-loc{font-size:12.5px;opacity:.9;margin-top:5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.wx-icon{font-size:72px;line-height:1;filter:drop-shadow(0 4px 10px rgba(0,0,0,.32))}
+.wx-pills{display:flex;gap:10px;margin-top:18px}
+.wx-pill{flex:1;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.18);border-radius:14px;
+  padding:11px 6px;text-align:center;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);min-width:0;
+  box-shadow:0 2px 10px rgba(0,0,0,.14)}
 .wx-pill span{font-size:17px;display:block}
 .wx-pill b{font-size:14px;display:block;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .wx-pill small{font-size:10.5px;opacity:.85;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}
@@ -442,10 +448,28 @@ label.fld{display:block;font-size:12.5px;font-weight:600;color:var(--muted);marg
 
 /* ---- Gericht des Tages (Apple-Look: Foto-Hero + aufklappbares Rezept) ---- */
 /* ---- Dashboard-Info-Widgets (Feiertage, Unwetterwarnungen) ---- */
-.dash-info-card{margin-bottom:22px;padding:15px 16px}
-.di-head{display:flex;align-items:center;gap:9px;margin-bottom:10px}
-.di-ic{font-size:19px;flex:none}
-.di-head b{font-size:15px;font-weight:700;flex:1;min-width:0}
+/* Tageskarte: Symbol links in einer eigenen Flaeche, Titel gross, Pfeil rechts.
+   Der Verlauf ist derselbe wie bei allen Karten – so bleibt sie Teil des
+   Systems und wird nicht zur Sonderkarte. */
+.dash-info-card{margin-bottom:var(--gap-card);padding:var(--pad-card)}
+.di-head{display:flex;align-items:center;gap:14px;margin-bottom:14px}
+.di-ic{font-size:20px;flex:none;width:42px;height:42px;border-radius:14px;
+  display:inline-flex;align-items:center;justify-content:center;
+  background:var(--accent-tint);border:1px solid rgba(77,124,255,.22);
+  color:var(--accent-ink)}
+.di-head b{font-size:18px;font-weight:700;flex:1;min-width:0;letter-spacing:-.2px}
+.di-ic svg{width:20px;height:20px}
+/* Titel und Datum stehen uebereinander, das Symbol daneben – deshalb ein
+   eigener Textblock statt beides direkt in die Kopfzeile zu haengen. */
+.di-head-tx{flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.22}
+.di-head-tx b{font-size:18px;font-weight:700;letter-spacing:-.2px}
+.di-head-tx small{font-size:12.5px;color:var(--muted);margin-top:2px}
+.di-arrow{font-size:24px;line-height:1;padding:0 4px;opacity:.65;min-height:0}
+.di-arrow:hover{opacity:1}
+/* Die Tageskarte traegt einen Hauch Akzent, bleibt aber im Kartensystem. */
+.brief-card{background:linear-gradient(160deg,rgba(77,124,255,.14),rgba(77,124,255,.05) 55%,transparent),var(--card)}
+/* Kein automatischer Pfeil per ::after – mehrere Beschriftungen tragen ihn
+   bereits im Text ("Arbeitszeit ›") und bekaemen sonst zwei. */
 .di-go{border:none;background:none;color:#4D7CFF;font-size:12.5px;font-weight:600;cursor:pointer;flex:none;padding:0}
 /* #4D7CFF ergab auf dunklem Grund 3,02:1 – zu wenig fuer 12,5px. */
 @media(prefers-color-scheme:dark){.di-go{color:#8FB0FF}}
@@ -657,13 +681,61 @@ label.fld{display:block;font-size:12.5px;font-weight:600;color:var(--muted);marg
 .mini .mini-when.warn{color:var(--warn)}
 .mini .mini-when.late{color:var(--danger)}
 /* ---- Cockpit: Hero-Header, kompakte Stats, Themen-Container ---- */
-.dash-hero{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:20px}
-.dash-hero-main{flex:1;min-width:0}
-.theme-toggle{flex:none;display:inline-flex;gap:2px;padding:3px;border-radius:999px;background:var(--card2);border:1px solid var(--border)}
-.theme-toggle button{width:32px;height:32px;border:none;background:none;border-radius:999px;cursor:pointer;font-size:14px;line-height:1;display:inline-flex;align-items:center;justify-content:center;color:var(--muted);font-weight:800;transition:.15s}
+.dash-hero{position:relative;display:flex;align-items:flex-start;justify-content:space-between;gap:14px;
+  margin-bottom:var(--gap-card);overflow:hidden}
+.dash-hero-main{flex:1;min-width:0;position:relative;z-index:1}
+/* Stimmungsmotiv nach Tageszeit. Bewusst in CSS gezeichnet statt als Foto:
+   nichts nachzuladen, beliebig scharf, und es bleibt in der Farbwelt der App.
+   Die Maske laesst es zu den Raendern hin ausklingen, damit keine Kante
+   entsteht – es soll Atmosphaere sein, kein Bild mit Rahmen. */
+.dash-hero-art{position:absolute;top:-34px;right:-46px;width:250px;height:170px;
+  pointer-events:none;z-index:0;opacity:.9;
+  -webkit-mask-image:radial-gradient(115% 100% at 72% 42%,#000 30%,transparent 76%);
+          mask-image:radial-gradient(115% 100% at 72% 42%,#000 30%,transparent 76%)}
+.dash-hero-art.morgen{background:
+  radial-gradient(circle at 62% 62%,rgba(255,181,71,.55),transparent 46%),
+  radial-gradient(circle at 40% 30%,rgba(122,92,255,.30),transparent 58%),
+  radial-gradient(circle at 78% 24%,rgba(62,201,255,.26),transparent 55%)}
+.dash-hero-art.tag{background:
+  radial-gradient(circle at 70% 32%,rgba(62,201,255,.48),transparent 50%),
+  radial-gradient(circle at 45% 62%,rgba(77,124,255,.42),transparent 55%)}
+.dash-hero-art.abend{background:
+  radial-gradient(circle at 60% 66%,rgba(255,138,61,.42),transparent 46%),
+  radial-gradient(circle at 52% 34%,rgba(122,92,255,.46),transparent 56%),
+  radial-gradient(circle at 82% 52%,rgba(77,124,255,.28),transparent 52%)}
+/* Nacht mit einem Hauch Nordlicht. */
+.dash-hero-art.nacht{background:
+  radial-gradient(circle at 68% 28%,rgba(62,201,255,.34),transparent 48%),
+  radial-gradient(circle at 44% 56%,rgba(122,92,255,.42),transparent 54%),
+  radial-gradient(circle at 86% 70%,rgba(50,213,131,.20),transparent 50%)}
+@media(max-width:420px){ .dash-hero-art{width:180px;height:130px;opacity:.7} }
+/* Der Theme-Umschalter sitzt jetzt IN der gemeinsamen Flaeche und braucht
+   deshalb keine eigene Huelle mehr – sonst waeren es Kaesten im Kasten. */
+.theme-toggle{flex:none;display:inline-flex;gap:1px;padding:0;border-radius:999px;background:none;border:none}
+.theme-toggle button{width:32px;height:32px;border:none;background:none;border-radius:999px;cursor:pointer;font-size:13px;line-height:1;display:inline-flex;align-items:center;justify-content:center;color:var(--faint);font-weight:700;transition:color .18s ease,background .18s ease}
+.theme-toggle button svg{width:16px;height:16px}
 .theme-toggle button:hover{color:var(--text)}
-.theme-toggle button.active{background:var(--grad);color:#fff;box-shadow:0 2px 8px rgba(77,124,255,.35)}
-.dash-hero-actions{flex:none;display:flex;align-items:center;gap:8px}
+.theme-toggle button.active{background:rgba(255,255,255,.10);color:var(--accent-ink);box-shadow:none}
+:root[data-theme="light"] .theme-toggle button.active{background:rgba(7,11,23,.07)}
+
+/* EINE schwebende Glasflaeche statt vier einzelner Knoepfe nebeneinander.
+   Die Trennstriche ersetzen die frueheren Rahmen: gleiche Gliederung,
+   deutlich weniger Kanten. */
+.dash-hero-actions{flex:none;display:flex;align-items:center;gap:2px;padding:4px;
+  background:var(--glass);border:1px solid var(--glass-brd);border-radius:999px;
+  backdrop-filter:blur(18px) saturate(1.3);-webkit-backdrop-filter:blur(18px) saturate(1.3);
+  box-shadow:var(--shadow-2)}
+.dash-hero-actions .icon-btn{width:34px;height:34px;border:none;background:none;border-radius:999px;color:var(--faint)}
+.dash-hero-actions .icon-btn:hover{background:rgba(255,255,255,.10);color:var(--text)}
+:root[data-theme="light"] .dash-hero-actions .icon-btn:hover{background:rgba(7,11,23,.07)}
+.dash-hero-actions .icon-btn svg{width:17px;height:17px}
+.dash-hero-actions .icon-btn:active,.theme-toggle button:active{transform:scale(.94)}
+/* Feiner Trennstrich zwischen den Gruppen. */
+.dash-hero-actions .theme-toggle{position:relative;margin:0 3px;padding:0 4px}
+.dash-hero-actions .theme-toggle::before,.dash-hero-actions .theme-toggle::after{
+  content:"";position:absolute;top:7px;bottom:7px;width:1px;background:var(--glass-brd)}
+.dash-hero-actions .theme-toggle::before{left:0}
+.dash-hero-actions .theme-toggle::after{right:0}
 .back-btn{display:none;align-items:center;gap:5px;margin:0 0 14px;padding:7px 13px 7px 9px;border:1px solid var(--border);background:var(--card2);color:var(--muted);border-radius:999px;font-size:13.5px;font-weight:600;cursor:pointer;min-height:38px;transition:.15s}
 .back-btn svg{width:18px;height:18px}
 .back-btn:hover{color:var(--text);border-color:var(--border2)}
@@ -1569,7 +1641,21 @@ body.lang-switching main,body.lang-switching .sidebar,body.lang-switching .topba
 .lic-tier small{font-size:10px;color:var(--faint);line-height:1.25;white-space:normal}
 .lic-tier.active{border-color:#4D7CFF;background:linear-gradient(135deg,rgba(77,124,255,.24),rgba(77,124,255,.14));box-shadow:0 4px 14px rgba(77,124,255,.28)}
 .lic-tier.active small{color:var(--muted)}
-.lic-tag{position:absolute;top:-7px;right:6px;font-size:8.5px;font-weight:800;letter-spacing:.4px;text-transform:uppercase;padding:2px 6px;border-radius:12px;background:linear-gradient(135deg,#4D7CFF,#4D7CFF);color:#fff}
+.lic-tier:active{transform:scale(.98)}
+/* Der beworbene Tarif: Goldrahmen und Schein. Der Rahmen liegt als eigene
+   Ebene ueber der Karte (Maske aus zwei Fuellungen), weil ein Verlauf sich
+   nicht direkt als border-color setzen laesst. */
+.lic-tier.lic-top{border-color:transparent;
+  background:
+    linear-gradient(var(--card),var(--card)) padding-box,
+    linear-gradient(140deg,#F5D07A,#C9A227 45%,#F7E3A1) border-box;
+  border:1.5px solid transparent;
+  box-shadow:0 0 18px rgba(201,162,39,.24),0 6px 18px rgba(0,0,0,.28)}
+.lic-tier.lic-top:hover{box-shadow:0 0 26px rgba(201,162,39,.36),0 8px 22px rgba(0,0,0,.32)}
+.lic-tag{position:absolute;top:-8px;right:6px;font-size:8.5px;font-weight:800;letter-spacing:.5px;
+  text-transform:uppercase;padding:2px 7px;border-radius:12px;
+  background:linear-gradient(135deg,#F7E3A1,#C9A227);color:#241B02;
+  box-shadow:0 2px 8px rgba(201,162,39,.4)}
 .lic-solo{padding:13px 14px}
 .lic-cur{display:flex;align-items:center;gap:12px}
 .lic-cur-ic{font-size:26px;flex:none;filter:drop-shadow(0 2px 6px rgba(77,124,255,.4))}
@@ -1580,6 +1666,18 @@ body.lang-switching main,body.lang-switching .sidebar,body.lang-switching .topba
 .lic-cur-manage:hover{border-color:rgba(167,139,250,.6)}
 .lic-cur-topup{border:none;background:linear-gradient(135deg,#4D7CFF,#4D7CFF);color:#fff}
 .lic-cur-topup:hover{filter:brightness(1.08)}
+/* Credits als Balken statt als blosse Zahl: der Fuellstand ist auf einen Blick
+   lesbar, die Zahl daneben bleibt fuer die Genauigkeit. Die Farbe wechselt,
+   wenn es knapp wird – das ist Zustand, nicht Dekoration. */
+.credit-bar{height:8px;border-radius:999px;margin-top:14px;overflow:hidden;background:rgba(255,255,255,.09)}
+.credit-bar i{display:block;height:100%;border-radius:999px;
+  background:linear-gradient(90deg,#4D7CFF,#7A5CFF);
+  box-shadow:0 0 12px rgba(77,124,255,.55);
+  transition:width .5s var(--ease-spring)}
+.credit-bar.knapp i{background:linear-gradient(90deg,#FFB547,#FF8A3D);box-shadow:0 0 12px rgba(255,181,71,.5)}
+.credit-bar.leer i{background:#FF6B6B;box-shadow:none}
+:root[data-theme="light"] .credit-bar{background:rgba(7,11,23,.10)}
+@media (prefers-reduced-motion:reduce){ .credit-bar i{transition:none} }
 .lic-empty-note{margin-top:10px;padding:9px 11px;border-radius:14px;font-size:12px;line-height:1.4;color:#fde68a;background:rgba(251,191,36,.12);border:1px solid rgba(251,191,36,.3)}
 @media(max-width:380px){.lic-tier{min-height:76px;padding:11px 3px}.lic-tier .lic-ic{font-size:20px}.lic-tier b{font-size:11.5px}.lic-tier small{font-size:9.5px}}
 :root[data-theme="light"] .lic-widget{border-color:rgba(77,124,255,.2);background:linear-gradient(135deg,rgba(77,124,255,.08),rgba(77,124,255,.06))}
@@ -1810,6 +1908,7 @@ body.lang-switching main,body.lang-switching .sidebar,body.lang-switching .topba
     <!-- ============================== DASHBOARD ============================== -->
     <section class="view" id="view-dashboard">
       <header class="dash-hero">
+        <div class="dash-hero-art" id="dashHeroArt" aria-hidden="true"></div>
         <div class="dash-hero-main">
           <h1 id="greetLine">Guten Tag<span class="grad-text"></span></h1>
           <p id="greetSub" class="dash-sub"></p>
@@ -2430,7 +2529,10 @@ const STORE_DEFAULTS = {
   checkups: [], // Vorsorge-Erinnerungen (lokal): {id,title,intervalMonths,lastDate,note,createdAt}
   fit: { weight: null, height: null, gender: null, goalSteps: 8000, goalKcal: null, activities: [], consent: false, lastSpruch: {}, rewardShown: {}, heroLast: -1, streak: 0, lastGoalDate: '' }, // OrdelaFit (Bewegung, aktives Session-Tracking, Gamification)
   work: { settings: { weeklyHours: 40, hoursPerDay: 8, vacationDays: 30, childSickMax: 10, state: 'NW', autoBreak: true }, entries: {}, shifts: [], absences: [] }, // Arbeitszeit
-  settings: { model: 'gpt-5-mini', demoIdx: 0, theme: 'light', rtSilenceMs: 700, morningPush: false }
+  /* theme: 'dark' ist der Standard. Bestandsnutzer behalten ihre Wahl, weil
+     ihr gespeichertes settings-Objekt beim Zusammenfuehren das Standardobjekt
+     komplett ersetzt – die Umstellung trifft also nur neue Installationen. */
+  settings: { model: 'gpt-5-mini', demoIdx: 0, theme: 'dark', rtSilenceMs: 700, morningPush: false }
 };
 const store = Object.assign(JSON.parse(JSON.stringify(STORE_DEFAULTS)), (() => {
   try { return JSON.parse(localStorage.getItem(DATA_KEY)) || {}; } catch (e) { return {}; }
@@ -2524,7 +2626,9 @@ const getKey = () => { try { return localStorage.getItem(KEY_KEY) || ''; } catch
 const hasKey = () => getKey().length > 8;
 
 /* ---- Erscheinungsbild (Hell/Dunkel/Auto) ---- */
-const themePref = () => (store.settings && store.settings.theme) || 'auto';
+/* Dunkel ist der Standard. Wer bereits bewusst hell oder auto gewaehlt hat,
+   behaelt seine Einstellung – die steht in settings.theme und geht hier vor. */
+const themePref = () => (store.settings && store.settings.theme) || 'dark';
 /* Auto-Modus nach Uhrzeit: hell von DAY_START bis DAY_END Uhr, sonst dunkel.
    Zum Anpassen einfach die beiden Stunden ändern. */
 const DAY_START = 6;   // ab 06:00 Uhr = heller Modus
@@ -7270,6 +7374,12 @@ RENDERERS.dashboard = function () {
   const H = new Date().getHours();
   const g = H < 5 ? 'Gute Nacht' : H < 11 ? 'Guten Morgen' : H < 18 ? 'Guten Tag' : 'Guten Abend';
   $('#greetLine').innerHTML = '<span>' + esc(g) + '</span>' + (store.name ? ', <span class="grad-text" data-noi18n>' + esc(store.name) + '</span>' : '') + '';
+  /* Stimmungsmotiv passend zur Tageszeit. Die Grenzen folgen der Begruessung
+     oben, damit Bild und Text nicht auseinanderlaufen – nur der spaete Abend
+     kippt schon vor Mitternacht auf Nacht. */
+  const heroArt = $('#dashHeroArt');
+  if (heroArt) heroArt.className = 'dash-hero-art ' +
+    (H < 5 ? 'nacht' : H < 11 ? 'morgen' : H < 18 ? 'tag' : H < 22 ? 'abend' : 'nacht');
 
   const today = todayISO();
   const evTodayList = eventsOn(today);
@@ -7288,7 +7398,7 @@ RENDERERS.dashboard = function () {
     const fam = !!(account.viaFamily || account.familyUntil || typeof account.familyAiLimit === 'number');
     if (paid) {
       /* Aktiver Plan – die anderen Optionen entfallen (nur der gebuchte Plan wird gezeigt). */
-      const ic = fam ? '' : '';
+      const ic = fam ? '👨‍👩‍👧‍👦' : '👑';
       const nm = fam ? pickLang({ de: 'Familienabo', en: 'Family plan', fr: 'Abonnement Famille', es: 'Plan Familia', it: 'Abbonamento Famiglia', pl: 'Abonament Rodzina' }) : 'Ordela Premium';
       const low = rem <= Math.max(10, Math.round(lim * 0.1));
       /* Aus Plan + Credits zusammengesetzt → nicht sweepbar, daher direkt lokalisiert. */
@@ -7305,10 +7415,17 @@ RENDERERS.dashboard = function () {
           ? pickLang({ de: ' – aufgebraucht', en: ' – used up', fr: ' – épuisés', es: ' – agotados', it: ' – esauriti', pl: ' – wyczerpane' })
           : pickLang({ de: ' verfügbar', en: ' available', fr: ' disponibles', es: ' disponibles', it: ' disponibili', pl: ' dostępnych' })
       });
+      /* Anteil der noch verfuegbaren Credits. Bei lim = 0 waere die Division
+         unendlich – dann bleibt der Balken leer statt NaN in die Breite zu
+         schreiben (das ergaebe eine ungueltige CSS-Angabe). */
+      const pct = lim > 0 ? Math.max(0, Math.min(100, Math.round(rem / lim * 100))) : 0;
       slot.innerHTML = '<div class="lic-widget lic-solo"><div class="lic-cur"><span class="lic-cur-ic">' + ic + '</span>' +
         '<div class="lic-cur-tx">' + head + '</div>' +
         (low ? '<button class="lic-cur-manage lic-cur-topup" data-lic="topup">Credits nachbuchen</button>' : '<button class="lic-cur-manage" data-lic="manage">Verwalten</button>') +
-        '</div>' + (rem <= 0 ? '<div class="lic-empty-note">Deine Credits sind für diesen Monat aufgebraucht. Buche Credits nach, um die KI weiter zu nutzen – sonst pausiert sie bis zum Monatswechsel.</div>' : '') + '</div>';
+        '</div>' +
+        '<div class="credit-bar' + (rem <= 0 ? ' leer' : low ? ' knapp' : '') + '" role="progressbar" aria-valuenow="' + rem + '" aria-valuemin="0" aria-valuemax="' + lim + '" aria-label="Verbleibende KI-Credits">' +
+        '<i style="width:' + pct + '%"></i></div>' +
+        (rem <= 0 ? '<div class="lic-empty-note">Deine Credits sind für diesen Monat aufgebraucht. Buche Credits nach, um die KI weiter zu nutzen – sonst pausiert sie bis zum Monatswechsel.</div>' : '') + '</div>';
     } else {
       const over = aiTrialOver();
       /* Zusammengesetzt (Tage + Credits) → für den Wörterbuch-Sweep unerreichbar, daher direkt lokalisiert. */
@@ -7330,15 +7447,24 @@ RENDERERS.dashboard = function () {
           it: 'Prova: ancora {d} · <b>{r} / {l} crediti IA</b>',
           pl: 'Okres próbny: jeszcze {d} · <b>{r} / {l} kredytów AI</b>'
         }, { d: daysPhrase(dl), r: rem, l: lim });
-      const tier = (k, ic, name, price, curr, tag) => '<button class="lic-tier' + (curr ? ' active' : '') + '" data-lic="' + k + '">' + (tag ? '<span class="lic-tag">' + tag + '</span>' : '') + '<span class="lic-ic">' + ic + '</span><b>' + name + '</b><small>' + price + '</small></button>';
-      slot.innerHTML = '<div class="lic-widget"><div class="lic-status">' + status + '</div><div class="lic-tiers">' +
-        tier('free', '',
+      /* Der beworbene Tarif traegt eine eigene Klasse statt nur ein Abzeichen –
+         daran haengen Goldrahmen und Schein. */
+      const tier = (k, ic, name, price, curr, tag) => '<button class="lic-tier' + (curr ? ' active' : '') + (tag ? ' lic-top' : '') + '" data-lic="' + k + '">' + (tag ? '<span class="lic-tag">' + tag + '</span>' : '') + '<span class="lic-ic">' + ic + '</span><b>' + name + '</b><small>' + price + '</small></button>';
+      /* Waehrend der Testphase zeigt derselbe Balken wie beim bezahlten Plan den
+         Verbrauch. Nach Ablauf entfaellt er – dann gibt es nichts mehr zu fuellen. */
+      const pctT = lim > 0 ? Math.max(0, Math.min(100, Math.round(rem / lim * 100))) : 0;
+      const balken = over ? '' :
+        '<div class="credit-bar' + (rem <= 0 ? ' leer' : rem <= Math.max(5, lim * 0.2) ? ' knapp' : '') +
+        '" role="progressbar" aria-valuenow="' + rem + '" aria-valuemin="0" aria-valuemax="' + lim +
+        '" aria-label="Verbleibende KI-Credits"><i style="width:' + pctT + '%"></i></div>';
+      slot.innerHTML = '<div class="lic-widget"><div class="lic-status">' + status + '</div>' + balken + '<div class="lic-tiers">' +
+        tier('free', '🎁',
           pickLang({ de: 'Kostenlos', en: 'Free', fr: 'Gratuit', es: 'Gratis', it: 'Gratis', pl: 'Za darmo' }),
           pickLang({ de: 'dein Plan', en: 'your plan', fr: 'ta formule', es: 'tu plan', it: 'il tuo piano', pl: 'Twój plan' }), true) +
-        tier('premium', '', 'Premium',
+        tier('premium', '👑', 'Premium',
           pickLang({ de: '4,99 €/Mon.', en: '€4.99/mo.', fr: '4,99 €/mois', es: '4,99 €/mes', it: '4,99 €/mese', pl: '4,99 €/mies.' }), false,
           pickLang({ de: 'Top', en: 'Top', fr: 'Top', es: 'Top', it: 'Top', pl: 'Top' })) +
-        tier('family', '',
+        tier('family', '👨‍👩‍👧‍👦',
           pickLang({ de: 'Familie', en: 'Family', fr: 'Famille', es: 'Familia', it: 'Famiglia', pl: 'Rodzina' }),
           pickLang({ de: '14,99 €/Mon.', en: '€14.99/mo.', fr: '14,99 €/mois', es: '14,99 €/mes', it: '14,99 €/mese', pl: '14,99 €/mies.' }), false) +
         '</div></div>';
@@ -7384,10 +7510,14 @@ RENDERERS.dashboard = function () {
     fr: 'Rien d\'urgent aujourd\'hui – profite de ta journée.', es: 'Hoy no hay nada urgente: disfruta del día.',
     it: 'Oggi niente di urgente: goditi la giornata.', pl: 'Dziś nic pilnego – ciesz się dniem.'
   });
-  $('#briefWidget').innerHTML = '<section class="dash-section" style="background:linear-gradient(135deg,rgba(77,124,255,.12),rgba(77,124,255,.09));border:1px solid var(--border2)">' +
-    '<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px"><span style="font-size:22px"></span>' +
-    '<div style="display:flex;flex-direction:column;line-height:1.25"><b style="font-size:15px">Dein Tag heute</b><span style="font-size:12px;color:var(--muted)">' + esc(dstr) + '</span></div></div>' +
-    '<p style="margin:0' + (_bChips.length ? ' 0 12px' : '') + ';font-size:14.5px">' + esc(_bLine) + '</p>' +
+  /* Tageskarte: Symbol links in eigener Flaeche, grosser Titel, Pfeil rechts.
+     Nutzt die .di-*-Klassen statt Inline-Stilen – so folgt sie automatisch dem
+     Kartensystem (Verlauf, Innenabstand, Radius) statt eigene Werte zu setzen. */
+  $('#briefWidget').innerHTML = '<section class="dash-section brief-card">' +
+    '<div class="di-head"><span class="di-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#icSun"/></svg></span>' +
+    '<div class="di-head-tx"><b>Dein Tag heute</b><small>' + esc(dstr) + '</small></div>' +
+    '<button class="di-go di-arrow" data-go="calendar" aria-label="Kalender öffnen">›</button></div>' +
+    '<p style="margin:0' + (_bChips.length ? ' 0 12px' : '') + ';font-size:15px">' + esc(_bLine) + '</p>' +
     (_bChips.length ? '<div style="display:flex;flex-wrap:wrap;gap:8px">' + _bChips.map(c => '<button data-go="' + c.go + '" style="display:inline-flex;align-items:center;gap:6px;background:var(--card2);border:1px solid var(--border);border-radius:16px;padding:7px 13px;font-size:13px;color:var(--text);cursor:pointer;min-height:38px"><span>' + c.ic + '</span><b>' + c.n + '</b> ' + esc(c.l) + '</button>').join('') + '</div>' : '') +
     '</section>';
   if (!dashOn('brief')) $('#briefWidget').innerHTML = '';
