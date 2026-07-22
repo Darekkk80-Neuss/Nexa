@@ -2656,12 +2656,12 @@ applyTheme();
    weitere Sprachen sind wählbar und fallen sauber auf Englisch/Deutsch zurück. */
 /* Nur vollständig (statisch) übersetzte Sprachen sind wählbar – keine Halb-Übersetzungen. */
 const LANGS = [
-  { code: 'de', flag: '', native: 'Deutsch', locale: 'de-DE', country: 'Deutschland', region: 'Europa', common: true },
-  { code: 'en', flag: '', native: 'English', locale: 'en-GB', country: 'United Kingdom', region: 'Europa', common: true },
-  { code: 'fr', flag: '', native: 'Français', locale: 'fr-FR', country: 'France', region: 'Europa', common: true },
-  { code: 'es', flag: '', native: 'Español', locale: 'es-ES', country: 'España', region: 'Europa', common: true },
-  { code: 'it', flag: '', native: 'Italiano', locale: 'it-IT', country: 'Italia', region: 'Europa', common: true },
-  { code: 'pl', flag: '', native: 'Polski', locale: 'pl-PL', country: 'Polska', region: 'Europa', common: true }
+  { code: 'de', flag: '🇩🇪', native: 'Deutsch', locale: 'de-DE', country: 'Deutschland', region: 'Europa', common: true },
+  { code: 'en', flag: '🇬🇧', native: 'English', locale: 'en-GB', country: 'United Kingdom', region: 'Europa', common: true },
+  { code: 'fr', flag: '🇫🇷', native: 'Français', locale: 'fr-FR', country: 'France', region: 'Europa', common: true },
+  { code: 'es', flag: '🇪🇸', native: 'Español', locale: 'es-ES', country: 'España', region: 'Europa', common: true },
+  { code: 'it', flag: '🇮🇹', native: 'Italiano', locale: 'it-IT', country: 'Italia', region: 'Europa', common: true },
+  { code: 'pl', flag: '🇵🇱', native: 'Polski', locale: 'pl-PL', country: 'Polska', region: 'Europa', common: true }
 ];
 const SUPPORTED_LANGS = ['de', 'en', 'fr', 'es', 'it', 'pl'];
 const I18N = {
@@ -4987,24 +4987,24 @@ const MODULE_CATS = [
   { id: 'finanzen', label: 'Arbeit & Finanzen' }
 ];
 const MODULES = [
-  { id: 'chat', name: 'Ordela AI Sprachassistent', cat: 'ki', icon: '', help: 'Dein Sprach- und Text-Assistent: Sag einfach, was ansteht – Ordela legt Termine, Aufgaben, Ausgaben oder Notizen automatisch an.', steps: ['Tippe oder sprich „Termin morgen 15 Uhr Zahnarzt".', 'Frag „Was steht heute an?".'], keys: ['assistent', 'sprache', 'chat', 'ki', 'fragen', 'termin anlegen'] },
-  { id: 'docs', name: 'Ordela AI Dokumentenassistent', cat: 'ki', icon: '', help: 'Fotografiere einen Brief – Ordela erklärt ihn in einfachen Worten, erkennt Fristen und schlägt Aufgaben & Antworten vor.', steps: ['Tippe auf „Dokument scannen" und fotografiere einen Brief.', 'Übernimm die erkannte Frist in den Kalender.'], keys: ['brief', 'scan', 'dokument', 'frist', 'post', 'mahnung', 'analyse'] },
-  { id: 'docgen', name: 'Briefe Vorlagen', cat: 'ki', icon: '', help: 'Fertige Brief-Vorlagen (Kündigung, Widerspruch u. v. m.) – deine Daten sind schon eingetragen, du ergänzt nur Details und druckst als PDF.', steps: ['Wähle eine Vorlage, z. B. „Kündigung".', 'Ergänze die Angaben und exportiere als PDF.'], keys: ['brief', 'vorlage', 'kündigung', 'widerspruch', 'pdf', 'schreiben'] },
-  { id: 'vault', name: 'Dokumenten-Tresor', cat: 'ki', icon: '', help: 'Wichtige Dokumente sicher an einem Ort ablegen und blitzschnell wiederfinden – Fotos bleiben verschlüsselt auf deinem Gerät.', steps: ['Lege den ersten Eintrag an (z. B. „Ausweis").', 'Nutze die Suche, um ihn sofort zu finden.'], keys: ['tresor', 'dokumente', 'ablage', 'suche', 'ausweis', 'versicherung'] },
-  { id: 'tasks', name: 'Aufgaben', cat: 'alltag', icon: '', help: 'Alle To-dos an einem Ort – mit Fälligkeit und Priorität; überfällige werden hervorgehoben, damit nichts liegen bleibt.', steps: ['Lege deine erste Aufgabe an.', 'Setze eine Fälligkeit für eine wichtige Aufgabe.'], keys: ['aufgaben', 'todo', 'erledigen', 'fällig', 'priorität'] },
-  { id: 'calendar', name: 'Kalender', cat: 'alltag', icon: '', help: 'Dein Terminüberblick – Termine aus Briefen, Kindern und Fahrzeugen laufen hier automatisch zusammen.', steps: ['Trage deinen ersten Termin ein.', 'Schau dir „Anstehend" für die nächsten Tage an.'], keys: ['kalender', 'termin', 'datum', 'erinnerung'] },
-  { id: 'shopping', name: 'Einkaufsliste', cat: 'alltag', icon: '', help: 'Gemeinsame Einkaufsliste für die Familie – mit Mengen, Kategorie-Icons und Zuweisung; Zutaten aus „Gericht des Tages" direkt übernehmbar.', steps: ['Füge den ersten Artikel hinzu.', 'Weise die Liste einem Familienmitglied zu (wenn verbunden).'], keys: ['einkaufen', 'liste', 'supermarkt', 'besorgen', 'zutaten'] },
-  { id: 'waste', name: 'Müllkalender', cat: 'alltag', icon: '', help: 'Nie wieder die Tonne verpassen – trage deine Abholtage ein, das Dashboard erinnert dich rechtzeitig.', steps: ['Trage deine erste Tonne mit Wochentag ein.', 'Prüfe den Hinweis auf dem Dashboard.'], keys: ['müll', 'tonne', 'abholung', 'biotonne', 'restmüll'] },
-  { id: 'life', name: 'Lebenslagen', cat: 'alltag', icon: '', help: 'Schritt-für-Schritt-Hilfe für große Lebensereignisse (Umzug, Nachwuchs u. a.) – mit Checklisten, damit nichts vergessen wird.', steps: ['Wähle eine Lebenslage aus.', 'Hake die ersten Schritte ab.'], keys: ['umzug', 'geburt', 'checkliste', 'behörde', 'lebenslage'] },
-  { id: 'behoerden', name: 'Wegweiser', cat: 'alltag', icon: '', help: 'Zeigt dir den Weg durch Behördengänge: was du brauchst (Unterlagen, Schritte), welches Amt zuständig ist und wo das nächste in deiner Nähe liegt – mit Link zur offiziellen Servicesuche.', steps: ['Wähle ein Anliegen (z. B. „Auto anmelden”).', 'PLZ eingeben → nächstes Amt + offizieller Link.'], keys: ['behörde', 'amt', 'ummelden', 'anmelden', 'ausweis', 'zulassung', 'standesamt', 'gewerbe', 'wegweiser'] },
-  { id: 'family', name: 'Familienzentrale', cat: 'familie', icon: '', help: 'Alles Gemeinsame an einem Ort: geteilter Kalender, Aufgaben, Budget, Medikamente & Anlässe – synchron mit dem Partner.', steps: ['Füge Familienmitglieder hinzu.', 'Verbinde dich per Sync mit deinem Partner.'], keys: ['familie', 'partner', 'sync', 'budget', 'medikamente', 'geteilt'] },
-  { id: 'school', name: 'Kinder', cat: 'familie', icon: '', help: 'Organisiere deine Kinder: Stundenplan, Arzt-/Impftermine, Hobbys und Packlisten – Termine erscheinen automatisch im Kalender.', steps: ['Lege ein Kind an.', 'Trage einen Stundenplan oder Termin ein.'], keys: ['kinder', 'schule', 'stundenplan', 'impfung', 'hobby', 'packen'] },
-  { id: 'fit', name: 'OrdelaFit', cat: 'gesundheit', icon: '', help: 'Bewegung mit Erfolgserlebnis: starte bewusst eine Einheit (Schritte, km, Kalorien) oder trage manuell nach – mit Tagesziel und Belohnungen.', steps: ['Trage in Einstellungen Gewicht & Größe ein.', 'Starte eine Einheit oder trage eine Aktivität nach.'], keys: ['sport', 'bewegung', 'schritte', 'kalorien', 'fitness', 'ziel'] },
-  { id: 'checkup', name: 'Vorsorge & Erinnerungen', cat: 'gesundheit', icon: '', help: 'Werde rechtzeitig an Vorsorge & Impfungen erinnert – wähle aus 50+ Vorlagen, der nächste Termin wird automatisch berechnet.', steps: ['Wähle eine Vorlage, z. B. „Zahnarzt".', 'Trage „zuletzt am" ein – der nächste Termin erscheint.'], keys: ['vorsorge', 'arzt', 'impfung', 'gesundheit', 'zahnarzt'] },
-  { id: 'emergency', name: 'Notfallbereich', cat: 'gesundheit', icon: '', help: 'Wichtige Notfall-Infos griffbereit: Kontakte, medizinische Angaben, Versicherungen – bleibt rein lokal auf deinem Gerät.', steps: ['Trage einen Notfallkontakt ein.', 'Ergänze deine wichtigsten medizinischen Angaben.'], keys: ['notfall', 'kontakt', 'blutgruppe', 'allergie', 'versicherung'] },
-  { id: 'work', name: 'Arbeitszeit', cat: 'finanzen', icon: '', help: 'Erfasse Arbeitszeiten, Schichten und Abwesenheiten – mit Pausen, Saldo und Arbeitszeitnachweis als PDF.', steps: ['Lege deine Dienste (Früh/Spät/Nacht) mit Zeiten an.', 'Trage einen Arbeitstag ein.'], keys: ['arbeit', 'schicht', 'stunden', 'dienst', 'überstunden', 'urlaub'] },
-  { id: 'contracts', name: 'Verträge & Abos', cat: 'finanzen', icon: '', help: 'Behalte Verträge & Abos im Blick – mit Kündigungsfristen-Radar und Direktlink in den Kündigungsbrief.', steps: ['Lege einen Vertrag mit Kündigungsfrist an.', 'Prüfe das Fristen-Radar auf dem Dashboard.'], keys: ['vertrag', 'abo', 'kündigung', 'frist', 'kosten'] },
-  { id: 'vehicles', name: 'Auto & Motorrad', cat: 'finanzen', icon: '', help: 'Verwalte deine Fahrzeuge: TÜV/HU, Tankvorgänge und Kosten – die App erinnert rechtzeitig an fällige Termine.', steps: ['Lege ein Fahrzeug an.', 'Trage den TÜV-Termin ein.'], keys: ['auto', 'motorrad', 'tüv', 'tanken', 'kosten', 'fahrzeug'] }
+  { id: 'chat', name: 'Ordela AI Sprachassistent', cat: 'ki', icon: '🤖', help: 'Dein Sprach- und Text-Assistent: Sag einfach, was ansteht – Ordela legt Termine, Aufgaben, Ausgaben oder Notizen automatisch an.', steps: ['Tippe oder sprich „Termin morgen 15 Uhr Zahnarzt".', 'Frag „Was steht heute an?".'], keys: ['assistent', 'sprache', 'chat', 'ki', 'fragen', 'termin anlegen'] },
+  { id: 'docs', name: 'Ordela AI Dokumentenassistent', cat: 'ki', icon: '📄', help: 'Fotografiere einen Brief – Ordela erklärt ihn in einfachen Worten, erkennt Fristen und schlägt Aufgaben & Antworten vor.', steps: ['Tippe auf „Dokument scannen" und fotografiere einen Brief.', 'Übernimm die erkannte Frist in den Kalender.'], keys: ['brief', 'scan', 'dokument', 'frist', 'post', 'mahnung', 'analyse'] },
+  { id: 'docgen', name: 'Briefe Vorlagen', cat: 'ki', icon: '✍️', help: 'Fertige Brief-Vorlagen (Kündigung, Widerspruch u. v. m.) – deine Daten sind schon eingetragen, du ergänzt nur Details und druckst als PDF.', steps: ['Wähle eine Vorlage, z. B. „Kündigung".', 'Ergänze die Angaben und exportiere als PDF.'], keys: ['brief', 'vorlage', 'kündigung', 'widerspruch', 'pdf', 'schreiben'] },
+  { id: 'vault', name: 'Dokumenten-Tresor', cat: 'ki', icon: '🔐', help: 'Wichtige Dokumente sicher an einem Ort ablegen und blitzschnell wiederfinden – Fotos bleiben verschlüsselt auf deinem Gerät.', steps: ['Lege den ersten Eintrag an (z. B. „Ausweis").', 'Nutze die Suche, um ihn sofort zu finden.'], keys: ['tresor', 'dokumente', 'ablage', 'suche', 'ausweis', 'versicherung'] },
+  { id: 'tasks', name: 'Aufgaben', cat: 'alltag', icon: '✅', help: 'Alle To-dos an einem Ort – mit Fälligkeit und Priorität; überfällige werden hervorgehoben, damit nichts liegen bleibt.', steps: ['Lege deine erste Aufgabe an.', 'Setze eine Fälligkeit für eine wichtige Aufgabe.'], keys: ['aufgaben', 'todo', 'erledigen', 'fällig', 'priorität'] },
+  { id: 'calendar', name: 'Kalender', cat: 'alltag', icon: '📅', help: 'Dein Terminüberblick – Termine aus Briefen, Kindern und Fahrzeugen laufen hier automatisch zusammen.', steps: ['Trage deinen ersten Termin ein.', 'Schau dir „Anstehend" für die nächsten Tage an.'], keys: ['kalender', 'termin', 'datum', 'erinnerung'] },
+  { id: 'shopping', name: 'Einkaufsliste', cat: 'alltag', icon: '🛒', help: 'Gemeinsame Einkaufsliste für die Familie – mit Mengen, Kategorie-Icons und Zuweisung; Zutaten aus „Gericht des Tages" direkt übernehmbar.', steps: ['Füge den ersten Artikel hinzu.', 'Weise die Liste einem Familienmitglied zu (wenn verbunden).'], keys: ['einkaufen', 'liste', 'supermarkt', 'besorgen', 'zutaten'] },
+  { id: 'waste', name: 'Müllkalender', cat: 'alltag', icon: '🗑️', help: 'Nie wieder die Tonne verpassen – trage deine Abholtage ein, das Dashboard erinnert dich rechtzeitig.', steps: ['Trage deine erste Tonne mit Wochentag ein.', 'Prüfe den Hinweis auf dem Dashboard.'], keys: ['müll', 'tonne', 'abholung', 'biotonne', 'restmüll'] },
+  { id: 'life', name: 'Lebenslagen', cat: 'alltag', icon: '🧭', help: 'Schritt-für-Schritt-Hilfe für große Lebensereignisse (Umzug, Nachwuchs u. a.) – mit Checklisten, damit nichts vergessen wird.', steps: ['Wähle eine Lebenslage aus.', 'Hake die ersten Schritte ab.'], keys: ['umzug', 'geburt', 'checkliste', 'behörde', 'lebenslage'] },
+  { id: 'behoerden', name: 'Wegweiser', cat: 'alltag', icon: '🗺️', help: 'Zeigt dir den Weg durch Behördengänge: was du brauchst (Unterlagen, Schritte), welches Amt zuständig ist und wo das nächste in deiner Nähe liegt – mit Link zur offiziellen Servicesuche.', steps: ['Wähle ein Anliegen (z. B. „Auto anmelden”).', 'PLZ eingeben → nächstes Amt + offizieller Link.'], keys: ['behörde', 'amt', 'ummelden', 'anmelden', 'ausweis', 'zulassung', 'standesamt', 'gewerbe', 'wegweiser'] },
+  { id: 'family', name: 'Familienzentrale', cat: 'familie', icon: '👪', help: 'Alles Gemeinsame an einem Ort: geteilter Kalender, Aufgaben, Budget, Medikamente & Anlässe – synchron mit dem Partner.', steps: ['Füge Familienmitglieder hinzu.', 'Verbinde dich per Sync mit deinem Partner.'], keys: ['familie', 'partner', 'sync', 'budget', 'medikamente', 'geteilt'] },
+  { id: 'school', name: 'Kinder', cat: 'familie', icon: '🧒', help: 'Organisiere deine Kinder: Stundenplan, Arzt-/Impftermine, Hobbys und Packlisten – Termine erscheinen automatisch im Kalender.', steps: ['Lege ein Kind an.', 'Trage einen Stundenplan oder Termin ein.'], keys: ['kinder', 'schule', 'stundenplan', 'impfung', 'hobby', 'packen'] },
+  { id: 'fit', name: 'OrdelaFit', cat: 'gesundheit', icon: '💪', help: 'Bewegung mit Erfolgserlebnis: starte bewusst eine Einheit (Schritte, km, Kalorien) oder trage manuell nach – mit Tagesziel und Belohnungen.', steps: ['Trage in Einstellungen Gewicht & Größe ein.', 'Starte eine Einheit oder trage eine Aktivität nach.'], keys: ['sport', 'bewegung', 'schritte', 'kalorien', 'fitness', 'ziel'] },
+  { id: 'checkup', name: 'Vorsorge & Erinnerungen', cat: 'gesundheit', icon: '🩺', help: 'Werde rechtzeitig an Vorsorge & Impfungen erinnert – wähle aus 50+ Vorlagen, der nächste Termin wird automatisch berechnet.', steps: ['Wähle eine Vorlage, z. B. „Zahnarzt".', 'Trage „zuletzt am" ein – der nächste Termin erscheint.'], keys: ['vorsorge', 'arzt', 'impfung', 'gesundheit', 'zahnarzt'] },
+  { id: 'emergency', name: 'Notfallbereich', cat: 'gesundheit', icon: '🆘', help: 'Wichtige Notfall-Infos griffbereit: Kontakte, medizinische Angaben, Versicherungen – bleibt rein lokal auf deinem Gerät.', steps: ['Trage einen Notfallkontakt ein.', 'Ergänze deine wichtigsten medizinischen Angaben.'], keys: ['notfall', 'kontakt', 'blutgruppe', 'allergie', 'versicherung'] },
+  { id: 'work', name: 'Arbeitszeit', cat: 'finanzen', icon: '🕒', help: 'Erfasse Arbeitszeiten, Schichten und Abwesenheiten – mit Pausen, Saldo und Arbeitszeitnachweis als PDF.', steps: ['Lege deine Dienste (Früh/Spät/Nacht) mit Zeiten an.', 'Trage einen Arbeitstag ein.'], keys: ['arbeit', 'schicht', 'stunden', 'dienst', 'überstunden', 'urlaub'] },
+  { id: 'contracts', name: 'Verträge & Abos', cat: 'finanzen', icon: '🧾', help: 'Behalte Verträge & Abos im Blick – mit Kündigungsfristen-Radar und Direktlink in den Kündigungsbrief.', steps: ['Lege einen Vertrag mit Kündigungsfrist an.', 'Prüfe das Fristen-Radar auf dem Dashboard.'], keys: ['vertrag', 'abo', 'kündigung', 'frist', 'kosten'] },
+  { id: 'vehicles', name: 'Auto & Motorrad', cat: 'finanzen', icon: '🚗', help: 'Verwalte deine Fahrzeuge: TÜV/HU, Tankvorgänge und Kosten – die App erinnert rechtzeitig an fällige Termine.', steps: ['Lege ein Fahrzeug an.', 'Trage den TÜV-Termin ein.'], keys: ['auto', 'motorrad', 'tüv', 'tanken', 'kosten', 'fahrzeug'] }
 ];
 function moduleMeta(id) { for (let i = 0; i < MODULES.length; i++) if (MODULES[i].id === id) return MODULES[i]; return null; }
 /* Coach-Marks (Welle 2): 1 kurzer Tipp beim ERSTEN Öffnen eines Moduls – nicht-blockierend,
@@ -7260,25 +7260,25 @@ let dashShopOpen = false;   // Einkaufs-Sektion auf dem Dashboard eingeklappt (D
    Blöcke sind standardmäßig AN; ausgeblendete stehen in store.dashHidden (id→1).
    Inhaltslose Blöcke bleiben ohnehin unsichtbar (Bedingungen im Render). */
 const DASH_BLOCKS = [
-  { id: 'brief', name: 'Dein Tag heute', icon: '' },
-  { id: 'weather', name: 'Wetter', icon: '' },
-  { id: 'holidays', name: 'Feiertage & Brückentage', icon: '' },
-  { id: 'fuel', name: 'Spritpreise', icon: '', defOff: true, deOnly: true },   // standardmäßig aus; Datenquelle Tankerkönig = NUR Deutschland → außerhalb DE komplett ausgeblendet
-  { id: 'meal', name: 'Gericht des Tages', icon: '' },
-  { id: 'quickactions', name: 'Schnellzugriff', icon: '' },
-  { id: 'capture', name: 'Schnell erfassen', icon: '' },
-  { id: 'firststeps', name: 'Erste Schritte', icon: '' },
-  { id: 'meds', name: 'Medikamente', icon: '' },
-  { id: 'events', name: 'Nächste Termine', icon: '' },
-  { id: 'tasks', name: 'Wichtige Aufgaben', icon: '' },
-  { id: 'famtasks', name: 'Familienaufgaben', icon: '' },
-  { id: 'shopping', name: 'Einkaufsliste', icon: '' },
-  { id: 'finance', name: 'Finanzen', icon: '' },
-  { id: 'family', name: 'Familie', icon: '' },
-  { id: 'docs', name: 'Dokumente', icon: '' },
-  { id: 'contracts', name: 'Verträge & Fristen', icon: '' },
-  { id: 'waste', name: 'Müllabholung', icon: '' },
-  { id: 'checkup', name: 'Vorsorge', icon: '' }
+  { id: 'brief', name: 'Dein Tag heute', icon: '☀️' },
+  { id: 'weather', name: 'Wetter', icon: '🌤️' },
+  { id: 'holidays', name: 'Feiertage & Brückentage', icon: '🎉' },
+  { id: 'fuel', name: 'Spritpreise', icon: '⛽', defOff: true, deOnly: true },   // standardmäßig aus; Datenquelle Tankerkönig = NUR Deutschland → außerhalb DE komplett ausgeblendet
+  { id: 'meal', name: 'Gericht des Tages', icon: '🍽️' },
+  { id: 'quickactions', name: 'Schnellzugriff', icon: '⚡' },
+  { id: 'capture', name: 'Schnell erfassen', icon: '✍️' },
+  { id: 'firststeps', name: 'Erste Schritte', icon: '🚀' },
+  { id: 'meds', name: 'Medikamente', icon: '💊' },
+  { id: 'events', name: 'Nächste Termine', icon: '📅' },
+  { id: 'tasks', name: 'Wichtige Aufgaben', icon: '✅' },
+  { id: 'famtasks', name: 'Familienaufgaben', icon: '👪' },
+  { id: 'shopping', name: 'Einkaufsliste', icon: '🛒' },
+  { id: 'finance', name: 'Finanzen', icon: '💰' },
+  { id: 'family', name: 'Familie', icon: '🏡' },
+  { id: 'docs', name: 'Dokumente', icon: '📄' },
+  { id: 'contracts', name: 'Verträge & Fristen', icon: '🧾' },
+  { id: 'waste', name: 'Müllabholung', icon: '🗑️' },
+  { id: 'checkup', name: 'Vorsorge', icon: '🩺' }
 ];
 function dashDefOff(id) { const b = DASH_BLOCKS.find(x => x.id === id); return !!(b && b.defOff); }
 function dashOn(id) {
@@ -7489,10 +7489,10 @@ RENDERERS.dashboard = function () {
   const _bChips = [];
   /* Das Briefing entsteht komplett aus Zahlen + Singular/Plural + Bindewort und ist
      darum für den Wörterbuch-Sweep unerreichbar – alles direkt lokalisiert. */
-  if (evToday) _bChips.push({ ic: '', n: evToday, l: pickLang({ de: 'Termine', en: 'appointments', fr: 'rendez-vous', es: 'citas', it: 'appuntamenti', pl: 'terminy' }), go: 'calendar' });
-  if (_bTasks.length) _bChips.push({ ic: '', n: _bTasks.length, l: pickLang({ de: 'heute fällig', en: 'due today', fr: 'à faire aujourd\'hui', es: 'para hoy', it: 'in scadenza oggi', pl: 'na dziś' }), go: 'tasks' });
-  if (_bMeds) _bChips.push({ ic: '', n: _bMeds, l: pickLang({ de: 'Medikamente', en: 'medications', fr: 'médicaments', es: 'medicamentos', it: 'farmaci', pl: 'leki' }), go: 'family' });
-  if (_bCt) _bChips.push({ ic: '', n: _bCt, l: pickLang({ de: 'Fristen', en: 'deadlines', fr: 'échéances', es: 'plazos', it: 'scadenze', pl: 'terminy' }), go: 'contracts' });
+  if (evToday) _bChips.push({ ic: '📅', n: evToday, l: pickLang({ de: 'Termine', en: 'appointments', fr: 'rendez-vous', es: 'citas', it: 'appuntamenti', pl: 'terminy' }), go: 'calendar' });
+  if (_bTasks.length) _bChips.push({ ic: '✅', n: _bTasks.length, l: pickLang({ de: 'heute fällig', en: 'due today', fr: 'à faire aujourd\'hui', es: 'para hoy', it: 'in scadenza oggi', pl: 'na dziś' }), go: 'tasks' });
+  if (_bMeds) _bChips.push({ ic: '💊', n: _bMeds, l: pickLang({ de: 'Medikamente', en: 'medications', fr: 'médicaments', es: 'medicamentos', it: 'farmaci', pl: 'leki' }), go: 'family' });
+  if (_bCt) _bChips.push({ ic: '🧾', n: _bCt, l: pickLang({ de: 'Fristen', en: 'deadlines', fr: 'échéances', es: 'plazos', it: 'scadenze', pl: 'terminy' }), go: 'contracts' });
   let _bLine;
   if (_bChips.length) {
     const bits = [];
@@ -7543,7 +7543,7 @@ RENDERERS.dashboard = function () {
   });
   medRows.sort((a, b) => a.sortT < b.sortT ? -1 : a.sortT > b.sortT ? 1 : 0);
   if (dashOn('meds') && medRows.length) secHTML.meds = dsec('Medikamente heute', 'family', 'Plan', medRows.slice(0, 6).map(r => drow({
-    emoji: '', iconColor: r.mm ? r.mm.color : '#64748b',
+    emoji: '💊', iconColor: r.mm ? r.mm.color : '#64748b',
     title: (r.mm ? r.mm.name + ': ' : '') + r.md.name,
     sub: (r.md.dose ? r.md.dose + ' · ' : '') + (r.t ? oclock(r.t) : (r.md.date ? t('fmt.once_today') : t('fmt.daily'))),
     chip: r.t ? (r.taken ? { cls: 'chip-ok', text: '✓ genommen' } : { cls: 'chip-warn', text: 'offen' }) : null,
@@ -7606,10 +7606,10 @@ RENDERERS.dashboard = function () {
   (store.kids || []).forEach(kid => {
     const td = new Date().getDay(); let sd = 0, lb = '';
     for (let o = 0; o < 7; o++) { const d = (td + o) % 7; if (d >= 1 && d <= 5 && kid.sched && kid.sched[d] && kid.sched[d].subjects.length) { sd = d; lb = o === 0 ? 'heute' : o === 1 ? 'morgen' : DAY_SHORT[d]; break; } }
-    if (sd) { const sl = lessonSlots(kid, sd); famRows.push({ emoji: '', iconColor: kid.color, title: kid.name + ' · ' + sl[0].start + '–' + sl[sl.length - 1].end, sub: sl.map(s => s.subject).join(', '), meta: lb, go: 'school', k: lb === 'heute' ? '0' : '1' }); }
+    if (sd) { const sl = lessonSlots(kid, sd); famRows.push({ emoji: '🎒', iconColor: kid.color, title: kid.name + ' · ' + sl[0].start + '–' + sl[sl.length - 1].end, sub: sl.map(s => s.subject).join(', '), meta: lb, go: 'school', k: lb === 'heute' ? '0' : '1' }); }
   });
-  store.events.filter(e => e.source === 'kind' && e.date >= today).sort((a, b) => a.date < b.date ? -1 : 1).slice(0, 2).forEach(e => famRows.push({ emoji: '', title: e.title, sub: cap(fmtDate(e.date)), meta: relDay(e.date), go: 'school', k: '2' }));
-  ((store.family && store.family.members) ? store.family.members : []).filter(m => m.birthday).map(m => ({ name: m.name, color: m.color, next: nextOccur(m.birthday), age: ageOn(m.birthday) })).filter(b => dayDiff(b.next) <= 30).forEach(b => famRows.push({ emoji: '', iconColor: b.color, title: b.name + ' ' + t('fmt.turns', { n: b.age }), sub: cap(fmtDate(b.next)), meta: relDay(b.next), go: 'family', k: '3' }));
+  store.events.filter(e => e.source === 'kind' && e.date >= today).sort((a, b) => a.date < b.date ? -1 : 1).slice(0, 2).forEach(e => famRows.push({ emoji: '📌', title: e.title, sub: cap(fmtDate(e.date)), meta: relDay(e.date), go: 'school', k: '2' }));
+  ((store.family && store.family.members) ? store.family.members : []).filter(m => m.birthday).map(m => ({ name: m.name, color: m.color, next: nextOccur(m.birthday), age: ageOn(m.birthday) })).filter(b => dayDiff(b.next) <= 30).forEach(b => famRows.push({ emoji: '🎂', iconColor: b.color, title: b.name + ' ' + t('fmt.turns', { n: b.age }), sub: cap(fmtDate(b.next)), meta: relDay(b.next), go: 'family', k: '3' }));
   /* Familienaufgaben haben eine eigene Dashboard-Sektion („Familienaufgaben") – hier nicht doppelt zeigen. */
   famRows.sort((a, b) => a.k < b.k ? -1 : 1);
   if (dashOn('family') && famRows.length) secHTML.family = dsec('Familie', 'school', 'Alle', famRows.slice(0, 3).map(drow).join(''));
@@ -7645,7 +7645,7 @@ RENDERERS.dashboard = function () {
   const cuSoon = cuUpcoming(14);
   if (dashOn('checkup') && cuSoon.length) secHTML.checkup = dsec('Vorsorge', 'checkup', 'Alle', cuSoon.slice(0, 4).map(x => {
     const d = dayDiff(x.next), pend = !x.c.lastDate;
-    return drow({ emoji: '', title: x.c.title, sub: t('cu.every_months', { n: x.c.intervalMonths }), chip: { cls: (pend || d < 0) ? 'chip-danger' : 'chip-warn', text: pend ? 'steht aus' : d < 0 ? 'überfällig' : relDay(x.next) }, go: 'checkup' });
+    return drow({ emoji: '🩺', title: x.c.title, sub: t('cu.every_months', { n: x.c.intervalMonths }), chip: { cls: (pend || d < 0) ? 'chip-danger' : 'chip-warn', text: pend ? 'steht aus' : d < 0 ? 'überfällig' : relDay(x.next) }, go: 'checkup' });
   }).join(''));
 
   $('#fsWidget').innerHTML = dashOn('firststeps') ? fsChecklistHTML() : '';   // „Erste Schritte"-Checkliste (Welle 2)
@@ -7959,7 +7959,7 @@ function lessonSlots(kid, day) {
 }
 
 const kidSection = {};   /* pro Kind gewählter Bereich: plan|termine|hobbys|pack */
-const APPT_KIND = { arzt: { i: '', l: 'Arzt' }, impf: { i: '', l: 'Impfung' }, schule: { i: '', l: 'Kita/Schule' }, sonst: { i: '', l: 'Sonstiges' } };
+const APPT_KIND = { arzt: { i: '🩺', l: 'Arzt' }, impf: { i: '💉', l: 'Impfung' }, schule: { i: '🏫', l: 'Kita/Schule' }, sonst: { i: '📌', l: 'Sonstiges' } };
 const DOW7 = { 1: 'Mo', 2: 'Di', 3: 'Mi', 4: 'Do', 5: 'Fr', 6: 'Sa', 0: 'So' };
 const DOW7FULL = { 1: 'Montag', 2: 'Dienstag', 3: 'Mittwoch', 4: 'Donnerstag', 5: 'Freitag', 6: 'Samstag', 0: 'Sonntag' };
 const PACK_TEMPLATES = {
@@ -8167,14 +8167,14 @@ $('#kidList').addEventListener('change', e => {
 
 /* ============================== DOKUMENTENASSISTENT ============================== */
 const DOC_CATS = [
-  { id: 'wohnen', icon: '', label: 'Wohnen' },
-  { id: 'vertraege', icon: '', label: 'Verträge & Abos' },
-  { id: 'behoerden', icon: '', label: 'Behörden & Meldungen' },
-  { id: 'arbeit', icon: '', label: 'Arbeit' },
-  { id: 'finanzen', icon: '', label: 'Finanzen' },
-  { id: 'energie', icon: '', label: 'Energie & Versorgung' },
-  { id: 'fahrzeug', icon: '', label: 'Fahrzeug' },
-  { id: 'mitteilungen', icon: '', label: 'Mitteilungen' }
+  { id: 'wohnen', icon: '🏠', label: 'Wohnen' },
+  { id: 'vertraege', icon: '📱', label: 'Verträge & Abos' },
+  { id: 'behoerden', icon: '🏢', label: 'Behörden & Meldungen' },
+  { id: 'arbeit', icon: '💼', label: 'Arbeit' },
+  { id: 'finanzen', icon: '💰', label: 'Finanzen' },
+  { id: 'energie', icon: '⚡', label: 'Energie & Versorgung' },
+  { id: 'fahrzeug', icon: '🚗', label: 'Fahrzeug' },
+  { id: 'mitteilungen', icon: '📬', label: 'Mitteilungen' }
 ];
 const DFIELDS = {
   empfName: { l: 'Empfänger (Firma/Person)', ph: 'z. B. Musterfirma GmbH' },
@@ -8677,7 +8677,7 @@ $('#dgRoot').addEventListener('change', e => {
 /* Schritt: {t, note?, due (Tage-Offset zum Stichtag, negativ=vorher), tpl?(Brief-ID), link?(View)} */
 const LIFE = [
   {
-    id: 'geburt', icon: '', title: 'Geburt eines Kindes', dateLabel: 'Geburtsdatum (oder errechneter Termin)',
+    id: 'geburt', icon: '👶', title: 'Geburt eines Kindes', dateLabel: 'Geburtsdatum (oder errechneter Termin)',
     short: 'Anträge, Fristen und Behördengänge nach der Geburt',
     intro: 'Herzlichen Glückwunsch! Diese Schritte helfen dir, in den ersten Wochen nichts Wichtiges zu vergessen.',
     steps: [
@@ -8692,7 +8692,7 @@ const LIFE = [
     ]
   },
   {
-    id: 'kita', icon: '', title: 'Eingewöhnung in der Kita', dateLabel: 'Erster Kita-Tag',
+    id: 'kita', icon: '🧸', title: 'Eingewöhnung in der Kita', dateLabel: 'Erster Kita-Tag',
     short: 'Sanfter Start in die Kita – gut vorbereitet',
     intro: 'Eine gute Eingewöhnung nimmt Druck von allen. Diese Punkte machen den Start leichter.',
     steps: [
@@ -8707,7 +8707,7 @@ const LIFE = [
     ]
   },
   {
-    id: 'schulstart', icon: '', title: 'Schulstart', dateLabel: 'Erster Schultag',
+    id: 'schulstart', icon: '🎒', title: 'Schulstart', dateLabel: 'Erster Schultag',
     short: 'Alles für einen entspannten Schulanfang',
     intro: 'Vom Ranzen bis zur Betreuung – so ist zum ersten Schultag alles bereit.',
     steps: [
@@ -8722,7 +8722,7 @@ const LIFE = [
     ]
   },
   {
-    id: 'trennung', icon: '', title: 'Trennung', dateLabel: 'Stichtag der Trennung',
+    id: 'trennung', icon: '💔', title: 'Trennung', dateLabel: 'Stichtag der Trennung',
     short: 'Ruhig und geordnet durch eine schwere Zeit',
     intro: 'Eine Trennung bringt viel Organisatorisches mit sich. Diese Liste hilft dir, den Überblick zu behalten – Schritt für Schritt.',
     steps: [
@@ -8737,7 +8737,7 @@ const LIFE = [
     ]
   },
   {
-    id: 'sterbefall', icon: '', title: 'Sterbefall', dateLabel: 'Sterbedatum',
+    id: 'sterbefall', icon: '🕊️', title: 'Sterbefall', dateLabel: 'Sterbedatum',
     short: 'Ruhig und geordnet durch eine schwere Zeit',
     intro: 'Der Verlust eines nahen Menschen ist schwer. Diese Checkliste nimmt dir Organisatorisches ab, damit du dich auf das Wesentliche konzentrieren kannst – Schritt für Schritt, in deinem Tempo.',
     steps: [
@@ -8757,7 +8757,7 @@ const LIFE = [
     ]
   },
   {
-    id: 'umzug', icon: '', title: 'Umzug', dateLabel: 'Umzugsdatum',
+    id: 'umzug', icon: '📦', title: 'Umzug', dateLabel: 'Umzugsdatum',
     short: 'Von der Kündigung bis zur Ummeldung',
     intro: 'Ein Umzug hat viele Fristen. Ordela sortiert sie dir – inklusive fertiger Briefe.',
     steps: [
@@ -8774,7 +8774,7 @@ const LIFE = [
     ]
   },
   {
-    id: 'urlaub', icon: '', title: 'Urlaub mit Kindern', dateLabel: 'Abreisedatum',
+    id: 'urlaub', icon: '🏖️', title: 'Urlaub mit Kindern', dateLabel: 'Abreisedatum',
     short: 'Entspannt verreisen – nichts vergessen',
     intro: 'Mit Kindern will der Urlaub gut vorbereitet sein. Diese Liste sorgt für einen ruhigen Start.',
     steps: [
@@ -8789,7 +8789,7 @@ const LIFE = [
     ]
   },
   {
-    id: 'wiedereinstieg', icon: '', title: 'Wiedereinstieg in den Beruf', dateLabel: 'Erster Arbeitstag',
+    id: 'wiedereinstieg', icon: '💼', title: 'Wiedereinstieg in den Beruf', dateLabel: 'Erster Arbeitstag',
     short: 'Zurück in den Job – gut organisiert',
     intro: 'Der Wiedereinstieg klappt entspannter, wenn Betreuung und Organisation vorher stehen.',
     steps: [
@@ -8955,12 +8955,12 @@ const POLLEN_MAP = { alder_pollen: 'Erle', birch_pollen: 'Birke', grass_pollen: 
 
 function wCode(c, day) {
   const m = {
-    0: ['Klar', day ? '' : ''], 1: ['Überwiegend klar', day ? '' : ''], 2: ['Teils bewölkt', day ? '' : ''], 3: ['Bedeckt', ''],
-    45: ['Nebel', ''], 48: ['Reifnebel', ''], 51: ['Leichter Niesel', ''], 53: ['Niesel', ''], 55: ['Dichter Niesel', ''],
-    56: ['Gefrierender Niesel', ''], 57: ['Gefrierender Niesel', ''], 61: ['Leichter Regen', ''], 63: ['Regen', ''], 65: ['Starker Regen', ''],
-    66: ['Gefrierender Regen', ''], 67: ['Gefrierender Regen', ''], 71: ['Leichter Schnee', ''], 73: ['Schnee', ''], 75: ['Starker Schnee', ''],
-    77: ['Schneegriesel', ''], 80: ['Regenschauer', ''], 81: ['Regenschauer', ''], 82: ['Heftige Schauer', ''], 85: ['Schneeschauer', ''], 86: ['Schneeschauer', ''],
-    95: ['Gewitter', ''], 96: ['Gewitter mit Hagel', ''], 99: ['Gewitter mit Hagel', '']
+    0: ['Klar', day ? '☀️' : '🌙'], 1: ['Überwiegend klar', day ? '🌤️' : '🌙'], 2: ['Teils bewölkt', day ? '⛅' : '☁️'], 3: ['Bedeckt', '☁️'],
+    45: ['Nebel', '🌫️'], 48: ['Reifnebel', '🌫️'], 51: ['Leichter Niesel', '🌦️'], 53: ['Niesel', '🌦️'], 55: ['Dichter Niesel', '🌧️'],
+    56: ['Gefrierender Niesel', '🌧️'], 57: ['Gefrierender Niesel', '🌧️'], 61: ['Leichter Regen', '🌦️'], 63: ['Regen', '🌧️'], 65: ['Starker Regen', '🌧️'],
+    66: ['Gefrierender Regen', '🌧️'], 67: ['Gefrierender Regen', '🌧️'], 71: ['Leichter Schnee', '🌨️'], 73: ['Schnee', '🌨️'], 75: ['Starker Schnee', '❄️'],
+    77: ['Schneegriesel', '🌨️'], 80: ['Regenschauer', '🌦️'], 81: ['Regenschauer', '🌧️'], 82: ['Heftige Schauer', '⛈️'], 85: ['Schneeschauer', '🌨️'], 86: ['Schneeschauer', '🌨️'],
+    95: ['Gewitter', '⛈️'], 96: ['Gewitter mit Hagel', '⛈️'], 99: ['Gewitter mit Hagel', '⛈️']
   };
   /* Die Bezeichnung landet verkettet in der Anzeige („21° Bedeckt") und ist so für den
      DOM-Sweep unerreichbar – deshalb hier über das Wörterbuch übersetzen. */
@@ -9847,7 +9847,7 @@ $('#fitRoot') && $('#fitRoot').addEventListener('change', e => {
 /* ============================== FAMILIENZENTRALE ============================== */
 /* Rollenmodell (Client, Phase 1): owner=Administrator, adult=Erwachsen, child=Kind (<18).
    Kinder sind eingeschränkt (keine KI, kein API-Key, keine Ausgaben ohne Freigabe). Zahlung/serverseitiges Enforcement folgt in Phase 2. */
-const FAM_ROLE_META = { owner: { label: 'Administrator', icon: '' }, adult: { label: 'Erwachsen', icon: '' }, child: { label: 'Kind', icon: '' } };
+const FAM_ROLE_META = { owner: { label: 'Administrator', icon: '👑' }, adult: { label: 'Erwachsen', icon: '🧑' }, child: { label: 'Kind', icon: '🧒' } };
 const FAMILY_AI_LIMIT = 1600;   // Basis-Familien-KI-Kontingent/Monat (enthaltene 2 Erwachsene, geteilt); je Zusatz-Erwachsener +500 – muss zur Formel in get_entitlements (DB) passen
 const FAMILY_MAX_ADULTS = 2, FAMILY_MAX_CHILDREN = 3;   // im Familienabo enthalten (weitere = kostenpflichtige Add-ons)
 /* Zusatzmitglieder als Google-Play-Billing-Abos. Kauf läuft nur in der Android-App (TWA) über die
@@ -10068,13 +10068,13 @@ const isChildMember = (m) => !!m && m.role === 'child';
 function memberCan(m, cap) { if (!m) return false; if (m.role === 'child') return cap === 'view'; return true; }
 /* Sync-Freigabe pro Bereich (Erwachsene teilen einzeln; sensible Bereiche default aus). */
 const SHARE_AREAS = [
-  { key: 'calendar', icon: '', label: 'Kalender', def: true },
+  { key: 'calendar', icon: '📅', label: 'Kalender', def: true },
   { key: 'appointments', icon: '⏰', label: 'Termine', def: true },
-  { key: 'tasks', icon: '', label: 'Aufgaben', def: true },
-  { key: 'reminders', icon: '', label: 'Erinnerungen', def: true },
-  { key: 'documents', icon: '', label: 'Dokumente', def: false },
-  { key: 'expenses', icon: '', label: 'Ausgaben', def: false },
-  { key: 'household', icon: '', label: 'Haushaltsinfos', def: false }
+  { key: 'tasks', icon: '✅', label: 'Aufgaben', def: true },
+  { key: 'reminders', icon: '🔔', label: 'Erinnerungen', def: true },
+  { key: 'documents', icon: '📄', label: 'Dokumente', def: false },
+  { key: 'expenses', icon: '💰', label: 'Ausgaben', def: false },
+  { key: 'household', icon: '🏠', label: 'Haushaltsinfos', def: false }
 ];
 const isShared = (key) => !!(store.family && store.family.share && store.family.share[key]);
 let famTab = 'personen', famLastPull = 0;
@@ -11648,10 +11648,10 @@ function famBudget() {
 /* ============================== NOTFALLBEREICH (nur lokal) ============================== */
 let emTab = 'kontakte';
 const EM_CHECKLISTS = [
-  { id: 'feuer', icon: '', title: 'Feuer / Brand', steps: ['Alle Personen aus der Wohnung bringen', 'Türen schließen (nicht abschließen)', '112 anrufen (Feuerwehr)', 'Bei Fettbrand niemals mit Wasser löschen', 'Am Treffpunkt sammeln, Vollzähligkeit prüfen'] },
-  { id: 'unfall', icon: '', title: 'Unfall / Verletzung', steps: ['Ruhe bewahren, Unfallstelle sichern', '112 anrufen (Rettungsdienst)', 'Erste Hilfe leisten', 'Bei Bewusstlosigkeit: stabile Seitenlage', 'Bis zum Eintreffen beim Verletzten bleiben'] },
-  { id: 'strom', icon: '', title: 'Stromausfall', steps: ['Sicherungskasten prüfen', 'Netzbetreiber / Nachbarn informieren', 'Kühl- und Gefrierschrank geschlossen halten', 'Taschenlampen statt Kerzen nutzen', 'Powerbank / Notfall-Radio bereithalten'] },
-  { id: 'kind', icon: '', title: 'Kind vermisst', steps: ['Ruhe bewahren, letzten Ort prüfen', 'Umgebung und bekannte Orte absuchen', 'Freunde und Familie informieren', 'Bei Gefahr sofort 110 anrufen', 'Aktuelles Foto und Beschreibung bereithalten'] }
+  { id: 'feuer', icon: '🔥', title: 'Feuer / Brand', steps: ['Alle Personen aus der Wohnung bringen', 'Türen schließen (nicht abschließen)', '112 anrufen (Feuerwehr)', 'Bei Fettbrand niemals mit Wasser löschen', 'Am Treffpunkt sammeln, Vollzähligkeit prüfen'] },
+  { id: 'unfall', icon: '🚑', title: 'Unfall / Verletzung', steps: ['Ruhe bewahren, Unfallstelle sichern', '112 anrufen (Rettungsdienst)', 'Erste Hilfe leisten', 'Bei Bewusstlosigkeit: stabile Seitenlage', 'Bis zum Eintreffen beim Verletzten bleiben'] },
+  { id: 'strom', icon: '🔌', title: 'Stromausfall', steps: ['Sicherungskasten prüfen', 'Netzbetreiber / Nachbarn informieren', 'Kühl- und Gefrierschrank geschlossen halten', 'Taschenlampen statt Kerzen nutzen', 'Powerbank / Notfall-Radio bereithalten'] },
+  { id: 'kind', icon: '🧒', title: 'Kind vermisst', steps: ['Ruhe bewahren, letzten Ort prüfen', 'Umgebung und bekannte Orte absuchen', 'Freunde und Familie informieren', 'Bei Gefahr sofort 110 anrufen', 'Aktuelles Foto und Beschreibung bereithalten'] }
 ];
 function ensureEmergency() {
   const e = store.emergency = store.emergency || {};
@@ -12040,14 +12040,14 @@ const DE_STATES = { BW: 'Baden-Württemberg', BY: 'Bayern', BE: 'Berlin', BB: 'B
    Neue Dienste = einfach hier ergänzen. Frühdienst/Spätdienst/Nachtdienst sind bearbeitbar (store.work.shiftDefs). ===== */
 const WORK_SHIFTS = {
   // Zeiten/Pause bewusst LEER – der Nutzer legt Beginn/Ende/Pause je Dienst selbst fest (im Tab „Dienste" oder pro Tag).
-  early:       { name: 'Frühdienst',  icon: '', color: '#4D7CFF', grad: 'linear-gradient(135deg,#8FB0FF,#4D7CFF)', defStart: '', defEnd: '', defBreak: '', shift: true },
-  late:        { name: 'Spätdienst',  icon: '', color: '#ea580c', grad: 'linear-gradient(135deg,#fb923c,#ea580c)', defStart: '', defEnd: '', defBreak: '', shift: true },
-  night:       { name: 'Nachtdienst', icon: '', color: '#4D7CFF', grad: 'linear-gradient(135deg,#818cf8,#4D7CFF)', defStart: '', defEnd: '', defBreak: '', shift: true },
-  frei:        { name: 'Frei',        icon: '', color: '#64748b', grad: 'linear-gradient(135deg,#94a3b8,#64748b)' },
-  urlaub:      { name: 'Urlaub',      icon: '', color: '#0d9488' },
-  krank:       { name: 'Krank',       icon: '', color: '#ef4444' },
-  kinderkrank: { name: 'Kinderkrank', icon: '', color: '#eab308' },
-  feiertag:    { name: 'Feiertag',    icon: '', color: '#4D7CFF' }
+  early:       { name: 'Frühdienst',  icon: '🌅', color: '#4D7CFF', grad: 'linear-gradient(135deg,#8FB0FF,#4D7CFF)', defStart: '', defEnd: '', defBreak: '', shift: true },
+  late:        { name: 'Spätdienst',  icon: '🌇', color: '#ea580c', grad: 'linear-gradient(135deg,#fb923c,#ea580c)', defStart: '', defEnd: '', defBreak: '', shift: true },
+  night:       { name: 'Nachtdienst', icon: '🌙', color: '#4D7CFF', grad: 'linear-gradient(135deg,#818cf8,#4D7CFF)', defStart: '', defEnd: '', defBreak: '', shift: true },
+  frei:        { name: 'Frei',        icon: '☕', color: '#64748b', grad: 'linear-gradient(135deg,#94a3b8,#64748b)' },
+  urlaub:      { name: 'Urlaub',      icon: '🏖️', color: '#0d9488' },
+  krank:       { name: 'Krank',       icon: '🤒', color: '#ef4444' },
+  kinderkrank: { name: 'Kinderkrank', icon: '🧒', color: '#eab308' },
+  feiertag:    { name: 'Feiertag',    icon: '🎉', color: '#4D7CFF' }
 };
 const SHIFT_KEYS = ['early', 'late', 'night'];
 const ABS_ICON = { urlaub: '', krank: '', krank_au: '', kinderkrank: '' };
@@ -12568,10 +12568,10 @@ async function renderFuel() {
 }
 /* ============================== VERTRÄGE & ABOS ============================== */
 const CONTRACT_CATS = {
-  versicherung: { l: 'Versicherung', i: '' }, mobilfunk: { l: 'Mobilfunk', i: '' },
-  internet: { l: 'Internet/TV', i: '' }, streaming: { l: 'Streaming', i: '' },
-  fitness: { l: 'Fitness', i: '' }, energie: { l: 'Strom/Gas', i: '' },
-  kfz: { l: 'Kfz', i: '' }, sonstiges: { l: 'Sonstiges', i: '' }
+  versicherung: { l: 'Versicherung', i: '🛡️' }, mobilfunk: { l: 'Mobilfunk', i: '📱' },
+  internet: { l: 'Internet/TV', i: '🌐' }, streaming: { l: 'Streaming', i: '🎬' },
+  fitness: { l: 'Fitness', i: '🏋️' }, energie: { l: 'Strom/Gas', i: '⚡' },
+  kfz: { l: 'Kfz', i: '🚗' }, sonstiges: { l: 'Sonstiges', i: '📄' }
 };
 const ctCat = (k) => CONTRACT_CATS[k] || CONTRACT_CATS.sonstiges;
 const ctMonthly = (c) => (c.interval === 'jahr' ? (Number(c.cost) || 0) / 12 : (Number(c.cost) || 0));
@@ -12654,10 +12654,10 @@ if ($('#contractsRoot')) $('#contractsRoot').addEventListener('click', e => {
 
 /* ============================== DOKUMENTEN-TRESOR (lokal, IndexedDB) ============================== */
 const VAULT_CATS = {
-  ausweis: { i: '', l: 'Ausweis/Pass' }, versicherung: { i: '', l: 'Versicherung' },
-  vertrag: { i: '', l: 'Vertrag' }, finanzen: { i: '', l: 'Finanzen' },
-  gesundheit: { i: '', l: 'Gesundheit' }, garantie: { i: '', l: 'Garantie/Kauf' },
-  wohnung: { i: '', l: 'Wohnung' }, fahrzeug: { i: '', l: 'Fahrzeug' }, sonstiges: { i: '', l: 'Sonstiges' }
+  ausweis: { i: '🪪', l: 'Ausweis/Pass' }, versicherung: { i: '🛡️', l: 'Versicherung' },
+  vertrag: { i: '📑', l: 'Vertrag' }, finanzen: { i: '🏦', l: 'Finanzen' },
+  gesundheit: { i: '🩺', l: 'Gesundheit' }, garantie: { i: '🧾', l: 'Garantie/Kauf' },
+  wohnung: { i: '🏠', l: 'Wohnung' }, fahrzeug: { i: '🚗', l: 'Fahrzeug' }, sonstiges: { i: '📄', l: 'Sonstiges' }
 };
 const vCat = (k) => VAULT_CATS[k] || VAULT_CATS.sonstiges;
 /* Volle Bilder liegen in IndexedDB (großes Kontingent) – nur ein Mini-Thumbnail steht in localStorage. */
@@ -12819,61 +12819,61 @@ if ($('#vtSearch')) $('#vtSearch').addEventListener('input', () => RENDERERS.vau
    Fallbacks zuletzt. Schlüsselwörter greifen als Teilstring; „ ei " ist bewusst mit Leerzeichen gepaddet. */
 const SHOP_ICONS = [
   // Obst & Gemüse (je Sorte eigenes Icon)
-  { i: '', kw: ['banane'] }, { i: '', kw: ['erdbeere', 'himbeere', 'heidelbeere', 'brombeere', 'beere'] },
-  { i: '', kw: ['apfel', 'äpfel'] }, { i: '', kw: ['birne'] }, { i: '', kw: ['tomate'] },
-  { i: '', kw: ['gurke', 'zucchini'] }, { i: '', kw: ['kartoffel'] }, { i: '', kw: ['zwiebel', 'lauch', 'porree'] },
-  { i: '', kw: ['knoblauch'] }, { i: '', kw: ['möhre', 'karotte', 'mohrrübe'] }, { i: '', kw: ['paprika'] },
-  { i: '', kw: ['salat', 'kohl', 'spinat', 'rucola'] }, { i: '', kw: ['brokkoli'] }, { i: '', kw: ['pilz', 'champignon'] },
-  { i: '', kw: ['zitrone', 'limette'] }, { i: '', kw: ['orange', 'mandarine', 'clementine'] }, { i: '', kw: ['traube', 'weintraube'] },
-  { i: '', kw: ['avocado'] }, { i: '', kw: ['ananas'] }, { i: '', kw: ['mango'] }, { i: '', kw: ['kiwi'] },
-  { i: '', kw: ['pfirsich', 'nektarine', 'aprikose'] }, { i: '', kw: ['kirsche'] }, { i: '', kw: ['melone'] },
-  { i: '', kw: ['mais'] }, { i: '', kw: ['aubergine'] },
+  { i: '🍌', kw: ['banane'] }, { i: '🍓', kw: ['erdbeere', 'himbeere', 'heidelbeere', 'brombeere', 'beere'] },
+  { i: '🍎', kw: ['apfel', 'äpfel'] }, { i: '🍐', kw: ['birne'] }, { i: '🍅', kw: ['tomate'] },
+  { i: '🥒', kw: ['gurke', 'zucchini'] }, { i: '🥔', kw: ['kartoffel'] }, { i: '🧅', kw: ['zwiebel', 'lauch', 'porree'] },
+  { i: '🧄', kw: ['knoblauch'] }, { i: '🥕', kw: ['möhre', 'karotte', 'mohrrübe'] }, { i: '🫑', kw: ['paprika'] },
+  { i: '🥬', kw: ['salat', 'kohl', 'spinat', 'rucola'] }, { i: '🥦', kw: ['brokkoli'] }, { i: '🍄', kw: ['pilz', 'champignon'] },
+  { i: '🍋', kw: ['zitrone', 'limette'] }, { i: '🍊', kw: ['orange', 'mandarine', 'clementine'] }, { i: '🍇', kw: ['traube', 'weintraube'] },
+  { i: '🥑', kw: ['avocado'] }, { i: '🍍', kw: ['ananas'] }, { i: '🥭', kw: ['mango'] }, { i: '🥝', kw: ['kiwi'] },
+  { i: '🍑', kw: ['pfirsich', 'nektarine', 'aprikose'] }, { i: '🍒', kw: ['kirsche'] }, { i: '🍉', kw: ['melone'] },
+  { i: '🌽', kw: ['mais'] }, { i: '🍆', kw: ['aubergine'] },
   // Molkerei & Eier
-  { i: '', kw: ['eier', ' ei '] }, { i: '', kw: ['butter', 'margarine'] },
-  { i: '', kw: ['käse', 'gouda', 'feta', 'mozzarella', 'frischkäse', 'parmesan'] },
-  { i: '', kw: ['milch', 'joghurt', 'quark', 'sahne', 'buttermilch', 'kefir', 'pudding'] },
+  { i: '🥚', kw: ['eier', ' ei '] }, { i: '🧈', kw: ['butter', 'margarine'] },
+  { i: '🧀', kw: ['käse', 'gouda', 'feta', 'mozzarella', 'frischkäse', 'parmesan'] },
+  { i: '🥛', kw: ['milch', 'joghurt', 'quark', 'sahne', 'buttermilch', 'kefir', 'pudding'] },
   // Backwaren
-  { i: '', kw: ['croissant'] }, { i: '', kw: ['brezel', 'laugen'] }, { i: '', kw: ['baguette'] },
-  { i: '', kw: ['kuchen', 'torte'] }, { i: '', kw: ['mehl', 'hefe'] }, { i: '', kw: ['brot', 'brötchen', 'semmel', 'toast', 'wecken'] },
+  { i: '🥐', kw: ['croissant'] }, { i: '🥨', kw: ['brezel', 'laugen'] }, { i: '🥖', kw: ['baguette'] },
+  { i: '🎂', kw: ['kuchen', 'torte'] }, { i: '🌾', kw: ['mehl', 'hefe'] }, { i: '🍞', kw: ['brot', 'brötchen', 'semmel', 'toast', 'wecken'] },
   // Fleisch & Fisch
-  { i: '', kw: ['hähnchen', 'hühnchen', 'huhn', 'geflügel', 'pute'] }, { i: '', kw: ['wurst', 'würstchen', 'bratwurst', 'wiener'] },
-  { i: '', kw: ['speck', 'bacon'] }, { i: '', kw: ['schinken', 'kotelett', 'kasseler'] },
-  { i: '', kw: ['aufschnitt', 'salami', 'mortadella'] }, { i: '', kw: ['fisch', 'lachs', 'thunfisch', 'forelle', 'hering', 'kabeljau'] },
-  { i: '', kw: ['garnele', 'shrimp', 'scampi'] }, { i: '', kw: ['fleisch', 'hack', 'steak', 'gulasch', 'frikadelle', 'rind', 'schwein', 'schnitzel'] },
+  { i: '🍗', kw: ['hähnchen', 'hühnchen', 'huhn', 'geflügel', 'pute'] }, { i: '🌭', kw: ['wurst', 'würstchen', 'bratwurst', 'wiener'] },
+  { i: '🥓', kw: ['speck', 'bacon'] }, { i: '🍖', kw: ['schinken', 'kotelett', 'kasseler'] },
+  { i: '🥪', kw: ['aufschnitt', 'salami', 'mortadella'] }, { i: '🐟', kw: ['fisch', 'lachs', 'thunfisch', 'forelle', 'hering', 'kabeljau'] },
+  { i: '🦐', kw: ['garnele', 'shrimp', 'scampi'] }, { i: '🥩', kw: ['fleisch', 'hack', 'steak', 'gulasch', 'frikadelle', 'rind', 'schwein', 'schnitzel'] },
   // Tiefkühl
-  { i: '', kw: ['pizza'] }, { i: '', kw: ['pommes'] }, { i: '', kw: [' eis', 'speiseeis', 'eiscreme'] }, { i: '', kw: ['tiefkühl', 'fischstäbchen'] },
+  { i: '🍕', kw: ['pizza'] }, { i: '🍟', kw: ['pommes'] }, { i: '🍨', kw: [' eis', 'speiseeis', 'eiscreme'] }, { i: '🧊', kw: ['tiefkühl', 'fischstäbchen'] },
   // Getränke
-  { i: '', kw: ['wasser', 'sprudel', 'mineralwasser'] }, { i: '', kw: ['saft', 'schorle', 'nektar'] },
-  { i: '', kw: ['cola', 'limo', 'limonade', 'softdrink', 'energy'] }, { i: '', kw: ['bier'] }, { i: '', kw: ['wein'] },
-  { i: '', kw: ['sekt', 'prosecco', 'champagner'] }, { i: '', kw: ['kaffee'] }, { i: '', kw: ['tee '] },
+  { i: '💧', kw: ['wasser', 'sprudel', 'mineralwasser'] }, { i: '🧃', kw: ['saft', 'schorle', 'nektar'] },
+  { i: '🥤', kw: ['cola', 'limo', 'limonade', 'softdrink', 'energy'] }, { i: '🍺', kw: ['bier'] }, { i: '🍷', kw: ['wein'] },
+  { i: '🍾', kw: ['sekt', 'prosecco', 'champagner'] }, { i: '☕', kw: ['kaffee'] }, { i: '🍵', kw: ['tee '] },
   // Vorrat
-  { i: '', kw: ['nudel', ' pasta', 'spaghetti', 'penne', 'makkaroni'] }, { i: '', kw: ['reis'] },
-  { i: '', kw: ['müsli', 'haferflocken', 'cornflakes', 'porridge'] }, { i: '', kw: ['honig'] },
-  { i: '', kw: ['schokolade', 'schoko', 'nutella', 'riegel', 'praline'] }, { i: '', kw: ['öl', 'olivenöl'] },
-  { i: '', kw: ['essig', 'sojasoße'] }, { i: '', kw: ['salz', 'pfeffer', 'gewürz'] },
-  { i: '', kw: ['konserve', 'dose', 'bohnen', 'linsen', 'kichererbsen', 'suppe', 'soße', 'sauce', 'ketchup', 'senf', 'brühe', 'tomatenmark', 'passata'] },
-  { i: '', kw: ['marmelade', 'konfitüre', 'gelee'] }, { i: '', kw: ['zucker', 'süßstoff'] },
+  { i: '🍝', kw: ['nudel', ' pasta', 'spaghetti', 'penne', 'makkaroni'] }, { i: '🍚', kw: ['reis'] },
+  { i: '🥣', kw: ['müsli', 'haferflocken', 'cornflakes', 'porridge'] }, { i: '🍯', kw: ['honig'] },
+  { i: '🍫', kw: ['schokolade', 'schoko', 'nutella', 'riegel', 'praline'] }, { i: '🫒', kw: ['öl', 'olivenöl'] },
+  { i: '🍶', kw: ['essig', 'sojasoße'] }, { i: '🧂', kw: ['salz', 'pfeffer', 'gewürz'] },
+  { i: '🥫', kw: ['konserve', 'dose', 'bohnen', 'linsen', 'kichererbsen', 'suppe', 'soße', 'sauce', 'ketchup', 'senf', 'brühe', 'tomatenmark', 'passata'] },
+  { i: '🍮', kw: ['marmelade', 'konfitüre', 'gelee'] }, { i: '🥄', kw: ['zucker', 'süßstoff'] },
   // Süßes & Snacks
-  { i: '', kw: ['keks', 'cookie', 'waffel'] }, { i: '', kw: ['bonbon', 'süßigkeit', 'gummibär', 'lakritz'] },
-  { i: '', kw: ['chips', 'popcorn', 'salzstange', 'cracker', 'snack'] }, { i: '', kw: ['nüsse', 'nuss', 'mandel', 'erdnuss', 'cashew'] },
+  { i: '🍪', kw: ['keks', 'cookie', 'waffel'] }, { i: '🍬', kw: ['bonbon', 'süßigkeit', 'gummibär', 'lakritz'] },
+  { i: '🍿', kw: ['chips', 'popcorn', 'salzstange', 'cracker', 'snack'] }, { i: '🥜', kw: ['nüsse', 'nuss', 'mandel', 'erdnuss', 'cashew'] },
   // Haushalt
-  { i: '', kw: ['klopapier', 'toilettenpapier', 'küchenrolle', 'taschentücher', 'serviette', 'papiertücher'] },
-  { i: '', kw: ['schwamm', 'spültuch', 'lappen'] }, { i: '', kw: ['müllbeutel', 'müllsäcke', 'mülltüte'] },
-  { i: '', kw: ['alufolie', 'frischhalte', 'backpapier', 'gefrierbeutel'] }, { i: '', kw: ['kerze', 'teelicht'] },
-  { i: '', kw: ['batterie', 'akku'] }, { i: '', kw: ['glühbirne', 'leuchtmittel'] },
+  { i: '🧻', kw: ['klopapier', 'toilettenpapier', 'küchenrolle', 'taschentücher', 'serviette', 'papiertücher'] },
+  { i: '🧽', kw: ['schwamm', 'spültuch', 'lappen'] }, { i: '🗑️', kw: ['müllbeutel', 'müllsäcke', 'mülltüte'] },
+  { i: '📦', kw: ['alufolie', 'frischhalte', 'backpapier', 'gefrierbeutel'] }, { i: '🕯️', kw: ['kerze', 'teelicht'] },
+  { i: '🔋', kw: ['batterie', 'akku'] }, { i: '💡', kw: ['glühbirne', 'leuchtmittel'] },
   // Drogerie & Hygiene
-  { i: '', kw: ['zahnpasta', 'zahncreme'] }, { i: '', kw: ['zahnbürste', 'zahnseide'] }, { i: '', kw: ['seife', 'waschlotion'] },
-  { i: '', kw: ['rasier'] }, { i: '', kw: ['pflaster', 'verband'] }, { i: '', kw: ['tampon', 'binde'] },
-  { i: '', kw: ['shampoo', 'duschgel', 'creme', 'lotion', 'deo', 'spülung', 'sonnencreme', 'waschmittel', 'weichspüler', 'spülmittel', 'reiniger', 'putzmittel', 'allzweck'] },
+  { i: '🦷', kw: ['zahnpasta', 'zahncreme'] }, { i: '🪥', kw: ['zahnbürste', 'zahnseide'] }, { i: '🧼', kw: ['seife', 'waschlotion'] },
+  { i: '🪒', kw: ['rasier'] }, { i: '🩹', kw: ['pflaster', 'verband'] }, { i: '🩸', kw: ['tampon', 'binde'] },
+  { i: '🧴', kw: ['shampoo', 'duschgel', 'creme', 'lotion', 'deo', 'spülung', 'sonnencreme', 'waschmittel', 'weichspüler', 'spülmittel', 'reiniger', 'putzmittel', 'allzweck'] },
   // Baby
-  { i: '', kw: ['windel', 'feuchttücher'] }, { i: '', kw: ['baby', 'schnuller', 'fläschchen'] },
+  { i: '🧷', kw: ['windel', 'feuchttücher'] }, { i: '🍼', kw: ['baby', 'schnuller', 'fläschchen'] },
   // generische Fallbacks
-  { i: '', kw: ['gemüse'] }, { i: '', kw: ['obst'] }
+  { i: '🥬', kw: ['gemüse'] }, { i: '🍎', kw: ['obst'] }
 ];
 function shopCat(name) {
   const s = ' ' + String(name || '').toLowerCase() + ' ';
   for (let i = 0; i < SHOP_ICONS.length; i++) { const r = SHOP_ICONS[i]; for (let j = 0; j < r.kw.length; j++) { if (s.indexOf(r.kw[j]) >= 0) return { icon: r.i }; } }
-  return { icon: '' };
+  return { icon: '🛒' };
 }
 /* Häufige Artikel für Schnell-Hinzufügen + Autovervollständigung (deutscher Markt). */
 const SHOP_COMMON = ['Milch', 'Brot', 'Eier', 'Butter', 'Käse', 'Joghurt', 'Bananen', 'Äpfel', 'Tomaten', 'Gurke', 'Kartoffeln', 'Zwiebeln', 'Salat', 'Hähnchen', 'Hackfleisch', 'Aufschnitt', 'Nudeln', 'Reis', 'Kaffee', 'Wasser', 'Saft', 'Klopapier', 'Küchenrolle', 'Spülmittel', 'Zahnpasta', 'Windeln', 'Schokolade', 'Müsli', 'Mehl', 'Zucker'];
@@ -13024,7 +13024,7 @@ if ($('#shoppingRoot')) $('#shoppingRoot').addEventListener('click', e => {
 });
 
 /* ============================== MÜLLKALENDER (lokal) ============================== */
-const WASTE_TYPES = { rest: { i: '', l: 'Restmüll' }, bio: { i: '', l: 'Biotonne' }, papier: { i: '', l: 'Papier' }, gelb: { i: '', l: 'Gelber Sack' }, glas: { i: '', l: 'Glas' } };
+const WASTE_TYPES = { rest: { i: '🗑️', l: 'Restmüll' }, bio: { i: '🟤', l: 'Biotonne' }, papier: { i: '📄', l: 'Papier' }, gelb: { i: '🟡', l: 'Gelber Sack' }, glas: { i: '🫙', l: 'Glas' } };
 const wType = (k) => WASTE_TYPES[k] || WASTE_TYPES.rest;
 const WD_NAMES = ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'];
 function isoWeekNum(d) { const dt = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate())); const day = dt.getUTCDay() || 7; dt.setUTCDate(dt.getUTCDate() + 4 - day); const ys = new Date(Date.UTC(dt.getUTCFullYear(), 0, 1)); return Math.ceil((((dt - ys) / 86400000) + 1) / 7); }
@@ -14151,22 +14151,22 @@ function pickKid(name) {
   return store.kids[0];
 }
 const FINDING_TYPES = {
-  expense:   { icon: '', group: 'Ausgaben', val: 'money', apply: f => { ensureBudget(); store.budget.entries.push({ id: uid(), kind: 'expense', label: f.title, amount: +f.amount || 0, recurring: !!f.recurring, date: f.date || todayISO() }); } },
-  income:    { icon: '', group: 'Einnahmen', val: 'money', apply: f => { ensureBudget(); store.budget.entries.push({ id: uid(), kind: 'income', label: f.title, amount: +f.amount || 0, recurring: !!f.recurring, date: f.date || todayISO() }); } },
-  task:      { icon: '', group: 'Aufgaben', val: 'date', apply: f => addTask(f.title, f.date || null, f.priority === 'hoch' ? 'high' : f.priority === 'niedrig' ? 'low' : 'med', 'doc') },
-  event:     { icon: '', group: 'Kalender', val: 'date', apply: f => addEvent(f.title, f.date || todayISO(), f.time || null, f.note || '', 'doc') },
+  expense:   { icon: '🧾', group: 'Ausgaben', val: 'money', apply: f => { ensureBudget(); store.budget.entries.push({ id: uid(), kind: 'expense', label: f.title, amount: +f.amount || 0, recurring: !!f.recurring, date: f.date || todayISO() }); } },
+  income:    { icon: '💶', group: 'Einnahmen', val: 'money', apply: f => { ensureBudget(); store.budget.entries.push({ id: uid(), kind: 'income', label: f.title, amount: +f.amount || 0, recurring: !!f.recurring, date: f.date || todayISO() }); } },
+  task:      { icon: '✅', group: 'Aufgaben', val: 'date', apply: f => addTask(f.title, f.date || null, f.priority === 'hoch' ? 'high' : f.priority === 'niedrig' ? 'low' : 'med', 'doc') },
+  event:     { icon: '📅', group: 'Kalender', val: 'date', apply: f => addEvent(f.title, f.date || todayISO(), f.time || null, f.note || '', 'doc') },
   deadline:  { icon: '⏰', group: 'Fristen', val: 'date', apply: f => addEvent('⏰ Frist: ' + f.title, f.date || todayISO(), null, f.note || '', 'doc') },
-  vehicle:   { icon: '', group: 'Auto & Motorrad', val: 'date', apply: f => {
+  vehicle:   { icon: '🔧', group: 'Auto & Motorrad', val: 'date', apply: f => {
     const v = pickOrCreateVehicle(f.vehicleName), sub = (f.subtype || '').toLowerCase();
     if (/tuev|tüv|hu|au|hauptunter/.test(sub) && f.date) { v.tuev = f.date; addTask('TÜV/HU: ' + v.name, addDays(f.date, -14), 'high', 'veh'); addEvent('TÜV fällig: ' + v.name, f.date, null, v.plate || '', 'veh'); }
     else if (/versicher|insurance/.test(sub)) { v.insurance = v.insurance || {}; v.insurance.company = f.title.replace(/^versicherung:?\s*/i, '') || v.insurance.company; }
     else if (/kilometer|mileage|km/.test(sub) && f.km) { v.lastServiceKm = +f.km; }
     else { v.services = v.services || []; v.services.push({ id: uid(), date: f.date || todayISO(), km: +f.km || 0, title: f.title, cost: +f.amount || 0 }); if (f.date) v.lastService = f.date; }   // Service/Reifen/Öl/Werkstatt → Serviceheft
   } },
-  work:      { icon: '', group: 'Arbeitszeit', val: 'date', apply: f => { ensureWork(); if (f.from && f.to && /urlaub|krank|kinder/.test(f.category || '')) store.work.absences.push({ id: uid(), type: f.category, from: f.from, to: f.to, note: f.title }); else if (/dienst|schicht/.test(f.category || '') && f.date) store.work.shifts.push({ id: uid(), name: f.title, date: f.date, start: f.time || '', end: '' }); else addTask(f.title, f.date || null, 'med', 'doc'); } },
-  child:     { icon: '', group: 'Kinder', val: 'date', apply: f => { const kid = pickKid(f.childName); const kind = ['arzt', 'impf', 'schule', 'sonst'].indexOf(f.apptKind) >= 0 ? f.apptKind : 'schule'; if (kid) addEvent(APPT_KIND[kind].i + ' ' + f.title, f.date || todayISO(), f.time || null, kid.name, 'kind', { kidId: kid.id, apptKind: kind }); else addEvent('' + f.title, f.date || todayISO(), f.time || null, 'Kinder', 'family'); } },
+  work:      { icon: '🕒', group: 'Arbeitszeit', val: 'date', apply: f => { ensureWork(); if (f.from && f.to && /urlaub|krank|kinder/.test(f.category || '')) store.work.absences.push({ id: uid(), type: f.category, from: f.from, to: f.to, note: f.title }); else if (/dienst|schicht/.test(f.category || '') && f.date) store.work.shifts.push({ id: uid(), name: f.title, date: f.date, start: f.time || '', end: '' }); else addTask(f.title, f.date || null, 'med', 'doc'); } },
+  child:     { icon: '🎒', group: 'Kinder', val: 'date', apply: f => { const kid = pickKid(f.childName); const kind = ['arzt', 'impf', 'schule', 'sonst'].indexOf(f.apptKind) >= 0 ? f.apptKind : 'schule'; if (kid) addEvent(APPT_KIND[kind].i + ' ' + f.title, f.date || todayISO(), f.time || null, kid.name, 'kind', { kidId: kid.id, apptKind: kind }); else addEvent('' + f.title, f.date || todayISO(), f.time || null, 'Kinder', 'family'); } },
   /* Dienstplan als GANZEN Plan in die Arbeitszeit übernehmen – füllt den Arbeitszeit-Kalender, KEINE Termine im normalen Kalender. */
-  dienstplan: { icon: '', group: 'Arbeitszeit · Plan', val: 'text', apply: f => {
+  dienstplan: { icon: '🗂️', group: 'Arbeitszeit · Plan', val: 'text', apply: f => {
     ensureWork();
     (Array.isArray(f.shifts) ? f.shifts : []).forEach(s => {
       if (!s || !/^\d{4}-\d{2}-\d{2}$/.test(s.date || '')) return;
@@ -14180,20 +14180,20 @@ const FINDING_TYPES = {
     });
   } },
   /* Stundenplan als GANZEN Plan beim Kind ablegen – erzeugt KEINE Kalendertermine je Schulstunde. */
-  schulplan: { icon: '', group: 'Kinder · Plan', val: 'text', apply: f => {
+  schulplan: { icon: '📅', group: 'Kinder · Plan', val: 'text', apply: f => {
     const kid = pickKid(f.childName); if (!kid) return;
     const DMAP = { mon: 1, tue: 2, wed: 3, thu: 4, fri: 5, mo: 1, di: 2, mi: 3, do: 4, fr: 5, montag: 1, dienstag: 2, mittwoch: 3, donnerstag: 4, freitag: 5, monday: 1, tuesday: 2, wednesday: 3, thursday: 4, friday: 5, '1': 1, '2': 2, '3': 3, '4': 4, '5': 5 };
     kid.sched = kid.sched || {}; [1, 2, 3, 4, 5].forEach(d => { kid.sched[d] = kid.sched[d] || { start: '08:00', subjects: [] }; });
     const sc = f.schedule || {}, st = f.start || {};
     Object.keys(sc).forEach(k => { const d = DMAP[String(k).toLowerCase().trim()]; if (d && Array.isArray(sc[k])) { kid.sched[d].subjects = sc[k].map(s => String(s).slice(0, 40)).filter(Boolean); if (st[k] && /^\d{1,2}:\d{2}$/.test(st[k])) kid.sched[d].start = st[k]; } });
   } },
-  family:    { icon: '', group: 'Familie', val: 'date', apply: f => addEvent(f.title, f.date || todayISO(), f.time || null, '', 'family') },
-  life:      { icon: '', group: 'Lebenslagen', val: 'text', apply: f => addTask('Einsortieren: ' + f.title + (f.category ? ' (' + f.category + ')' : ''), null, 'low', 'doc') },
-  emergency: { icon: '', group: 'Notfall', val: 'text', consent: true, apply: f => { store.emergency = store.emergency || { contacts: [], phones: [], medical: {}, insurances: [], checkDone: {} }; store.emergency.medical = store.emergency.medical || {}; const k = EM_MED_KEYS[(f.category || '').toLowerCase()] || 'notes'; store.emergency.medical[k] = (k === 'notes' && store.emergency.medical.notes ? store.emergency.medical.notes + '\n' : '') + f.title; } },
+  family:    { icon: '👪', group: 'Familie', val: 'date', apply: f => addEvent(f.title, f.date || todayISO(), f.time || null, '', 'family') },
+  life:      { icon: '📂', group: 'Lebenslagen', val: 'text', apply: f => addTask('Einsortieren: ' + f.title + (f.category ? ' (' + f.category + ')' : ''), null, 'low', 'doc') },
+  emergency: { icon: '🚨', group: 'Notfall', val: 'text', consent: true, apply: f => { store.emergency = store.emergency || { contacts: [], phones: [], medical: {}, insurances: [], checkDone: {} }; store.emergency.medical = store.emergency.medical || {}; const k = EM_MED_KEYS[(f.category || '').toLowerCase()] || 'notes'; store.emergency.medical[k] = (k === 'notes' && store.emergency.medical.notes ? store.emergency.medical.notes + '\n' : '') + f.title; } },
   /* Vertraege und Abos. Der Nutzen liegt nicht im Erfassen, sondern in der
      Frist: Wer den Vertrag im Modul hat, sieht sie im Dashboard-Radar und
      bekommt rechtzeitig eine Aufgabe – so wie beim TÜV. */
-  vertrag:   { icon: '', group: 'Verträge', val: 'date', apply: f => {
+  vertrag:   { icon: '📑', group: 'Verträge', val: 'date', apply: f => {
     store.contracts = store.contracts || [];
     const erlaubt = ['versicherung', 'mobilfunk', 'internet', 'streaming', 'fitness', 'energie', 'kfz'];
     const c = {
@@ -14214,7 +14214,7 @@ const FINDING_TYPES = {
        auffaellt, ist keine Hilfe – bei Kuendigungen ist sie dann vorbei. */
     if (c.cancelBy) addTask('' + pickLang({ de: 'Kündigungsfrist', en: 'Notice period', fr: 'Délai de résiliation', es: 'Plazo de baja', it: 'Termine di disdetta', pl: 'Termin wypowiedzenia' }) + ': ' + c.name, addDays(c.cancelBy, -14), 'high', 'ct');
   } },
-  note:      { icon: '', group: 'Hinweis', val: 'text', apply: () => {} }
+  note:      { icon: '📝', group: 'Hinweis', val: 'text', apply: () => {} }
 };
 function applyFinding(f) {
   const t = FINDING_TYPES[f.type]; if (!t || f.applied) return false;
