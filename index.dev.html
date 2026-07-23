@@ -599,23 +599,23 @@ label.fld{display:block;font-size:12.5px;font-weight:600;color:var(--muted);marg
 .fuel-name{font-size:13.5px;font-weight:600;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .fuel-price{flex:none;font-weight:700;font-size:15px;font-variant-numeric:tabular-nums;color:var(--text)}
 .fuel-addr{margin-top:1px;font-size:12px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-/* Das „Hierhin fahren"-Symbol ist die Einladung, die Zeile anzutippen. Statt
-   eines blassen Pfeils sitzt es jetzt in einer goldenen Medaille mit umlaufendem
-   Glanz – derselbe Blickfang wie der Ordela-AI-Knopf unten, damit die Route klar
-   als „das kannst du antippen" heraussticht. Dunkle Mulde in BEIDEN Themen, weil
-   Gold Tiefe braucht (auf Weiss verliert es den Schein). */
+/* Das „Hierhin fahren"-Symbol ist die Einladung, die Zeile anzutippen: eine
+   kleine goldene Medaille. Der Rand glaenzt jetzt RUHIG (kein umlaufender Spin) –
+   bewegtes Gold wirkt billig, ruhendes Gold edel. Dunkle Mulde in beiden Themen,
+   weil Gold Tiefe braucht (auf Weiss verliert es den Schein). */
 .fuel-go{position:relative;flex:none;width:26px;height:26px;border-radius:50%;
   display:grid;place-items:center;
   background:radial-gradient(circle at 50% 118%,#3A3320,#171320 78%);
   box-shadow:inset 0 1px 0 rgba(255,255,255,.14),0 1px 4px rgba(15,23,42,.2);
   transition:transform .16s ease}
 .fuel-go svg{width:12px;height:12px;color:#F0D48A;filter:drop-shadow(0 0 2px rgba(233,199,102,.35))}
+/* Ruhender Goldrand: dieselbe Konus-Palette, aber unbewegt. Anfang und Ende
+   liegen auf demselben Ton (#8A6A1E), damit die Naht am 0-Grad-Punkt verschwindet. */
 .fuel-go::after{content:"";position:absolute;inset:-1.5px;border-radius:50%;pointer-events:none;
-  background:conic-gradient(from 0deg,#8A6A1E,#E9C766 12%,#FFF7DA 25%,#E9C766 38%,#9C7519 50%,#E9C766 62%,#FFF7DA 75%,#E9C766 88%,#8A6A1E);
+  background:conic-gradient(from 210deg,#8A6A1E,#E9C766 14%,#FFF7DA 27%,#D8AE3E 44%,#9C7519 60%,#E9C766 82%,#8A6A1E);
   -webkit-mask:radial-gradient(farthest-side,transparent calc(100% - 2px),#000 calc(100% - 2px));
           mask:radial-gradient(farthest-side,transparent calc(100% - 2px),#000 calc(100% - 2px));
-  filter:drop-shadow(0 0 2px rgba(233,199,102,.5));
-  animation:goldSpin 4s linear infinite;will-change:transform}
+  filter:drop-shadow(0 0 2px rgba(233,199,102,.5))}
 .fuel-row:hover .fuel-go{transform:scale(1.08)}
 /* „Günstig tanken" in Gold mit wanderndem Glanz – ein heller Streifen laeuft
    ueber die goldene Schrift. Auf dunklem Grund kraeftig lesbar (~10:1). */
@@ -631,7 +631,7 @@ label.fld{display:block;font-size:12.5px;font-weight:600;color:var(--muted);marg
   background:linear-gradient(100deg,#5A4410 0%,#6B5214 30%,#8A6D1E 48%,#6B5214 64%,#5A4410 100%);
   background-size:230% 100%;-webkit-background-clip:text;background-clip:text;
   -webkit-text-fill-color:transparent;color:transparent}
-@media(prefers-reduced-motion:reduce){ .fuel-row{transition:none} .fuel-row:active{transform:none} .fuel-go::after{animation:none} .fuel-title{animation:none} }
+@media(prefers-reduced-motion:reduce){ .fuel-row{transition:none} .fuel-row:active{transform:none} .fuel-title{animation:none} }
 .warn-row{border-left:3px solid #f59e0b;padding:5px 0 5px 10px;margin-bottom:7px;display:flex;flex-direction:column;gap:1px}
 .warn-row b{font-size:13.5px;line-height:1.25}
 .warn-row span{font-size:12px;color:var(--muted);line-height:1.35}
@@ -2573,12 +2573,19 @@ body.lang-switching main,body.lang-switching .sidebar,body.lang-switching .topba
     <linearGradient id="lgrad" x1="0" y1="0" x2="1" y2="1">
       <stop offset="0" stop-color="#4D7CFF"/><stop offset="1" stop-color="#4D7CFF"/>
     </linearGradient>
+    <!-- Winziger Goldperl-Verlauf fuer den Uhr-Mittelpunkt: heller Lichtpunkt
+         oben links -> Gold -> tiefes Gold am Rand, damit der Punkt wie eine
+         kleine Goldperle wirkt statt eines flachen Flecks. Bewusst NUR hier ein
+         Hauch Gold – die Wortmarke bleibt ruhig, Gold behaelt seine Sonderrolle. -->
+    <radialGradient id="goldDot" cx="38%" cy="30%" r="75%">
+      <stop offset="0" stop-color="#FFF6D2"/><stop offset="46%" stop-color="#EAC66A"/><stop offset="100%" stop-color="#B0810F"/>
+    </radialGradient>
     <symbol id="logoSym" viewBox="0 0 64 64">
       <circle cx="32" cy="32" r="27" fill="#0d1019" stroke="url(#lgrad)" stroke-width="3.5"/>
       <circle cx="32" cy="32" r="27" fill="none" stroke="url(#lgrad)" stroke-width="1" opacity=".35"/>
       <path d="M32 15v3M49 32h-3M32 49v-3M15 32h3" stroke="url(#lgrad)" stroke-width="2.4" stroke-linecap="round"/>
       <path d="M32 32V19M32 32l10 6" fill="none" stroke="url(#lgrad)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-      <circle cx="32" cy="32" r="2.8" fill="#8FB0FF"/>
+      <circle cx="32" cy="32" r="3.1" fill="url(#goldDot)"/>
     </symbol>
     <symbol id="icHome" viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
     <symbol id="icFit" viewBox="0 0 24 24"><path d="M3 12h4l2-6 4 12 2-6h6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
