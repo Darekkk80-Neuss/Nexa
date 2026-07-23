@@ -1797,6 +1797,12 @@ body.lang-switching main,body.lang-switching .sidebar,body.lang-switching .topba
 .up-code{font-size:13px;margin-bottom:6px}
 .up-code summary{cursor:pointer;color:var(--muted);list-style:none}
 .up-code summary::-webkit-details-marker{display:none}
+/* „Erst mal ohne KI weiter": ruhiger Ausstieg aus dem Plan-Screen zurück in die
+   App. Bewusst nicht farbig – er soll klar erreichbar sein, aber die Plan-CTAs
+   nicht ueberstrahlen. */
+.up-dismiss{width:100%;margin:2px 0 14px;background:transparent;border:1px solid var(--border2);
+  color:var(--text);padding:13px;font-size:14.5px;font-weight:600}
+.up-dismiss:hover{background:rgba(255,255,255,.06)}
 /* KI-Kontingent-Balken (Einstellungen) */
 .quota-bar{height:12px;border-radius:12px;background:var(--border);overflow:hidden;margin:8px 0}
 .quota-fill{height:100%;border-radius:12px;background:var(--grad);transition:width .4s}
@@ -2017,6 +2023,7 @@ body.lang-switching main,body.lang-switching .sidebar,body.lang-switching .topba
         <button class="btn btn-primary tier-cta" data-buy="family">Familie starten – 14,99 €/Mon.</button>
       </div>
     </div>
+    <button class="btn up-dismiss" id="pwBack" style="display:none">Erst mal ohne KI weiter</button>
     <details class="up-code"><summary>Ich habe einen Freischalt-Code</summary>
       <div class="gate-fields" style="margin-top:10px">
         <input type="text" id="pwCode" placeholder="Freischalt-Code eingeben" maxlength="20" autocomplete="off">
@@ -2024,7 +2031,7 @@ body.lang-switching main,body.lang-switching .sidebar,body.lang-switching .topba
         <button class="btn btn-primary gate-cta" id="pwGo">Code einlösen</button>
       </div>
     </details>
-    <p class="gate-note"><a id="pwBack" style="display:none">← Zurück</a> <a id="pwLogout">Abmelden</a></p>
+    <p class="gate-note"><a id="pwLogout">Abmelden</a></p>
   </div>
 </div>
 
@@ -5454,10 +5461,13 @@ function showUpgrade(lockedView) {
       it: '«{v}» è disponibile da Medium in su', pl: '„{v}" jest dostępne od pakietu Medium'
     }, { v: viewLabel(lockedView) });
     $('#pwSub').textContent = 'Schalte alle Module frei – oder gleich Premium mit echter KI.';
+    $('#pwBack').textContent = pickLang({ de: 'Zurück zur App', en: 'Back to the app', fr: 'Retour à l’app', es: 'Volver a la app', it: 'Torna all’app', pl: 'Powrót do aplikacji' });
     $('#pwBack').style.display = '';
   } else {
     $('#pwHead').textContent = 'Wähle deinen Plan';
     $('#pwSub').textContent = 'Deine Daten bleiben immer erhalten. Jederzeit wechselbar.';
+    /* Freundlicher, prominenter Ausstieg: die KI ist gesperrt, die App bleibt es nicht. */
+    $('#pwBack').textContent = pickLang({ de: 'Erst mal ohne KI weiter', en: 'Continue without AI for now', fr: 'Continuer sans IA pour l’instant', es: 'Seguir sin IA por ahora', it: 'Continua senza IA per ora', pl: 'Na razie dalej bez AI' });
     $('#pwBack').style.display = '';
   }
   pw.classList.add('on');
@@ -6661,7 +6671,7 @@ $('#pwGo').addEventListener('click', () => activatePremium($('#pwCode').value, $
 $('#pwCode').addEventListener('keydown', e => { if (e.key === 'Enter') $('#pwGo').click(); });
 $('#pwLogout').addEventListener('click', logout);
 $('#paywall').addEventListener('click', e => { const buy = e.target.closest('[data-buy]'); if (buy) startCheckout(buy.dataset.buy); });
-$('#pwBack').addEventListener('click', () => { $('#paywall').classList.remove('on'); showView('dashboard'); });
+$('#pwBack').addEventListener('click', () => { $('#paywall').classList.remove('on'); showView('dashboard'); toast(pickLang({ de: 'Alles gut – die App bleibt ohne KI voll nutzbar.', en: 'All good – the app stays fully usable without AI.', fr: 'Tout va bien – l’app reste pleinement utilisable sans IA.', es: 'Todo bien: la app sigue plenamente utilizable sin IA.', it: 'Tutto ok – l’app resta pienamente utilizzabile senza IA.', pl: 'W porządku – aplikacja pozostaje w pełni użyteczna bez AI.' })); });
 
 /* ============================== TASKS (Daten) ============================== */
 function addTask(title, due, prio, source, time) {
