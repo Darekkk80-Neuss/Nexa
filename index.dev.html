@@ -599,11 +599,25 @@ label.fld{display:block;font-size:12.5px;font-weight:600;color:var(--muted);marg
 .fuel-name{font-size:13.5px;font-weight:600;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .fuel-price{flex:none;font-weight:700;font-size:15px;font-variant-numeric:tabular-nums;color:var(--text)}
 .fuel-addr{margin-top:1px;font-size:12px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-/* Der Pfeil ist die einzige Ankuendigung, dass die Zeile irgendwohin fuehrt –
-   deshalb sichtbar, aber leise, damit er nicht mit dem Preis konkurriert. */
-.fuel-nav{flex:none;width:17px;height:17px;color:var(--accent-ink);opacity:.75}
-.fuel-row:hover .fuel-nav{opacity:1}
-@media(prefers-reduced-motion:reduce){ .fuel-row{transition:none} .fuel-row:active{transform:none} }
+/* Das „Hierhin fahren"-Symbol ist die Einladung, die Zeile anzutippen. Statt
+   eines blassen Pfeils sitzt es jetzt in einer goldenen Medaille mit umlaufendem
+   Glanz – derselbe Blickfang wie der Ordela-AI-Knopf unten, damit die Route klar
+   als „das kannst du antippen" heraussticht. Dunkle Mulde in BEIDEN Themen, weil
+   Gold Tiefe braucht (auf Weiss verliert es den Schein). */
+.fuel-go{position:relative;flex:none;width:34px;height:34px;border-radius:50%;
+  display:grid;place-items:center;
+  background:radial-gradient(circle at 50% 118%,#3A3320,#171320 78%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.14),0 2px 6px rgba(15,23,42,.2);
+  transition:transform .16s ease}
+.fuel-go svg{width:16px;height:16px;color:#F0D48A;filter:drop-shadow(0 0 3px rgba(233,199,102,.35))}
+.fuel-go::after{content:"";position:absolute;inset:-2px;border-radius:50%;pointer-events:none;
+  background:conic-gradient(from 0deg,#8A6A1E,#E9C766 12%,#FFF7DA 25%,#E9C766 38%,#9C7519 50%,#E9C766 62%,#FFF7DA 75%,#E9C766 88%,#8A6A1E);
+  -webkit-mask:radial-gradient(farthest-side,transparent calc(100% - 2.5px),#000 calc(100% - 2.5px));
+          mask:radial-gradient(farthest-side,transparent calc(100% - 2.5px),#000 calc(100% - 2.5px));
+  filter:drop-shadow(0 0 3px rgba(233,199,102,.5));
+  animation:goldSpin 4s linear infinite;will-change:transform}
+.fuel-row:hover .fuel-go{transform:scale(1.06)}
+@media(prefers-reduced-motion:reduce){ .fuel-row{transition:none} .fuel-row:active{transform:none} .fuel-go::after{animation:none} }
 .warn-row{border-left:3px solid #f59e0b;padding:5px 0 5px 10px;margin-bottom:7px;display:flex;flex-direction:column;gap:1px}
 .warn-row b{font-size:13.5px;line-height:1.25}
 .warn-row span{font-size:12px;color:var(--muted);line-height:1.35}
@@ -7442,7 +7456,7 @@ const DASH_BLOCKS = [
   { id: 'brief', name: 'Dein Tag heute', icon: '☀️' },
   { id: 'weather', name: 'Wetter', icon: '🌤️' },
   { id: 'holidays', name: 'Feiertage & Brückentage', icon: '🎉' },
-  { id: 'fuel', name: 'Spritpreise', icon: '⛽', defOff: true, deOnly: true },   // standardmäßig aus; Datenquelle Tankerkönig = NUR Deutschland → außerhalb DE komplett ausgeblendet
+  { id: 'fuel', name: 'Spritpreise', icon: '⛽', deOnly: true },   // in DE standardmäßig AN (Nutzer kann abschalten); Datenquelle Tankerkönig = NUR Deutschland → außerhalb DE komplett ausgeblendet
   { id: 'meal', name: 'Gericht des Tages', icon: '🍽️' },
   { id: 'quickactions', name: 'Schnellzugriff', icon: '⚡' },
   { id: 'capture', name: 'Schnell erfassen', icon: '✍️' },
@@ -12718,7 +12732,19 @@ function startWeatherWatch() {
 }
 /* ============================== DASHBOARD-WIDGET: SPRITPREISE (Tankerkönig via Proxy) ============================== */
 let _fuelCache = { at: 0, html: '', key: '' };
-function fuelCard(inner, loc) { return '<section class="card dash-info-card"><div class="di-head"><b>Spritpreise</b>' + (loc ? '<span class="di-loc">' + esc(loc.name || '') + '</span>' : '') + '</div>' + inner + '</section>'; }
+/* Ueberschrift, die sagt WORUM es geht: guenstig tanken in der Naehe – nicht das
+   neutrale „Spritpreise". Titel + Unterzeile im Stil der Tageskarte. Lokalisiert,
+   weil die Karte zwar nur in DE erscheint, die App-Sprache dort aber auch
+   Englisch sein kann (z. B. Zugezogene). */
+function fuelCard(inner, loc) {
+  const titel = pickLang({ de: 'Günstig tanken', en: 'Cheapest fuel nearby', fr: 'Faire le plein malin', es: 'Repostar barato', it: 'Fai il pieno risparmiando', pl: 'Tankuj taniej' });
+  const sub = (loc && loc.name)
+    ? agentMsg({ de: 'Beste Preise in {o}', en: 'Best prices in {o}', fr: 'Meilleurs prix à {o}', es: 'Mejores precios en {o}', it: 'Prezzi migliori a {o}', pl: 'Najlepsze ceny w {o}' }, { o: loc.name })
+    : pickLang({ de: 'Beste Preise in deiner Nähe', en: 'Best prices near you', fr: 'Meilleurs prix près de toi', es: 'Mejores precios cerca de ti', it: 'Prezzi migliori vicino a te', pl: 'Najlepsze ceny w pobliżu' });
+  return '<section class="card dash-info-card"><div class="di-head">' +
+    '<div class="di-head-tx"><b>' + esc(titel) + '</b><small>' + esc(sub) + '</small></div></div>' +
+    inner + '</section>';
+}
 function fuelSetupHTML() { return fuelCard('<div class="di-note">Noch einzurichten: kostenlosen <b>Tankerkönig-API-Key</b> holen und die Function <code>fuel-proxy</code> deployen (Secret <code>TANKERKOENIG_KEY</code>). Danach erscheinen hier die günstigsten Tankstellen in der Nähe.</div>'); }
 /* Wortvergleich fuer den Namensputz unten: Umlaute und die vielen Schreibweisen
    von „Straße" auf eine Form bringen, alles andere wegwerfen. */
@@ -12775,7 +12801,7 @@ function fuelRow(label, st) {
     '<span class="fuel-mid"><span class="fuel-name">' + kopf + '</span>' +
     (fuss ? '<span class="fuel-addr">' + fuss + '</span>' : '') + '</span>' +
     '<span class="fuel-price">' + price + '</span>' +
-    '<svg class="fuel-nav" viewBox="0 0 24 24" aria-hidden="true"><use href="#icNav"/></svg></a>';
+    '<span class="fuel-go"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#icNav"/></svg></span></a>';
 }
 async function renderFuel() {
   const box = $('#fuelWidget'); if (!box) return;
