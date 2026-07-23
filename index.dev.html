@@ -931,6 +931,12 @@ body.store-safe [data-buy]{display:none!important}
 .beh-bundle{background:linear-gradient(135deg,rgba(77,124,255,.1),rgba(77,124,255,.08));border-color:var(--border2)}
 .beh-list,.beh-steps{margin:0;padding-left:20px;color:var(--text);font-size:14px;line-height:1.7}
 .beh-list li,.beh-steps li{margin-bottom:2px}
+/* Schalter-Spickzettel: deutscher Satz oben (zum Zeigen), Uebersetzung darunter. */
+.beh-phrases .sub{margin:-4px 0 6px}
+.beh-phrase{padding:9px 0;border-bottom:1px solid var(--border)}
+.beh-phrase:last-child{border-bottom:none}
+.beh-phrase b{display:block;font-size:14px;font-weight:600;color:var(--text);line-height:1.35}
+.beh-phrase span{display:block;font-size:12.5px;color:var(--muted);margin-top:2px;line-height:1.35}
 #view-behoerden .card h3{font-size:15px;margin-bottom:10px}
 .beh-loc{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 .beh-loc input{flex:1;min-width:130px}
@@ -7434,6 +7440,29 @@ function behBrowseHTML() {
   });
   return h;
 }
+/* Zweisprachiger „Am Schalter"-Spickzettel. Nur fuer NICHT-deutsche App-Sprachen –
+   Zielgruppe sind fremdsprachige Menschen, die deutsche Aemter navigieren. Der
+   DEUTSCHE Satz steht immer oben (zum Zeigen/Vorlesen am Schalter), darunter die
+   Uebersetzung in der App-Sprache (zum Verstehen). pickLang statt TDICT, damit
+   alle Sprachen sofort stimmen. */
+const AMT_PHRASES = [
+  { de: 'Guten Tag. Ich möchte etwas beantragen.', en: 'Hello. I would like to apply for something.', fr: 'Bonjour. Je voudrais faire une demande.', es: 'Buenos días. Quisiera presentar una solicitud.', it: 'Buongiorno. Vorrei presentare una domanda.', pl: 'Dzień dobry. Chciałbym/chciałabym złożyć wniosek.' },
+  { de: 'Ich habe einen Termin.', en: 'I have an appointment.', fr: 'J\'ai un rendez-vous.', es: 'Tengo una cita.', it: 'Ho un appuntamento.', pl: 'Mam umówioną wizytę.' },
+  { de: 'Ich habe keinen Termin. Geht es trotzdem?', en: 'I don\'t have an appointment. Is it still possible?', fr: 'Je n\'ai pas de rendez-vous. Est-ce possible quand même ?', es: 'No tengo cita. ¿Es posible igualmente?', it: 'Non ho un appuntamento. È possibile lo stesso?', pl: 'Nie mam wizyty. Czy mimo to się da?' },
+  { de: 'Entschuldigung, ich spreche nur wenig Deutsch. Können Sie bitte langsam sprechen?', en: 'Sorry, I only speak a little German. Could you please speak slowly?', fr: 'Excusez-moi, je parle peu allemand. Pouvez-vous parler lentement, s\'il vous plaît ?', es: 'Disculpe, hablo poco alemán. ¿Puede hablar despacio, por favor?', it: 'Mi scusi, parlo poco tedesco. Può parlare lentamente, per favore?', pl: 'Przepraszam, słabo mówię po niemiecku. Czy może Pan/Pani mówić wolniej?' },
+  { de: 'Hier sind meine Unterlagen.', en: 'Here are my documents.', fr: 'Voici mes documents.', es: 'Aquí están mis documentos.', it: 'Ecco i miei documenti.', pl: 'Oto moje dokumenty.' },
+  { de: 'Welche Unterlagen brauche ich noch?', en: 'Which documents do I still need?', fr: 'Quels documents me manque-t-il ?', es: '¿Qué documentos me faltan?', it: 'Quali documenti mi mancano?', pl: 'Jakich dokumentów jeszcze potrzebuję?' },
+  { de: 'Was kostet das, und wo kann ich bezahlen?', en: 'How much is it, and where can I pay?', fr: 'Combien cela coûte-t-il et où puis-je payer ?', es: '¿Cuánto cuesta y dónde puedo pagar?', it: 'Quanto costa e dove posso pagare?', pl: 'Ile to kosztuje i gdzie mogę zapłacić?' },
+  { de: 'Können Sie mir das bitte aufschreiben?', en: 'Could you please write that down for me?', fr: 'Pouvez-vous me l\'écrire, s\'il vous plaît ?', es: '¿Puede escribírmelo, por favor?', it: 'Può scrivermelo, per favore?', pl: 'Czy może Pan/Pani mi to zapisać?' },
+  { de: 'Bekomme ich eine Bestätigung? Wann ist es fertig?', en: 'Will I get a confirmation? When will it be ready?', fr: 'Vais-je recevoir une confirmation ? Quand sera-ce prêt ?', es: '¿Recibiré un justificante? ¿Cuándo estará listo?', it: 'Riceverò una conferma? Quando sarà pronto?', pl: 'Czy dostanę potwierdzenie? Kiedy będzie gotowe?' }
+];
+function behPhrasesHTML() {
+  const kopf = pickLang({ de: 'Am Schalter', en: 'At the counter', fr: 'Au guichet', es: 'En la ventanilla', it: 'Allo sportello', pl: 'Przy okienku' });
+  const sub = pickLang({ de: '', en: 'Point at these sentences or read them aloud – German on top, your language below.', fr: 'Montre ces phrases ou lis-les à voix haute – l\'allemand en haut, ta langue en dessous.', es: 'Señala estas frases o léelas en voz alta: alemán arriba, tu idioma debajo.', it: 'Mostra queste frasi o leggile ad alta voce: tedesco sopra, la tua lingua sotto.', pl: 'Pokaż te zdania lub przeczytaj je na głos – niemiecki u góry, Twój język poniżej.' });
+  let h = '<div class="card beh-phrases"><h3>' + esc(kopf) + '</h3>' + (sub ? '<p class="sub">' + esc(sub) + '</p>' : '');
+  AMT_PHRASES.forEach(p => { h += '<div class="beh-phrase"><b>' + esc(p.de) + '</b><span>' + esc(pickLang(p)) + '</span></div>'; });
+  return h + '</div>';
+}
 function behDetailHTML() {
   const a = behById(behState.sel); if (!a) { behState.sel = null; return behBrowseHTML(); }
   let h = '<button class="btn btn-ghost btn-sm" data-beh="back">‹ Zurück zur Übersicht</button>';
@@ -7446,6 +7475,7 @@ function behDetailHTML() {
   h += '<div class="card"><h3>Benötigte Unterlagen</h3><ul class="beh-list">' + (a.unterlagen || []).map(u => '<li>' + esc(u) + '</li>').join('') + '</ul><button class="btn btn-sm" data-beh="toTasks" data-id="' + a.id + '">Unterlagen in Aufgaben übernehmen</button></div>';
   h += '<div class="card"><h3>Schritte</h3><ol class="beh-steps">' + (a.schritte || []).map(s => '<li>' + esc(s) + '</li>').join('') + '</ol></div>';
   if (a.hinweise && a.hinweise.length) h += '<div class="card"><h3>Gut zu wissen</h3><ul class="beh-list">' + a.hinweise.map(x => '<li>' + esc(x) + '</li>').join('') + '</ul></div>';
+  if (curLang !== 'de') h += behPhrasesHTML();   // Feature #2: zweisprachiger Schalter-Spickzettel
   h += '<div class="card"><h3>' + agentMsg({
     de: 'Nächstes Amt ({amt})', en: 'Nearest office ({amt})', fr: 'Administration la plus proche ({amt})',
     es: 'Oficina más cercana ({amt})', it: 'Ufficio più vicino ({amt})', pl: 'Najbliższy urząd ({amt})'
@@ -9126,7 +9156,9 @@ function briefAusDokument(id) {
   dgValues = {
     betreffFrei: d.title || '',
     empfName: d.sender || '',
-    empfAddr: '',
+    /* Anschrift des Absenders aus der Analyse (falls im Briefkopf erkannt),
+       damit der Empfaengerblock direkt vollstaendig ist statt leer. */
+    empfAddr: d.senderAddress || '',
     /* Auch hier der bereinigte Text: Geht der Nutzer zurück ins Formular und
        lässt neu erzeugen, entfällt dgOverrideBody und dieses Feld wird zum
        Briefrumpf – mit dem Rohentwurf käme die Dopplung zurück. */
@@ -13989,6 +14021,7 @@ async function aiAnalyze(dataUrl) {
     'UNSICHERHEIT: Bei unklarem Eigentümer (z. B. zwei Kinder möglich) oder Modul NICHT raten → needsConfirmation:true + präzise clarifyingQuestion. Im Zweifel Fachmodul statt Kalender. Niemals Namen/Daten/Zuordnungen erfinden.\n\n' +
     'Antworte AUSSCHLIESSLICH mit EINEM JSON-Objekt (kein Markdown, kein Text drumherum):\n' +
     '{"docType":"Rechnung|Mahnung|Vertrag|Behörde|Sonstiges","title":"kurzer Titel","sender":"Absender oder leer",' +
+    '"senderAddress":"vollständige Anschrift des Absenders aus dem Briefkopf (Straße Nr., PLZ Ort), sonst leer",' +
     '"subject":{"type":"kind|elternteil|fahrzeug|haushalt|unbekannt","name":"Name oder null"},' +
     '"primaryModule":"Kinder|Arbeitszeit|Auto & Motorrad|Notfallbereich|Lebenslagen|Familienzentrale|Dokumente|Kalender|Aufgaben",' +
     '"explanation":"2-4 einfache Sätze, duze den Leser, kein Amtsdeutsch","summary":"1-2 Sätze, sachlich",' +
@@ -14423,6 +14456,7 @@ async function handleDocFile(file) {
       docType: DOC_BADGE[result.docType] ? result.docType : 'Sonstiges',
       title: result.title || 'Dokument',
       sender: result.sender || '',
+      senderAddress: result.senderAddress || '',   // fuer „Als Brief öffnen": Empfaenger-Anschrift vorbefuellen
       explanation: result.explanation || '',
       deadline: (result.deadline && /^\d{4}-\d{2}-\d{2}$/.test(result.deadline)) ? result.deadline : null,
       urgency: result.urgency || result.priority || 'mittel',
