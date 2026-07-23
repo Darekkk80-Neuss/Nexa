@@ -967,6 +967,11 @@ body.store-safe [data-buy]{display:none!important}
   background:linear-gradient(145deg,var(--navy-2),var(--navy));border-radius:var(--r-md);box-shadow:var(--shadow-1)}
 /* Karten & Sektionen: weiche Radien, dezente Tiefe, großzügige Innenabstände */
 #view-dashboard .dash-section{border-radius:var(--r-card);padding:var(--sp-5);box-shadow:var(--shadow-1);margin-bottom:var(--sp-4)}
+/* Die Abo-Karte (#trialSlot) ist keine .dash-section und stand deshalb ohne
+   unteren Abstand direkt auf der Tageskarte. Denselben Abstand wie zwischen den
+   Karten darunter (16px), damit die Reihe gleichmaessig atmet. Auf #trialSlot
+   bezogen, damit dieselbe .lic-widget an anderer Stelle unberuehrt bleibt. */
+#view-dashboard #trialSlot .lic-widget,#view-dashboard #trialSlot .trial-pill{margin-bottom:var(--sp-4)}
 #view-dashboard .dsec-title{font-size:var(--fs-headline)}
 #view-dashboard .dsec-head button{color:var(--navy-ink);border-radius:var(--r-sm)}
 #view-dashboard .dsec-head button:hover{color:var(--navy-ink);opacity:.78}
