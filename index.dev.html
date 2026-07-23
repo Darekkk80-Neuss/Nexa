@@ -1127,6 +1127,26 @@ body.store-safe [data-buy]{display:none!important}
 .doc-explain{padding:12px 14px;border-radius:16px;background:rgba(77,124,255,.09);
   border:1px solid rgba(167,139,250,.22);font-size:14px;line-height:1.5;margin-bottom:14px}
 .doc-explain b{color:#8FB0FF;font-size:11.5px;letter-spacing:.5px;display:block;margin-bottom:5px}
+/* Zusammenfassung in eine Wunschsprache uebersetzen (inkl. Tuerkisch/Russisch).
+   Kompaktes Auswahlfeld; das Ergebnis erscheint in einer goldenen Box. */
+.doc-trans-ctl{display:flex;align-items:center;gap:8px;margin:-4px 0 14px}
+.doc-trans-ctl>svg{width:16px;height:16px;color:var(--faint);flex:none}
+.doc-trans-sel{flex:1;min-width:0;background:transparent;color:var(--text);border:1px solid var(--border);
+  border-radius:12px;padding:8px 32px 8px 11px;font-size:13px;font-family:inherit;cursor:pointer;
+  -webkit-appearance:none;appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238a93a8' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 10px center;background-size:15px}
+.doc-trans-sel:disabled{opacity:.6;cursor:progress}
+.doc-translated{padding:12px 14px;border-radius:16px;background:rgba(233,199,102,.09);
+  border:1px solid rgba(233,199,102,.34);margin-bottom:14px}
+.doc-tr-head{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.doc-tr-head .doc-tr-lang{flex:1;font-size:11.5px;letter-spacing:.4px;font-weight:700;
+  color:#E9C766;text-transform:uppercase}
+:root[data-theme="light"] .doc-tr-head .doc-tr-lang{color:#9C7519}
+.doc-tr-head button{background:none;border:none;color:var(--faint);cursor:pointer;font-size:15px;
+  line-height:1;padding:2px 5px;border-radius:8px}
+.doc-tr-head button:hover{color:var(--text)}
+.doc-tr-text{white-space:pre-wrap;font-size:14px;line-height:1.55;color:var(--text)}
 .deadline-row{display:flex;align-items:center;gap:9px;padding:10px 14px;border-radius:16px;
   font-size:13.5px;font-weight:600;margin-bottom:14px;border:1px solid}
 .deadline-row.ok{background:rgba(52,211,153,.08);border-color:rgba(52,211,153,.25);color:#7FE3AE}
@@ -2885,6 +2905,15 @@ const LANGS = [
   { code: 'pl', flag: '🇵🇱', native: 'Polski', locale: 'pl-PL', country: 'Polska', region: 'Europa', common: true }
 ];
 const SUPPORTED_LANGS = ['de', 'en', 'fr', 'es', 'it', 'pl'];
+/* Zielsprachen fuer die Uebersetzung der Dokument-Zusammenfassung: die sechs
+   App-Sprachen plus Tuerkisch und Russisch. Letztere sind KEINE vollstaendigen
+   App-Sprachen (die Bedienoberflaeche bleibt in der App-Sprache) – uebersetzt
+   wird nur die KI-Ausgabe, und das kann die KI in jede Sprache. */
+const DOC_TRANSLATE_TARGETS = LANGS.map(l => ({ code: l.code, flag: l.flag, native: l.native }))
+  .concat([
+    { code: 'tr', flag: '🇹🇷', native: 'Türkçe' },
+    { code: 'ru', flag: '🇷🇺', native: 'Русский' }
+  ]);
 const I18N = {
   de: {
     'date.today': 'heute', 'date.tomorrow': 'morgen', 'date.yesterday': 'gestern', 'date.days_ago': 'vor {n} Tagen', 'date.in_days': 'in {n} Tagen',
@@ -9189,6 +9218,77 @@ function briefAusDokument(id) {
   showView('docgen');
   window.scrollTo(0, 0);
 }
+/* Uebersetzt die Zusammenfassung (die einfache Erklaerung, plus – falls
+   vorhanden – die KI-Zusammenfassung) in eine Wunschsprache, inkl. Tuerkisch und
+   Russisch. Nur die KI-Ausgabe wird uebersetzt; das Ergebnis haengt am Dokument
+   (d.translation) und ueberlebt so das Neuzeichnen und einen Neustart. Kostet wie
+   jede KI-Aktion Credits – daher dasselbe Gate wie beim Scan. */
+async function translateDocSummary(id, code) {
+  const d = (store.docs || []).find(x => x.id === id);
+  if (!d) return;
+  const tgt = DOC_TRANSLATE_TARGETS.find(l => l.code === code);
+  if (!tgt) return;
+  if (d.demo) {
+    toast(pickLang({ de: 'Übersetzung gibt es für echte Analysen – lade ein eigenes Dokument hoch.', en: 'Translation is available for real analyses – upload your own document.', fr: 'La traduction est disponible pour les analyses réelles – téléverse ton propre document.', es: 'La traducción está disponible para análisis reales: sube tu propio documento.', it: 'La traduzione è disponibile per le analisi reali: carica un tuo documento.', pl: 'Tłumaczenie jest dostępne dla prawdziwych analiz – wgraj własny dokument.' }));
+    RENDERERS.docs(); return;
+  }
+  if (!canRealAI()) {
+    if (aiQuotaAufgebraucht()) { toast('KI-Kontingent aufgebraucht – nachbestellen oder eigenen Schlüssel eingeben.'); if (typeof showUpgrade === 'function') showUpgrade(); }
+    else requireAI();
+    RENDERERS.docs(); return;
+  }
+  const src = [d.explanation, (d.summary && d.summary !== d.explanation) ? d.summary : '']
+    .filter(x => x && x.trim()).join('\n\n');
+  if (!src) {
+    toast(pickLang({ de: 'Für dieses Dokument gibt es keine Zusammenfassung zum Übersetzen.', en: 'There is no summary to translate for this document.', fr: 'Aucun résumé à traduire pour ce document.', es: 'No hay resumen que traducir para este documento.', it: 'Nessun riassunto da tradurre per questo documento.', pl: 'Brak podsumowania do przetłumaczenia dla tego dokumentu.' }));
+    return;
+  }
+  d._translating = tgt.code;
+  RENDERERS.docs();
+  try {
+    const out = await aiCall({
+      op: 'question',
+      model: store.settings.model,
+      max_tokens: 900,
+      messages: [{ role: 'user', content: [{ type: 'text', text:
+        'Übersetze den folgenden Text vollständig und originalgetreu ins ' + tgt.native + '. Gib AUSSCHLIESSLICH die Übersetzung zurück – ohne Anführungszeichen, ohne Vorbemerkung, ohne Erklärung. Behalte die Absätze bei. Verändere niemals Zahlen, Beträge, Namen, Daten oder Fristen.\n\nTEXT:\n' + src
+      }] }]
+    });
+    const clean = (out || '').trim();
+    if (!clean) throw new Error(pickLang({ de: 'Die KI hat nichts zurückgegeben. Versuch es bitte noch einmal.', en: 'The AI returned nothing. Please try again.', fr: 'L\'IA n\'a rien renvoyé. Réessaie.', es: 'La IA no devolvió nada. Inténtalo de nuevo.', it: 'L\'IA non ha restituito nulla. Riprova.', pl: 'AI nic nie zwróciło. Spróbuj ponownie.' }));
+    delete d._translating;
+    d.translation = { code: tgt.code, native: tgt.native, flag: tgt.flag, text: clean };
+    save(); RENDERERS.docs();
+  } catch (e) {
+    delete d._translating;
+    RENDERERS.docs();
+    toast((e && e.message) ? e.message : pickLang({ de: 'Übersetzung fehlgeschlagen. Versuch es bitte noch einmal.', en: 'Translation failed. Please try again.', fr: 'Échec de la traduction. Réessaie.', es: 'La traducción falló. Inténtalo de nuevo.', it: 'Traduzione non riuscita. Riprova.', pl: 'Tłumaczenie nie powiodło się. Spróbuj ponownie.' }));
+  }
+}
+/* Auswahlfeld + Ergebnis-Box fuer die Uebersetzung, direkt unter der einfachen
+   Erklaerung. Die aktuelle App-Sprache faellt aus der Liste – sie steht schon
+   oben. Flaggen rendern auf Android/dem Ziel-Handy; im Desktop-Browser ggf. als
+   Laendercode – der native Sprachname daneben traegt die Auswahl. */
+function docTransControlHTML(d) {
+  const busy = !!d._translating;
+  const opts = DOC_TRANSLATE_TARGETS
+    .filter(l => l.code !== curLang)
+    .map(l => '<option value="' + l.code + '"' + (d.translation && d.translation.code === l.code ? ' selected' : '') + '>' + l.flag + ' ' + esc(l.native) + '</option>')
+    .join('');
+  const ph = busy
+    ? pickLang({ de: 'Wird übersetzt …', en: 'Translating …', fr: 'Traduction …', es: 'Traduciendo …', it: 'Traduzione …', pl: 'Tłumaczenie …' })
+    : pickLang({ de: 'Zusammenfassung übersetzen …', en: 'Translate summary …', fr: 'Traduire le résumé …', es: 'Traducir el resumen …', it: 'Traduci il riassunto …', pl: 'Przetłumacz podsumowanie …' });
+  let h = '<div class="doc-trans-ctl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3a15 15 0 0 1 0 18a15 15 0 0 1 0-18"/></svg>' +
+    '<select class="doc-trans-sel" data-act="docTransLang" data-id="' + d.id + '"' + (busy ? ' disabled' : '') + '>' +
+    '<option value="">' + esc(ph) + '</option>' + opts + '</select></div>';
+  if (d.translation && d.translation.text) {
+    h += '<div class="doc-translated"><div class="doc-tr-head"><span class="doc-tr-lang">' +
+      (d.translation.flag ? d.translation.flag + ' ' : '') + esc(d.translation.native) +
+      '</span><button data-act="clearDocTrans" data-id="' + d.id + '" aria-label="' + esc(pickLang({ de: 'Übersetzung ausblenden', en: 'Hide translation', fr: 'Masquer la traduction', es: 'Ocultar traducción', it: 'Nascondi traduzione', pl: 'Ukryj tłumaczenie' })) + '">✕</button></div>' +
+      '<div class="doc-tr-text">' + esc(d.translation.text) + '</div></div>';
+  }
+  return h;
+}
 function openDocTemplate(id) {
   dgActiveId = id; dgValues = {}; dgOverrideBody = null; dgSign = true; dgProfileOpen = !profileComplete(); dgState = 'form';
   showView('docgen');
@@ -14701,6 +14801,7 @@ RENDERERS.docs = function () {
         '<div class="doc-main"><h3>' + esc(d.title) + '</h3>' +
         (d.sender ? '<div class="doc-sender">' + t('doc.from', { s: esc(d.sender) }) + '</div>' : '') +
         '<div class="doc-explain"><b>IN EINFACHEN WORTEN</b>' + esc(d.explanation) + '</div>' +
+        (!d.demo && d.explanation ? docTransControlHTML(d) : '') +
         (d.needsConfirmation && d.clarifyingQuestion ? '<div class="doc-confirm"><b>Kurze Rückfrage:</b> ' + esc(d.clarifyingQuestion) + '</div>' : '') +
         (d.deadline ? '<div class="deadline-row ' + dlClass + '"><svg viewBox="0 0 24 24" width="17" height="17"><use href="#icClock"/></svg>' +
           esc(t('doc.deadline', { date: fmtDate(d.deadline), rel: dl < 0 ? t('doc.expired') : relDay(d.deadline) })) + '</div>' : '') +
@@ -14770,6 +14871,7 @@ $('#docList').addEventListener('click', e => {
   if (act.dataset.act === 'copyReply' && d.replyDraft) {
     copyText(d.replyDraft).then(ok => toast(ok ? 'Antwort kopiert ✓' : 'Kopieren nicht möglich'));
   }
+  if (act.dataset.act === 'clearDocTrans') { delete d.translation; save(); RENDERERS.docs(); return; }
 });
 /* Auswahl (Checkbox) und Inline-Bearbeitung der erkannten Einträge */
 /* Suche im Dokumentenarchiv. Bewusst ohne Entprellung: Gefiltert wird ueber
@@ -14791,6 +14893,7 @@ $('#docList').addEventListener('change', e => {
   const el = e.target.closest('[data-act]'); if (!el) return;
   const card = el.closest('.doc-card'); if (!card) return;
   const d = store.docs.find(x => x.id === card.dataset.id); if (!d) return;
+  if (el.dataset.act === 'docTransLang') { if (el.value) translateDocSummary(d.id, el.value); return; }
   const f = (d.findings || []).find(x => x.id === el.dataset.fid); if (!f) return;
   if (el.dataset.act === 'toggleFnd') { f.selected = el.checked; save(); return; }
   if (el.dataset.act === 'editFnd') {
