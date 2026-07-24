@@ -1975,7 +1975,6 @@ body.lang-switching main,body.lang-switching .sidebar,body.lang-switching .topba
     <svg class="logo-mark" viewBox="0 0 64 64" aria-hidden="true"><use href="#logoSym"/></svg>
     <h1 class="gate-brand font-head">Ordela</h1>
     <div class="brand-slogan"><svg viewBox="0 0 24 24"><use href="#icClock"/></svg>gewinnt dir Zeit zurück</div>
-    <a class="gate-film" href="werbespot.html">Film ansehen</a>
     <h2 id="authTitle">Konto erstellen</h2>
     <p class="gate-sub" id="authSub">7 Tage kostenlos testen – alle Funktionen inklusive.</p>
     <div class="gate-fields">
@@ -2420,6 +2419,17 @@ body.lang-switching main,body.lang-switching .sidebar,body.lang-switching .topba
         </div>
         <div class="kid-row" style="margin-bottom:12px"><select id="wtFreq" style="flex:1"><option value="weekly">wöchentlich</option><option value="biweeklyA">2-wöchentlich (gerade KW)</option><option value="biweeklyB">2-wöchentlich (ungerade KW)</option></select></div>
         <button class="btn btn-primary" id="wtAddBtn" style="width:100%">+ Abholtag hinzufügen</button>
+      </div>
+      <div class="card">
+        <h3 style="margin:0 0 4px">Automatisch aus deinem Gemeinde-Kalender</h3>
+        <p class="sub" style="margin:0 0 10px">Viele Gemeinden bieten ihren Abfallkalender als iCal/ICS an. Lade ihn hier – Ordela trägt die echten Abholtermine mit Datum ein.</p>
+        <button class="btn" id="wtFindBtn" style="width:100%;margin-bottom:8px">Kalender meiner Gemeinde finden</button>
+        <div class="kid-row" style="margin-bottom:8px">
+          <input type="url" id="wtIcsUrl" placeholder="iCal/ICS-Link einfügen …" style="flex:1" inputmode="url" autocomplete="off" aria-label="iCal/ICS-Link">
+          <button class="btn" id="wtIcsLoad" style="flex:none">Laden</button>
+        </div>
+        <label class="btn" style="width:100%;cursor:pointer;justify-content:center">Oder ICS-Datei wählen<input type="file" id="wtIcsFile" accept=".ics,text/calendar" style="display:none"></label>
+        <div class="sub" id="wtIcsStatus" style="margin-top:8px;min-height:1.2em" role="status" aria-live="polite"></div>
       </div>
       <div id="wasteRoot"></div>
     </section>
@@ -13712,6 +13722,12 @@ const WD_NAMES = ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'];
 function isoWeekNum(d) { const dt = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate())); const day = dt.getUTCDay() || 7; dt.setUTCDate(dt.getUTCDate() + 4 - day); const ys = new Date(Date.UTC(dt.getUTCFullYear(), 0, 1)); return Math.ceil((((dt - ys) / 86400000) + 1) / 7); }
 /* Nächster Abholtag als ISO-String (bis 4 Wochen voraus). */
 function wasteNext(w) {
+  if (w.dates && w.dates.length) {   // ICS-Import: naechstes Datum ab heute
+    const t0 = toISO(new Date());
+    let best = null;
+    for (const d of w.dates) { if (d >= t0 && (best === null || d < best)) best = d; }
+    return best;
+  }
   const today = new Date(); today.setHours(0, 0, 0, 0);
   for (let i = 0; i < 28; i++) {
     const d = new Date(today); d.setDate(today.getDate() + i);
@@ -13736,10 +13752,18 @@ RENDERERS.waste = function () {
     const ty = wType(w.type), dd = next ? dayDiff(next) : null;
     const when = next ? relDay(next) : '–';
     const cls = dd != null && dd <= 1 ? 'chip-danger' : dd != null && dd <= 3 ? 'chip-warn' : 'chip-accent';
+    const title = w.label || ty.l;
+    let meta;
+    if (w.dates && w.dates.length) {
+      const t0 = toISO(new Date()), kommend = w.dates.filter(d => d >= t0).length;
+      meta = 'Gemeinde-Kalender · ' + kommend + (kommend === 1 ? ' Termin' : ' Termine') + (next ? ' · ' + esc(fmtDateShort(next)) : '');
+    } else {
+      meta = WD_NAMES[Number(w.weekday)] + ' · ' + t(w.freq === 'weekly' ? 'wt.weekly' : w.freq === 'biweeklyA' ? 'wt.evenweek' : 'wt.oddweek') + (next ? ' · ' + esc(fmtDateShort(next)) : '');
+    }
     h += '<div class="task" style="align-items:center">' +
       '<span style="font-size:22px;width:40px;text-align:center;flex:none">' + ty.i + '</span>' +
-      '<div class="t-main"><span class="t-title">' + esc(ty.l) + '</span>' +
-      '<div class="t-meta">' + WD_NAMES[Number(w.weekday)] + ' · ' + t(w.freq === 'weekly' ? 'wt.weekly' : w.freq === 'biweeklyA' ? 'wt.evenweek' : 'wt.oddweek') + (next ? ' · ' + esc(fmtDateShort(next)) : '') + '</div></div>' +
+      '<div class="t-main"><span class="t-title">' + esc(title) + '</span>' +
+      '<div class="t-meta">' + meta + '</div></div>' +
       (next ? '<span class="chip-status ' + cls + '">' + when + '</span>' : '') +
       '<button class="t-del" data-wst="del" data-id="' + w.id + '" aria-label="Löschen"><svg viewBox="0 0 24 24"><use href="#icTrash"/></svg></button></div>';
   });
@@ -13754,6 +13778,67 @@ if ($('#wtAddBtn')) $('#wtAddBtn').addEventListener('click', () => {
 if ($('#wasteRoot')) $('#wasteRoot').addEventListener('click', e => {
   const b = e.target.closest('[data-wst]'); if (!b) return;
   if (b.dataset.wst === 'del') { store.waste = (store.waste || []).filter(x => x.id !== b.dataset.id); save(); RENDERERS.waste(); toast('Gelöscht'); return; }
+});
+
+/* --- Müllkalender: ICS/iCal-Import – echte Abholtermine aus dem Gemeinde-Kalender.
+   Der bekannte Wetter-Standort hilft nur beim Finden des Links; die Termine kommen
+   aus der (müllspezifischen) ICS-Datei der Gemeinde, nicht aus dem Wetterdienst. */
+function wasteTypeFromSummary(s) {
+  const x = (s || '').toLowerCase();
+  if (/(bio|grün|gruen|braun|kompost|garten)/.test(x)) return 'bio';
+  if (/(papier|pappe|karton|blau)/.test(x)) return 'papier';
+  if (/(gelb|wertstoff|verpack|plastik|lvp|dsd|leichtverpack)/.test(x)) return 'gelb';
+  if (/glas/.test(x)) return 'glas';
+  if (/(rest|schwarz|grau|hausmüll|hausmuell|hausabfall)/.test(x)) return 'rest';
+  return 'rest';
+}
+function parseICS(text) {
+  const raw = String(text).replace(/\r\n/g, '\n').replace(/\r/g, '\n').replace(/\n[ \t]/g, ''); // Zeilen entfalten (RFC 5545)
+  const out = []; let cur = null;
+  for (const line of raw.split('\n')) {
+    if (line === 'BEGIN:VEVENT') { cur = {}; continue; }
+    if (line === 'END:VEVENT') { if (cur && cur.date) out.push(cur); cur = null; continue; }
+    if (!cur) continue;
+    const ci = line.indexOf(':'); if (ci < 0) continue;
+    const name = line.slice(0, ci).split(';')[0].toUpperCase(), val = line.slice(ci + 1);
+    if (name === 'DTSTART') { const m = val.match(/(\d{4})(\d{2})(\d{2})/); if (m) cur.date = m[1] + '-' + m[2] + '-' + m[3]; }
+    else if (name === 'SUMMARY') { cur.summary = val.replace(/\\n/gi, ' ').replace(/\\,/g, ',').replace(/\\;/g, ';').replace(/\s+/g, ' ').trim(); }
+  }
+  const t0 = toISO(new Date());
+  return out.filter(e => e.date >= t0).map(e => ({ date: e.date, summary: e.summary || 'Abholung', type: wasteTypeFromSummary(e.summary) }));
+}
+function setWtStatus(m) { const el = $('#wtIcsStatus'); if (el) el.textContent = m || ''; }
+function importWasteEvents(events) {
+  if (!events || !events.length) { setWtStatus('Keine kommenden Abholtermine gefunden – enthält der Kalender künftige Termine?'); return; }
+  store.waste = (store.waste || []).filter(w => w.src !== 'ics');   // alten Import ersetzen, manuelle Regeln behalten
+  const groups = {};
+  events.forEach(e => { (groups[e.summary] = groups[e.summary] || { label: e.summary, type: e.type, dates: [] }).dates.push(e.date); });
+  Object.values(groups).forEach(g => store.waste.push({ id: uid(), type: g.type, label: g.label, dates: [...new Set(g.dates)].sort(), src: 'ics' }));
+  save(); RENDERERS.waste();
+  const ne = events.length, ng = Object.keys(groups).length;
+  setWtStatus('✓ ' + ne + (ne === 1 ? ' Termin' : ' Termine') + ' aus ' + ng + (ng === 1 ? ' Tonne' : ' Tonnen') + ' importiert.');
+  toast('Abholtermine importiert ✓');
+}
+if ($('#wtFindBtn')) $('#wtFindBtn').addEventListener('click', () => {
+  const ort = (store.weatherLoc && store.weatherLoc.name) ? store.weatherLoc.name + ' ' : '';
+  window.open('https://www.google.com/search?q=' + encodeURIComponent(ort + 'Abfallkalender iCal ICS Download'), '_blank', 'noopener');
+});
+if ($('#wtIcsLoad')) $('#wtIcsLoad').addEventListener('click', async () => {
+  let url = (($('#wtIcsUrl') || {}).value || '').trim(); if (!url) { setWtStatus('Bitte einen iCal/ICS-Link einfügen.'); return; }
+  url = url.replace(/^webcal:/i, 'https:');
+  setWtStatus('Lade Kalender …');
+  try {
+    const r = await fetch(url); if (!r.ok) throw new Error('HTTP ' + r.status);
+    const txt = await r.text(); if (!/BEGIN:VCALENDAR/i.test(txt)) throw new Error('kein ICS');
+    importWasteEvents(parseICS(txt));
+  } catch (e) { setWtStatus('Der Link ließ sich nicht laden (viele Gemeinden sperren den Direktzugriff im Browser). Lade die ICS-Datei herunter und wähle sie unten aus.'); }
+});
+if ($('#wtIcsFile')) $('#wtIcsFile').addEventListener('change', async (e) => {
+  const f = e.target.files && e.target.files[0]; if (!f) return;
+  setWtStatus('Lese Datei …');
+  try { const txt = await f.text(); if (!/BEGIN:VCALENDAR/i.test(txt)) throw new Error('kein ICS'); importWasteEvents(parseICS(txt)); }
+  catch (err) { setWtStatus('Das war keine gültige ICS-Datei.'); }
+  e.target.value = '';
 });
 
 /* ============================== VORSORGE & ERINNERUNGEN (lokal) ============================== */
