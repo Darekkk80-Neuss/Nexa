@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ordela ohne Sehen bedienen · Anleitung</title>
+<style>
+  :root{color-scheme:light dark}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;line-height:1.6;color:#1f2430;background:#fff;padding:22px 18px 60px}
+  @media(prefers-color-scheme:dark){body{background:#0e1118;color:#e7ebf3}}
+  .wrap{max-width:760px;margin:0 auto}
+  h1{font-size:26px;margin:.2em 0 .1em;line-height:1.15}
+  h2{font-size:18px;margin:1.5em 0 .3em}
+  h3{font-size:15px;margin:1.1em 0 .2em}
+  a{color:#7c3aed}
+  p{margin:.5em 0}
+  ul{margin:.4em 0;padding-left:1.2em}
+  li{margin:.35em 0}
+  .langbar{display:flex;gap:8px;margin-bottom:18px}
+  .langbar button{border:1px solid #ccc;background:transparent;color:inherit;border-radius:8px;padding:5px 12px;cursor:pointer;font-size:13px}
+  .langbar button.on{background:#7c3aed;border-color:#7c3aed;color:#fff}
+  .muted{color:#6b7280;font-size:13px}
+  .box{border:1px solid rgba(127,127,127,.25);border-radius:12px;padding:14px 16px;margin:14px 0}
+  .box b.k{display:block;margin-bottom:4px}
+  .step{position:relative;border:1px solid rgba(127,127,127,.25);border-radius:12px;padding:12px 14px 12px 50px;margin:10px 0}
+  .step .no{position:absolute;left:12px;top:12px;width:28px;height:28px;border-radius:8px;background:#7c3aed;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px}
+  .step b{display:block;margin-bottom:2px}
+  .g{margin:9px 0}
+  .g b{display:inline}
+  .say{font-family:ui-monospace,"Segoe UI Mono",Consolas,monospace;font-size:.92em;background:rgba(127,127,127,.16);padding:.06em .42em;border-radius:5px}
+  [hidden]{display:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="langbar"><button data-l="de" class="on">Deutsch</button><button data-l="en">English</button></div>
+
+  <section id="de">
+    <h1>Ordela ohne Sehen bedienen</h1>
+    <p class="muted">Schritt-für-Schritt-Anleitung für blinde Nutzerinnen und Nutzer, die Ordela per Screenreader bedienen.</p>
+
+    <div class="box">
+      <b class="k">Das Wichtigste zuerst</b>
+      Den Screenreader schaltest du in den Einstellungen deines <b>Geräts</b> ein – nicht in Ordela. In der App selbst musst du nichts aktivieren: Sie unterstützt TalkBack (Android), VoiceOver (iPhone) und NVDA (Computer) automatisch und liest dir Knöpfe, Felder, Meldungen und sogar Kalendertage von selbst vor.
+    </div>
+
+    <h2>1. Screenreader einschalten</h2>
+    <p>Ordela läuft aus dem Google Play Store – für die meisten ist das <b>TalkBack auf Android</b>.</p>
+    <h3>TalkBack (Android)</h3>
+    <ul>
+      <li><b>Schnell per Tasten:</b> beide Lautstärketasten etwa 3 Sekunden zusammen gedrückt halten. Beim ersten Mal fragt Android, ob die Verknüpfung eingerichtet werden soll – bestätige das.</li>
+      <li><b>Per Sprache:</b> <span class="say">„Hey Google, TalkBack einschalten"</span>.</li>
+      <li><b>Über die Einstellungen:</b> Einstellungen → Bedienungshilfen → TalkBack → einschalten.</li>
+      <li>Wieder <b>aus</b> geht es genauso.</li>
+    </ul>
+    <h3>VoiceOver (iPhone / iPad)</h3>
+    <p>Falls du die Web-App auf einem Apple-Gerät nutzt: Einstellungen → Bedienungshilfen → VoiceOver einschalten, oder <span class="say">„Hey Siri, VoiceOver einschalten"</span>. Mit eingerichtetem Kurzbefehl genügt dreimaliges Drücken der Seitentaste.</p>
+    <h3>NVDA (Computer im Browser)</h3>
+    <p>Am PC startest du NVDA mit <span class="say">Strg + Alt + N</span>. Du bewegst dich mit <span class="say">Tab</span> und <span class="say">Umschalt + Tab</span>, liest mit den Pfeiltasten, <span class="say">Enter</span> oder <span class="say">Leertaste</span> aktiviert.</p>
+
+    <h2>2. Die wichtigsten Gesten (TalkBack)</h2>
+    <p>Mit einer Handvoll Gesten kommst du überall in Ordela hin. Sie gelten in ganz Android, nicht nur hier.</p>
+    <div class="g"><b>Weiter:</b> mit einem Finger nach rechts wischen – zum nächsten Element.</div>
+    <div class="g"><b>Zurück (ein Element):</b> nach links wischen – zum vorherigen Element.</div>
+    <div class="g"><b>Aktivieren:</b> einmal doppeltippen (egal wo) – öffnet das zuletzt genannte Element.</div>
+    <div class="g"><b>Scrollen:</b> mit zwei Fingern nach oben oder unten wischen.</div>
+    <div class="g"><b>Vorlesen anhalten:</b> mit zwei Fingern einmal tippen. Nochmal tippen = weiterlesen.</div>
+    <div class="g"><b>Erkunden:</b> einen Finger langsam über den Bildschirm ziehen – TalkBack liest vor, was darunter liegt.</div>
+    <div class="g"><b>Eine Ansicht zurück:</b> „nach unten, dann nach links" wischen (L-Geste) – oder die Zurück-Geste deines Geräts.</div>
+    <div class="box">
+      <b class="k">Profi-Tipp: nach Überschriften springen</b>
+      Stell die <b>Lesesteuerung</b> auf „Überschriften". Dann springst du mit Auf- und Ab-Wischen direkt von Abschnitt zu Abschnitt – in Ordela ist jeder Bereich sauber überschrieben. Welche Geste die Lesesteuerung umschaltet, zeigt dir TalkBack unter Einstellungen → TalkBack → Gesten (je nach Android-Version verschieden).
+    </div>
+    <h3>Text eingeben</h3>
+    <p>Doppeltippe ein Eingabefeld – die Tastatur erscheint. Fahre mit dem Finger über die Tasten (TalkBack liest jede vor) und hebe den Finger auf der richtigen ab. Oft bequemer ist die <b>Spracheingabe</b>: Doppeltippe die Mikrofon-Taste der Tastatur und sprich.</p>
+
+    <h2>3. Der erste Start</h2>
+    <p>Beim ersten Öffnen führt dich Ordela durch ein paar Schritte. Fokus und Ansagen leiten dich – folge einfach der Reihe.</p>
+    <div class="step"><span class="no">1</span><b>Zum Inhalt springen (optional)</b>Ganz am Anfang liegt der Link <span class="say">„Zum Hauptinhalt springen"</span>. Doppeltippen überspringt die Kopfzeile.</div>
+    <div class="step"><span class="no">2</span><b>Alter bestätigen</b>Fragt Ordela nach dem Alter, findest du das Feld <span class="say">„Geburtsdatum, Konten ab 18 Jahren"</span>. Doppeltippen öffnet die Datumsauswahl. Stimmt etwas nicht, nennt Ordela den Grund und der Fokus springt zurück auf das Feld (angesagt als „ungültig").</div>
+    <div class="step"><span class="no">3</span><b>Anmelden oder Konto erstellen</b>Wische zum Feld <span class="say">„E-Mail-Adresse"</span> und gib sie ein, dann zum Feld <span class="say">„Passwort"</span>. Der Knopf heißt „Konto erstellen" oder „Anmelden". Fehler werden vorgelesen (z. B. „Das Passwort braucht mindestens 6 Zeichen.") und der Fokus springt automatisch auf das falsche Feld.</div>
+    <div class="step"><span class="no">4</span><b>Nutzungsbedingungen zustimmen</b>Beim ersten Mal kommt das Kästchen <span class="say">„Ich stimme den Nutzungsbedingungen zu"</span>. Doppeltippen setzt den Haken, dann „Weiter". Die Links „Nutzungsbedingungen" und „Datenschutzerklärung" öffnen die Texte zum Nachhören.</div>
+    <div class="step"><span class="no">5</span><b>Kurze Einrichtung</b>Ordela fragt evtl. deinen Namen und was du zuerst nutzen willst – folge den Ansagen. Zum Schluss hörst du eine Bestätigung wie „Konto erstellt – 7 Tage alles inklusive".</div>
+
+    <h2>4. Dich in Ordela bewegen</h2>
+    <ul>
+      <li><b>Ansage bei jedem Wechsel:</b> Öffnest du einen Bereich, sagt Ordela dessen Namen an – „Aufgaben", „Kalender", „Dokumente" … – und setzt den Vorlese-Fokus auf dessen Überschrift.</li>
+      <li><b>Die zwei Menüs:</b> die „Hauptnavigation" (alle Funktionen) und der „Schnellzugriff" (die wichtigsten unten). Der Punkt, auf dem du gerade bist, wird als „aktuelle Seite" angesagt.</li>
+      <li><b>Schnell springen:</b> mit der Lesesteuerung „Überschriften" hüpfst du in einem Rutsch zwischen den Abschnitten.</li>
+      <li><b>Meldungen kommen von selbst:</b> Kurzmeldungen wie „Gespeichert" liest Ordela automatisch vor.</li>
+      <li><b>Dialoge halten dich fest:</b> Öffnet sich ein Dialog, bleibt der Fokus darin – du wischst nicht in den Hintergrund. Schließen über den „Schließen"-Knopf oder die Zurück-Geste.</li>
+    </ul>
+
+    <h2>5. Typische Aufgaben</h2>
+    <ul>
+      <li><b>Einen Brief verstehen:</b> „Foto analysieren" auf der Startseite oder „Dokument fotografieren oder hochladen" im Bereich Dokumente. Danach liest Ordela Titel, den Abschnitt „In einfachen Worten" und – falls vorhanden – die Frist vor. Übersetzung in eine andere Sprache über das Übersetzungs-Steuerelement.</li>
+      <li><b>Eine Aufgabe notieren:</b> Feld „Schnell erfassen" auf der Startseite (doppeltippen, tippen oder diktieren, dann „Erfassen") – oder die Schnellaktion „Neue Aufgabe".</li>
+      <li><b>Kalender:</b> Jeder Tag wird vollständig angesagt, z. B. „Freitag, 24. Juli, 1 Termin, heute, ausgewählt". Doppeltippen wählt den Tag; darunter erscheinen seine Termine. Blättern mit „Voriger Monat" / „Nächster Monat".</li>
+      <li><b>Arbeitszeit &amp; Dienste:</b> Im Arbeits-Kalender nennt jeder Tag zusätzlich die Schicht, z. B. „Samstag, 25. Juli, Nachtdienst". Farben und Symbole sind nur Deko – die Schicht steht immer im vorgelesenen Text.</li>
+      <li><b>Frag Ordela:</b> Die Schnellaktion „Frag Ordela" öffnet den Chat. Frage eingeben oder diktieren, abschicken – die Antwort wird vorgelesen.</li>
+    </ul>
+
+    <h2>6. Gut zu wissen</h2>
+    <ul>
+      <li><b>Orientierung verloren?</b> Setz den Finger oben links auf und hangel dich mit Rechts-Wischen neu durch – oder nutz die Überschriften-Lesesteuerung.</li>
+      <li><b>Tempo nach deinem Geschmack:</b> Sprechtempo und Ausführlichkeit stellst du in den TalkBack-Einstellungen ein.</li>
+      <li><b>Für Restsehkraft:</b> Unter Ordela → Einstellungen → Barrierefreiheit gibt es größere Schrift, mehr Kontrast und weniger Bewegung. Für die reine Screenreader-Bedienung brauchst du dort nichts umzustellen.</li>
+    </ul>
+    <div class="box">
+      <b class="k">Wenn mal etwas klemmt</b>
+      Wird dir irgendwo etwas nicht oder falsch vorgelesen, melde es bitte an <a href="mailto:info@gonsoft-labs.de">info@gonsoft-labs.de</a> – wir bessern gezielt nach. An einzelnen Übersichts-Kacheln der Startseite arbeiten wir gerade noch.
+    </div>
+    <p class="muted">Stand: 24.07.2026</p>
+  </section>
+
+  <section id="en" hidden>
+    <h1>Using Ordela without sight</h1>
+    <p class="muted">A step-by-step guide for blind users operating Ordela with a screen reader.</p>
+
+    <div class="box">
+      <b class="k">First things first</b>
+      You turn the screen reader on in your <b>device</b> settings – not in Ordela. There is nothing to enable inside the app: it supports TalkBack (Android), VoiceOver (iPhone) and NVDA (computer) automatically and reads out buttons, fields, messages and even calendar days on its own.
+    </div>
+
+    <h2>1. Turn the screen reader on</h2>
+    <p>Ordela ships via the Google Play Store – for most people that means <b>TalkBack on Android</b>.</p>
+    <h3>TalkBack (Android)</h3>
+    <ul>
+      <li><b>Quick, with the buttons:</b> press and hold both volume keys together for about 3 seconds. The first time, Android asks whether to set up the shortcut – confirm it.</li>
+      <li><b>By voice:</b> <span class="say">“Hey Google, turn on TalkBack”</span>.</li>
+      <li><b>Via settings:</b> Settings → Accessibility → TalkBack → turn on.</li>
+      <li>Turning it <b>off</b> works the same way.</li>
+    </ul>
+    <h3>VoiceOver (iPhone / iPad)</h3>
+    <p>If you use the web app on an Apple device: Settings → Accessibility → VoiceOver → on, or <span class="say">“Hey Siri, turn on VoiceOver”</span>. With the accessibility shortcut set up, triple-press the side button.</p>
+    <h3>NVDA (computer in the browser)</h3>
+    <p>On a PC start NVDA with <span class="say">Ctrl + Alt + N</span>. Move with <span class="say">Tab</span> and <span class="say">Shift + Tab</span>, read with the arrow keys, and activate with <span class="say">Enter</span> or <span class="say">Space</span>.</p>
+
+    <h2>2. The essential gestures (TalkBack)</h2>
+    <p>A handful of gestures get you everywhere in Ordela. They work across all of Android, not just here.</p>
+    <div class="g"><b>Next:</b> swipe right with one finger – to the next item.</div>
+    <div class="g"><b>Previous item:</b> swipe left – to the previous item.</div>
+    <div class="g"><b>Activate:</b> double-tap once (anywhere) – opens the item last announced.</div>
+    <div class="g"><b>Scroll:</b> swipe up or down with two fingers.</div>
+    <div class="g"><b>Pause speech:</b> tap once with two fingers. Tap again to resume.</div>
+    <div class="g"><b>Explore:</b> drag one finger slowly across the screen – TalkBack reads whatever is under it.</div>
+    <div class="g"><b>Back one screen:</b> swipe “down, then left” (L-gesture) – or your device's back gesture.</div>
+    <div class="box">
+      <b class="k">Pro tip: jump by headings</b>
+      Set the <b>reading control</b> to “Headings”. Then swipe up and down to jump straight from section to section – every area in Ordela is properly headed. Which gesture switches the reading control is shown in TalkBack under Settings → TalkBack → Gestures (it varies by Android version).
+    </div>
+    <h3>Entering text</h3>
+    <p>Double-tap an input field – the keyboard appears. Drag your finger over the keys (TalkBack reads each one) and lift on the right one. Often easier is <b>voice input</b>: double-tap the microphone key on the keyboard and speak.</p>
+
+    <h2>3. The first launch</h2>
+    <p>On first open, Ordela walks you through a few steps. Focus and announcements guide you – just follow the order.</p>
+    <div class="step"><span class="no">1</span><b>Skip to content (optional)</b>Right at the start there is a link <span class="say">“Skip to main content”</span>. Double-tapping it skips the header.</div>
+    <div class="step"><span class="no">2</span><b>Confirm your age</b>If Ordela asks for your age, find the field <span class="say">“Date of birth, accounts from age 18”</span>. Double-tap to open the date picker. If something is wrong, Ordela states the reason and focus returns to the field (announced as “invalid”).</div>
+    <div class="step"><span class="no">3</span><b>Sign in or create an account</b>Swipe to the <span class="say">“Email address”</span> field and enter it, then the <span class="say">“Password”</span> field. The button reads “Create account” or “Sign in”. Errors are read out (e.g. “Password must be at least 6 characters.”) and focus jumps to the wrong field automatically.</div>
+    <div class="step"><span class="no">4</span><b>Agree to the terms</b>The first time, a checkbox appears: <span class="say">“I agree to the Terms of Use”</span>. Double-tap to check it, then “Continue”. The “Terms of Use” and “Privacy Policy” links open the texts to read.</div>
+    <div class="step"><span class="no">5</span><b>Quick setup</b>Ordela may ask your name and what you want to use first – follow the prompts. At the end you hear a confirmation like “Account created – 7 days all included”.</div>
+
+    <h2>4. Getting around in Ordela</h2>
+    <ul>
+      <li><b>Announced on every change:</b> when you open an area, Ordela says its name – “Tasks”, “Calendar”, “Documents” … – and moves the reading focus to its heading.</li>
+      <li><b>The two menus:</b> the “Main navigation” (all features) and the “Quick access” (the important ones, at the bottom). The item you are on is announced as “current page”.</li>
+      <li><b>Jump fast:</b> with the “Headings” reading control you hop between sections in one go.</li>
+      <li><b>Messages come to you:</b> short messages like “Saved” are read out automatically.</li>
+      <li><b>Dialogs hold you:</b> when a dialog opens, focus stays inside – you won't swipe into the background. Close it with the “Close” button or the back gesture.</li>
+    </ul>
+
+    <h2>5. Common tasks</h2>
+    <ul>
+      <li><b>Understand a letter:</b> “Analyse photo” on the home screen, or “Photograph or upload document” in the Documents area. Ordela then reads the title, the “In plain words” section and – if present – the deadline. Translate into another language via the translation control.</li>
+      <li><b>Jot down a task:</b> the “Quick capture” field on the home screen (double-tap, type or dictate, then “Capture”) – or the quick action “New task”.</li>
+      <li><b>Calendar:</b> each day is announced in full, e.g. “Friday, 24 July, 1 appointment, today, selected”. Double-tap to select a day; its appointments appear below. Page with “Previous month” / “Next month”.</li>
+      <li><b>Work time &amp; shifts:</b> in the work calendar each day also states the shift, e.g. “Saturday, 25 July, night shift”. Colours and icons are decoration only – the shift is always in the spoken text.</li>
+      <li><b>Ask Ordela:</b> the quick action “Ask Ordela” opens the chat. Type or dictate your question, send it – the answer is read out.</li>
+    </ul>
+
+    <h2>6. Good to know</h2>
+    <ul>
+      <li><b>Lost your place?</b> Put a finger at the top left and swipe right to work through again – or use the Headings reading control.</li>
+      <li><b>Speed to taste:</b> set speaking rate and verbosity in the TalkBack settings.</li>
+      <li><b>Some remaining sight:</b> under Ordela → Settings → Accessibility there are larger text, higher contrast and reduced motion. For pure screen-reader use you don't need to change anything there.</li>
+    </ul>
+    <div class="box">
+      <b class="k">If something goes wrong</b>
+      If anything is not read out, or read out incorrectly, please report it to <a href="mailto:info@gonsoft-labs.de">info@gonsoft-labs.de</a> – we fix things specifically. We are still improving a few dashboard tiles.
+    </div>
+    <p class="muted">Version: 2026-07-24</p>
+  </section>
+</div>
+<script>
+  (function(){
+    var p=new URLSearchParams(location.search).get('lang');
+    var lang=(p||navigator.language||'de').slice(0,2).toLowerCase()==='de'?'de':'en';
+    function set(l){document.getElementById('de').hidden=l!=='de';document.getElementById('en').hidden=l!=='en';document.documentElement.lang=l;[].forEach.call(document.querySelectorAll('.langbar button'),function(b){b.classList.toggle('on',b.dataset.l===l);});}
+    set(lang);
+    [].forEach.call(document.querySelectorAll('.langbar button'),function(b){b.onclick=function(){set(b.dataset.l);};});
+  })();
+</script>
+</body>
+</html>

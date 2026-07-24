@@ -2594,6 +2594,7 @@ body.lang-switching main,body.lang-switching .sidebar,body.lang-switching .topba
         <div style="display:flex;gap:8px;flex-wrap:wrap">
           <button class="btn" id="btnResetHelp"><svg viewBox="0 0 24 24"><use href="#icHelp"/></svg>Hilfe &amp; Tour zurücksetzen</button>
           <button class="btn" id="btnOpenHelp">Alle Funktionen ansehen</button>
+          <button class="btn" id="btnScreenreaderGuide">Bedienung mit Screenreader</button>
         </div>
       </div>
 
@@ -5569,6 +5570,7 @@ if ($('#btnResetHelp')) $('#btnResetHelp').addEventListener('click', () => {
   $('#onboarding').classList.add('on'); if (typeof obShow === 'function') obShow(0); if ($('#obName')) $('#obName').value = store.name || '';
 });
 if ($('#btnOpenHelp')) $('#btnOpenHelp').addEventListener('click', () => showView('help'));
+if ($('#btnScreenreaderGuide')) $('#btnScreenreaderGuide').addEventListener('click', () => showLegalDoc('anleitung'));
 
 const MORE_VIEWS = ['work', 'docs', 'school', 'calendar', 'life', 'behoerden', 'family', 'emergency', 'vehicles', 'contracts', 'vault', 'shopping', 'waste', 'checkup', 'fit', 'help', 'settings'];
 let viewHistory = [], _navBack = false;
