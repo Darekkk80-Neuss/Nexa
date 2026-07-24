@@ -170,6 +170,7 @@ supabase functions deploy nutrition-proxy
 supabase functions deploy meal-translate     # Rezept-Übersetzung, serverseitig gecacht
 supabase functions deploy photo-proxy
 supabase functions deploy fuel-proxy
+supabase functions deploy ics-proxy          # Muellkalender: laedt iCal/ICS-Link der Gemeinde serverseitig (CORS-Umgehung); Auth im Code (getUser), SSRF-Schutz, kein Secret noetig
 supabase functions deploy push-send
 supabase functions deploy delete-account
 supabase functions deploy stripe-checkout

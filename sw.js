@@ -8,7 +8,7 @@
    hiess in der Praxis: wer nur index.dev.html änderte, liess sw.js byte-gleich. Der
    Browser sieht dann keine neue Datei, installiert keinen neuen Worker – und im
    laufenden Tab feuert nie 'updatefound'. Der Zeitstempel erzwingt beides. */
-const BUILD = '20260724-0954';
+const BUILD = '20260724-1011';
 const CACHE = 'effyra-' + BUILD;
 const SHELL = ['./', './index.html', './manifest.webmanifest', './icon.svg', './bg.jpg',
   './impressum.html', './datenschutz.html', './nutzungsbedingungen.html', './konto-loeschen.html', './barrierefreiheit.html', './anleitung.html',
